@@ -1,0 +1,105 @@
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+
+stages:
+  - validate
+  - build
+  - test
+
+# Prefer merge-request pipelines while avoiding a duplicate branch pipeline for
+# a branch that already has an open merge request.
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+
+default:
+  interruptible: true
+
+variables:
+  AST_ENABLE_MR_PIPELINES: "true"
+  SAST_EXCLUDED_PATHS: "vendor/,node_modules/,public/build/,storage/"
+  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.cache/composer"
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
+
+composer_validate:
+  stage: validate
+  image: composer:2
+  script:
+    - composer validate --strict --no-check-publish
+
+frontend_build:
+  stage: build
+  image: node:24-alpine
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .cache/npm/
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    name: "frontend-$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - public/build/
+    expire_in: 1 week
+
+backend_checks:
+  stage: test
+  image: php:8.3-cli
+  needs:
+    - job: frontend_build
+      artifacts: true
+  cache:
+    key:
+      files:
+        - composer.lock
+    paths:
+      - .cache/composer/
+  before_script:
+    - apt-get update
+    - apt-get install --yes --no-install-recommends curl git unzip libonig-dev libsqlite3-dev libxml2-dev
+    - docker-php-ext-install -j"$(nproc)" dom mbstring pdo_sqlite xml xmlwriter
+    - curl --fail --silent --show-error https://getcomposer.org/installer --output composer-setup.php
+    - curl --fail --silent --show-error https://composer.github.io/installer.sig --output composer-setup.sig
+    - php -r "if (hash_file('sha384', 'composer-setup.php') !== trim(file_get_contents('composer-setup.sig'))) { fwrite(STDERR, 'Invalid Composer installer signature.' . PHP_EOL); exit(1); }"
+    - php composer-setup.php --quiet --install-dir=/usr/local/bin --filename=composer
+    - rm composer-setup.php composer-setup.sig
+  script:
+    - composer install --no-interaction --prefer-dist --no-progress
+    - cp .env.example .env
+    - php artisan key:generate
+    - mkdir -p build/test-results
+    - vendor/bin/pint --test
+    - php artisan test --log-junit build/test-results/phpunit.xml
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/phpunit.xml
+    paths:
+      - storage/logs/
+    expire_in: 1 week
+
+composer_audit:
+  stage: test
+  image: composer:2
+  script:
+    - composer audit --locked --no-interaction
+
+npm_audit:
+  stage: test
+  image: node:24-alpine
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .cache/npm/
+  script:
+    - npm audit --audit-level=high
