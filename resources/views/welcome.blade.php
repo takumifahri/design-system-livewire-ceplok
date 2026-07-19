@@ -181,16 +181,29 @@
                             </div>
                         </div>
 
+                        <div class="mt-12">
+                            <p class="ds-eyebrow">tpl/design-kit</p>
+                            <h2 class="mt-2 text-heading-3 font-black text-gray-900">Komponen dari package</h2>
+                            <p class="mt-2 max-w-2xl text-body-sm text-gray-500">Diambil dari <code class="text-xs font-bold text-gray-700">vendor/tpl/design-kit</code>, dipakai lewat <code class="text-xs font-bold text-gray-700">&lt;x-dk::button&gt;</code> dan <code class="text-xs font-bold text-gray-700">&lt;x-dk::badge&gt;</code>.</p>
+                            <div class="ds-card mt-5 flex flex-wrap items-center gap-3 p-6">
+                                <x-dk::button variant="primary">Simpan perubahan</x-dk::button>
+                                <x-dk::button variant="secondary">Batal</x-dk::button>
+                                <x-dk::button variant="danger">Hapus</x-dk::button>
+                                <x-dk::badge variant="success">Aktif</x-dk::badge>
+                                <x-dk::badge variant="warning">Menunggu</x-dk::badge>
+                            </div>
+                        </div>
+
                         <div class="mt-12 overflow-hidden rounded-2xl bg-gray-900 shadow-soft">
                             <div class="flex items-center justify-between border-b border-white/10 px-5 py-3">
                                 <span class="text-xs font-bold text-gray-300">Contoh penggunaan</span>
-                                <span class="text-[10px] font-bold tracking-wider text-gray-500 uppercase">Blade + Tailwind</span>
+                                <span class="text-[10px] font-bold tracking-wider text-gray-500 uppercase">Blade + tpl/design-kit</span>
                             </div>
-                            <pre class="overflow-x-auto p-5 text-sm leading-7 text-gray-300"><code>&lt;button class=&quot;<span class="text-primary-300">bg-brand hover:bg-brand-hover</span> text-white&quot;&gt;
+                            <pre class="overflow-x-auto p-5 text-sm leading-7 text-gray-300"><code>&lt;x-dk::button variant=&quot;<span class="text-primary-300">primary</span>&quot;&gt;
     Simpan perubahan
-&lt;/button&gt;
+&lt;/x-dk::button&gt;
 
-&lt;p class=&quot;<span class="text-success-300">text-feedback-success</span>&quot;&gt;Data berhasil disimpan&lt;/p&gt;</code></pre>
+&lt;x-dk::badge variant=&quot;<span class="text-success-300">success</span>&quot;&gt;Aktif&lt;/x-dk::badge&gt;</code></pre>
                         </div>
                     </section>
 

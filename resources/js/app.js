@@ -1,12 +1,15 @@
 import Alpine from 'alpinejs';
+import { registerDesignKit, dkClipboard } from '@tpl/design-kit';
+
+registerDesignKit(Alpine);
 
 window.Alpine = Alpine;
 
 Alpine.data('designSystem', () => ({
+    ...dkClipboard(),
+
     section: window.location.hash === '#typography' ? 'typography' : 'colors',
     mobileMenu: false,
-    copied: null,
-    copiedTimer: null,
 
     showSection(section) {
         this.section = section;
@@ -15,17 +18,8 @@ Alpine.data('designSystem', () => ({
         window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
-    async copyToken(value, token) {
-        try {
-            await navigator.clipboard.writeText(value);
-            this.copied = token;
-            window.clearTimeout(this.copiedTimer);
-            this.copiedTimer = window.setTimeout(() => {
-                this.copied = null;
-            }, 1200);
-        } catch {
-            this.copied = null;
-        }
+    copyToken(value, token) {
+        this.copy(value, token);
     },
 }));
 
