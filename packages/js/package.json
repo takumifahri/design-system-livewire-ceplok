@@ -1,6 +1,6 @@
 {
     "name": "@tpl/design-kit",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Design tokens (CSS) and Alpine.js interaction primitives for TPL products",
     "type": "module",
     "license": "MIT",

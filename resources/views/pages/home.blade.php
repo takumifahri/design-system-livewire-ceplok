@@ -2,7 +2,7 @@
     <section class="relative overflow-hidden border-b border-border bg-gradient-to-b from-primary-50 to-white px-5 py-16 sm:px-8 lg:px-12 lg:py-24 xl:px-14">
         <div class="mx-auto max-w-5xl">
             <span class="inline-flex items-center gap-2 rounded-full border border-primary-200 bg-white px-3 py-1.5 text-xs font-bold text-primary-700">
-                <span class="size-2 rounded-full bg-success-500"></span>
+                <span class="size-2 rounded-full bg-green-500"></span>
                 v1.0.0 · Ready to use
             </span>
             <h1 class="mt-5 max-w-3xl text-[clamp(2.25rem,6vw,3.75rem)] leading-[1.05] font-black tracking-tight text-gray-900">
@@ -44,7 +44,7 @@
                 <span class="text-[10px] font-bold tracking-wider text-gray-500 uppercase">Blade + tpl/design-kit</span>
             </div>
             <pre class="overflow-x-auto p-5 text-sm leading-7 text-gray-300"><code>&lt;x-dk::button variant=&quot;<span class="text-primary-300">primary</span>&quot;&gt;Simpan&lt;/x-dk::button&gt;
-&lt;x-dk::badge variant=&quot;<span class="text-success-300">success</span>&quot;&gt;Aktif&lt;/x-dk::badge&gt;</code></pre>
+&lt;x-dk::badge variant=&quot;<span class="text-green-300">success</span>&quot;&gt;Aktif&lt;/x-dk::badge&gt;</code></pre>
         </div>
     </div>
 </x-docs-layout>
