@@ -30,6 +30,10 @@
             'items' => [
                 ['label' => 'Colors', 'route' => 'foundations.colors'],
                 ['label' => 'Typography', 'route' => 'foundations.typography'],
+                ['label' => 'Spacing', 'route' => 'foundations.spacing'],
+                ['label' => 'Border', 'route' => 'foundations.border'],
+                ['label' => 'Elevation', 'route' => 'foundations.elevation'],
+                ['label' => 'Icons', 'route' => 'foundations.icons'],
             ],
         ],
         'components' => [
