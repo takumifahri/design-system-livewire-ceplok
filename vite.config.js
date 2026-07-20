@@ -10,7 +10,7 @@ export default defineConfig({
             refresh: true,
             fonts: [
                 bunny('Lato', {
-                    weights: [300, 400, 700, 900],
+                    weights: [100, 300, 400, 700, 900],
                 }),
             ],
         }),

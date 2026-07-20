@@ -1,6 +1,6 @@
-# Komdigi Design System
+# State Security Service Design System
 
-Komdigi Design System adalah proof of concept untuk membangun fondasi antarmuka yang konsisten pada aplikasi berbasis Laravel. Proyek ini menyediakan design token, aturan tipografi, dan halaman dokumentasi interaktif sebagai acuan bersama bagi designer dan developer.
+State Security Service Design System adalah proof of concept untuk membangun fondasi antarmuka yang konsisten pada aplikasi berbasis Laravel. Proyek ini menyediakan design token, aturan tipografi, dan halaman dokumentasi interaktif sebagai acuan bersama bagi designer dan developer.
 
 Saat ini proyek masih berbentuk aplikasi Laravel untuk pengembangan dan validasi visual. Proyek belum dipublikasikan sebagai package npm atau Composer.
 

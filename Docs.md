@@ -1,7 +1,7 @@
 # tpl/design-kit & @tpl/design-kit
 
 Dokumentasi alur kerja package internal yang dipecah dari aplikasi dokumentasi
-Komdigi Design System. Ada dua package yang dipublikasikan dari folder ini:
+State Security Service Design System. Ada dua package yang dipublikasikan dari folder ini:
 
 | Package | Ekosistem | Isi |
 | --- | --- | --- |
