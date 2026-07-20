@@ -47,4 +47,23 @@
     .ds-nav-link.is-active {
         @apply bg-primary-50 text-primary-700;
     }
+
+    /* Scroll horizontal tipis dan bersih untuk baris type scale */
+    .ds-scroll-x {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-gray-300) transparent;
+    }
+
+    .ds-scroll-x::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .ds-scroll-x::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .ds-scroll-x::-webkit-scrollbar-thumb {
+        border-radius: 9999px;
+        background-color: var(--color-gray-300);
+    }
 }
