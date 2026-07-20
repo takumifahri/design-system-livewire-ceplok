@@ -1,8 +1,4 @@
 @php
-    // Skala bayangan mengikuti penamaan Figma/v3: shadow-sm adalah langkah
-    // terkecil (nilainya dioverride di design-tokens.css) dan `shadow` adalah
-    // default — di Tailwind v4 `shadow` tetap bekerja sebagai alias kompat.
-    // Nama class ditulis literal agar terdeteksi oleh scanner Tailwind.
     $shadowScale = [
         ['class' => 'shadow-sm'],
         ['class' => 'shadow'],
@@ -12,9 +8,6 @@
         ['class' => 'shadow-2xl'],
     ];
 
-    // Label mengikuti penamaan warna di Figma; tile dirender dengan token
-    // palet proyek yang nilainya identik (blue = primary, green = success,
-    // red = danger). "Blue portal" memakai token --color-blue-portal-600.
     $shadowColors = [
         ['label' => 'shadow-blue-600/50', 'tile' => 'bg-primary-600 shadow-lg shadow-primary-600/50'],
         ['label' => 'shadow-blue-portal-600/50', 'tile' => 'bg-blue-portal-600 shadow-lg shadow-blue-portal-600/50'],

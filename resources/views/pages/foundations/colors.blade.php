@@ -6,6 +6,10 @@
             'name' => 'Biru (untuk identitas utama aplikasi)',
             'colors' => [900 => '#233876', 800 => '#1E429F', 700 => '#1A56DB', 600 => '#1C64F2', 500 => '#3F83F8', 400 => '#76A9FA', 300 => '#A4CAFE', 200 => '#C3DDFD', 100 => '#E1EFFE', 50 => '#EBF5FF'],
         ],
+        'blue-portal' => [
+            'name' => 'Biru Portal (untuk identitas ...)',
+            'colors' => [900 => '#020217', 800 => '#060746', 700 => '#0B0C75', 600 => '#0F11A4', 500 => '#2D30EC', 400 => '#5B5EF0', 300 => '#5B5EF0', 200 => '#8A8CF4', 100 => '#B9BAF9', 50 => '#E8E8FD'],
+        ],
         'gray' => [
             'name' => 'Abu-abu (untuk teks, border, dan permukaan)',
             'colors' => [900 => '#111827', 800 => '#1F2937', 700 => '#374151', 600 => '#4B5563', 500 => '#6B7280', 400 => '#9CA3AF', 300 => '#D1D5DB', 200 => '#E5E7EB', 100 => '#F3F4F6', 50 => '#F9FAFB'],
@@ -63,7 +67,7 @@
 
 <x-docs-layout section="foundations" title="Colors">
     <x-doc-hero eyebrow="Foundations · Color" title="Color tokens" description="Klik warna untuk menyalin nilai HEX. Skala primitive dinamai berdasarkan warna, lalu dipetakan ke semantic token agar makna terpisah dari palet.">
-        <span class="mt-5 inline-block w-fit rounded-full border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-bold text-primary-700">7 palette · 70 tokens</span>
+        <span class="mt-5 inline-block w-fit rounded-full border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-bold text-primary-700">8 palette · 80 tokens</span>
     </x-doc-hero>
 
     <div class="mx-auto max-w-5xl px-5 py-9 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
