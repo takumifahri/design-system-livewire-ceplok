@@ -1,0 +1,22 @@
+{
+    "name": "@tpl/design-kit",
+    "version": "0.1.0",
+    "description": "Design tokens (CSS) and Alpine.js interaction primitives for TPL products",
+    "type": "module",
+    "license": "MIT",
+    "files": [
+        "dist",
+        "src"
+    ],
+    "main": "src/index.js",
+    "exports": {
+        ".": "./src/index.js",
+        "./tokens.css": "./src/tokens.css"
+    },
+    "peerDependencies": {
+        "alpinejs": "^3.15"
+    },
+    "devDependencies": {
+        "alpinejs": "^3.15.12"
+    }
+}

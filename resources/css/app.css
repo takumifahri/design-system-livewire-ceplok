@@ -1,9 +1,50 @@
 @import 'tailwindcss';
+@import '../../vendor/tpl/design-kit/resources/css/tokens.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/tpl/design-kit/resources/views/**/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+@source '../js/**/*.js';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-gray-50 font-sans text-content antialiased;
+    }
+
+    button,
+    a {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+        @apply outline-2 outline-offset-2 outline-primary-600;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    .ds-card {
+        @apply rounded-2xl border border-border bg-surface shadow-soft;
+    }
+
+    .ds-eyebrow {
+        @apply text-caption font-bold tracking-[0.14em] text-primary-700 uppercase;
+    }
+
+    .ds-nav-link {
+        @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-primary-50 hover:text-primary-700;
+    }
+
+    .ds-nav-link.is-active {
+        @apply bg-primary-50 text-primary-700;
+    }
 }
