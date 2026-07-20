@@ -38,6 +38,27 @@
         ['Warning', 'Status perlu perhatian', 'bg-feedback-warning', 'text-gray-900', 'yellow-300'],
         ['Success', 'Proses berhasil', 'bg-feedback-success', 'text-white', 'green-600'],
     ];
+
+    // Cuplikan kode untuk tombol salin di tiap section.
+    $usage = [
+        'primitive' => <<<'CODE'
+        {{-- Latar, teks, dan garis --}}
+        <div class="bg-primary-600 text-white">Panel utama</div>
+        <p class="text-gray-500">Teks sekunder</p>
+        <div class="border border-gray-200">Kotak dengan garis</div>
+
+        {{-- Warna dengan transparansi --}}
+        <div class="bg-gray-900/50">Overlay 50%</div>
+        CODE,
+
+        'semantic' => <<<'CODE'
+        {{-- Pakai token semantik di komponen, bukan primitive langsung --}}
+        <button class="bg-brand text-white hover:bg-brand-hover">Simpan</button>
+        <span class="text-feedback-error">Terjadi kesalahan</span>
+        <div class="border border-border bg-surface text-content">Kartu</div>
+        <p class="text-content-subtle">Keterangan pendukung</p>
+        CODE,
+    ];
 @endphp
 
 <x-docs-layout section="foundations" title="Colors">
@@ -79,6 +100,8 @@
             @endforeach
         </div>
 
+        <x-doc-usage :code="$usage['primitive']" />
+
         <div class="mt-14">
             <p class="ds-eyebrow">Semantic layer</p>
             <h2 class="mt-2 text-heading-3 font-black text-gray-900">Tokens berdasarkan fungsi</h2>
@@ -96,5 +119,7 @@
                 @endforeach
             </div>
         </div>
+        <x-doc-usage :code="$usage['semantic']" />
+
     </div>
 </x-docs-layout>

@@ -17,6 +17,39 @@
         ->values();
 
     $outlineIcons = $names->filter(fn ($name) => str_starts_with($name, 'o-'))->values();
+
+    // Cuplikan kode untuk tombol salin di tiap section.
+    $usage = [
+        'solid' => <<<'CODE'
+        {{-- Ikon solid — prefix flowbite-s- --}}
+        <x-flowbite-s-bell class="size-5 text-primary-600" />
+        CODE,
+
+        'outline' => <<<'CODE'
+        {{-- Ikon outline — prefix flowbite-o- --}}
+        <x-flowbite-o-home class="size-5 text-gray-700" />
+        <x-flowbite-o-search class="size-4 text-gray-500" />
+        CODE,
+
+        'brand' => <<<'CODE'
+        {{-- Logo brand — prefix brand- --}}
+        <x-brand-github class="size-5" />
+        CODE,
+
+        'a11y' => <<<'CODE'
+        {{-- Alternatif lewat directive atau helper blade-icons --}}
+        @svg('flowbite-o-search', 'size-4 text-gray-500')
+
+        {{-- Ikon dekoratif — sembunyikan dari pembaca layar --}}
+        <x-flowbite-o-home class="size-4" aria-hidden="true" />
+
+        {{-- Ikon tanpa teks pendamping — wajib diberi label --}}
+        <button type="button">
+            <x-flowbite-o-search class="size-5" />
+            <span class="sr-only">Cari</span>
+        </button>
+        CODE,
+    ];
 @endphp
 
 <x-docs-layout section="foundations" title="Icons">
@@ -48,6 +81,8 @@
             </div>
         </article>
 
+        <x-doc-usage :code="$usage['solid']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Outline</p>
@@ -65,6 +100,8 @@
             </article>
         </div>
 
+        <x-doc-usage :code="$usage['outline']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Social icons</p>
@@ -81,6 +118,8 @@
                 </div>
             </article>
         </div>
+
+        <x-doc-usage :code="$usage['brand']" />
 
         <div class="mt-8">
             <div class="mb-5">
@@ -119,6 +158,8 @@
                 </div>
             </article>
         </div>
+
+        <x-doc-usage :code="$usage['a11y']" />
 
         <div class="mt-8">
             <article class="ds-card p-6">

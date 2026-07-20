@@ -21,6 +21,29 @@
         ['class' => 'border-4', 'value' => '4px', 'extra' => ''],
         ['class' => 'border-8', 'value' => '8px', 'extra' => ''],
     ];
+
+    // Cuplikan kode untuk tombol salin di tiap section.
+    $usage = [
+        'radius' => <<<'CODE'
+        {{-- Radius sesuai jenis komponen --}}
+        <button class="rounded-lg border border-border px-4 py-2">Tombol</button>
+        <div class="rounded-2xl border border-border p-6">Kartu</div>
+        <span class="rounded-full bg-primary-50 px-2.5 py-1">Badge</span>
+        CODE,
+
+        'width' => <<<'CODE'
+        {{-- Ketebalan — di atas 1px hanya untuk penekanan --}}
+        <div class="border border-border">Default 1px</div>
+        <div class="border-2 border-primary-600">Sedang terpilih</div>
+        <div class="border-b border-border">Garis bawah saja</div>
+        CODE,
+
+        'style' => <<<'CODE'
+        {{-- Gaya garis --}}
+        <div class="border border-solid border-border">Solid — default</div>
+        <div class="border border-dashed border-gray-300">Putus-putus</div>
+        CODE,
+    ];
 @endphp
 
 <x-docs-layout section="foundations" title="Border">
@@ -45,6 +68,8 @@
             </div>
         </article>
 
+        <x-doc-usage :code="$usage['radius']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Border width</p>
@@ -63,6 +88,8 @@
             </article>
         </div>
 
+        <x-doc-usage :code="$usage['width']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Border style</p>
@@ -78,6 +105,8 @@
                 </div>
             </article>
         </div>
+
+        <x-doc-usage :code="$usage['style']" />
 
         <div class="mt-8">
             <article class="ds-card p-6">

@@ -23,6 +23,29 @@
         ['label' => 'shadow-orange-500/50', 'tile' => 'bg-orange-500 shadow-lg shadow-orange-500/50'],
         ['label' => 'shadow-purple-500/50', 'tile' => 'bg-purple-500 shadow-lg shadow-purple-500/50'],
     ];
+
+    // Cuplikan kode untuk tombol salin di tiap section.
+    $usage = [
+        'shadow' => <<<'CODE'
+        {{-- Semakin tinggi melayang, semakin besar bayangannya --}}
+        <div class="rounded-lg bg-white shadow-sm">Kartu diam</div>
+        <div class="rounded-lg bg-white shadow-lg">Dropdown / popover</div>
+        <div class="rounded-xl bg-white shadow-2xl">Modal</div>
+
+        {{-- Transisi bayangan saat hover --}}
+        <div class="rounded-lg bg-white shadow transition-shadow hover:shadow-md">
+            Kartu yang bisa diklik
+        </div>
+        CODE,
+
+        'color' => <<<'CODE'
+        {{-- Bayangan berwarna — khusus penekanan seperti CTA --}}
+        <button class="rounded-lg bg-primary-600 px-4 py-2 text-white shadow-lg shadow-primary-600/50">
+            Aksi utama
+        </button>
+        <div class="rounded-lg bg-green-500 p-4 shadow-lg shadow-green-500/50">Berhasil</div>
+        CODE,
+    ];
 @endphp
 
 <x-docs-layout section="foundations" title="Elevation">
@@ -44,6 +67,8 @@
             </div>
         </article>
 
+        <x-doc-usage :code="$usage['shadow']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Box shadow color</p>
@@ -60,6 +85,8 @@
                 </div>
             </article>
         </div>
+
+        <x-doc-usage :code="$usage['color']" />
 
         <div class="mt-8">
             <article class="ds-card p-6">
