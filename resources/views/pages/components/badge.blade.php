@@ -16,7 +16,7 @@
                 <x-dk::badge variant="success">Aktif</x-dk::badge>
                 <x-dk::badge variant="warning">Menunggu</x-dk::badge>
                 <x-dk::badge variant="danger">Ditolak</x-dk::badge>
-                <x-slot:code>&lt;x-dk::badge variant=&quot;<span class="text-success-300">success</span>&quot;&gt;Aktif&lt;/x-dk::badge&gt;
+                <x-slot:code>&lt;x-dk::badge variant=&quot;<span class="text-green-300">success</span>&quot;&gt;Aktif&lt;/x-dk::badge&gt;
 &lt;x-dk::badge variant=&quot;warning&quot;&gt;Menunggu&lt;/x-dk::badge&gt;
 &lt;x-dk::badge variant=&quot;danger&quot;&gt;Ditolak&lt;/x-dk::badge&gt;</x-slot:code>
             </x-doc-example>

@@ -7,7 +7,7 @@
     $variants = [
         'primary' => 'bg-brand text-white hover:bg-brand-hover focus-visible:outline-primary-600',
         'secondary' => 'bg-surface text-content border border-border hover:bg-surface-subtle',
-        'danger' => 'bg-feedback-error text-white hover:bg-danger-700',
+        'danger' => 'bg-feedback-error text-white hover:bg-red-700',
         'ghost' => 'text-content hover:bg-surface-subtle',
     ];
 
