@@ -52,6 +52,47 @@
         ['class' => 'leading-normal', 'value' => '150%'],
         ['class' => 'leading-loose', 'value' => '200%'],
     ];
+
+    // Cuplikan kode untuk tombol salin di tiap section.
+    $usage = [
+        'semantic' => <<<'CODE'
+        {{-- Token semantik — hierarki utama halaman --}}
+        <h1 class="text-display font-bold">Judul besar</h1>
+        <h2 class="text-heading-1 font-bold">Judul halaman</h2>
+        <p class="text-body text-gray-500">Paragraf isi konten.</p>
+        <span class="text-caption font-bold uppercase">Label kecil</span>
+        CODE,
+
+        'scale' => <<<'CODE'
+        {{-- Skala Tailwind — untuk kebutuhan di luar token semantik --}}
+        <p class="text-xs">Teks 12px</p>
+        <p class="text-base">Teks 16px</p>
+        <p class="text-2xl">Teks 24px</p>
+        <p class="text-5xl">Teks 48px</p>
+        CODE,
+
+        'weight' => <<<'CODE'
+        {{-- Sembilan tingkat ketebalan --}}
+        <p class="font-thin">Thin 100</p>
+        <p class="font-normal">Regular 400</p>
+        <p class="font-semibold">Semi Bold 600</p>
+        <p class="font-black">Black 900</p>
+        CODE,
+
+        'leading' => <<<'CODE'
+        {{-- Jarak antarbaris --}}
+        <p class="leading-none">Rapat — 100%</p>
+        <p class="leading-normal">Standar — 150%</p>
+        <p class="leading-loose">Renggang — 200%</p>
+        CODE,
+
+        'transform' => <<<'CODE'
+        {{-- Transform & decoration --}}
+        <p class="uppercase">huruf kapital semua</p>
+        <p class="line-through">Teks dicoret</p>
+        <a href="#" class="underline">Tautan bergaris bawah</a>
+        CODE,
+    ];
 @endphp
 
 <x-docs-layout section="foundations" title="Typography">
@@ -83,6 +124,8 @@
             </div>
         </article>
 
+        <x-doc-usage :code="$usage['semantic']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Type scale</p>
@@ -104,6 +147,8 @@
             </article>
         </div>
 
+        <x-doc-usage :code="$usage['scale']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Font weights</p>
@@ -123,6 +168,8 @@
             </article>
         </div>
 
+        <x-doc-usage :code="$usage['weight']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Line height</p>
@@ -141,6 +188,8 @@
                 @endforeach
             </div>
         </div>
+
+        <x-doc-usage :code="$usage['leading']" />
 
         <div class="mt-8 grid gap-5 lg:grid-cols-2">
             <article class="ds-card p-6">
@@ -168,5 +217,7 @@
                 </ul>
             </article>
         </div>
+        <x-doc-usage :code="$usage['transform']" />
+
     </div>
 </x-docs-layout>

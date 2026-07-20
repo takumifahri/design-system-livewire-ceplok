@@ -44,6 +44,28 @@
         ['label' => 'Margin', 'code' => 'm-* · mx-* · my-* · mt-* mr-* mb-* ml-*', 'desc' => 'Ruang di luar elemen, memisahkan dari elemen lain.'],
         ['label' => 'Gap', 'code' => 'gap-* · gap-x-* · gap-y-*', 'desc' => 'Jarak antaritem di dalam flex dan grid container.'],
     ];
+
+    // Cuplikan kode untuk tombol salin di tiap section.
+    $usage = [
+        'scale' => <<<'CODE'
+        {{-- Padding: ruang di dalam elemen --}}
+        <div class="p-6">Padding 24px di semua sisi</div>
+        <div class="px-4 py-2">Horizontal 16px, vertikal 8px</div>
+
+        {{-- Skala yang sama dipakai untuk ukuran --}}
+        <div class="size-10">40 × 40px</div>
+        CODE,
+
+        'usage' => <<<'CODE'
+        {{-- Gap — utamakan ini di flex/grid daripada margin --}}
+        <div class="flex gap-3">...</div>
+        <div class="grid grid-cols-3 gap-6">...</div>
+
+        {{-- Margin & space-y --}}
+        <div class="mt-8">Margin atas 32px</div>
+        <div class="space-y-4">Setiap anak berjarak 16px</div>
+        CODE,
+    ];
 @endphp
 
 <x-docs-layout section="foundations" title="Spacing">
@@ -78,6 +100,8 @@
                 </div>
             </div>
         </article>
+
+        <x-doc-usage :code="$usage['scale']" />
 
         <div class="mt-8">
             <div class="mb-5">
@@ -124,6 +148,8 @@
                 </article>
             </div>
         </div>
+
+        <x-doc-usage :code="$usage['usage']" />
 
         <div class="mt-8">
             <article class="ds-card p-6">
