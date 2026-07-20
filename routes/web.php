@@ -8,6 +8,10 @@ Route::prefix('foundations')->name('foundations.')->group(function () {
     Route::view('/', 'pages.foundations.colors')->name('index');
     Route::view('/colors', 'pages.foundations.colors')->name('colors');
     Route::view('/typography', 'pages.foundations.typography')->name('typography');
+    Route::view('/spacing', 'pages.foundations.spacing')->name('spacing');
+    Route::view('/border', 'pages.foundations.border')->name('border');
+    Route::view('/elevation', 'pages.foundations.elevation')->name('elevation');
+    Route::view('/icons', 'pages.foundations.icons')->name('icons');
 });
 
 Route::prefix('components')->name('components.')->group(function () {

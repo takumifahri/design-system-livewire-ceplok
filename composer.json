@@ -15,6 +15,7 @@
         "php": "^8.3",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0",
+        "themesberg/flowbite-blade-icons": "^1.4",
         "tpl/design-kit": "@dev"
     },
     "require-dev": {

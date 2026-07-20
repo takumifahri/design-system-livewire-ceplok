@@ -84,6 +84,11 @@
     --color-purple-800: #5521b5;
     --color-purple-900: #4a1d96;
 
+    /* Brand color of the national portal ("Blue Portal" in Figma). Only the
+       600 step is defined for now — extend to a full 50–900 family when the
+       brand team provides the remaining values. */
+    --color-blue-portal-600: #2d30ec;
+
     /* Semantic aliases keep component intent independent from the palette. */
     --color-brand: var(--color-primary-600);
     --color-brand-hover: var(--color-primary-700);
@@ -114,6 +119,19 @@
     --text-body-sm--line-height: 1.45;
     --text-caption: 0.75rem;
     --text-caption--line-height: 1.4;
+
+    /* Spacing scale base — every step is a multiple of 4px (0.25rem).
+       Tailwind derives p-*, m-*, gap-*, w-*, h-* etc. from this value,
+       e.g. p-4 = 4 × 0.25rem = 16px. */
+    --spacing: 0.25rem;
+
+    /* Radius & shadow scales follow the Figma/v3 naming: the -sm step is the
+       smallest and the bare utility (rounded, shadow) the default. Tailwind v4
+       renamed these (sm → xs, bare → sm), so the -sm tokens are redefined here
+       to keep the original small values; bare `rounded`/`shadow` still work
+       via v4's compat aliases. */
+    --radius-sm: 0.125rem;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.08);
 
     --shadow-soft: 0 1px 2px rgb(17 24 39 / 0.04), 0 8px 24px rgb(17 24 39 / 0.05);
 }
