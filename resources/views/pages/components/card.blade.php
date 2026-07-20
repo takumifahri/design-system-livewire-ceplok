@@ -30,7 +30,7 @@
 
             <div class="grid place-items-center rounded-2xl border border-border bg-surface-subtle p-6 sm:p-10">
                 <div class="w-full transition-[max-width] duration-300 ease-out"
-                     :class="view === 'mobile' ? 'max-w-[250px]' : 'max-w-[400px]'">
+                     :class="view === 'mobile' ? 'max-w-[238px]' : 'max-w-[384px]'">
                     @foreach ([true, false] as $withImage)
                         @foreach (array_keys($actionChoices) as $action)
                             <div x-show="hasImage === {{ $withImage ? 'true' : 'false' }} && action === '{{ $action }}'" x-cloak>

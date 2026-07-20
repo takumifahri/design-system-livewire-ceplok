@@ -9,7 +9,7 @@
 {{-- @container: tata letak mengikuti lebar footer, bukan lebar viewport. --}}
 <footer {{ $attributes->merge(['class' => '@container bg-gray-800 text-gray-300']) }}>
     {{-- Container mengikuti Figma: lebar 1280, gap 32, padding atas/bawah 16. --}}
-    <div class="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-4 @3xl:px-12">
+    <div class="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-16 @3xl:px-12">
         {{-- Baris atas: logo + menu --}}
         <div class="flex flex-col gap-7 @3xl:flex-row @3xl:items-center @3xl:gap-12">
             <div class="shrink-0">

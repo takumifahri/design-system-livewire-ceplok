@@ -18,8 +18,8 @@
     $shadowColors = [
         ['label' => 'shadow-blue-600/50', 'tile' => 'bg-primary-600 shadow-lg shadow-primary-600/50'],
         ['label' => 'shadow-blue-portal-600/50', 'tile' => 'bg-blue-portal-600 shadow-lg shadow-blue-portal-600/50'],
-        ['label' => 'shadow-green-500/50', 'tile' => 'bg-success-500 shadow-lg shadow-success-500/50'],
-        ['label' => 'shadow-red-500/50', 'tile' => 'bg-danger-500 shadow-lg shadow-danger-500/50'],
+        ['label' => 'shadow-green-500/50', 'tile' => 'bg-green-500 shadow-lg shadow-green-500/50'],
+        ['label' => 'shadow-red-500/50', 'tile' => 'bg-red-500 shadow-lg shadow-red-500/50'],
         ['label' => 'shadow-orange-500/50', 'tile' => 'bg-orange-500 shadow-lg shadow-orange-500/50'],
         ['label' => 'shadow-purple-500/50', 'tile' => 'bg-purple-500 shadow-lg shadow-purple-500/50'],
     ];
