@@ -5842,7 +5842,7 @@
         },
         {
             "name": "tpl/design-kit",
-            "version": "dev-fahri",
+            "version": "dev-intern-tpl",
             "dist": {
                 "type": "path",
                 "url": "packages/php",
