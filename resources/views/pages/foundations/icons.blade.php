@@ -17,6 +17,45 @@
         ->values();
 
     $outlineIcons = $names->filter(fn ($name) => str_starts_with($name, 'o-'))->values();
+
+    // Cuplikan kode untuk tombol salin di tiap section.
+    $usage = [
+        'solid' => <<<'CODE'
+        {{-- Ikon solid — prefix flowbite-s- --}}
+        <x-flowbite-s-bell class="size-5 text-primary-600" />
+        CODE,
+
+        'outline' => <<<'CODE'
+        {{-- Ikon outline — prefix flowbite-o- --}}
+        <x-flowbite-o-home class="size-5 text-gray-700" />
+        <x-flowbite-o-search class="size-4 text-gray-500" />
+        CODE,
+
+        'brand' => <<<'CODE'
+        {{-- Logo brand — prefix brand- --}}
+        <x-brand-github class="size-5" />
+        CODE,
+
+        'a11y' => <<<'CODE'
+        {{-- Ikon dekoratif — sembunyikan dari pembaca layar --}}
+        <x-flowbite-o-home class="size-4" aria-hidden="true" />
+
+        {{-- Ikon tanpa teks pendamping — wajib diberi label --}}
+        <button type="button">
+            <x-flowbite-o-search class="size-5" />
+            <span class="sr-only">Cari</span>
+        </button>
+        CODE,
+    ];
+
+    // Cuplikan per baris pada section "Cara pakai" — tiap baris punya
+    // kartu kode, contoh render, dan penjelasannya sendiri.
+    $snippets = [
+        'component' => '<x-flowbite-o-home class="size-5" />',
+        'color' => '<x-flowbite-s-bell class="size-5 text-primary-600" />',
+        'brand' => '<x-brand-github class="size-5" />',
+        'directive' => "@svg('flowbite-o-search', 'size-4 text-gray-500')",
+    ];
 @endphp
 
 <x-docs-layout section="foundations" title="Icons">
@@ -48,6 +87,8 @@
             </div>
         </article>
 
+        <x-doc-usage :code="$usage['solid']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Outline</p>
@@ -64,6 +105,8 @@
                 </div>
             </article>
         </div>
+
+        <x-doc-usage :code="$usage['outline']" />
 
         <div class="mt-8">
             <div class="mb-5">
@@ -82,43 +125,54 @@
             </article>
         </div>
 
+        <x-doc-usage :code="$usage['brand']" />
+
         <div class="mt-8">
             <div class="mb-5">
                 <p class="ds-eyebrow">Usage</p>
                 <h3 class="mt-2 text-heading-3 font-black text-gray-900">Cara pakai</h3>
                 <p class="mt-2 max-w-2xl text-body-sm text-gray-500">Ikon outline dan solid memakai prefix <code class="text-xs font-bold text-gray-700">flowbite-</code> diikuti <code class="text-xs font-bold text-gray-700">o-</code> atau <code class="text-xs font-bold text-gray-700">s-</code>; logo brand memakai prefix <code class="text-xs font-bold text-gray-700">brand-</code>.</p>
             </div>
-            <article class="ds-card divide-y divide-border overflow-hidden">
-                <div class="grid gap-3 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
-                    <div>
-                        <code class="text-sm font-bold text-primary-700">&lt;x-flowbite-o-home class=&quot;size-5&quot; /&gt;</code>
-                        <p class="mt-1 text-xs text-gray-500">Komponen Blade — ukuran diatur lewat class <code class="font-bold text-gray-700">size-*</code>.</p>
-                    </div>
-                    <span class="flex items-center gap-3 text-gray-700">{{ svg('flowbite-o-home', 'size-5') }}</span>
-                </div>
-                <div class="grid gap-3 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
-                    <div>
-                        <code class="text-sm font-bold text-primary-700">&lt;x-flowbite-s-bell class=&quot;size-5 text-primary-600&quot; /&gt;</code>
-                        <p class="mt-1 text-xs text-gray-500">Warna mengikuti <code class="font-bold text-gray-700">currentColor</code> — atur lewat class <code class="font-bold text-gray-700">text-*</code>.</p>
-                    </div>
-                    <span class="flex items-center gap-3 text-primary-600">{{ svg('flowbite-s-bell', 'size-5') }}</span>
-                </div>
-                <div class="grid gap-3 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
-                    <div>
-                        <code class="text-sm font-bold text-primary-700">&lt;x-brand-github class=&quot;size-5&quot; /&gt;</code>
-                        <p class="mt-1 text-xs text-gray-500">Logo brand dari design kit — pakai warna netral atau warna resmi brand.</p>
-                    </div>
-                    <span class="flex items-center gap-3 text-gray-700">{{ svg('brand-github', 'size-5') }}</span>
-                </div>
-                <div class="grid gap-3 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
-                    <div>
-                        <code class="text-sm font-bold text-primary-700">@@svg('flowbite-o-search', 'size-4 text-gray-500')</code>
-                        <p class="mt-1 text-xs text-gray-500">Alternatif lewat directive <code class="font-bold text-gray-700">&#64;svg</code> atau helper <code class="font-bold text-gray-700">svg()</code> dari blade-icons.</p>
-                    </div>
-                    <span class="flex items-center gap-3 text-gray-500">{{ svg('flowbite-o-search', 'size-4') }}</span>
-                </div>
-            </article>
+            <div class="space-y-4">
+                <x-doc-snippet
+                    :code="$snippets['component']"
+                    description="Komponen Blade — ukuran diatur lewat class <code class=&quot;font-bold text-gray-700&quot;>size-*</code>."
+                >
+                    <x-slot:preview>
+                        <span class="text-gray-700">{{ svg('flowbite-o-home', 'size-6') }}</span>
+                    </x-slot:preview>
+                </x-doc-snippet>
+
+                <x-doc-snippet
+                    :code="$snippets['color']"
+                    description="Warna mengikuti <code class=&quot;font-bold text-gray-700&quot;>currentColor</code> — atur lewat class <code class=&quot;font-bold text-gray-700&quot;>text-*</code>."
+                >
+                    <x-slot:preview>
+                        <span class="text-primary-600">{{ svg('flowbite-s-bell', 'size-6') }}</span>
+                    </x-slot:preview>
+                </x-doc-snippet>
+
+                <x-doc-snippet
+                    :code="$snippets['brand']"
+                    description="Logo brand dari design kit — pakai warna netral atau warna resmi brand."
+                >
+                    <x-slot:preview>
+                        <span class="text-gray-700">{{ svg('brand-github', 'size-6') }}</span>
+                    </x-slot:preview>
+                </x-doc-snippet>
+
+                <x-doc-snippet
+                    :code="$snippets['directive']"
+                    description="Alternatif lewat directive <code class=&quot;font-bold text-gray-700&quot;>&#64;svg</code> atau helper <code class=&quot;font-bold text-gray-700&quot;>svg()</code> dari blade-icons."
+                >
+                    <x-slot:preview>
+                        <span class="text-gray-500">{{ svg('flowbite-o-search', 'size-5') }}</span>
+                    </x-slot:preview>
+                </x-doc-snippet>
+            </div>
         </div>
+
+        <x-doc-usage :code="$usage['a11y']" />
 
         <div class="mt-8">
             <article class="ds-card p-6">
