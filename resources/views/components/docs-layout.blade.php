@@ -42,8 +42,10 @@
                 ['label' => 'Overview', 'route' => 'components.index'],
                 ['label' => 'Button', 'route' => 'components.button'],
                 ['label' => 'Badge', 'route' => 'components.badge'],
+                ['label' => 'Alert', 'route' => 'components.alert'],
                 ['label' => 'Card', 'route' => 'components.card'],
                 ['label' => 'Footer', 'route' => 'components.footer'],
+                ['label' => 'Toast', 'route' => 'components.toast'],
             ],
         ],
     ];

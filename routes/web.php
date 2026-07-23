@@ -18,6 +18,8 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/', 'pages.components.index')->name('index');
     Route::view('/button', 'pages.components.button')->name('button');
     Route::view('/badge', 'pages.components.badge')->name('badge');
+    Route::view('/alert', 'pages.components.alert')->name('alert');
     Route::view('/card', 'pages.components.card')->name('card');
     Route::view('/footer', 'pages.components.footer')->name('footer');
+    Route::view('/toast', 'pages.components.toast')->name('toast');
 });
