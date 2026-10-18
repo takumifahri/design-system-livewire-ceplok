@@ -49,6 +49,17 @@ class PagesTest extends TestCase
         ];
     }
 
+    /**
+     * Halaman yang sama, hanya nama rutenya. PHPUnit 12 memperingatkan bila
+     * provider mengirim lebih banyak argumen daripada parameter tesnya.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function rute(): array
+    {
+        return array_map(fn (array $halaman) => [$halaman[0]], self::halaman());
+    }
+
     #[DataProvider('halaman')]
     public function test_halaman_dirender_dengan_judul_dan_heading_utama(string $route, string $title, string $heading): void
     {
@@ -60,7 +71,7 @@ class PagesTest extends TestCase
         $this->assertSame($heading, $h1->getAttribute('aria-label') ?: trim($h1->textContent));
     }
 
-    #[DataProvider('halaman')]
+    #[DataProvider('rute')]
     public function test_navigasi_menandai_halaman_yang_sedang_dibuka(string $route): void
     {
         $dom = $this->page(route($route));
@@ -84,7 +95,7 @@ class PagesTest extends TestCase
         }
     }
 
-    #[DataProvider('halaman')]
+    #[DataProvider('rute')]
     public function test_setiap_id_di_halaman_unik(string $route): void
     {
         // label for, aria-controls, dan popovertarget menunjuk lewat id: id kembar membuat label

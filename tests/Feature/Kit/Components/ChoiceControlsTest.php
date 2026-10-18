@@ -20,6 +20,17 @@ class ChoiceControlsTest extends TestCase
         ];
     }
 
+    /**
+     * Kontrol yang sama, hanya nama komponennya. PHPUnit 12 memperingatkan
+     * bila provider mengirim lebih banyak argumen daripada parameter tesnya.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function nama(): array
+    {
+        return array_map(fn (array $kontrol) => [$kontrol[0]], self::kontrol());
+    }
+
     #[DataProvider('kontrol')]
     public function test_label_dan_caption_ditautkan_ke_input(string $name, string $type): void
     {
@@ -34,7 +45,7 @@ class ChoiceControlsTest extends TestCase
         $this->assertHasClasses($this->find($dom, 'body > div'), 'flex items-start gap-2');
     }
 
-    #[DataProvider('kontrol')]
+    #[DataProvider('nama')]
     public function test_tanpa_teks_pembungkusnya_span_inline(string $name): void
     {
         $root = $this->find($this->dom("<x-ceplok::{$name} aria-label=\"Setuju\" />"), 'body > span');
@@ -61,7 +72,7 @@ class ChoiceControlsTest extends TestCase
         $this->assertLacksClasses($input, 'mt-4');
     }
 
-    #[DataProvider('kontrol')]
+    #[DataProvider('nama')]
     public function test_inactive_dan_disabled_menonaktifkan_kontrol(string $name): void
     {
         foreach (['state="inactive"', 'disabled'] as $attribute) {
@@ -72,7 +83,7 @@ class ChoiceControlsTest extends TestCase
         }
     }
 
-    #[DataProvider('kontrol')]
+    #[DataProvider('nama')]
     public function test_dark_mode_platform_dan_aplikasi(string $name): void
     {
         $dom = $this->dom("<x-ceplok::{$name} label=\"Setuju\" dark-mode platform=\"mobile\" application=\"purple\" />");
@@ -82,7 +93,7 @@ class ChoiceControlsTest extends TestCase
         $this->assertStringContainsString('purple-500', $dom->body->innerHTML);
     }
 
-    #[DataProvider('kontrol')]
+    #[DataProvider('nama')]
     public function test_prop_yang_tidak_sah_ditolak(string $name): void
     {
         $this->assertPropError("<x-ceplok::{$name} platform=\"tablet\" />", "Prop `platform` pada <x-ceplok::{$name}> harus salah satu dari 'default', 'mobile'");
