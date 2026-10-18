@@ -1,16 +1,35 @@
-import Alpine from 'alpinejs';
-import { registerDesignKit, dkClipboard } from '@tpl/design-kit';
+/*
+ * Livewire 4 sudah membawa Alpine. Keduanya dibundel di sini (layout memakai
+ * @livewireScriptConfig, bukan @livewireScripts) supaya plugin Alpine kit
+ * terdaftar sebelum Alpine berjalan. Jangan muat Alpine terpisah: Alpine yang
+ * dimuat dua kali gagal diinisialisasi.
+ */
+import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
+import ceplok from '../../vendor/ceplok-ui/design-kit-livewire/resources/js/index.js';
+import copy from './docs/copy';
+import docsDropdownPlayground from './docs/dropdown-playground';
+import docsLayout from './docs/layout';
+import docsSearch from './docs/search';
+import docsToc from './docs/toc';
+import spotlight from './docs/spotlight';
+import { codeWindow, countUp, magnetic, parallax, reveal, scrollProgress, splitWords, tilt } from './docs/motion';
 
-registerDesignKit(Alpine);
+Alpine.plugin(ceplok);
 
-window.Alpine = Alpine;
+// Perilaku situs dokumentasi; bukan bagian dari kit.
+Alpine.data('designSystem', copy);
+Alpine.data('docsLayout', docsLayout);
+Alpine.data('docsDropdownPlayground', docsDropdownPlayground);
+Alpine.data('docsSearch', docsSearch);
+Alpine.data('docsToc', docsToc);
+Alpine.directive('spotlight', spotlight);
+Alpine.data('docsCodeWindow', codeWindow);
+Alpine.directive('reveal', reveal);
+Alpine.directive('split-words', splitWords);
+Alpine.directive('count-up', countUp);
+Alpine.directive('magnetic', magnetic);
+Alpine.directive('tilt', tilt);
+Alpine.directive('scroll-progress', scrollProgress);
+Alpine.directive('parallax', parallax);
 
-Alpine.data('designSystem', () => ({
-    ...dkClipboard(),
-
-    copyToken(value, token) {
-        this.copy(value, token);
-    },
-}));
-
-Alpine.start();
+Livewire.start();

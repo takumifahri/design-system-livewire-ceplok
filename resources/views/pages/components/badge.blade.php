@@ -1,62 +1,155 @@
 @php
+    $variants = ['gray', 'danger', 'warning', 'success', 'brand'];
+
     $props = [
-        ['variant', 'string', 'gray', 'gray · brand · danger · warning · success'],
+        ['variant', '"gray" | "danger" | "warning" | "success" | "brand"', 'gray', 'Warna semantik badge.'],
+        ['size', '"sm" | "lg"', 'sm', 'Ukuran teks, ikon, dan tombol tutup.'],
+        ['icon', 'Htmlable | slot', 'null', 'Ikon di kiri label, mis. svg(\'ceplok-s-clock\'). Pakai SVG dengan currentColor.'],
+        ['dismissible', 'bool', 'false', 'Menampilkan tombol tutup (×) di kanan label.'],
+        ['open', 'bool', 'true', 'Tampil sejak awal. Bisa dikendalikan dari luar lewat wire:model atau x-model.'],
+        ['dark-mode', 'bool', 'false', 'Tampilan gelap: latar -900 dengan teks -300.'],
+        ['wire:dismiss', 'event', '—', 'Dipicu saat tombol tutup diklik; padanan onDismiss. Juga bisa x-on:dismiss.'],
+        ['slot', 'slot', '—', 'Label badge.'],
+        ['…atribut', 'HTML', '—', 'Seluruh atribut <span> diteruskan (class, id, …).'],
     ];
 @endphp
 
-<x-docs-layout section="components" title="Badge">
-    <x-doc-hero eyebrow="Components" title="Badge" description="Label status ringkas untuk menandai kondisi sebuah entitas. Lima variant warna dengan makna semantik." />
-
-    <div class="mx-auto max-w-5xl space-y-10 px-5 py-9 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Variants</h2>
-            <x-doc-example>
-                <x-dk::badge variant="gray">Draft</x-dk::badge>
-                <x-dk::badge variant="brand">Baru</x-dk::badge>
-                <x-dk::badge variant="success">Aktif</x-dk::badge>
-                <x-dk::badge variant="warning">Menunggu</x-dk::badge>
-                <x-dk::badge variant="danger">Ditolak</x-dk::badge>
-                <x-slot:code>&lt;x-dk::badge variant=&quot;<span class="text-green-300">success</span>&quot;&gt;Aktif&lt;/x-dk::badge&gt;
-&lt;x-dk::badge variant=&quot;warning&quot;&gt;Menunggu&lt;/x-dk::badge&gt;
-&lt;x-dk::badge variant=&quot;danger&quot;&gt;Ditolak&lt;/x-dk::badge&gt;</x-slot:code>
-            </x-doc-example>
-        </section>
-
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Dalam konteks</h2>
-            <p class="mb-4 max-w-2xl text-body-sm text-gray-500">Badge biasanya menyertai judul, baris tabel, atau kartu untuk menandai status tanpa memakan banyak ruang.</p>
-            <x-doc-example>
-                <span class="inline-flex items-center gap-2 text-sm font-bold text-gray-900">Pengajuan izin <x-dk::badge variant="warning">Menunggu</x-dk::badge></span>
-                <span class="inline-flex items-center gap-2 text-sm font-bold text-gray-900">Verifikasi data <x-dk::badge variant="success">Selesai</x-dk::badge></span>
-            </x-doc-example>
-        </section>
-
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Properties</h2>
-            <div class="ds-card overflow-hidden">
-                <div class="ds-scroll-x overflow-x-auto">
-                    <table class="w-full min-w-[36rem] text-left text-sm">
-                        <thead class="border-b border-border bg-surface-subtle text-xs font-black tracking-wide text-gray-500 uppercase">
-                            <tr>
-                                <th class="px-5 py-3">Prop</th>
-                                <th class="px-5 py-3">Tipe</th>
-                                <th class="px-5 py-3">Default</th>
-                                <th class="px-5 py-3">Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-border">
-                            @foreach ($props as [$name, $type, $default, $desc])
-                                <tr>
-                                    <td class="px-5 py-3"><code class="text-xs font-bold text-primary-700">{{ $name }}</code></td>
-                                    <td class="px-5 py-3 text-gray-500">{{ $type }}</td>
-                                    <td class="px-5 py-3"><code class="text-xs text-gray-500">{{ $default }}</code></td>
-                                    <td class="px-5 py-3 text-gray-600">{{ $desc }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+<x-docs.layout title="Badge">
+    <x-docs.page
+        title="Badge"
+        description="Label status ringkas untuk menandai kondisi sebuah entitas. Lima variant warna, dua ukuran, ikon dan tombol tutup opsional. Tersedia juga dalam tampilan gelap."
+        :toc="[
+            'badge' => 'Badge',
+            'opsional' => 'Ikon dan tombol tutup',
+            'ukuran' => 'Ukuran',
+            'dark-mode' => 'Dark mode',
+            'playground' => 'Playground',
+            'penggunaan' => 'Penggunaan',
+            'livewire' => 'Livewire',
+            'properties' => 'Properties',
+        ]"
+    >
+        <x-docs.section id="badge" title="Badge">
+            <x-docs.lead>
+                Label beradius 6px dengan padding 2px × 12px. Lima variant warnanya punya makna semantik yang sama
+                dengan Alert dan token warna lain di design system ini.
+            </x-docs.lead>
+            <x-docs.demo>
+                <div class="flex flex-wrap items-center gap-3">
+                    <x-ceplok::badge variant="gray">Draf</x-ceplok::badge>
+                    <x-ceplok::badge variant="danger">Ditolak</x-ceplok::badge>
+                    <x-ceplok::badge variant="warning">Menunggu</x-ceplok::badge>
+                    <x-ceplok::badge variant="success">Aktif</x-ceplok::badge>
+                    <x-ceplok::badge variant="brand">Baru</x-ceplok::badge>
                 </div>
+            </x-docs.demo>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::badge ⟦variant⟧="success">Aktif</x-ceplok::badge>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="opsional" title="Ikon dan tombol tutup">
+            <x-docs.lead>
+                Ikon kiri dan tombol tutup sama-sama opsional. Ikon mengikuti warna teks, jadi cukup kirim SVG
+                dengan <span class="text-primary-500">currentColor</span>. Tombol tutup menyembunyikan badge dengan transisi singkat.
+            </x-docs.lead>
+            <div class="grid gap-5 sm:grid-cols-3">
+                <x-docs.demo label="Dengan ikon">
+                    <x-ceplok::badge variant="brand" :icon="svg('ceplok-s-clock')">Badge</x-ceplok::badge>
+                </x-docs.demo>
+                <x-docs.demo label="Dengan tombol tutup">
+                    <x-ceplok::badge variant="brand" dismissible>Badge</x-ceplok::badge>
+                </x-docs.demo>
+                <x-docs.demo label="Keduanya">
+                    <x-ceplok::badge variant="brand" :icon="svg('ceplok-s-clock')" dismissible>Badge</x-ceplok::badge>
+                </x-docs.demo>
             </div>
-        </section>
-    </div>
-</x-docs-layout>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::badge variant="brand" :⟦icon⟧="svg('ceplok-s-clock')" ⟦dismissible⟧>Badge</x-ceplok::badge>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="ukuran" title="Ukuran">
+            <x-docs.lead>
+                <span class="text-primary-500">sm</span> (bawaan) memakai teks 14px, cocok untuk tabel dan kartu. <span class="text-primary-500">lg</span> memakai teks 16px
+                untuk area yang lebih lega. Padding dan radiusnya sama.
+            </x-docs.lead>
+            <x-docs.demo>
+                <div class="flex flex-col gap-4">
+                    @foreach (['sm', 'lg'] as $size)
+                        <div class="flex flex-wrap items-center gap-4">
+                            @foreach ($variants as $variant)
+                                <x-ceplok::badge :variant="$variant" :size="$size" :icon="svg('ceplok-s-clock')" dismissible>Badge</x-ceplok::badge>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+            </x-docs.demo>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::badge ⟦size⟧="lg" variant="success" :icon="svg('ceplok-s-clock')" dismissible>Badge</x-ceplok::badge>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="dark-mode" title="Dark mode">
+            <x-docs.lead>
+                Prop <span class="text-primary-500">dark-mode</span> membalik pasangan warnanya: latar -900 (gray-700 untuk variant gray) dan
+                teks -300, keduanya di atas 4,5:1.
+            </x-docs.lead>
+            <x-docs.demo dark>
+                <div class="flex flex-col gap-4">
+                    @foreach (['sm', 'lg'] as $size)
+                        <div class="flex flex-wrap items-center gap-4">
+                            @foreach ($variants as $variant)
+                                <x-ceplok::badge :variant="$variant" :size="$size" :icon="svg('ceplok-s-clock')" dismissible dark-mode>Badge</x-ceplok::badge>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+            </x-docs.demo>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::badge ⟦dark-mode⟧ variant="success" :icon="svg('ceplok-s-clock')" dismissible>Badge</x-ceplok::badge>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <livewire:playground.badge />
+
+        <x-docs.section id="livewire" title="Livewire">
+            <x-docs.lead>
+                Tampil/sembunyinya badge bisa diikat ke properti komponen dengan <span class="text-primary-500">wire:model</span>, dan
+                tombol tutupnya memicu event <span class="text-primary-500">dismiss</span> yang bisa ditangkap <span class="text-primary-500">wire:dismiss</span>.
+                Coba tutup salah satu filter di bawah, lalu pulihkan.
+            </x-docs.lead>
+            <x-docs.demo>
+                <livewire:playground.badge-filters />
+            </x-docs.demo>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::badge
+                    variant="brand"
+                    dismissible
+                    ⟦wire:model.live⟧="filters.aktif"
+                    ⟦wire:dismiss⟧="removed('Status')"
+                >
+                    Status: Aktif
+                </x-ceplok::badge>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="properties" title="Properties">
+            <x-docs.lead>
+                Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut
+                <span class="text-primary-500">&lt;span&gt;</span> standar juga diteruskan apa adanya.
+            </x-docs.lead>
+            <x-docs.props-table :rows="$props" min-width="52rem" />
+        </x-docs.section>
+    </x-docs.page>
+</x-docs.layout>

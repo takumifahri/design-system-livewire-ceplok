@@ -58,12 +58,12 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="State Security Service Design System — foundations & components.">
+        <meta name="description" content="Ceplok Design Kit — foundations dan komponen Blade + Livewire.">
 
-        <title>{{ $title }} — State Security Service Design System</title>
+        <title>{{ $title }} — Ceplok Design Kit</title>
 
-        @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
     </head>
     <body x-data="designSystem" class="min-h-screen bg-gray-50">
         <div x-data="{ drawer: false, sidebar: true }"
@@ -170,8 +170,8 @@
                             @endforeach
                         </nav>
                         <div class="mt-auto rounded-xl bg-gray-50 p-4">
-                            <p class="text-xs font-bold text-gray-900">Foundation v1.0</p>
-                            <p class="mt-1 text-xs leading-5 text-gray-500">Laravel · Alpine.js<br>Tailwind CSS v4</p>
+                            <p class="text-xs font-bold text-gray-900">ceplok-ui/design-kit-livewire</p>
+                            <p class="mt-1 text-xs leading-5 text-gray-500">Laravel · Livewire 4 · Blaze<br>Tailwind CSS v4</p>
                         </div>
                     </div>
                 </aside>
@@ -184,5 +184,8 @@
                 <main>{{ $slot }}</main>
             </div>
         </div>
+
+        {{-- Livewire dan Alpine dibundel di resources/js/app.js; di sini cukup konfigurasinya. --}}
+        @livewireScriptConfig
     </body>
 </html>

@@ -1,0 +1,204 @@
+/*
+ * Gaya pendukung SITUS DOKUMENTASI saja — padanan docs/motion/motion.css di
+ * docs React. Tidak ikut paket kit. Semuanya CSS biasa yang membaca token dari
+ * tokens.css kit, tanpa @apply.
+ */
+
+/* ── Kisi halus di latar hero ───────────────────────────────────────────── */
+
+.ds-grid {
+    background-image:
+        linear-gradient(to right, var(--color-gray-200) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--color-gray-200) 1px, transparent 1px);
+    background-size: 56px 56px;
+    /* Kisinya hanya boleh terbaca di tengah lalu larut ke tepi; tanpa mask, ia
+       berhenti mendadak di batas elemen dan terlihat seperti tabel. */
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 20%, transparent 78%);
+    opacity: 0.55;
+}
+
+/* ── Sapuan sinar diagonal ──────────────────────────────────────────────── */
+
+.ds-beam {
+    background: linear-gradient(
+        105deg,
+        transparent 32%,
+        color-mix(in oklab, var(--color-primary-100) 55%, transparent) 46%,
+        color-mix(in oklab, #fff 70%, transparent) 52%,
+        transparent 66%
+    );
+    opacity: 0.85;
+}
+
+/* ── Kartu dengan sorotan mengikuti kursor ──────────────────────────────── */
+
+.ds-spotlight {
+    position: relative;
+    isolation: isolate;
+    --mx: 50%;
+    --my: 50%;
+}
+
+.ds-spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+        18rem circle at var(--mx) var(--my),
+        color-mix(in oklab, var(--color-primary-500) 12%, transparent),
+        transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.ds-spotlight:hover::before,
+.ds-spotlight:focus-visible::before,
+.ds-spotlight:focus-within::before {
+    opacity: 1;
+}
+
+/* Tepi yang ikut menyala di sisi terdekat kursor. Dibuat dengan border
+   transparan + dua background: satu di padding-box, satu di border-box, lalu
+   dipotong agar hanya menyisakan cincin. */
+.ds-spotlight::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(
+        14rem circle at var(--mx) var(--my),
+        color-mix(in oklab, var(--color-primary-500) 65%, transparent),
+        transparent 65%
+    );
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.ds-spotlight:hover::after,
+.ds-spotlight:focus-visible::after,
+.ds-spotlight:focus-within::after {
+    opacity: 1;
+}
+
+/* ── Lempeng yang memiringkan diri mengikuti kursor (x-tilt) ────────────── */
+
+.ds-tilt {
+    /* Perspektif hidup di pembungkus supaya titik hilangnya tetap di tengah
+       kartu saat pelatnya berputar. */
+    perspective: 1200px;
+}
+
+.ds-tilt-plate {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+/* ── Tombol yang sedikit tertarik ke kursor (x-magnetic) ────────────────── */
+
+.ds-magnetic > * {
+    transition: transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+/* ── Garis kemajuan baca di puncak halaman (x-scroll-progress) ──────────── */
+
+.ds-progress {
+    transform-origin: 0 50%;
+    /* Dimulai dari 0 supaya tidak berkedip lebar penuh sebelum posisi gulir
+       pertama terbaca. */
+    transform: scaleX(0);
+}
+
+/* ── Gumpalan cahaya di latar hero ──────────────────────────────────────── */
+
+.ds-blob {
+    animation: ds-blob var(--duration, 11s) ease-in-out infinite alternate;
+}
+
+@keyframes ds-blob {
+    to {
+        translate: var(--x, 8%) var(--y, -6%);
+        scale: 1.12;
+    }
+}
+
+/* ── Kursor jendela kode: diam menyala saat mengetik, berkedip saat jeda ── */
+
+.ds-caret {
+    animation: ds-caret 1.06s linear infinite;
+}
+
+@keyframes ds-caret {
+    0%,
+    49.9% {
+        opacity: 1;
+    }
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ── Disembunyikan sampai animasi masuknya berjalan ─────────────────────── */
+
+/* `ds-js` dipasang skrip di <head>, jadi tanpa JavaScript semuanya tetap
+   tampil. Begitu x-reveal / x-split-words berjalan, `is-revealed` melepasnya. */
+.ds-js [x-reveal]:not([data-stagger]):not(.is-revealed),
+.ds-js [x-reveal][data-stagger]:not(.is-revealed) > *,
+.ds-js [x-split-words]:not(.is-revealed) [data-word] {
+    opacity: 0;
+}
+
+/* Jendela kode: baris-barisnya kosong sampai skrip mengetiknya. */
+.ds-js [data-typing]:not(.is-ready) [data-line] {
+    width: 0;
+}
+
+/* ── Isi laci navigasi mobile menyusul panelnya ─────────────────────────── */
+
+/* Berurutan menurut --i, supaya terbaca sebagai daftar yang tersusun — bukan
+   satu lempeng utuh yang digeser. Berjalan ulang setiap laci dibuka karena
+   lacinya kembali dari display: none. */
+.ds-drawer-item {
+    animation: ds-drawer-item 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    animation-delay: calc(140ms + var(--i, 0) * 35ms);
+}
+
+@keyframes ds-drawer-item {
+    from {
+        opacity: 0;
+        translate: -14px 0;
+    }
+}
+
+/* ── Hormati permintaan gerak dikurangi ─────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* Garis kemajuan hanya bermakna kalau bergerak; diam, ia cuma garis yang
+       membingungkan di puncak halaman. */
+    .ds-progress {
+        display: none;
+    }
+}

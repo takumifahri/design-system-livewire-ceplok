@@ -1,18 +1,13 @@
 import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
+import laravel, { refreshPaths } from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-            fonts: [
-                bunny('Lato', {
-                    weights: [100, 300, 400, 700, 900],
-                }),
-            ],
+            // Muat ulang halaman juga saat komponen atau skrip kit diubah.
+            refresh: [...refreshPaths, 'packages/design-kit-livewire/resources/**'],
         }),
         tailwindcss(),
     ],

@@ -1,150 +1,245 @@
 @php
-    $allMenus = [
-        ['label' => 'Menu 1', 'url' => '#'],
-        ['label' => 'Menu 2', 'url' => '#'],
-        ['label' => 'Menu 3', 'url' => '#'],
-        ['label' => 'Menu 4', 'url' => '#'],
-        ['label' => 'Menu 5', 'url' => '#'],
-    ];
-
+    $menus = array_map(fn (int $i) => ['label' => "Menu {$i}", 'url' => '#'], range(1, 8));
     $socials = [
-        ['label' => 'Instagram', 'url' => '#', 'icon' => 'icons/instagram.svg'],
-        ['label' => 'X', 'url' => '#', 'icon' => 'icons/x.svg'],
-        ['label' => 'Facebook', 'url' => '#', 'icon' => 'icons/facebook.svg'],
+        ['label' => 'Instagram', 'url' => 'https://www.instagram.com/ceplok/', 'icon' => 'brand-instagram'],
+        ['label' => 'X', 'url' => 'https://x.com/ceplok', 'icon' => 'brand-x'],
+        ['label' => 'Facebook', 'url' => '#', 'icon' => 'brand-facebook'],
+    ];
+    $logo = '/images/footer-logo.svg';
+    $copyright = '© 2025 Ceplok Design System';
+
+    $responsive = [
+        ['Sempit (< 576px)', 'Semua bagian bertumpuk satu kolom: logo, menu, garis pemisah, hak cipta, lalu ikon sosial. Menu tetap mengalir menyamping dan membungkus ke baris berikutnya sesuai ruang. Padding kiri-kanan 24px.'],
+        ['Sedang (576–767px)', 'Hak cipta dan ikon sosial naik jadi satu baris — hak cipta di kiri, ikon di kanan. Logo dan menu masih bertumpuk karena butuh ruang lebih lega sebelum bisa sebaris.'],
+        ['Lebar (≥ 768px)', 'Logo di kiri, menu mengisi sisa ruang di tengah dan tersusun berkolom: maksimal 5 per baris, sisanya turun dan sejajar kolom di atasnya. Padding kiri-kanan melebar jadi 48px dan logo sedikit membesar.'],
     ];
 
     $props = [
-        ['logo', 'string|null', 'null', 'URL gambar logo. Kalau kosong, isi lewat slot default.'],
-        ['logoAlt', 'string', 'Logo', 'Teks alternatif untuk logo.'],
-        ['menus', 'array', '[]', 'Daftar tautan: [[\'label\' => .., \'url\' => ..], ..]'],
-        ['copyright', 'string|null', 'null', 'Teks hak cipta di baris bawah.'],
-        ['socials', 'array', '[]', 'Ikon sosial. icon = path SVG relatif terhadap public/'],
+        ['logo', 'string | null', 'null', 'URL berkas gambar logo, dirender sebagai <img> setinggi 48px (60px saat footer ≥ 768px) dengan lebar mengikuti rasio aslinya. Bila diisi, logo-content diabaikan.'],
+        ['logo-alt', 'string', 'Logo', 'Teks alternatif gambar logo; hanya berlaku bersama prop logo. Isi dengan nama instansinya, bukan kata "logo", agar wajar dibacakan pembaca layar.'],
+        ['logo-content', 'slot', 'null', 'Logo berupa elemen — misal logo teks atau <svg> inline. Dipakai hanya bila prop logo kosong, dan warnanya diatur sendiri supaya kontras di atas latar gelap.'],
+        ['menus', 'array', '[]', "Tautan navigasi: [['label' => …, 'url' => …], …]. url boleh dikosongkan dan otomatis jadi \"#\". Satu baris memuat maksimal 5 menu; sisanya turun ke baris berikutnya. Bila kosong, blok navigasi tidak dirender sama sekali."],
+        ['copyright', 'string | slot', 'null', 'Isi baris bawah sisi kiri, umumnya teks hak cipta. Lewat slot boleh berupa markup, misal disisipi tautan kebijakan privasi. Bila kosong, barisnya tidak dirender.'],
+        ['socials', 'array', '[]', "Ikon media sosial: [['label' => …, 'url' => …, 'icon' => …], …]. icon berupa nama ikon (mis. brand-instagram) atau markup <svg> yang mewarisi currentColor sehingga ikut berubah saat hover; label jadi aria-label; url selain \"#\" dibuka di tab baru dengan rel=\"noopener noreferrer\"."],
+        ['fluid', 'bool', 'false', 'Bila true, isi footer melebar penuh mengikuti lebar footer — batas 1280px (max-w-7xl) dan pemusatannya dilepas, menyisakan padding kiri-kanan saja. Dipakai untuk footer situs yang menempel di tepi layar.'],
+        ['…atribut', 'HTML', '—', 'Atribut untuk elemen <footer> terluar (class, id, …) — untuk mengganti warna latar atau menyetel jarak. Elemen ini sekaligus titik ukur @container, jadi hindari memberinya lebar tetap.'],
     ];
 @endphp
 
-<x-docs-layout section="components" title="Footer">
-    <x-doc-hero eyebrow="Components" title="Footer" description="Penutup halaman berisi logo, navigasi ringkas, hak cipta, dan tautan media sosial. Tata letaknya mengikuti lebar footer itu sendiri, bukan lebar layar." />
+<x-docs.layout title="Footer">
+    <x-docs.page
+        title="Footer"
+        description="Penutup halaman berisi logo, navigasi ringkas, hak cipta, dan tautan media sosial. Tata letaknya mengikuti lebar footer itu sendiri, bukan lebar layar."
+        :toc="[
+            'dasar' => 'Tampilan dasar',
+            'logo' => 'logo · logo-alt · logo-content',
+            'menus' => 'menus',
+            'baris-bawah' => 'copyright · socials',
+            'fluid' => 'fluid',
+            'responsif' => 'Perilaku responsif',
+            'playground' => 'Playground',
+            'penggunaan' => 'Penggunaan',
+            'properties' => 'Properties',
+        ]"
+    >
+        <x-docs.section id="dasar" title="Tampilan dasar">
+            <x-docs.lead>
+                Satu blok utuh berlatar <span class="text-primary-500">gray-800</span>: baris atas berisi logo dan menu, lalu garis tipis,
+                lalu baris bawah berisi hak cipta dan ikon sosial. Semua bagiannya opsional — yang tidak
+                diisi tidak dirender, bukan disembunyikan lewat CSS.
+            </x-docs.lead>
 
-    <div class="mx-auto max-w-5xl space-y-10 px-5 py-9 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
-        <section x-data="{ view: 'desktop', menuCount: 4 }">
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Preview</h2>
+            <x-docs.preview>
+                <x-ceplok::footer :logo="$logo" logo-alt="Ceplok Design System" :menus="array_slice($menus, 0, 4)" :copyright="$copyright" :socials="$socials" />
+            </x-docs.preview>
 
-            {{-- Area preview --}}
-            <div class="rounded-2xl border border-border bg-surface-subtle p-4 sm:p-6">
-                <div class="mx-auto overflow-hidden rounded-xl shadow-soft transition-[max-width] duration-300 ease-out"
-                     :class="view === 'mobile' ? 'max-w-[390px]' : 'max-w-full'">
-                    @foreach ([2, 3, 4, 5] as $count)
-                        <div x-show="menuCount === {{ $count }}" x-cloak>
-                            <x-dk::footer
-                                :logo="asset('images/komdigi-logo.svg')"
-                                logo-alt="Komdigi — Kementerian Komunikasi dan Digital"
-                                :menus="array_slice($allMenus, 0, $count)"
-                                copyright="© 2025 Kementerian Komunikasi dan Digital"
-                                :socials="$socials"
-                            />
-                        </div>
-                    @endforeach
-                </div>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::footer
+                    logo="/images/footer-logo.svg"
+                    logo-alt="Ceplok Design System"
+                    :menus="[['label' => 'Menu 1', 'url' => '/menu-1'], …]"
+                    copyright="© 2025 Ceplok Design System"
+                    :socials="$socials"
+                />
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="logo" title="logo · logo-alt · logo-content">
+            <x-docs.lead>
+                <span class="text-primary-500">logo</span> menerima URL berkas gambar dan dirender sebagai <span class="text-primary-500">&lt;img&gt;</span> setinggi 48px —
+                60px saat footer selebar ≥ 768px — dengan lebar mengikuti rasio aslinya. <span class="text-primary-500">logo-alt</span> jadi
+                teks alternatifnya; isi dengan nama instansi, bukan kata "logo", supaya wajar dibacakan
+                pembaca layar.
+            </x-docs.lead>
+            <x-docs.lead>
+                Bila logonya bukan berkas gambar — logo teks, <span class="text-primary-500">&lt;svg&gt;</span> inline, atau gabungan keduanya
+                — pakai slot <span class="text-primary-500">logo-content</span>. Slot itu hanya berlaku saat <span class="text-primary-500">logo</span> kosong: kalau dua-duanya
+                diisi, <span class="text-primary-500">logo</span> yang menang. Karena latarnya gelap, warnanya harus ditentukan sendiri.
+            </x-docs.lead>
+
+            <div class="space-y-6">
+                <x-docs.preview label="logo — berkas gambar">
+                    <x-ceplok::footer :logo="$logo" logo-alt="Ceplok Design System" :menus="array_slice($menus, 0, 4)" :copyright="$copyright" />
+                </x-docs.preview>
+
+                <x-docs.preview label="logo-content — logo teks">
+                    <x-ceplok::footer :menus="array_slice($menus, 0, 4)" :copyright="$copyright">
+                        <x-slot:logo-content>
+                            <span class="text-xl font-black text-white">CEPLOK</span>
+                        </x-slot:logo-content>
+                    </x-ceplok::footer>
+                </x-docs.preview>
             </div>
 
-            {{-- Kontrol --}}
-            <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex items-center gap-3">
-                    <span class="text-xs font-black tracking-wide text-gray-500 uppercase">Tampilan</span>
-                    <div class="inline-flex rounded-lg border border-border bg-surface p-1" role="group" aria-label="Pilih lebar tampilan">
-                        @foreach ([['mobile', 'Mobile', 'M7 3h10a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm4 15h2'], ['desktop', 'Desktop', 'M3 5h18v11H3V5Zm6 15h6m-3-4v4']] as [$value, $label, $icon])
-                            <button type="button" @click="view = '{{ $value }}'"
-                                    class="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-bold transition-colors"
-                                    :class="view === '{{ $value }}' ? 'bg-primary-50 text-primary-700' : 'text-gray-500 hover:text-gray-800'"
-                                    :aria-pressed="view === '{{ $value }}'">
-                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icon }}"/></svg>
-                                {{ $label }}
-                            </button>
-                        @endforeach
-                    </div>
-                </div>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::footer
+                    ⟦*logo⟧="/images/footer-logo.svg"
+                    ⟦*logo-alt⟧="Ceplok Design System"
+                />
 
-                <div class="flex items-center gap-3">
-                    <span class="text-xs font-black tracking-wide text-gray-500 uppercase">Jumlah menu</span>
-                    <div class="inline-flex rounded-lg border border-border bg-surface p-1" role="group" aria-label="Pilih jumlah menu">
-                        @foreach ([2, 3, 4, 5] as $count)
-                            <button type="button" @click="menuCount = {{ $count }}"
-                                    class="w-9 rounded-md py-1.5 text-sm font-bold transition-colors"
-                                    :class="menuCount === {{ $count }} ? 'bg-primary-50 text-primary-700' : 'text-gray-500 hover:text-gray-800'"
-                                    :aria-pressed="menuCount === {{ $count }}">{{ $count }}</button>
-                        @endforeach
-                    </div>
-                </div>
+                {{-- Bukan berkas gambar — hanya dipakai bila logo kosong --}}
+                <x-ceplok::footer …>
+                    <x-slot:⟦*logo-content⟧>
+                        <span class="text-xl font-black text-white">CEPLOK</span>
+                    </x-slot:logo-content>
+                </x-ceplok::footer>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="menus" title="menus">
+            <x-docs.lead>
+                Daftar tautan navigasi. <span class="text-primary-500">url</span> boleh dikosongkan dan otomatis jadi <span class="text-primary-500">"#"</span>. Satu baris
+                memuat paling banyak lima menu; menu keenam dan seterusnya turun ke
+                baris berikutnya dan tetap sejajar kolom di atasnya. Bila <span class="text-primary-500">menus</span> kosong, blok navigasinya
+                tidak dirender sama sekali.
+            </x-docs.lead>
+
+            <div class="space-y-6">
+                <x-docs.preview label="Lima menu — masih satu baris">
+                    <x-ceplok::footer :logo="$logo" logo-alt="CEPLOK" :menus="array_slice($menus, 0, 5)" :copyright="$copyright" />
+                </x-docs.preview>
+
+                <x-docs.preview label="Delapan menu — tiga sisanya turun">
+                    <x-ceplok::footer :logo="$logo" logo-alt="CEPLOK" :menus="$menus" :copyright="$copyright" />
+                </x-docs.preview>
             </div>
 
-            <p class="mt-3 text-body-sm text-gray-500">
-                Tata letak berubah otomatis: bertumpuk saat sempit, satu baris saat lebar.
-                Karena komponen memakai <em>container query</em>, preview di atas benar-benar berganti susunan, bukan sekadar mengecil.
-            </p>
-        </section>
+            <x-docs.code>
+                @verbatim
+                {{-- Lima menu pertama satu baris, sisanya turun sendiri --}}
+                <x-ceplok::footer
+                    :⟦*menus⟧="[
+                        ['label' => 'Menu 1', 'url' => '/menu-1'],
+                        ['label' => 'Menu 2', 'url' => '/menu-2'],
+                        ['label' => 'Menu 3', 'url' => '/menu-3'],
+                        ['label' => 'Menu 4', 'url' => '/menu-4'],
+                        ['label' => 'Menu 5', 'url' => '/menu-5'],
+                        ['label' => 'Menu 6', 'url' => '/menu-6'],
+                        ['label' => 'Menu 7', 'url' => '/menu-7'],
+                        ['label' => 'Menu 8', 'url' => '/menu-8'],
+                    ]"
+                />
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
 
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Perilaku responsif</h2>
-            <div class="grid gap-4 sm:grid-cols-2">
-                @foreach ([
-                    ['Sempit (&lt; 768px)', 'Logo, menu, hak cipta, dan ikon sosial tersusun bertumpuk. Menu membungkus ke baris berikutnya bila ruang kurang.'],
-                    ['Lebar (≥ 768px)', 'Logo di kiri dengan menu di tengah pada satu baris. Hak cipta di kiri, ikon sosial di kanan.'],
-                ] as [$title, $desc])
+        <x-docs.section id="baris-bawah" title="copyright · socials">
+            <x-docs.lead>
+                Keduanya mengisi baris bawah — <span class="text-primary-500">copyright</span> di kiri, <span class="text-primary-500">socials</span> di ujung kanan.
+                <span class="text-primary-500">copyright</span> juga bisa diisi lewat slot, jadi tidak harus teks: boleh disisipi tautan
+                kebijakan privasi atau nomor versi. Bila kosong, barisnya tidak dirender dan ikon sosial
+                bergeser ke kiri.
+            </x-docs.lead>
+            <x-docs.lead>
+                Pada <span class="text-primary-500">socials</span>, <span class="text-primary-500">icon</span> berupa nama ikon — mis. ikon brand bawaan kit
+                <span class="text-primary-500">brand-instagram</span> — atau markup <span class="text-primary-500">&lt;svg&gt;</span> sendiri. Warnanya mengikuti
+                <span class="text-primary-500">currentColor</span> sehingga ikut berubah saat hover. <span class="text-primary-500">label</span> menjadi
+                <span class="text-primary-500">aria-label</span> tautannya, dan url selain <span class="text-primary-500">"#"</span> dibuka di tab baru dengan
+                <span class="text-primary-500">rel="noopener noreferrer"</span>.
+            </x-docs.lead>
+
+            <x-docs.preview>
+                <x-ceplok::footer :logo="$logo" logo-alt="CEPLOK" :menus="array_slice($menus, 0, 4)" :socials="$socials">
+                    <x-slot:copyright>
+                        {{ $copyright }} · <a href="#" class="underline underline-offset-2 hover:text-white">Kebijakan privasi</a>
+                    </x-slot:copyright>
+                </x-ceplok::footer>
+            </x-docs.preview>
+
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::footer
+                    :⟦*socials⟧="[
+                        ['label' => 'Instagram', 'url' => 'https://instagram.com/ceplok', 'icon' => 'brand-instagram'],
+                        ['label' => 'X',         'url' => 'https://x.com/ceplok',         'icon' => 'brand-x'],
+                        ['label' => 'Facebook',  'url' => '#',                            'icon' => 'brand-facebook'],
+                    ]"
+                >
+                    <x-slot:⟦*copyright⟧>
+                        © 2025 Ceplok Design System · <a href="/privasi">Kebijakan privasi</a>
+                    </x-slot:copyright>
+                </x-ceplok::footer>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="fluid" title="fluid">
+            <x-docs.lead>
+                Bawaannya isi footer dibatasi <span class="text-primary-500">max-w-7xl</span> (1280px) lalu dipusatkan, jadi di layar lebar
+                logo dan menu berhenti sebelum tepi. <span class="text-primary-500">fluid</span> melepas batas itu: isinya melebar penuh
+                mengikuti lebar footer, menyisakan padding kiri-kanan saja. Latar dan tinggi footernya sendiri
+                tidak berubah — yang bergeser hanya letak isinya.
+            </x-docs.lead>
+
+            <x-docs.preview label="fluid — isi menempel ke tepi footer">
+                <x-ceplok::footer fluid :logo="$logo" logo-alt="CEPLOK" :menus="array_slice($menus, 0, 4)" :copyright="$copyright" :socials="$socials" />
+            </x-docs.preview>
+
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::footer ⟦*fluid⟧ … />
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="responsif" title="Perilaku responsif">
+            <x-docs.lead>
+                Ambang di bawah ini diukur dari
+                <strong class="text-gray-900">lebar footer itu sendiri</strong>, bukan lebar layar —
+                elemen <span class="text-primary-500">&lt;footer&gt;</span> dipasangi <span class="text-primary-500">@container</span>. Jadi footer yang ditaruh di kolom
+                sempit pada layar desktop tetap tampil bertumpuk seperti di ponsel, dan sebaliknya. Cara
+                mengeceknya: ganti kontrol <em>Tampilan</em> di Playground, atau perkecil jendela.
+            </x-docs.lead>
+
+            <div class="grid gap-4 sm:grid-cols-3">
+                @foreach ($responsive as [$title, $text])
                     <article class="ds-card p-5">
-                        <h3 class="text-sm font-black text-gray-900">{!! $title !!}</h3>
-                        <p class="mt-1.5 text-body-sm leading-6 text-gray-500">{{ $desc }}</p>
+                        <h3 class="text-sm font-black text-gray-900">{{ $title }}</h3>
+                        <p class="mt-1.5 text-body-sm leading-6 text-gray-500">{{ $text }}</p>
                     </article>
                 @endforeach
             </div>
-        </section>
 
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Penggunaan</h2>
-            <div class="ds-card overflow-hidden">
-                <pre class="ds-scroll-x overflow-x-auto bg-gray-900 p-5 text-xs leading-6 text-gray-300"><code>&lt;x-dk::footer
-    :logo="asset('images/komdigi-logo.svg')"
-    logo-alt="Komdigi"
-    :menus="[
-        ['label' =&gt; 'Menu 1', 'url' =&gt; '/menu-1'],
-        ['label' =&gt; 'Menu 2', 'url' =&gt; '/menu-2'],
-    ]"
-    copyright="© 2025 Kementerian Komunikasi dan Digital"
-    :socials="[
-        ['label' =&gt; 'Instagram', 'url' =&gt; 'https://instagram.com/komdigi', 'icon' =&gt; '<span class="text-primary-300">icons/instagram.svg</span>'],
-        ['label' =&gt; 'X',         'url' =&gt; 'https://x.com/komdigi',         'icon' =&gt; '<span class="text-primary-300">icons/x.svg</span>'],
-        ['label' =&gt; 'Facebook',  'url' =&gt; '#',                            'icon' =&gt; '<span class="text-primary-300">icons/facebook.svg</span>'],
-    ]"
-/&gt;</code></pre>
-            </div>
-            <p class="mt-3 text-body-sm text-gray-500">Berkas SVG disisipkan inline, sehingga warnanya mengikuti <code class="text-xs font-bold text-gray-700">currentColor</code> dan bisa berubah saat hover.</p>
-        </section>
+            <p class="mt-4 max-w-2xl text-body-sm leading-6 text-gray-500">
+                Yang tidak berubah di ukuran mana pun: latar <span class="text-primary-500">bg-gray-800</span>, jarak atas-bawah 64px, lebar
+                isi dibatasi <span class="text-primary-500">max-w-7xl</span> lalu dipusatkan — kecuali bila <span class="text-primary-500">fluid</span> diisi — dan garis
+                pemisah tipis di atas baris hak cipta.
+            </p>
+        </x-docs.section>
 
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Properties</h2>
-            <div class="ds-card overflow-hidden">
-                <div class="ds-scroll-x overflow-x-auto">
-                    <table class="w-full min-w-[40rem] text-left text-sm">
-                        <thead class="border-b border-border bg-surface-subtle text-xs font-black tracking-wide text-gray-500 uppercase">
-                            <tr>
-                                <th class="px-5 py-3">Prop</th>
-                                <th class="px-5 py-3">Tipe</th>
-                                <th class="px-5 py-3">Default</th>
-                                <th class="px-5 py-3">Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-border">
-                            @foreach ($props as [$name, $type, $default, $desc])
-                                <tr>
-                                    <td class="px-5 py-3"><code class="text-xs font-bold text-primary-700">{{ $name }}</code></td>
-                                    <td class="px-5 py-3 text-gray-500">{{ $type }}</td>
-                                    <td class="px-5 py-3"><code class="text-xs text-gray-500">{{ $default }}</code></td>
-                                    <td class="px-5 py-3 text-gray-600">{{ $desc }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-    </div>
-</x-docs-layout>
+        <livewire:playground.footer />
+
+        <x-docs.section id="properties" title="Properties">
+            <x-docs.lead>
+                Rangkuman seluruh prop, termasuk yang tidak diberi bagian sendiri di atas. Semuanya opsional —
+                <span class="text-primary-500">&lt;x-ceplok::footer /&gt;</span> tanpa prop tetap merender kerangkanya. Atribut HTML lain
+                diteruskan ke elemen <span class="text-primary-500">&lt;footer&gt;</span>.
+            </x-docs.lead>
+            <x-docs.props-table :rows="$props" min-width="48rem" />
+        </x-docs.section>
+    </x-docs.page>
+</x-docs.layout>

@@ -1,74 +1,171 @@
 @php
+    $sizes = ['xs', 's', 'base', 'l', 'xl'];
+
+    $themes = [
+        ['primary', 'Primary', 'digunakan untuk tindakan utama atau aksi yang paling penting dalam suatu halaman.'],
+        ['green', 'Green', 'digunakan untuk tindakan yang menunjukkan keberhasilan, konfirmasi, atau penyelesaian.'],
+        ['gray', 'Gray', 'digunakan untuk tindakan sekunder atau aksi dengan tingkat prioritas rendah.'],
+        ['purple', 'Purple', 'digunakan untuk tindakan atau fitur khusus yang membutuhkan penekanan visual berbeda.'],
+        ['orange', 'Orange', 'digunakan untuk tindakan yang membutuhkan perhatian atau bersifat peringatan.'],
+        ['yellow', 'Yellow', 'digunakan untuk informasi yang perlu diperhatikan tanpa menunjukkan kondisi kritis.'],
+    ];
+
     $props = [
-        ['variant', 'string', 'primary', 'primary · secondary · danger · ghost'],
-        ['as', 'string', 'button', 'Tag HTML yang dirender, mis. a untuk link'],
+        ['as', '"button" | "anchor"', 'button', 'Menentukan elemen yang dirender. Tanpa as, tombol otomatis menjadi anchor bila href diisi.'],
+        ['type', '"button" | "submit" | "reset"', 'button', 'Menentukan tipe tombol bawaan HTML. Hanya dipasang pada <button>.'],
+        ['icon-only', 'bool', 'false', 'Jika true, gaya tombol disesuaikan menjadi khusus ikon. Beri aria-label.'],
+        ['size', '"xs" | "s" | "base" | "l" | "xl"', 'base', 'Menentukan ukuran tombol.'],
+        ['variant', '"filled" | "outline"', 'filled', 'Gaya utama tombol: solid atau outline.'],
+        ['tone', '"light" | "dark"', 'light', 'Menyetel kontras warna untuk variant atau theme.'],
+        ['left-icon', 'Htmlable | slot', 'null', 'Ikon di sisi kiri tombol, mis. svg(\'ceplok-s-messages\', \'size-4\').'],
+        ['right-icon', 'Htmlable | slot', 'null', 'Ikon di sisi kanan tombol.'],
+        ['theme', '"primary" | "green" | "gray" | "purple" | "orange" | "yellow"', 'primary', 'Warna aksen tombol.'],
     ];
 @endphp
 
-<x-docs-layout section="components" title="Button">
-    <x-doc-hero eyebrow="Components" title="Button" description="Memicu aksi utama pada sebuah halaman atau form. Empat variant untuk tingkat penekanan yang berbeda." />
+<x-docs.layout title="Button">
+    <x-docs.page
+        eyebrow="Components · Button"
+        title="Button"
+        description="Tombol untuk memicu aksi utama pada sebuah halaman atau form. Mendukung berbagai ukuran, warna, varian, dan penggunaan icon."
+        :toc="[
+            'button' => 'Button & Sizes',
+            'icon-only' => 'Icon Only & Sizes',
+            'variants' => 'Variants',
+            'themes' => 'Themes',
+            'playground' => 'Playground',
+            'penggunaan' => 'Penggunaan',
+            'properties' => 'Properties',
+        ]"
+    >
+        <x-docs.section id="button" title="Button & Sizes">
+            <p class="mb-4 text-body-sm text-gray-500">
+                Tombol default dalam berbagai ukuran untuk membantu memilih <span class="text-primary-500">size</span> yang sesuai dengan
+                ruang layout. Tombol ditampilkan menggunakan ikon untuk memberikan gambaran untuk tombol
+                dengan ikon saat dipakai sebagai aksi utama.
+            </p>
 
-    <div class="mx-auto max-w-5xl space-y-10 px-5 py-9 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Variants</h2>
-            <x-doc-example>
-                <x-dk::button variant="primary">Simpan perubahan</x-dk::button>
-                <x-dk::button variant="secondary">Batal</x-dk::button>
-                <x-dk::button variant="danger">Hapus</x-dk::button>
-                <x-dk::button variant="ghost">Lewati</x-dk::button>
-                <x-slot:code>&lt;x-dk::button variant=&quot;<span class="text-primary-300">primary</span>&quot;&gt;Simpan perubahan&lt;/x-dk::button&gt;
-&lt;x-dk::button variant=&quot;secondary&quot;&gt;Batal&lt;/x-dk::button&gt;
-&lt;x-dk::button variant=&quot;danger&quot;&gt;Hapus&lt;/x-dk::button&gt;
-&lt;x-dk::button variant=&quot;ghost&quot;&gt;Lewati&lt;/x-dk::button&gt;</x-slot:code>
-            </x-doc-example>
-        </section>
-
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">States</h2>
-            <x-doc-example>
-                <x-dk::button variant="primary">Normal</x-dk::button>
-                <x-dk::button variant="primary" disabled>Nonaktif</x-dk::button>
-                <x-slot:code>&lt;x-dk::button variant=&quot;primary&quot; <span class="text-primary-300">disabled</span>&gt;Nonaktif&lt;/x-dk::button&gt;</x-slot:code>
-            </x-doc-example>
-        </section>
-
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Sebagai link</h2>
-            <p class="mb-4 max-w-2xl text-body-sm text-gray-500">Gunakan prop <code class="text-xs font-bold text-gray-700">as="a"</code> agar dirender sebagai anchor tanpa kehilangan gaya tombol.</p>
-            <x-doc-example>
-                <x-dk::button :as="'a'" href="{{ route('foundations.colors') }}" variant="secondary">Buka Foundations</x-dk::button>
-                <x-slot:code>&lt;x-dk::button :as=&quot;<span class="text-primary-300">'a'</span>&quot; href=&quot;/foundations/colors&quot; variant=&quot;secondary&quot;&gt;
-    Buka Foundations
-&lt;/x-dk::button&gt;</x-slot:code>
-            </x-doc-example>
-        </section>
-
-        <section>
-            <h2 class="mb-4 text-heading-3 font-black text-gray-900">Properties</h2>
-            <div class="ds-card overflow-hidden">
-                <div class="ds-scroll-x overflow-x-auto">
-                    <table class="w-full min-w-[36rem] text-left text-sm">
-                        <thead class="border-b border-border bg-surface-subtle text-xs font-black tracking-wide text-gray-500 uppercase">
-                            <tr>
-                                <th class="px-5 py-3">Prop</th>
-                                <th class="px-5 py-3">Tipe</th>
-                                <th class="px-5 py-3">Default</th>
-                                <th class="px-5 py-3">Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-border">
-                            @foreach ($props as [$name, $type, $default, $desc])
-                                <tr>
-                                    <td class="px-5 py-3"><code class="text-xs font-bold text-primary-700">{{ $name }}</code></td>
-                                    <td class="px-5 py-3 text-gray-500">{{ $type }}</td>
-                                    <td class="px-5 py-3"><code class="text-xs text-gray-500">{{ $default }}</code></td>
-                                    <td class="px-5 py-3 text-gray-600">{{ $desc }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+            <div class="mb-4 flex flex-wrap items-start justify-start gap-6">
+                @foreach ($sizes as $size)
+                    <div class="flex flex-col items-center gap-3">
+                        <x-ceplok::button
+                            :size="$size"
+                            :left-icon="svg('ceplok-s-messages', 'size-4')"
+                            :right-icon="svg('ceplok-s-messages', 'size-4')"
+                        >Button</x-ceplok::button>
+                        <span class="text-xs font-semibold tracking-wide text-gray-500 uppercase">{{ $size }}</span>
+                    </div>
+                @endforeach
             </div>
-        </section>
-    </div>
-</x-docs-layout>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::button
+                    ⟦size⟧="base"
+                    :left-icon="svg('ceplok-s-messages', 'size-4')"
+                    :right-icon="svg('ceplok-s-messages', 'size-4')"
+                >
+                    Button
+                </x-ceplok::button>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="icon-only" title="Icon Only & Sizes">
+            <p class="mb-4 text-body-sm text-gray-500">
+                Versi ringkas untuk aksi cepat seperti toolbar, floating action, menu, atau shortcut.
+                Tersedia dengan beberapa ukuran dan digunakan saat label tidak diperlukan atau ruang
+                layout yang sempit.
+            </p>
+
+            <div class="mb-4 flex flex-wrap items-start justify-start gap-6">
+                @foreach ($sizes as $size)
+                    <div class="flex flex-col items-center gap-3">
+                        <x-ceplok::button :size="$size" icon-only :aria-label="'Icon '.$size">
+                            {{ svg('ceplok-s-messages', 'size-4') }}
+                        </x-ceplok::button>
+                        <span class="text-xs font-semibold tracking-wide text-gray-500 uppercase">{{ $size }}</span>
+                    </div>
+                @endforeach
+            </div>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::button
+                    ⟦icon-only⟧
+                    ⟦size⟧="base"
+                    aria-label="Kirim pesan"
+                >
+                    {{ svg('ceplok-s-messages', 'size-4') }}
+                </x-ceplok::button>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="variants" title="Variants">
+            <p class="mb-4 text-body-sm text-gray-500">
+                Variasi tombol yang ditentukan oleh <span class="text-primary-500">variant</span>. Gunakan <span class="text-primary-500">filled</span> untuk aksi utama
+                yang perlu mendapat perhatian lebih, dan <span class="text-primary-500">outline</span> untuk tindakan pendukung yang
+                tetap terlihat, namun tidak terlalu dominan.
+            </p>
+
+            <div class="mb-4 grid gap-5 sm:grid-cols-2">
+                <x-docs.demo label="Filled">
+                    <x-ceplok::button variant="filled">Simpan Perubahan</x-ceplok::button>
+                </x-docs.demo>
+                <x-docs.demo label="Outline">
+                    <x-ceplok::button variant="outline">Lihat Detail</x-ceplok::button>
+                </x-docs.demo>
+            </div>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::button
+                    size="base"
+                    ⟦variant⟧="outline"
+                >
+                    Lihat Detail
+                </x-ceplok::button>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="themes" title="Themes">
+            <p class="mb-6 text-body-sm text-gray-500">
+                Tema digunakan untuk membedakan konteks dan tingkat prioritas suatu aksi.
+            </p>
+
+            <div class="mb-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($themes as [$theme, $label, $description])
+                    <div>
+                        <x-ceplok::button :theme="$theme">{{ $label }}</x-ceplok::button>
+                        <p class="mt-3 text-sm text-gray-600">
+                            <span class="text-primary-500">{{ $label }}</span> {{ $description }}
+                        </p>
+                    </div>
+                @endforeach
+            </div>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::button
+                    type="button"
+                    variant="filled"
+                    ⟦theme⟧="green"
+                    ⟦tone⟧="light"
+                >
+                    Green
+                </x-ceplok::button>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <livewire:playground.button />
+
+        <x-docs.section id="properties" title="Properties">
+            <p class="mb-6 text-body-sm text-gray-500">
+                Referensi semua prop yang tersedia. Digunakan untuk bisa memahami cara kerja komponen
+                tanpa harus menebak implementasinya dari kode. Prop pilihan juga menerima enum PHP dari
+                <code class="text-xs font-bold text-gray-700">CeplokUi\DesignKit\Enums</code>, mis. <code class="text-xs font-bold text-gray-700">ButtonSize::Xl</code>.
+            </p>
+
+            <x-docs.props-table :rows="$props" min-width="46rem" />
+        </x-docs.section>
+    </x-docs.page>
+</x-docs.layout>
