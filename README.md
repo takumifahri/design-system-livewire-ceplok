@@ -1,219 +1,135 @@
-# State Security Service Design System
+# Ceplok Design Kit — Livewire
 
-State Security Service Design System adalah proof of concept untuk membangun fondasi antarmuka yang konsisten pada aplikasi berbasis Laravel. Proyek ini menyediakan design token, aturan tipografi, dan halaman dokumentasi interaktif sebagai acuan bersama bagi designer dan developer.
+Repo ini berisi paket Composer **`ceplok-ui/design-kit-livewire`**: komponen
+Blade + Alpine.js, design token, dan ikon Ceplok Design System untuk aplikasi
+Laravel dan Livewire. Repo ini juga memuat aplikasi dokumentasinya. Paket ini
+padanan `@ceplok-ui/design-kit-react`. Markup, class, token, dan ikon kedua
+kit diuji sama persis di browser.
 
-Saat ini proyek masih berbentuk aplikasi Laravel untuk pengembangan dan validasi visual. Proyek belum dipublikasikan sebagai package npm atau Composer.
+Sebelumnya repo ini adalah proof of concept State Security Service Design
+System dengan paket `tpl/design-kit`; paket itu kini digantikan
+`ceplok-ui/design-kit-livewire`.
 
-## Tujuan Proyek
+## Status
 
-- Menyediakan sumber acuan untuk warna dan tipografi.
-- Menjaga konsistensi visual antarhalaman dan antarproduk.
-- Memisahkan nilai dasar desain dari kebutuhan semantik komponen.
-- Memudahkan pengujian token sebelum didistribusikan sebagai package.
-- Menyiapkan alur kolaborasi melalui code review, staging, dan CI/CD.
+| Tahap | Komponen |
+| --- | --- |
+| Fase 1 (selesai) | Alert, Avatar, Badge, Breadcrumb, Button, Card, Container, Footer, Hero, Icon, Pagination, Spinner, Toast |
+| Fase 2 (selesai) | Komponen form: Input Field, Floating Label, Text Area, Select, Search, Datepicker, Upload, Radio, Toggle, Checkbox — serta Dropdown |
 
-## Fitur Saat Ini
-
-- Primitive color tokens untuk `primary`, `gray`, `danger`, `orange`, `warning`, `success`, dan `purple`.
-- Semantic color tokens untuk brand, feedback, content, border, dan surface.
-- Typography scale mulai dari `display` sampai `caption`.
-- Lato sebagai font utama.
-- Utility class berbasis Tailwind CSS.
-- Halaman dokumentasi responsif untuk melihat dan menyalin nilai token.
-- Interaksi antarmuka menggunakan Alpine.js.
-- Pipeline GitLab untuk build, test, code style, dependency audit, SAST, dan secret detection.
+Setiap komponen punya halaman dokumentasi dengan demo, Playground Livewire,
+contoh kode, dan tabel props, mengikuti dokumentasi kit React.
 
 ## Teknologi
 
 | Teknologi | Kegunaan |
 | --- | --- |
-| Laravel 13 | Aplikasi dokumentasi dan integrasi backend |
-| Blade | Template halaman dokumentasi |
-| Tailwind CSS 4 | Utility CSS dan definisi token |
-| Alpine.js | Interaksi ringan pada halaman |
+| Laravel 13 | Aplikasi dokumentasi |
+| Livewire 4 | Playground dan contoh integrasi; membawa Alpine.js |
+| Blaze | Mengompilasi komponen kit menjadi fungsi PHP biasa |
+| Blade Icons | Set ikon Flowbite dan logo brand kit |
+| Tailwind CSS 4 | Token (`@theme`) dan class utility |
 | Vite 8 | Development server dan production build |
-| PHPUnit | Unit dan feature test |
+| PHPUnit 12 | Tes komponen, halaman, dan Playground |
 | Laravel Pint | Pemeriksaan format kode PHP |
-| GitLab CI/CD | Otomatisasi quality check dan security scan |
 
 ## Persyaratan
 
-Pastikan perangkat pengembangan memiliki:
-
-- PHP 8.3 atau lebih baru.
+- PHP 8.4 atau lebih baru, dengan extension `dom` dan `pdo_sqlite`. Paket
+  kitnya sendiri cukup PHP 8.2; PHP 8.4 dibutuhkan aplikasi dan tesnya.
 - Composer 2.
-- Node.js 20.19 atau lebih baru.
-- npm.
-- Extension PHP SQLite untuk pengembangan dan testing lokal.
+- Node.js 20.19 atau lebih baru, dan npm.
 
-Build frontend membutuhkan koneksi internet karena konfigurasi Vite mengambil file font Lato dari Bunny Fonts.
+Font Lato dan Inter dimuat dari Google Fonts oleh browser, jadi build tidak
+butuh koneksi internet.
 
 ## Instalasi
-
-Clone repository dan masuk ke direktori proyek:
 
 ```bash
 git clone https://gitlab.com/intern-tpl-ipb/design-system-project.git
 cd design-system-project
-```
 
-Pasang dependency PHP:
-
-```bash
 composer install
-```
 
-Siapkan environment Laravel:
-
-```bash
 cp .env.example .env
 php artisan key:generate
 touch database/database.sqlite
 php artisan migrate
-```
 
-Pasang dependency frontend dan buat production build awal:
-
-```bash
 npm ci
 npm run build
 ```
 
-## Menjalankan Proyek
+## Menjalankan
 
-Cara paling praktis untuk menjalankan server Laravel, queue listener, log viewer, dan Vite secara bersamaan:
+Server Laravel, queue listener, log viewer, dan Vite sekaligus:
 
 ```bash
 composer run dev
 ```
 
-Buka aplikasi melalui:
+Lalu buka `http://localhost:8000`. Untuk menjalankannya terpisah, pakai dua
+terminal: `php artisan serve` dan `npm run dev`.
+
+## Struktur
 
 ```text
-http://localhost:8000
+packages/design-kit-livewire/   paket Composer ceplok-ui/design-kit-livewire
+app/Docs/                       navigasi dan pengolah cuplikan kode situs docs
+resources/views/pages/          halaman dokumentasi
+resources/views/components/     komponen situs (x-docs.*) dan Playground Livewire
+resources/js/, resources/css/   entry Vite: plugin kit + perilaku situs docs
+scripts/                        sinkronisasi token dan ikon dari kit React
+tests/                          tes kit, halaman docs, dan Playground
 ```
 
-Untuk menjalankan backend dan frontend secara terpisah, gunakan dua terminal:
+Panduan memakai paket ada di
+[packages/design-kit-livewire/README.md](packages/design-kit-livewire/README.md),
+alur kerja paket (development lokal, menambah komponen, publikasi) di
+[packages/README.md](packages/README.md), dan panduan aplikasi dokumentasi di
+[Docs.md](Docs.md).
+
+## Kesetaraan dengan kit React
+
+Token dan ikon disalin dari kit React, bukan ditulis ulang. Kit React dibaca
+dari folder `react-design-system` yang bersebelahan dengan repo ini, atau dari
+`CEPLOK_REACT_DIR`.
 
 ```bash
-php artisan serve
+npm run tokens:check    # gagal bila token tertinggal dari kit React
+npm run tokens:sync
+npm run icons:check     # gagal bila ikon tertinggal dari flowbite-react-icons
+npm run icons:sync
 ```
 
-```bash
-npm run dev
-```
+## Quality check lokal
 
-## Cara Kerja Design Token
-
-Token didefinisikan di `resources/css/app.css` menggunakan konfigurasi theme Tailwind CSS.
-
-Primitive token menyimpan nilai dasar palet:
-
-```css
---color-primary-600: #1c64f2;
---color-danger-600: #e02424;
---color-gray-900: #111827;
-```
-
-Semantic token menjelaskan tujuan penggunaan dan mengacu pada primitive token:
-
-```css
---color-brand: var(--color-primary-600);
---color-feedback-error: var(--color-danger-600);
---color-content: var(--color-gray-900);
-```
-
-Pemisahan tersebut membuat komponen bergantung pada makna token, bukan langsung pada nilai warna. Jika warna brand berubah, komponen tidak perlu diperbarui satu per satu.
-
-Contoh penggunaan utility pada Blade:
-
-```blade
-<button class="bg-brand text-white hover:bg-brand-hover">
-    Simpan
-</button>
-
-<p class="text-body text-content-subtle">
-    Informasi tambahan
-</p>
-```
-
-Class komponen yang sudah tersedia antara lain:
-
-- `ds-card`
-- `ds-eyebrow`
-- `ds-nav-link`
-
-## Struktur Utama
-
-```text
-app/                         Kode aplikasi Laravel
-resources/css/app.css        Token, base style, dan component style
-resources/js/app.js          Interaksi Alpine.js
-resources/views/             Halaman dokumentasi Blade
-routes/web.php               Route aplikasi
-tests/Feature/               Feature test Laravel
-tests/Unit/                  Unit test PHP
-public/build/                Hasil production build Vite
-.gitlab-ci.yml               Konfigurasi pipeline GitLab
-```
-
-Direktori `vendor`, `node_modules`, dan `public/build` dibuat secara lokal atau oleh pipeline dan tidak disimpan ke Git.
-
-## Quality Check Lokal
-
-Jalankan pemeriksaan berikut sebelum melakukan push.
-
-Validasi dependency Composer:
+Jalankan sebelum push:
 
 ```bash
 composer validate --strict --no-check-publish
-```
-
-Pasang dependency sesuai lockfile dan build frontend:
-
-```bash
 npm ci
 npm run build
-```
-
-Periksa format PHP tanpa mengubah file:
-
-```bash
 vendor/bin/pint --test
-```
-
-Jika ditemukan masalah format, perbaiki dengan:
-
-```bash
-vendor/bin/pint
-```
-
-Jalankan seluruh test:
-
-```bash
 php artisan test
-```
-
-Periksa kerentanan dependency:
-
-```bash
+npm run tokens:check
+npm run icons:check
 composer audit --locked
 npm audit --audit-level=high
 ```
 
+Bila Pint menemukan masalah format, perbaiki dengan `vendor/bin/pint`.
+`npm run build` perlu dijalankan sebelum tes: halaman docs memakai manifest
+Vite.
+
 ## CI/CD
 
-Pipeline GitLab berjalan pada branch, merge request, dan tag. Ketika sebuah branch sudah memiliki merge request, pipeline branch duplikat tidak dibuat.
-
-Pipeline terdiri dari tiga tahap:
-
-1. `validate` memeriksa konfigurasi Composer.
-2. `build` memasang dependency npm dan menghasilkan artifact frontend di `public/build`.
-3. `test` menjalankan Laravel test, Pint, dependency audit, SAST, dan secret detection.
-
-Artifact frontend dari tahap build digunakan oleh feature test Laravel. Hal ini memastikan halaman yang menggunakan Vite manifest juga dapat diuji di environment CI.
-
-Pipeline saat ini belum melakukan deployment atau publish package. Tahap release akan ditambahkan setelah nama package, jenis package, registry, dan aturan versioning ditetapkan.
+Repo ini belum memuat konfigurasi pipeline. Urutan quality check di atas
+siap dipakai sebagai job-nya: `validate` (composer validate), `build` (npm ci,
+npm run build), lalu `test` (Pint, PHPUnit, pemeriksaan token dan ikon, audit
+dependency). Tahap `test` memakai artifact `public/build` dari tahap `build`.
+Pemeriksaan token dan ikon butuh checkout kit React di sebelahnya; lewati
+keduanya bila checkout itu tidak tersedia di runner.
 
 ## Alur Branch dan Merge Request
 
@@ -245,31 +161,35 @@ Buat merge request dengan alur:
 feature/nama-fitur -> staging
 ```
 
-Perubahan dapat digabungkan setelah pipeline berhasil, reviewer memberikan persetujuan, dan seluruh diskusi selesai. Setelah sekumpulan perubahan di staging dinyatakan stabil oleh tim, buat merge request:
+Perubahan dapat digabungkan setelah pipeline berhasil, reviewer memberikan
+persetujuan, dan seluruh diskusi selesai. Setelah sekumpulan perubahan di
+staging dinyatakan stabil oleh tim, buat merge request:
 
 ```text
 staging -> main
 ```
 
-Jangan melakukan push langsung ke `staging` atau `main`. Kedua branch tersebut sebaiknya dilindungi melalui protected branch dan hanya menerima perubahan melalui merge request.
+Jangan melakukan push langsung ke `staging` atau `main`. Kedua branch tersebut
+sebaiknya dilindungi melalui protected branch dan hanya menerima perubahan
+melalui merge request.
 
-## Rencana Distribusi Package
+## Distribusi Paket
 
-Distribusi akhir akan dipilih berdasarkan jenis aset yang digunakan kembali:
-
-- Package npm untuk design token, CSS, Tailwind, dan JavaScript.
-- Package Composer untuk Blade component dan integrasi khusus Laravel.
-- Kombinasi keduanya jika design system membutuhkan aset frontend sekaligus komponen Blade.
-
-Release stabil sebaiknya dibuat dari tag pada branch `main`, misalnya `v1.0.0`. Pipeline release kemudian membangun dan memublikasikan package secara otomatis ke registry yang telah ditentukan.
+Paket Composer `ceplok-ui/design-kit-livewire` dipecah ke repo sendiri lalu
+dipublikasikan ke Packagist (publik) atau GitLab Composer Package Registry
+(privat). Langkah dan aturan versinya ada di
+[packages/README.md](packages/README.md). Paket npm tidak dibutuhkan lagi:
+perilaku Alpine ikut paket Composer.
 
 ## Kontribusi
 
 - Buat satu branch untuk satu fitur atau perbaikan.
-- Gunakan nama branch yang menjelaskan task, seperti `feature/button-component` atau `fix/typography-scale`.
+- Gunakan nama branch yang menjelaskan task, seperti `feature/select-component`
+  atau `fix/badge-dark-mode`.
 - Buat commit kecil dengan pesan yang menjelaskan perubahan.
-- Tambahkan atau perbarui test jika perilaku aplikasi berubah.
+- Tambahkan atau perbarui tes bila perilaku komponen berubah.
 - Jalankan quality check lokal sebelum push.
 - Sertakan ringkasan perubahan dan cara pengujian pada deskripsi merge request.
 
-Untuk laporan kerentanan keamanan, hubungi maintainer proyek melalui jalur internal dan jangan memublikasikan detail sensitif pada issue umum.
+Untuk laporan kerentanan keamanan, hubungi maintainer proyek melalui jalur
+internal dan jangan memublikasikan detail sensitif pada issue umum.

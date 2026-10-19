@@ -12,7 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Keadaan panel samping docs, ditulis JavaScript (resources/js/docs/layout.js).
+        $middleware->encryptCookies(except: ['ceplok_docs_panel']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

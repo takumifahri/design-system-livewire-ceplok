@@ -1,102 +1,149 @@
-<x-docs-layout section="components" title="Components">
-    <x-doc-hero eyebrow="Components · Overview" title="Components" description="Komponen Blade & Alpine siap pakai dari package tpl/design-kit. Dipakai lewat sintaks &lt;x-dk::nama&gt; setelah package terpasang.">
-        <span class="mt-5 inline-block w-fit rounded-full border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-bold text-primary-700">6 komponen tersedia</span>
-    </x-doc-hero>
+@php
+    use App\Docs\Navigation;
+
+    // Ikon sosial yang sama dengan footer situs, urutannya mengikuti kartu Footer di docs React.
+    $socials = collect(Navigation::socials())->keyBy('label');
+    $footerSocials = [
+        ['label' => 'Facebook', 'url' => '#', 'icon' => $socials['Facebook']['icon']],
+        ['label' => 'Twitter', 'url' => '#', 'icon' => $socials['X']['icon']],
+        ['label' => 'Instagram', 'url' => '#', 'icon' => $socials['Instagram']['icon']],
+    ];
+
+    // Ditulis di blok PHP ini karena di luarnya Blade ikut mengompilasi teks
+    // tag komponen kit sebagai komponen, termasuk di dalam nilai atribut.
+    $description = 'Komponen Blade siap pakai dari paket ceplok-ui/design-kit-livewire. Dipakai lewat tag <x-ceplok::nama> setelah paket terpasang — tanpa import, langsung di view mana pun.';
+@endphp
+
+<x-docs.layout title="Components">
+    <x-docs.hero
+        eyebrow="Components · Overview"
+        title="Components"
+        :description="$description"
+    />
 
     <div class="mx-auto max-w-5xl px-5 py-9 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
         <div class="grid gap-5 sm:grid-cols-2">
-            <a href="{{ route('components.button') }}" class="ds-card group flex flex-col p-6 transition-shadow hover:shadow-md">
-                <div class="flex flex-wrap items-center gap-2 rounded-xl bg-surface-subtle p-5">
-                    <x-dk::button variant="primary">Primary</x-dk::button>
-                    <x-dk::button variant="secondary">Secondary</x-dk::button>
-                </div>
-                <h2 class="mt-4 text-heading-4 font-black text-gray-900">Button</h2>
-                <p class="mt-1.5 text-body-sm text-gray-500">Aksi utama dengan empat variant: primary, secondary, danger, ghost.</p>
-                <span class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-primary-700">
-                    Lihat detail
-                    <svg class="size-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
-                </span>
-            </a>
-
-            <a href="{{ route('components.badge') }}" class="ds-card group flex flex-col p-6 transition-shadow hover:shadow-md">
-                <div class="flex flex-wrap items-center gap-2 rounded-xl bg-surface-subtle p-5">
-                    <x-dk::badge variant="success">Aktif</x-dk::badge>
-                    <x-dk::badge variant="warning">Menunggu</x-dk::badge>
-                    <x-dk::badge variant="danger">Ditolak</x-dk::badge>
-                </div>
-                <h2 class="mt-4 text-heading-4 font-black text-gray-900">Badge</h2>
-                <p class="mt-1.5 text-body-sm text-gray-500">Label status ringkas dengan lima variant warna semantik.</p>
-                <span class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-primary-700">
-                    Lihat detail
-                    <svg class="size-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
-                </span>
-            </a>
-
-            <a href="{{ route('components.alert') }}" class="ds-card group flex flex-col p-6 transition-shadow hover:shadow-md sm:col-span-2">
+            <x-docs.overview-card route="components.container" name="Container" desc="Pembungkus lebar konten: 380px di mobile (rounded), maksimum 1126px di desktop." wide>
                 <div class="rounded-xl bg-surface-subtle p-5">
-                    <x-dk::alert variant="success" heading="Ini adalah Alert" :dismissible="false">
-                        Ini merupakan Design system Komdigi berupa component alert.
-                    </x-dk::alert>
+                    <div class="mx-auto max-w-55 rounded-lg border-2 border-dashed border-primary-300 bg-white px-4 py-6 text-center">
+                        <span class="text-xs font-black text-primary-700">1126px · 380px</span>
+                    </div>
                 </div>
-                <h2 class="mt-4 text-heading-4 font-black text-gray-900">Alert</h2>
-                <p class="mt-1.5 text-body-sm text-gray-500">Pesan status kontekstual dengan lima variant warna dan dua gaya permukaan.</p>
-                <span class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-primary-700">
-                    Lihat detail
-                    <svg class="size-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
-                </span>
-            </a>
+            </x-docs.overview-card>
 
-            <a href="{{ route('components.card') }}" class="ds-card group flex flex-col p-6 transition-shadow hover:shadow-md">
+            <x-docs.overview-card route="components.button" name="Button" desc="Aksi utama dengan variant filled atau outline, enam theme warna, dan lima ukuran.">
+                <div class="flex flex-wrap items-center gap-2 rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::button variant="outline">Secondary</x-ceplok::button>
+                    <x-ceplok::button variant="filled">Primary</x-ceplok::button>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.badge" name="Badge" desc="Label status ringkas dengan lima variant warna semantik.">
+                <div class="flex flex-wrap items-center gap-2 rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::badge variant="success" :icon="svg('ceplok-o-check-circle')">Aktif</x-ceplok::badge>
+                    <x-ceplok::badge variant="warning" :icon="svg('ceplok-o-hourglass')">Menunggu</x-ceplok::badge>
+                    <x-ceplok::badge variant="danger" :icon="svg('ceplok-o-close-circle')">Ditolak</x-ceplok::badge>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.alert" name="Alert" desc="Pesan status di dalam alur halaman dengan lima variant warna dan elemen yang sepenuhnya opsional.">
                 <div class="rounded-xl bg-surface-subtle p-5">
-                    <div class="overflow-hidden rounded-lg border border-border bg-white">
-                        <img src="{{ asset('images/card-sample.svg') }}" alt="" class="aspect-video w-full object-cover">
-                        <div class="space-y-1.5 p-3">
-                            <div class="h-2 w-24 rounded bg-gray-300"></div>
-                            <div class="h-1.5 w-full rounded bg-gray-200"></div>
-                            <div class="h-1.5 w-2/3 rounded bg-gray-200"></div>
+                    <x-ceplok::alert variant="success" heading="Ini adalah Alert" :dismissible="false">
+                        Ini merupakan Design system Ceplok berupa component alert.
+                    </x-ceplok::alert>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.avatar" name="Avatar" desc="Lingkaran identitas berisi foto profil, atau inisial namanya bila fotonya tidak ada.">
+                <div class="flex items-center justify-center gap-4 rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::avatar src="/images/avatar-sample.svg" alt="" size="large" />
+                    <x-ceplok::avatar initials="PH" />
+                    <x-ceplok::avatar initials="PH" size="small" />
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.spinner" name="Spinner" desc="Indikator proses berputar dalam ukuran default dan large.">
+                <div class="flex items-center justify-center rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::spinner aria-label="Memuat preview" />
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.dropdown" name="Dropdown" desc="Kumpulan aksi atau pilihan tambahan yang dibuka dari sebuah trigger.">
+                {{-- Gambaran statis: panel yang terbuka diperlihatkan langsung di bawah pemicunya. --}}
+                <div class="rounded-xl bg-surface-subtle p-5">
+                    <div class="mx-auto flex w-fit max-w-full flex-col items-center gap-2">
+                        <div class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-700 px-4 text-base font-medium text-white">
+                            Dropdown button
+                            <svg aria-hidden="true" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
+                        </div>
+                        <div class="w-full rounded-lg bg-surface py-1 shadow-md" aria-hidden="true">
+                            <div class="px-4 py-2 text-sm font-medium text-gray-700">Profil</div>
+                            <div class="px-4 py-2 text-sm font-medium text-gray-700">Pengaturan</div>
+                            <div class="my-1 border-t border-border"></div>
+                            <div class="px-4 py-2 text-sm font-medium text-red-600">Keluar</div>
                         </div>
                     </div>
                 </div>
-                <h2 class="mt-4 text-heading-4 font-black text-gray-900">Card</h2>
-                <p class="mt-1.5 text-body-sm text-gray-500">Wadah informasi dengan gambar, judul, deskripsi, dan aksi yang semuanya opsional.</p>
-                <span class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-primary-700">
-                    Lihat detail
-                    <svg class="size-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
-                </span>
-            </a>
+            </x-docs.overview-card>
 
-            <a href="{{ route('components.footer') }}" class="ds-card group flex flex-col p-6 transition-shadow hover:shadow-md sm:col-span-2">
+            <x-docs.overview-card route="components.toast" name="Toast" desc="Notifikasi sekilas yang melayang di atas konten, dengan heading dan aksi opsional.">
+                {{--
+                    Kerangka halaman di belakangnya penting: Toast bedanya dengan Alert
+                    justru karena ia melayang di atas konten. mt-auto menurunkan Toast
+                    ke sudut bawah kiri, memakai sisa tinggi kartu.
+                --}}
+                <div class="flex flex-col rounded-xl bg-surface-subtle p-5">
+                    <div class="space-y-3 opacity-60" aria-hidden="true">
+                        <div class="h-2 w-2/5 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-5/6 rounded bg-gray-200"></div>
+                        <div class="mt-6 h-2 w-1/3 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-4/6 rounded bg-gray-200"></div>
+                    </div>
+                    <div class="mt-auto max-w-80 pt-8">
+                        <x-ceplok::toast variant="success">Sukses Membuat Data!</x-ceplok::toast>
+                    </div>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.card" name="Card" desc="Wadah informasi dengan gambar, judul, deskripsi, dan aksi yang semuanya opsional.">
+                <div class="rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::card image="/images/card-sample.svg" image-alt="" title="Judul Kartu" description="Deskripsi singkat yang menjelaskan isi kartu dalam satu atau dua baris." />
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.breadcrumb" name="Breadcrumb" desc="Jejak lokasi halaman dengan pemisah chevron, dua ukuran teks, dan latar opsional.">
+                <div class="flex items-center rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::breadcrumb :items="[['label' => 'Beranda'], ['label' => 'Komponen'], ['label' => 'Breadcrumb']]" />
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.hero" name="Hero" desc="Pembuka halaman: judul, sub heading, deskripsi, satu tombol, dan gambar di kiri atau kanan." wide>
+                <div class="overflow-hidden rounded-xl border border-border bg-white">
+                    <x-ceplok::hero heading="Judul Halaman" sub-heading="Sub heading" description="Paragraf pembuka yang menjelaskan isi halaman secara singkat." button-label="Selengkapnya" image="/images/hero-sample.svg" image-alt="" />
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.footer" name="Footer" desc="Penutup halaman responsif dengan logo, menu, hak cipta, dan tautan media sosial." wide>
                 <div class="overflow-hidden rounded-xl">
-                    <div class="flex items-center justify-between gap-4 bg-gray-800 px-5 py-4">
-                        <img src="{{ asset('images/komdigi-logo.svg') }}" alt="Komdigi" class="h-7 w-auto">
-                        <div class="hidden gap-5 text-xs text-gray-300 sm:flex">
-                            <span>Menu 1</span><span>Menu 2</span><span>Menu 3</span><span>Menu 4</span>
-                        </div>
-                    </div>
+                    <x-ceplok::footer
+                        logo="/images/footer-logo.svg"
+                        logo-alt="Ceplok Design System"
+                        :menus="[['label' => 'Menu 1'], ['label' => 'Menu 2'], ['label' => 'Menu 3'], ['label' => 'Menu 4']]"
+                        :copyright="'© '.date('Y').' CEPLOK Design System'"
+                        :socials="$footerSocials"
+                    />
                 </div>
-                <h2 class="mt-4 text-heading-4 font-black text-gray-900">Footer</h2>
-                <p class="mt-1.5 text-body-sm text-gray-500">Penutup halaman responsif dengan logo, menu, hak cipta, dan tautan media sosial.</p>
-                <span class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-primary-700">
-                    Lihat detail
-                    <svg class="size-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
-                </span>
-            </a>
+            </x-docs.overview-card>
 
-            <a href="{{ route('components.toast') }}" class="ds-card group flex flex-col p-6 transition-shadow hover:shadow-md sm:col-span-2">
-                <div class="rounded-xl bg-surface-subtle p-5">
-                    <div class="mx-auto max-w-sm">
-                        <x-dk::toast variant="success" :dismissible="false">
-                            Sukses Membuat Data!
-                        </x-dk::toast>
-                    </div>
+            <x-docs.overview-card route="components.pagination" name="Pagination" desc="Navigasi antar halaman daftar data, dengan tema warna mengikuti aplikasi.">
+                <div class="flex justify-center rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::pagination :current-page="2" :total-pages="5" />
                 </div>
-                <h2 class="mt-4 text-heading-4 font-black text-gray-900">Toast</h2>
-                <p class="mt-1.5 text-body-sm text-gray-500">Notifikasi melayang di atas konten halaman untuk konfirmasi aksi dan pembaruan status.</p>
-                <span class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-primary-700">
-                    Lihat detail
-                    <svg class="size-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
-                </span>
-            </a>
+            </x-docs.overview-card>
         </div>
     </div>
-</x-docs-layout>
+</x-docs.layout>

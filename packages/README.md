@@ -1,222 +1,129 @@
-# tpl/design-kit & @tpl/design-kit
+# Paket di repo ini
 
-Dokumentasi alur kerja package internal yang dipecah dari aplikasi dokumentasi
-State Security Service Design System. Ada dua package yang dipublikasikan dari folder ini:
+Folder ini memuat paket yang dikembangkan bersama aplikasi dokumentasi di root
+repo, lalu dipublikasikan terpisah.
 
-| Package | Ekosistem | Isi |
+| Paket | Ekosistem | Isi |
 | --- | --- | --- |
-| `tpl/design-kit` | Composer | Blade components (`<x-dk::button>`, dll) + token CSS |
-| `@tpl/design-kit` | npm | Alpine.js components (`registerDesignKit`, dll) + token CSS |
+| `ceplok-ui/design-kit-livewire` | Composer | Komponen Blade `<x-ceplok::…>`, plugin Alpine, token CSS, dan ikon. Padanan `@ceplok-ui/design-kit-react`. |
 
-Keduanya dikembangkan bareng di repo aplikasi ini (`Design-system-projects`)
-sebagai **local path package**, supaya bisa dipakai dan diedit sekaligus tanpa
-publish berkali-kali saat masih development.
+Cara memakai paketnya ada di
+[design-kit-livewire/README.md](design-kit-livewire/README.md). Dokumen ini
+membahas alur kerja pengembangnya.
 
+```text
+packages/design-kit-livewire/
+├── composer.json
+├── README.md, CHANGELOG.md
+├── src/
+│   ├── DesignKitServiceProvider.php   komponen, set ikon, Blaze, vendor:publish
+│   ├── Enums/                          pilihan prop: ButtonVariant, AlertVariant, …
+│   └── Support/                        Prop (pemeriksa prop), Content, Bound
+└── resources/
+    ├── css/styles.css                  entry stylesheet: Tailwind, token, font, base, .ds-*
+    ├── css/tokens.css                  salinan token kit React (jangan diedit di sini)
+    ├── js/index.js, js/components/     plugin Alpine: dismissible, avatar, pagination
+    ├── svg/flowbite/                   ikon Flowbite (salinan dari kit React)
+    ├── svg/brands/                     logo brand milik kit
+    └── views/components/               button.blade.php, badge.blade.php, …
 ```
-packages/
-├── tokens/design-tokens.css        ← sumber tunggal token warna & tipografi
-├── php/                             ← tpl/design-kit (Composer)
-│   ├── composer.json
-│   ├── src/DesignKitServiceProvider.php
-│   └── resources/
-│       ├── css/tokens.css           ← salinan dari packages/tokens/
-│       └── views/components/        ← button.blade.php, badge.blade.php, ...
-└── js/                               ← @tpl/design-kit (npm)
-    ├── package.json
-    └── src/
-        ├── index.js                  ← registerDesignKit(Alpine)
-        ├── tokens.css                ← salinan dari packages/tokens/
-        └── components/               ← clipboard.js, disclosure.js, ...
-```
 
----
+## 1. Development lokal
 
-## 1. Alur development lokal
-
-Aplikasi utama (`Design-system-projects`) sudah di-wiring supaya "menginstall"
-kedua package ini dari folder lokal, bukan dari registry:
-
-**Composer** — [composer.json](../composer.json) punya path repository:
+Aplikasi di root memasang paket ini dari folder lokal lewat path repository di
+[composer.json](../composer.json):
 
 ```json
 "repositories": [
-    { "type": "path", "url": "packages/php" }
+    {
+        "type": "path",
+        "url": "packages/design-kit-livewire",
+        "options": { "versions": { "ceplok-ui/design-kit-livewire": "0.1.x-dev" } }
+    }
 ],
 "require": {
-    "tpl/design-kit": "@dev"
+    "ceplok-ui/design-kit-livewire": "0.1.x-dev"
 }
 ```
 
-Ini bikin `vendor/tpl/design-kit` jadi **symlink** ke `packages/php`. Efeknya:
-edit file di `packages/php/resources/views/components/button.blade.php`
-langsung kepakai di aplikasi, tanpa `composer update` ulang.
+`vendor/ceplok-ui/design-kit-livewire` menjadi symlink (junction di Windows)
+ke folder ini, jadi perubahan langsung terpakai tanpa `composer update`.
+Versinya dipatok `0.1.x-dev` lewat `options.versions` supaya tidak berubah
+mengikuti nama branch yang sedang aktif. `npm run dev` ikut memuat ulang
+halaman saat berkas di `resources/` paket berubah.
 
-**npm** — [package.json](../package.json) punya workspace:
+Setelah clone baru, `composer install` membuat ulang symlink tersebut.
 
-```json
-"workspaces": ["packages/js"],
-"dependencies": {
-    "@tpl/design-kit": "*"
-}
-```
+## 2. Menambah komponen
 
-Sama halnya, `node_modules/@tpl/design-kit` jadi symlink ke `packages/js`.
+1. Buat `resources/views/components/nama.blade.php`. Komponen langsung
+   tersedia sebagai `<x-ceplok::nama>` dan dikompilasi Blaze.
+2. Samakan markup dan class-nya dengan komponen kit React, termasuk urutan
+   elemen dan atribut ARIA.
+3. Untuk prop berpilihan, buat enum di `src/Enums` dan periksa nilainya dengan
+   `Prop::oneOf()`. Gunakan `Prop::bool()`, `Prop::int()`, dan `Prop::tag()`
+   untuk prop boolean, angka, dan nama tag. Jangan memakai nilai prop mentah:
+   atribut statis selalu tiba sebagai string.
+4. Isi yang bisa datang sebagai prop atau slot diperiksa dengan
+   `Content::filled()`, padanan pemeriksaan falsy di React.
+5. Perilaku interaktif ditulis sebagai data Alpine di `resources/js/components`
+   lalu didaftarkan di `resources/js/index.js`.
+6. Tulis nama class Tailwind utuh. Tailwind hanya membuat class yang namanya
+   muncul utuh di berkas sumber, jadi jangan merakitnya dari potongan string.
+7. Tambahkan tes di `tests/Feature/Kit/Components` (lihat tes yang sudah ada:
+   markup diperiksa dengan parser HTML bawaan PHP 8.4) dan halaman docs-nya.
 
-Kalau symlink belum ada (misal setelah clone baru), jalankan ulang:
+## 3. Sinkronisasi dengan kit React
 
-```bash
-composer install
-npm install
-```
-
-### Menambah komponen baru
-
-- **Blade component** → bikin file baru di
-  `packages/php/resources/views/components/nama.blade.php`, otomatis bisa
-  dipakai sebagai `<x-dk::nama>` (didaftarkan via
-  `Blade::anonymousComponentPath` di `DesignKitServiceProvider`).
-- **Alpine component** → bikin file baru di `packages/js/src/components/`,
-  export function-nya, lalu daftarkan di `packages/js/src/index.js` dalam
-  `registerDesignKit()`.
-
-### Token warna/tipografi
-
-Satu sumber di `packages/tokens/design-tokens.css`. **Jangan edit** salinan di
-`packages/php/resources/css/tokens.css` atau `packages/js/src/tokens.css`
-langsung — edit sumbernya, lalu sinkronkan:
+Token dan ikon disalin dari kit React, bukan ditulis ulang. Lokasi kit React
+dibaca dari `CEPLOK_REACT_DIR`; bawaannya folder `react-design-system` yang
+bersebelahan dengan repo ini.
 
 ```bash
-npm run sync:tokens
+npm run tokens:check   # gagal bila tokens.css tertinggal dari kit React
+npm run tokens:sync    # salin ulang dari react-design-system/src/lib/tokens.css
+
+npm run icons:check    # gagal bila ikon tertinggal dari flowbite-react-icons
+npm run icons:sync     # render ulang ikon dari node_modules kit React
 ```
 
----
+Jangan mengedit `resources/css/tokens.css` atau `resources/svg/flowbite/`
+langsung: ubah sumbernya di kit React, lalu jalankan perintah sync.
 
-## 2. Cara aplikasi ini memakai package
+## 4. Publikasi ke Composer
 
-`resources/css/app.css`:
-
-```css
-@import 'tailwindcss';
-@import '../../vendor/tpl/design-kit/resources/css/tokens.css';
-
-@source '../../vendor/tpl/design-kit/resources/views/**/*.blade.php';
-```
-
-`resources/js/app.js`:
-
-```js
-import Alpine from 'alpinejs';
-import { registerDesignKit, dkClipboard } from '@tpl/design-kit';
-
-registerDesignKit(Alpine);
-window.Alpine = Alpine;
-Alpine.start();
-```
-
-Contoh pemakaian komponen ada di [welcome.blade.php](../resources/views/welcome.blade.php),
-bagian "Komponen dari package".
-
----
-
-## 3. Publish `@tpl/design-kit` ke npm (private, GitLab registry)
-
-Registry-nya adalah **GitLab npm Package Registry** milik project ini sendiri
-— gratis, private mengikuti visibility repo, tidak butuh akun npm terpisah.
-
-Konfigurasi ada di [.npmrc](../.npmrc) (root repo):
-
-```
-@tpl:registry=https://gitlab.com/api/v4/projects/intern-tpl-ipb%2Fdesign-system-project/packages/npm/
-//gitlab.com/api/v4/projects/intern-tpl-ipb%2Fdesign-system-project/packages/npm/:_authToken=${NPM_TOKEN}
-```
-
-### Publish otomatis lewat CI (direkomendasikan)
-
-Job `publish_design_kit_npm` di [.gitlab-ci.yml](../.gitlab-ci.yml) jalan
-otomatis saat push tag berformat `design-kit-js@x.y.z`:
+Paket Composer harus punya `composer.json` di root repo yang dipublikasikan,
+jadi folder ini dipecah dulu ke repo sendiri:
 
 ```bash
-git tag design-kit-js@0.1.0
-git push origin design-kit-js@0.1.0
+git subtree split --prefix=packages/design-kit-livewire -b design-kit-livewire-split
+git push <url-repo-paket> design-kit-livewire-split:main
 ```
 
-CI otomatis bump versi di `packages/js/package.json` sesuai tag, lalu publish
-pakai `$CI_JOB_TOKEN` bawaan GitLab (tidak perlu bikin token manual).
+Lalu beri tag versi di repo paket itu (`v0.1.0`) dan pilih registry-nya:
 
-### Publish manual dari laptop (kalau perlu)
+- **Packagist**, bila paket boleh publik. Daftarkan URL repo paketnya sekali;
+  tag berikutnya terbaca otomatis lewat webhook.
+- **GitLab Composer Package Registry**, bila paket harus privat. Consumer
+  menambahkan repository GitLab dan token baca (deploy token dengan scope
+  `read_package_registry`) di `auth.json`, bukan di `composer.json`.
 
-1. Bikin **Project Access Token** atau **Personal Access Token** dengan scope
-   `api`, di GitLab → Settings → Access Tokens.
-2. Jalankan:
-   ```bash
-   export NPM_TOKEN=glpat-xxxxxxxxxxxx
-   npm publish --workspace packages/js
-   ```
-
-Cek dulu tanpa publish beneran dengan `--dry-run`:
+Setelah itu project consumer cukup:
 
 ```bash
-npm publish --workspace packages/js --dry-run
+composer require ceplok-ui/design-kit-livewire:^0.1
 ```
-
-### Cara project lain (consumer) install package ini
-
-Tambahkan di `.npmrc` project consumer:
-
-```
-@tpl:registry=https://gitlab.com/api/v4/projects/intern-tpl-ipb%2Fdesign-system-project/packages/npm/
-//gitlab.com/api/v4/projects/intern-tpl-ipb%2Fdesign-system-project/packages/npm/:_authToken=${NPM_TOKEN}
-```
-
-`NPM_TOKEN` diisi token dengan scope minimal `read_package_registry` — idealnya
-**Deploy Token** khusus read-only, bukan personal token, supaya consumer tidak
-dikasih akses lebih dari yang perlu. Lalu:
-
-```bash
-npm install @tpl/design-kit
-```
-
----
-
-## 4. Publish `tpl/design-kit` ke Composer
-
-Saat ini package Composer masih dipakai lewat **path repository** (lokal, poin
-1 di atas) karena baru satu consumer. Kalau nanti perlu dipakai project
-Laravel lain di luar repo ini, ada dua opsi:
-
-**Opsi A — Split ke repo sendiri (untuk konsumsi eksternal jangka panjang)**
-
-```bash
-git subtree split --prefix=packages/php -b design-kit-php-split
-```
-
-Push branch itu ke repo baru, lalu tag versi di sana (`v1.0.0`). Consumer
-lain menambahkan sebagai VCS repository:
-
-```json
-"repositories": [
-    { "type": "vcs", "url": "https://gitlab.com/intern-tpl-ipb/design-kit-php.git" }
-]
-```
-
-**Opsi B — GitLab Composer Package Registry** (mirip skema npm di atas,
-tapi untuk Composer) — lebih pas kalau `packages/php` sudah displit jadi repo
-sendiri, karena `composer.json` package harus ada di root repo yang dipublish.
-
-Belum ada keputusan final soal opsi ini — evaluasi ulang kalau sudah ada
-consumer kedua.
-
----
 
 ## 5. Versioning
 
 Ikuti semver (`MAJOR.MINOR.PATCH`):
 
-- **Patch** — perbaikan bug, tidak ubah API/props komponen.
-- **Minor** — komponen baru, token baru, tanpa breaking change.
-- **Major** — rename/hapus token, ubah props komponen yang breaking. Wajib
-  dicatat di changelog sebelum tag dibuat, karena dipakai lintas produk.
+- **Patch**: perbaikan bug tanpa mengubah prop atau markup yang diandalkan
+  consumer.
+- **Minor**: komponen, prop, atau token baru tanpa breaking change.
+- **Major**: mengganti nama atau menghapus prop, token, atau ikon. Wajib
+  dicatat di [CHANGELOG.md](design-kit-livewire/CHANGELOG.md) sebelum tag
+  dibuat, karena paket dipakai lintas produk.
 
-Format tag npm: `design-kit-js@x.y.z` (dipakai CI untuk trigger publish
-otomatis, lihat bagian 3). Format tag Composer menyusul saat package displit
-ke repo sendiri (bagian 4).
+Selama versi masih `0.x`, perubahan minor boleh breaking; catat tetap di
+changelog.

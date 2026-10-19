@@ -1,69 +1,18 @@
-@import 'tailwindcss';
-@import '../../vendor/tpl/design-kit/resources/css/tokens.css';
+/*
+ * styles.css kit sudah memanggil `@import 'tailwindcss'`, memuat token, font,
+ * dan base layer, jadi Tailwind tidak diimpor lagi di sini.
+ */
+@import '../../vendor/ceplok-ui/design-kit-livewire/resources/css/styles.css';
 
+/* Gaya khusus situs dokumentasi; dimuat setelah kit supaya bisa menimpa bila perlu. */
+@import './docs.css';
+
+/*
+ * Tailwind v4 tidak memindai vendor/ secara otomatis. Tanpa @source untuk
+ * komponen kit, komponennya tetap ter-render, tetapi tanpa class utility-nya.
+ */
+@source '../../vendor/ceplok-ui/design-kit-livewire/resources/views/**/*.blade.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../vendor/tpl/design-kit/resources/views/**/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
 @source '../js/**/*.js';
-
-@layer base {
-    html {
-        scroll-behavior: smooth;
-    }
-
-    body {
-        @apply bg-gray-50 font-sans text-content antialiased;
-    }
-
-    button,
-    a {
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    button:focus-visible,
-    a:focus-visible {
-        @apply outline-2 outline-offset-2 outline-primary-600;
-    }
-
-    [x-cloak] {
-        display: none !important;
-    }
-}
-
-@layer components {
-    .ds-card {
-        @apply rounded-2xl border border-border bg-surface shadow-soft;
-    }
-
-    .ds-eyebrow {
-        @apply text-caption font-bold tracking-[0.14em] text-primary-700 uppercase;
-    }
-
-    .ds-nav-link {
-        @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-primary-50 hover:text-primary-700;
-    }
-
-    .ds-nav-link.is-active {
-        @apply bg-primary-50 text-primary-700;
-    }
-
-    /* Scroll horizontal tipis dan bersih untuk baris type scale */
-    .ds-scroll-x {
-        scrollbar-width: thin;
-        scrollbar-color: var(--color-gray-300) transparent;
-    }
-
-    .ds-scroll-x::-webkit-scrollbar {
-        height: 6px;
-    }
-
-    .ds-scroll-x::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .ds-scroll-x::-webkit-scrollbar-thumb {
-        border-radius: 9999px;
-        background-color: var(--color-gray-300);
-    }
-}
