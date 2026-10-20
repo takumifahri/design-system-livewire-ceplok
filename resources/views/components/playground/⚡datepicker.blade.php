@@ -110,6 +110,12 @@ new class extends Component
         </p>
 
         <x-docs.controls>
+            <x-docs.control label="Tampilan">
+                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Light'],
+                    ['value' => true, 'label' => 'Dark'],
+                ]" />
+            </x-docs.control>
             <x-docs.control label="Type">
                 <x-docs.segmented label="Pilih bentuk" model="type" :value="$type" :options="[
                     ['value' => 'single', 'label' => 'Single'],
@@ -146,12 +152,6 @@ new class extends Component
                 ]" />
             </x-docs.control>
 
-            <x-docs.control label="Tampilan">
-                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Light'],
-                    ['value' => true, 'label' => 'Dark'],
-                ]" />
-            </x-docs.control>
 
             <x-docs.control label="Label">
                 <x-docs.segmented label="Tampilkan label" model="label" :value="$label" :options="[
