@@ -19,7 +19,7 @@ class PlaygroundTest extends TestCase
     {
         $names = [
             'alert', 'alert-notice', 'avatar', 'badge', 'badge-filters', 'breadcrumb', 'button', 'card', 'container',
-            'footer', 'hero', 'pagination', 'pagination-list', 'spinner', 'spinner-loading', 'toast', 'toast-saved',
+            'footer', 'hero', 'pagination', 'pagination-list', 'table', 'table-demo', 'spinner', 'spinner-loading', 'toast', 'toast-saved',
             'dropdown', 'dropdown-actions', 'dropdown-sort',
             'input-field', 'input-field-validate', 'floating-label', 'floating-label-fill', 'text-area', 'text-area-send',
             'select', 'select-region', 'search', 'search-live', 'datepicker', 'datepicker-filter', 'upload', 'upload-livewire',

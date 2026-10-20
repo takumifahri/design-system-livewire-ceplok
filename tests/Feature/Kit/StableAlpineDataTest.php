@@ -31,6 +31,12 @@ class StableAlpineDataTest extends TestCase
 
             public int $halaman = 1;
 
+            /** @var array{key: string, direction: string}|null */
+            public ?array $urutan = null;
+
+            /** @var list<int> */
+            public array $terpilih = [];
+
             public function render(): string
             {
                 return <<<'BLADE'
@@ -41,6 +47,16 @@ class StableAlpineDataTest extends TestCase
                         <x-ceplok::search aria-label="Cari" :categories="['izin' => 'Perizinan', 'pajak' => 'Pajak']" :category-attributes="['wire:model.live' => 'kategori']" />
                         <x-ceplok::toast wire:model="tampil">Tersimpan</x-ceplok::toast>
                         <x-ceplok::pagination wire:model.live="halaman" :current-page="$halaman" :total-pages="5" />
+                        <x-ceplok::table
+                            :columns="[['key' => 'nama', 'header' => 'Nama', 'sortable' => true]]"
+                            :data="[['id' => 1, 'nama' => 'Andi'], ['id' => 2, 'nama' => 'Budi'], ['id' => 3, 'nama' => 'Citra']]"
+                            row-key="id"
+                            selectable
+                            :filter="[]"
+                            :sort="$urutan"
+                            :pagination="['page' => $halaman, 'page-size' => 1]"
+                            wire:model.live="terpilih"
+                        />
                     </div>
                     BLADE;
             }
@@ -58,7 +74,9 @@ class StableAlpineDataTest extends TestCase
             ->set('provinsi', 'jt')
             ->set('kategori', 'pajak')
             ->set('tampil', false)
-            ->set('halaman', 3);
+            ->set('halaman', 3)
+            ->set('urutan', ['key' => 'nama', 'direction' => 'desc'])
+            ->set('terpilih', [2]);
 
         $this->assertSame($before, $xData());
     }

@@ -75,6 +75,7 @@ final class Navigation
                     ['label' => 'Footer', 'route' => 'components.footer', 'keywords' => 'kaki halaman'],
                     ['label' => 'Breadcrumb', 'route' => 'components.breadcrumb', 'keywords' => 'jejak remah'],
                     ['label' => 'Pagination', 'route' => 'components.pagination', 'keywords' => 'halaman paginasi'],
+                    ['label' => 'Table', 'route' => 'components.table', 'keywords' => 'tabel data baris kolom urutkan'],
                 ],
             ],
             'form' => [

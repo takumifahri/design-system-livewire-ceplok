@@ -144,6 +144,61 @@
                     <x-ceplok::pagination :current-page="2" :total-pages="5" />
                 </div>
             </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.table" name="Table" desc="Tabel data dengan pencarian, filter kolom, pengurutan, pagination, dan aksi per baris." wide>
+                {{--
+                    Skeleton, bukan Table asli, sama seperti di docs React. Kotak cari,
+                    sort, aksi, dan pagination Table asli merender <button>, sedangkan
+                    kartu ini sendiri sudah berupa <a>.
+
+                    Lima kolom (nomor, pemohon, layanan, status, aksi) hanya mulai sm;
+                    di bawahnya kolom layanan dan aksi disembunyikan supaya tetap muat.
+                --}}
+                <div class="rounded-xl bg-surface-subtle p-5" aria-hidden="true">
+                    <div class="overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+                        {{-- Toolbar: kotak cari, tombol filter, aksi di kanan --}}
+                        <div class="flex items-center gap-3 p-4">
+                            <div class="h-7 w-40 max-w-full rounded-md border border-gray-200 bg-gray-50 sm:w-56"></div>
+                            <div class="h-7 w-20 shrink-0 rounded-md border border-gray-300"></div>
+                            <div class="ml-auto hidden h-7 w-24 rounded-md bg-primary-700 sm:block"></div>
+                        </div>
+                        {{-- Header --}}
+                        <div class="grid grid-cols-[1fr_1.4fr_1fr] items-center gap-4 border-y border-gray-200 bg-gray-50 px-4 py-3 sm:grid-cols-[1fr_1.4fr_1.4fr_1fr_0.8fr]">
+                            <div class="h-1.5 w-10 rounded bg-gray-300"></div>
+                            <div class="h-1.5 w-14 rounded bg-gray-300"></div>
+                            <div class="hidden h-1.5 w-14 rounded bg-gray-300 sm:block"></div>
+                            <div class="h-1.5 w-10 rounded bg-gray-300"></div>
+                            <div class="hidden h-1.5 w-8 rounded bg-gray-300 sm:block"></div>
+                        </div>
+                        {{-- Baris: nomor, nama tebal, layanan, pill status, tombol aksi --}}
+                        @foreach (['bg-green-100', 'bg-primary-100', 'bg-yellow-100'] as $pill)
+                            <div @class([
+                                'grid grid-cols-[1fr_1.4fr_1fr] items-center gap-4 px-4 py-3.5 sm:grid-cols-[1fr_1.4fr_1.4fr_1fr_0.8fr]',
+                                'border-b border-gray-200' => ! $loop->last,
+                            ])>
+                                <div class="h-1.5 w-12 rounded bg-gray-200"></div>
+                                <div class="h-2 w-24 max-w-full rounded bg-gray-300"></div>
+                                <div class="hidden h-1.5 w-28 max-w-full rounded bg-gray-200 sm:block"></div>
+                                <div class="h-4 w-14 rounded-full {{ $pill }}"></div>
+                                <div class="hidden gap-1.5 sm:flex">
+                                    <div class="size-4 rounded bg-primary-700"></div>
+                                    <div class="size-4 rounded border border-gray-300"></div>
+                                </div>
+                            </div>
+                        @endforeach
+                        {{-- Ringkasan dan pagination --}}
+                        <div class="flex items-center justify-between border-t border-gray-200 px-4 py-3">
+                            <div class="h-1.5 w-28 rounded bg-gray-200"></div>
+                            <div class="flex gap-1">
+                                <div class="size-5 rounded bg-gray-200"></div>
+                                <div class="size-5 rounded bg-primary-700"></div>
+                                <div class="size-5 rounded bg-gray-200"></div>
+                                <div class="size-5 rounded bg-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </x-docs.overview-card>
         </div>
     </div>
 </x-docs.layout>

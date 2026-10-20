@@ -27,6 +27,7 @@ class PagesTest extends TestCase
             'footer' => ['components.footer', 'Footer', 'Footer'],
             'breadcrumb' => ['components.breadcrumb', 'Breadcrumb', 'Breadcrumb'],
             'pagination' => ['components.pagination', 'Pagination', 'Pagination'],
+            'table' => ['components.table', 'Table', 'Table'],
             'form' => ['form.index', 'Form', 'Form'],
             'input-field-form' => ['form.input-field', 'Input Field Form', 'Input Field Form'],
             'input-field' => ['form.input-field.input', 'Input Field', 'Input Field'],
