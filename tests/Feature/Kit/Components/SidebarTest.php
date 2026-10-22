@@ -115,6 +115,7 @@ class SidebarTest extends TestCase
                 'items' => [
                     ['label' => 'Menu 1', 'href' => '#m1', 'icon' => 'ceplok-s-chart-pie', 'badge' => 5],
                     [
+                        'id' => 'menu-2',
                         'label' => 'Menu 2',
                         'icon' => 'ceplok-s-cart',
                         'children' => [

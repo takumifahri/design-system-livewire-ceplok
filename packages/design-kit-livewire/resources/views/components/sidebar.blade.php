@@ -1,6 +1,7 @@
 @php
     use CeplokUi\DesignKit\Support\Bound;
     use CeplokUi\DesignKit\Support\Content;
+    use CeplokUi\DesignKit\Support\FieldId;
     use CeplokUi\DesignKit\Support\Prop;
 @endphp
 
@@ -45,6 +46,7 @@
     });
     $hasCollapseButton = $hasMenuIcons && $showCollapseButton;
     $hasHeader = Content::filled($logo) || Content::filled($collapsedLogo) || $hasCollapseButton;
+    $sidebarId = FieldId::for($attributes, 'sidebar');
 
     $userGroups = !empty($user['groups'])
         ? $user['groups']
@@ -322,7 +324,7 @@
                         @foreach ($group['items'] ?? [] as $item)
                             @php
                                 $hasChildren = !empty($item['children']);
-                                $itemId = $item['id'] ?? \Illuminate\Support\Str::slug($item['label'] ?? '');
+                                $itemId = $item['id'] ?? ($sidebarId.'-'.\Illuminate\Support\Str::slug($item['label'] ?? ''));
                                 $isActive = !empty($item['active']);
                                 $isDisabled = !empty($item['disabled']);
                                 $isSubmenuDisabled = !empty($item['submenuToggleDisabled']);

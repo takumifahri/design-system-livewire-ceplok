@@ -19,8 +19,8 @@ berulang kali di dalam komponen Livewire.
   radius, shadow, font Lato serta font alternatif Inter (`font-alt`) dan Arial
   (`font-alt-2`). Disalin apa adanya dari kit React.
 - **Komponen**: `alert`, `avatar`, `badge`, `breadcrumb`, `button`, `card`,
-  `container`, `dropdown`, `footer`, `hero`, `icon`, `pagination`, `spinner`,
-  `toast`.
+  `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`, `pagination`,
+  `sidebar`, `spinner`, `toast`.
 - **Elemen form**: `checkbox`, `datepicker`, `floating-label`, `input-field`,
   `radio`, `search`, `select`, `text-area`, `toggle`, `upload`.
 - **Ikon**: 411 ikon outline dan 340 ikon solid Flowbite (salinan persis
@@ -147,6 +147,7 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 | `icon` | slot berisi `<svg>` yang memakai `currentColor` |
 | `breadcrumb` | `items` (`label`, `href`, `icon`, `attributes`), slot `separator`, `size`: `sm \| base`, `background`: `bg \| none`, `dark-mode` |
 | `pagination` | `current-page`, `total-pages`, `theme`: `default \| primary \| purple`, `size`: `base \| s \| responsive`, `url`, `dark-mode` |
+| `sidebar` | `items`, `groups`, `logo`, `collapsed-logo`, `user`, `sticky`, `collapsed`, `show-collapse-button`, `footer`, `dark-mode` |
 | `hero` | `type`, `centered-content`, `platform`, `heading`, `sub-heading`, `description`, `show-heading`, `show-button`, `button-label`, `button-href`, `button-attributes`, `image`, `image-alt`, `image-orientation`, slot `image-content`, `dark-mode` |
 | `footer` | `logo`/`logo-alt` atau slot `logo-content`, `menus`, `copyright` (prop atau slot), `socials`, `fluid` |
 | `dropdown` | slot `trigger` (atribut slot menjadi props Button kit, atau `<button>` polos dengan `raw`), `items` atau `groups` (`label`, `separator`, `items`), slot isi bebas, `attached`, `content-label`, `content-class`, `panel-id`, `dark-mode`. Tiap item: `label`, `description`, `icon`, `href`, `tone`: `default \| danger`, `disabled`, `selected`, `selected-when`, `attributes` |
