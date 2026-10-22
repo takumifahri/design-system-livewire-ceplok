@@ -68,6 +68,7 @@ final class Navigation
                     ['label' => 'Avatar', 'route' => 'components.avatar', 'keywords' => 'foto profil inisial'],
                     ['label' => 'Spinner', 'route' => 'components.spinner', 'keywords' => 'memuat loading'],
                     ['label' => 'Dropdown', 'route' => 'components.dropdown', 'keywords' => 'menu'],
+                    ['label' => 'Drawer', 'route' => 'components.drawer', 'keywords' => 'panel samping laci'],
                     ['label' => 'Alert', 'route' => 'components.alert', 'keywords' => 'peringatan pesan'],
                     ['label' => 'Toast', 'route' => 'components.toast', 'keywords' => 'notifikasi'],
                     ['label' => 'Card', 'route' => 'components.card', 'keywords' => 'kartu'],
@@ -75,6 +76,7 @@ final class Navigation
                     ['label' => 'Footer', 'route' => 'components.footer', 'keywords' => 'kaki halaman'],
                     ['label' => 'Breadcrumb', 'route' => 'components.breadcrumb', 'keywords' => 'jejak remah'],
                     ['label' => 'Pagination', 'route' => 'components.pagination', 'keywords' => 'halaman paginasi'],
+                    ['label' => 'Sidebar', 'route' => 'components.sidebar', 'keywords' => 'menu samping navigasi'],
                 ],
             ],
             'form' => [

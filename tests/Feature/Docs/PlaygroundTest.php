@@ -20,7 +20,8 @@ class PlaygroundTest extends TestCase
         $names = [
             'alert', 'alert-notice', 'avatar', 'badge', 'badge-filters', 'breadcrumb', 'button', 'card', 'container',
             'footer', 'hero', 'pagination', 'pagination-list', 'spinner', 'spinner-loading', 'toast', 'toast-saved',
-            'dropdown', 'dropdown-actions', 'dropdown-sort',
+            'dropdown', 'dropdown-actions', 'dropdown-sort', 'drawer', 'drawer-livewire',
+            'sidebar', 'sidebar-livewire',
             'input-field', 'input-field-validate', 'floating-label', 'floating-label-fill', 'text-area', 'text-area-send',
             'select', 'select-region', 'search', 'search-live', 'datepicker', 'datepicker-filter', 'upload', 'upload-livewire',
             'radio', 'radio-livewire', 'toggle', 'toggle-livewire', 'checkbox', 'checkbox-livewire',
@@ -162,6 +163,19 @@ class PlaygroundTest extends TestCase
         Livewire::test('playground.container')
             ->set('width', 100)->assertSet('width', 320)
             ->set('width', 5000)->assertSet('width', 1600);
+    }
+
+    public function test_sidebar_playground_menyesuaikan_state(): void
+    {
+        $component = Livewire::test('playground.sidebar')
+            ->set('collapse', 'collapsed')
+            ->set('theme', 'dark')
+            ->set('separator', 'hide');
+
+        $dom = $this->domOf($component);
+        $this->assertStringContainsString('collapsed', $this->code($dom));
+        $this->assertStringContainsString('dark-mode', $this->code($dom));
+        $this->assertStringContainsString(':items="$items"', $this->code($dom));
     }
 
     private function domOf(Testable $component): HTMLDocument

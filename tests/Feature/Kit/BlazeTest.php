@@ -17,8 +17,8 @@ class BlazeTest extends TestCase
     public static function komponen(): array
     {
         $names = [
-            'alert', 'avatar', 'badge', 'breadcrumb', 'button', 'card', 'checkbox', 'container', 'datepicker', 'dropdown',
-            'floating-label', 'footer', 'hero', 'icon', 'input-field', 'pagination', 'radio', 'search', 'select', 'spinner',
+            'alert', 'avatar', 'badge', 'breadcrumb', 'button', 'card', 'checkbox', 'container', 'datepicker', 'drawer', 'dropdown',
+            'floating-label', 'footer', 'hero', 'icon', 'input-field', 'pagination', 'radio', 'search', 'select', 'sidebar', 'spinner',
             'text-area', 'toast', 'toggle', 'upload',
         ];
 

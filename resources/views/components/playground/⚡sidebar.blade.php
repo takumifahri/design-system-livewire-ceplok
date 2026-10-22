@@ -1,0 +1,367 @@
+<?php
+
+use Livewire\Attributes\Computed;
+use Livewire\Component;
+
+/*
+ * Playground halaman Sidebar: kontrol mengubah state konfigurasi, Livewire
+ * merender ulang preview secara interaktif, dan blok Penggunaan menyusun kode
+ * Blade yang setara dengan konfigurasi aktif.
+ */
+new class extends Component
+{
+    public string $collapse = 'expanded';
+
+    public string $theme = 'light';
+
+    public string $badge = 'show';
+
+    public string $menuIcon = 'show';
+
+    public string $userInfo = 'show';
+
+    public string $logoWeb = 'show';
+
+    public string $collapseButton = 'show';
+
+    public string $separator = 'show';
+
+    public string $activeMenu = 'Menu 1';
+
+    public function selectMenu(string $label): void
+    {
+        $this->activeMenu = $label;
+    }
+
+    public function toggleCollapse(): void
+    {
+        $this->collapse = ($this->collapse === 'expanded' ? 'collapsed' : 'expanded');
+    }
+
+    #[Computed]
+    public function usage(): string
+    {
+        $resolvedCollapse = ($this->menuIcon === 'hide' ? 'expanded' : $this->collapse);
+        $resolvedCollapseBtn = ($this->menuIcon === 'hide' ? 'hide' : $this->collapseButton);
+        $isDark = ($this->theme === 'dark');
+        $hasSep = ($this->separator === 'show');
+        $hasIcons = ($this->menuIcon === 'show');
+        $hasBadge = ($this->badge === 'show');
+        $hasUser = ($this->userInfo === 'show');
+        $hasLogo = ($this->logoWeb === 'show');
+
+        $lines = [];
+        $lines[] = '@php';
+        $lines[] = '    $items = [';
+        $lines[] = '        [\'label\' => \'Menu 1\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-chart-pie\'' : '').'],';
+        $lines[] = '        [\'label\' => \'Menu 2\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-clipboard\'' : '').'],';
+        $lines[] = '        [';
+        $lines[] = '            \'label\' => \'Menu 3\',';
+        if ($hasIcons) {
+            $lines[] = '            \'icon\' => \'ceplok-s-cart\',';
+        }
+        $lines[] = '            \'defaultOpen\' => true,';
+        $lines[] = '            \'children\' => [';
+        $lines[] = '                [\'label\' => \'Sub - Menu 1\', \'href\' => \'#\'],';
+        $lines[] = '                [\'label\' => \'Sub - Menu 2\', \'href\' => \'#\'],';
+        $lines[] = '                [\'label\' => \'Sub - Menu 3\', \'href\' => \'#\'],';
+        $lines[] = '            ],';
+        $lines[] = '        ],';
+        $lines[] = '        [\'label\' => \'Menu 4\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-inbox\'' : '').($hasBadge ? ', \'badge\' => 1' : '').'],';
+        $lines[] = '        [\'label\' => \'Menu 5\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-lock\'' : '').'],';
+        $lines[] = '        [\'label\' => \'Menu 6\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-clipboard\'' : '').'],';
+        $lines[] = '        [\'label\' => \'Menu 7\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-layers\'' : '').'],';
+        $lines[] = '        [\'label\' => \'Menu 8\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-chart-pie\'' : '').'],';
+        $lines[] = '    ];';
+
+        if ($hasSep) {
+            $lines[] = '';
+            $lines[] = '    $groups = [';
+            $lines[] = '        [\'id\' => \'main\', \'items\' => array_slice($items, 0, 5)],';
+            $lines[] = '        [\'id\' => \'secondary\', ⟦\'separator\' => true⟧, \'items\' => array_slice($items, 5)],';
+            $lines[] = '    ];';
+        }
+
+        if ($hasUser) {
+            $lines[] = '';
+            $lines[] = '    $user = [';
+            $lines[] = '        \'name\' => \'Nama User\',';
+            $lines[] = '        \'profileLabel\' => \'Lihat Profil\',';
+            $lines[] = '        \'items\' => [';
+            $lines[] = '            [\'label\' => \'Profil Saya\', \'href\' => \'#profile\'],';
+            $lines[] = '            [\'label\' => \'Pengaturan Akun\', \'href\' => \'#settings\'],';
+            $lines[] = '            [\'label\' => \'Dokumentasi\', \'href\' => \'https://example.com\', \'external\' => true],';
+            $lines[] = '            [\'label\' => \'Keluar\', \'tone\' => \'danger\'],';
+            $lines[] = '        ],';
+            $lines[] = '    ];';
+        }
+        $lines[] = '@endphp';
+        $lines[] = '';
+        $lines[] = '<x-ceplok::sidebar';
+        if ($isDark) {
+            $lines[] = '    ⟦dark-mode⟧';
+        }
+        if ($hasSep) {
+            $lines[] = '    :⟦groups⟧="$groups"';
+        } else {
+            $lines[] = '    :⟦items⟧="$items"';
+        }
+        if ($hasUser) {
+            $lines[] = '    :⟦user⟧="$user"';
+        }
+        $lines[] = '    ⟦sticky⟧';
+        if ($resolvedCollapse === 'collapsed') {
+            $lines[] = '    ⟦collapsed⟧';
+        }
+        if ($resolvedCollapseBtn === 'show') {
+            $lines[] = '    ⟦show-collapse-button⟧';
+        }
+        $lines[] = '>';
+        if ($hasLogo) {
+            $lines[] = '    <x-slot:⟦logo⟧>';
+            $lines[] = '        <span class="flex items-center gap-2 font-bold text-sm">CEPLOK</span>';
+            $lines[] = '    </x-slot:logo>';
+            $lines[] = '    <x-slot:⟦collapsed-logo⟧>';
+            $lines[] = '        <span class="font-bold text-sm">C</span>';
+            $lines[] = '    </x-slot:collapsed-logo>';
+        }
+        $lines[] = '</x-ceplok::sidebar>';
+
+        return implode("\n", $lines);
+    }
+};
+?>
+
+@php
+    $resolvedCollapse = ($menuIcon === 'hide' ? 'expanded' : $collapse);
+    $resolvedCollapseBtn = ($menuIcon === 'hide' ? 'hide' : $collapseButton);
+    $isCollapsed = ($resolvedCollapse === 'collapsed');
+    $isDark = ($theme === 'dark');
+
+    $rawItems = [
+        ['label' => 'Menu 1', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-chart-pie' : null)],
+        ['label' => 'Menu 2', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-clipboard' : null)],
+        [
+            'label' => 'Menu 3',
+            'icon' => ($menuIcon === 'show' ? 'ceplok-s-cart' : null),
+            'defaultOpen' => true,
+            'children' => [
+                ['label' => 'Sub - Menu 1', 'href' => '#'],
+                ['label' => 'Sub - Menu 2', 'href' => '#'],
+                ['label' => 'Sub - Menu 3', 'href' => '#'],
+            ],
+        ],
+        ['label' => 'Menu 4', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-inbox' : null), 'badge' => ($badge === 'show' ? 1 : null)],
+        ['label' => 'Menu 5', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-lock' : null)],
+        ['label' => 'Menu 6', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-clipboard' : null)],
+        ['label' => 'Menu 7', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-layers' : null)],
+        ['label' => 'Menu 8', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-chart-pie' : null)],
+    ];
+
+    $items = array_map(function ($item) use ($activeMenu) {
+        $item['active'] = ($activeMenu === $item['label']);
+        if (!empty($item['children'])) {
+            $item['children'] = array_map(function ($sub) use ($activeMenu) {
+                $sub['active'] = ($activeMenu === $sub['label']);
+                return $sub;
+            }, $item['children']);
+        }
+        return $item;
+    }, $rawItems);
+
+    $groups = ($separator === 'show') ? [
+        ['id' => 'main', 'items' => array_slice($items, 0, 5)],
+        ['id' => 'secondary', 'separator' => true, 'items' => array_slice($items, 5)],
+    ] : null;
+
+    $userData = ($userInfo === 'show') ? [
+        'name' => 'Nama User',
+        'profileLabel' => 'Lihat Profil',
+        'items' => [
+            ['label' => 'Profil Saya', 'href' => '#profile'],
+            ['label' => 'Pengaturan Akun', 'href' => '#settings'],
+            ['label' => 'Dokumentasi', 'href' => 'https://example.com', 'external' => true],
+            ['label' => 'Keluar', 'tone' => 'danger'],
+        ],
+    ] : null;
+@endphp
+
+<div class="space-y-16">
+    <x-docs.section id="playground" title="Playground">
+        <x-docs.lead>
+            Coba konfigurasi Sidebar melalui kontrol di bawah ini untuk melihat perubahan mode
+            collapse, badge, separator, logo, user info, dan tombol collapse.
+        </x-docs.lead>
+
+        <x-docs.stage max-width="max-w-[768px]" :dark="$isDark">
+            <div
+                wire:key="sidebar-stage-{{ $separator }}-{{ $resolvedCollapse }}-{{ $theme }}"
+                @class([
+                    'flex min-h-[760px] w-full items-stretch overflow-hidden border rounded-xl',
+                    $isDark ? 'border-gray-700 bg-gray-900 text-white' : 'border-gray-200 bg-white text-gray-900',
+                ])
+            >
+                <x-ceplok::sidebar
+                    class="!min-h-0 h-full shrink-0"
+                    :collapsed="$isCollapsed"
+                    :dark-mode="$isDark"
+                    :show-collapse-button="$resolvedCollapseBtn === 'show'"
+                    :groups="$groups"
+                    :items="$groups ? [] : $items"
+                    :user="$userData"
+                    wire:collapse="toggleCollapse"
+                >
+                    @if ($logoWeb === 'show')
+                        <x-slot:logo>
+                            <span class="flex items-center gap-2">
+                                <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
+                                    <span class="rounded-sm bg-white"></span>
+                                    <span class="rounded-sm bg-primary-300"></span>
+                                    <span class="rounded-sm bg-primary-300"></span>
+                                    <span class="rounded-sm bg-white"></span>
+                                </span>
+                                <span class="text-sm font-black tracking-tight">CEPLOK</span>
+                            </span>
+                        </x-slot:logo>
+                        <x-slot:collapsed-logo>
+                            <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
+                                <span class="rounded-sm bg-white"></span>
+                                <span class="rounded-sm bg-primary-300"></span>
+                                <span class="rounded-sm bg-primary-300"></span>
+                                <span class="rounded-sm bg-white"></span>
+                            </span>
+                        </x-slot:collapsed-logo>
+                    @endif
+                </x-ceplok::sidebar>
+
+                <div class="flex w-full flex-col gap-6 p-6 min-w-0">
+                    <div class="flex flex-col gap-2">
+                        <h2 @class(['text-xl font-bold', $isDark ? 'text-white' : 'text-gray-900'])>
+                            {{ $activeMenu }}
+                        </h2>
+                        <p @class(['text-sm', $isDark ? 'text-gray-400' : 'text-gray-500'])>
+                            Ini adalah simulasi konten untuk halaman {{ $activeMenu }}. Anda bisa menaruh konten aplikasi yang sebenarnya di sini.
+                        </p>
+                    </div>
+
+                    {{-- Tombol simulasi ganti halaman aktif --}}
+                    <div class="mt-4 flex flex-wrap gap-2 pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 self-center mr-2">Simulasi Klik:</span>
+                        <button type="button" wire:click="selectMenu('Menu 1')" class="rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Menu 1</button>
+                        <button type="button" wire:click="selectMenu('Menu 2')" class="rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Menu 2</button>
+                        <button type="button" wire:click="selectMenu('Sub - Menu 1')" class="rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Sub - Menu 1</button>
+                        <button type="button" wire:click="selectMenu('Menu 4')" class="rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Menu 4</button>
+                    </div>
+                </div>
+            </div>
+        </x-docs.stage>
+
+        <x-docs.controls>
+            <x-docs.control label="Sidebar">
+                <x-docs.segmented
+                    label="Pilih kondisi Sidebar"
+                    model="collapse"
+                    :value="$resolvedCollapse"
+                    :disabled="$menuIcon === 'hide'"
+                    :options="[
+                        ['value' => 'expanded', 'label' => 'Expanded'],
+                        ['value' => 'collapsed', 'label' => 'Collapsed'],
+                    ]"
+                />
+            </x-docs.control>
+
+            <x-docs.control label="Mode">
+                <x-docs.segmented
+                    label="Pilih mode"
+                    model="theme"
+                    :value="$theme"
+                    :options="[
+                        ['value' => 'light', 'label' => 'Light'],
+                        ['value' => 'dark', 'label' => 'Dark'],
+                    ]"
+                />
+            </x-docs.control>
+
+            <x-docs.control label="Badge">
+                <x-docs.segmented
+                    label="Tampilkan badge"
+                    model="badge"
+                    :value="$badge"
+                    :options="[
+                        ['value' => 'show', 'label' => 'Ada'],
+                        ['value' => 'hide', 'label' => 'Tidak Ada'],
+                    ]"
+                />
+            </x-docs.control>
+
+            <x-docs.control label="Icon menu">
+                <x-docs.segmented
+                    label="Tampilkan icon menu"
+                    model="menuIcon"
+                    :value="$menuIcon"
+                    :options="[
+                        ['value' => 'show', 'label' => 'Ada'],
+                        ['value' => 'hide', 'label' => 'Tidak Ada'],
+                    ]"
+                />
+            </x-docs.control>
+
+            <x-docs.control label="User info">
+                <x-docs.segmented
+                    label="Tampilkan informasi user"
+                    model="userInfo"
+                    :value="$userInfo"
+                    :options="[
+                        ['value' => 'show', 'label' => 'Ada'],
+                        ['value' => 'hide', 'label' => 'Tidak Ada'],
+                    ]"
+                />
+            </x-docs.control>
+
+            <x-docs.control label="Logo web">
+                <x-docs.segmented
+                    label="Tampilkan logo web"
+                    model="logoWeb"
+                    :value="$logoWeb"
+                    :options="[
+                        ['value' => 'show', 'label' => 'Ada'],
+                        ['value' => 'hide', 'label' => 'Tidak Ada'],
+                    ]"
+                />
+            </x-docs.control>
+
+            <x-docs.control label="Button collapse">
+                <x-docs.segmented
+                    label="Tampilkan tombol collapse"
+                    model="collapseButton"
+                    :value="$resolvedCollapseBtn"
+                    :disabled="$menuIcon === 'hide'"
+                    :options="[
+                        ['value' => 'show', 'label' => 'Ada'],
+                        ['value' => 'hide', 'label' => 'Tidak Ada'],
+                    ]"
+                />
+            </x-docs.control>
+
+            <x-docs.control label="Content separator">
+                <x-docs.segmented
+                    label="Tampilkan content separator"
+                    model="separator"
+                    :value="$separator"
+                    :options="[
+                        ['value' => 'show', 'label' => 'Ada'],
+                        ['value' => 'hide', 'label' => 'Tidak Ada'],
+                    ]"
+                />
+            </x-docs.control>
+        </x-docs.controls>
+    </x-docs.section>
+
+    <x-docs.section id="penggunaan" title="Penggunaan">
+        <x-docs.lead>
+            Bagian ini menampilkan contoh penggunaan Sidebar berdasarkan konfigurasi yang dipilih pada
+            Playground.
+        </x-docs.lead>
+        <x-docs.code :code="$this->usage" flush />
+    </x-docs.section>
+</div>

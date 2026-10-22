@@ -11,7 +11,7 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
 ### Ditambahkan
 
 - Komponen Blade setara kit React: `alert`, `avatar`, `badge`, `breadcrumb`,
-  `button`, `card`, `container`, `dropdown`, `footer`, `hero`, `icon`,
+  `button`, `card`, `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`,
   `pagination`, `spinner`, dan `toast`. Markup, class, dan atribut ARIA-nya
   diuji sama dengan `@ceplok-ui/design-kit-react` di browser.
 - Elemen form setara kit React: `checkbox`, `datepicker`, `floating-label`,
@@ -28,7 +28,7 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
 - 411 ikon outline dan 340 ikon solid Flowbite (`ceplok-o-*`, `ceplok-s-*`)
   dari `flowbite-react-icons` 1.3.1, plus 30 logo brand (`brand-*`) yang
   bawaannya `aria-hidden="true"`.
-- Plugin Alpine (`resources/js/index.js`): `ceplokDismissible`,
+- Plugin Alpine (`resources/js/index.js`): `ceplokDismissible`, `ceplokDrawer`,
   `ceplokAvatar`, `ceplokPagination`, `ceplokDropdown`, `ceplokSelect`,
   `ceplokSearch`, `ceplokDatepicker`, `ceplokUpload`, `ceplokFloatingLabel`,
   `ceplokInputField`, dan `ceplokTextArea`.

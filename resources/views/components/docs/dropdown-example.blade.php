@@ -11,9 +11,6 @@
     isinya kontrol form, bukan daftar aksi. `selection` adalah daftar pilihan
     urutan; pilihannya dipegang Alpine (`urut`), kecuali `model` diisi nama
     properti Livewire — barisnya lalu memanggil $set.
-
-    Kelas scrollbar gelap ditulis utuh di sini supaya ikut dipindai Tailwind:
-    [@supports_not_selector(::-webkit-scrollbar)]:[scrollbar-color:var(--color-gray-600)_var(--color-gray-800)]
 --}}
 @props([
     'example' => 'actions',
@@ -40,9 +37,7 @@
     $disabledRow = 'w-full rounded-md px-2';
     $hr = $dark ? 'my-1 border-0 border-t border-gray-700' : 'my-1 border-0 border-t border-border';
     $scroll = $dark
-        ? 'ds-scroll-y [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb:hover]:bg-gray-500 [&::-webkit-scrollbar-button]:hidden '
-          // Dipecah supaya editor tidak membacanya sebagai direktif Blade.
-          .'[@'.'supports_not_selector(::-webkit-scrollbar)]:[scrollbar-color:var(--color-gray-600)_var(--color-gray-800)]'
+        ? 'ds-scroll-y [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb:hover]:bg-gray-500 [&::-webkit-scrollbar-button]:hidden ds-scrollbar-dark'
         : '';
     $chevron = svg('ceplok-o-chevron-down', 'size-3.5 shrink-0', ['aria-hidden' => 'true']);
 
