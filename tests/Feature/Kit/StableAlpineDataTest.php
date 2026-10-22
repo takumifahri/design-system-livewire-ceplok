@@ -37,6 +37,10 @@ class StableAlpineDataTest extends TestCase
             /** @var list<int> */
             public array $terpilih = [];
 
+            public bool $dialog = false;
+
+            public bool $info = false;
+
             public function render(): string
             {
                 return <<<'BLADE'
@@ -57,6 +61,8 @@ class StableAlpineDataTest extends TestCase
                             :pagination="['page' => $halaman, 'page-size' => 1]"
                             wire:model.live="terpilih"
                         />
+                        <x-ceplok::modal wire:model="dialog" title="Edit">Isi</x-ceplok::modal>
+                        <x-ceplok::popover wire:model="info" title="Info"><x-slot:trigger>Buka</x-slot:trigger>Isi</x-ceplok::popover>
                     </div>
                     BLADE;
             }
@@ -76,7 +82,9 @@ class StableAlpineDataTest extends TestCase
             ->set('tampil', false)
             ->set('halaman', 3)
             ->set('urutan', ['key' => 'nama', 'direction' => 'desc'])
-            ->set('terpilih', [2]);
+            ->set('terpilih', [2])
+            ->set('dialog', true)
+            ->set('info', true);
 
         $this->assertSame($before, $xData());
     }

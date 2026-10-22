@@ -68,6 +68,31 @@
                 </div>
             </x-docs.overview-card>
 
+            {{-- Skeleton seperti di docs React: Popover asli merender <button>, sedangkan kartu ini sudah berupa <a>. --}}
+            <x-docs.overview-card route="components.popover" name="Popover" desc="Menampilkan informasi kontekstual secara ringkas di dekat elemen yang memicunya.">
+                <div class="flex items-center justify-center rounded-xl bg-surface-subtle p-5" aria-hidden="true">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex size-8 shrink-0 items-center justify-center text-gray-500">
+                            <x-ceplok::icon class="size-5">{{ svg('ceplok-o-info-circle') }}</x-ceplok::icon>
+                        </span>
+                        <div class="relative w-56 shrink-0 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.08))]">
+                            <span class="pointer-events-none absolute top-1/2 left-[-8px] z-30 size-4 -translate-y-1/2 -rotate-90">
+                                <span class="absolute top-[3.25px] left-[3px] size-2.5 rotate-45 border-t border-l border-border bg-surface"></span>
+                            </span>
+                            <div class="relative z-10 overflow-hidden rounded-md bg-surface">
+                                <div class="border-b border-border bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-900">Informasi</div>
+                                <div class="bg-surface px-3 py-2 text-xs font-medium text-gray-500">
+                                    <span class="whitespace-nowrap">Informasi tambahan yang relevan</span>
+                                    <br>
+                                    <span class="whitespace-nowrap">untuk membantu memahami konteks.</span>
+                                </div>
+                                <span aria-hidden="true" class="pointer-events-none absolute inset-0 z-20 rounded-md border border-border"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </x-docs.overview-card>
+
             <x-docs.overview-card route="components.dropdown" name="Dropdown" desc="Kumpulan aksi atau pilihan tambahan yang dibuka dari sebuah trigger.">
                 {{-- Gambaran statis: panel yang terbuka diperlihatkan langsung di bawah pemicunya. --}}
                 <div class="rounded-xl bg-surface-subtle p-5">
@@ -83,6 +108,24 @@
                             <div class="px-4 py-2 text-sm font-medium text-gray-700">Pengaturan</div>
                             <div class="my-1 border-t border-border"></div>
                             <div class="px-4 py-2 text-sm font-medium text-red-600">Keluar</div>
+                        </div>
+                    </div>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.modal" name="Modal" desc="Dialog terkontrol untuk informasi atau tindakan yang harus diselesaikan sebelum kembali ke halaman utama.">
+                <div class="rounded-xl bg-gray-900/40 p-5">
+                    <div class="mx-auto max-w-[240px] overflow-hidden rounded-lg border border-border bg-white shadow-xl">
+                        <div class="flex items-center justify-between border-b border-border px-4 py-3">
+                            <div class="h-2.5 w-24 rounded bg-gray-300"></div>
+                            <div class="size-3 rounded bg-gray-200"></div>
+                        </div>
+                        <div class="space-y-2 px-4 py-5">
+                            <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                            <div class="h-1.5 w-2/3 rounded bg-gray-200"></div>
+                        </div>
+                        <div class="border-t border-border px-4 py-3">
+                            <div class="h-6 w-20 rounded-lg bg-primary-700"></div>
                         </div>
                     </div>
                 </div>
