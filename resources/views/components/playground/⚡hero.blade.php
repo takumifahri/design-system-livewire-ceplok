@@ -105,6 +105,12 @@ new class extends Component
         </x-docs.stage>
 
         <x-docs.controls>
+            <x-docs.control label="Mode">
+                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Terang'],
+                    ['value' => true, 'label' => 'Gelap'],
+                ]" />
+            </x-docs.control>
             <x-docs.control label="Tipe">
                 <x-docs.segmented label="Pilih tipe hero" model="type" :value="$type" wrap :options="[
                     ['value' => 'horizontal-image-left', 'label' => 'Image Left'],
@@ -141,12 +147,6 @@ new class extends Component
                 ]" />
             </x-docs.control>
 
-            <x-docs.control label="Mode">
-                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Terang'],
-                    ['value' => true, 'label' => 'Gelap'],
-                ]" />
-            </x-docs.control>
         </x-docs.controls>
     </x-docs.section>
 

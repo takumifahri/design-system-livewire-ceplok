@@ -67,7 +67,9 @@ final class Navigation
                     ['label' => 'Badge', 'route' => 'components.badge', 'keywords' => 'lencana label'],
                     ['label' => 'Avatar', 'route' => 'components.avatar', 'keywords' => 'foto profil inisial'],
                     ['label' => 'Spinner', 'route' => 'components.spinner', 'keywords' => 'memuat loading'],
+                    ['label' => 'Popover', 'route' => 'components.popover', 'keywords' => 'tooltip informasi keterangan'],
                     ['label' => 'Dropdown', 'route' => 'components.dropdown', 'keywords' => 'menu'],
+                    ['label' => 'Modal', 'route' => 'components.modal', 'keywords' => 'dialog jendela konfirmasi'],
                     ['label' => 'Alert', 'route' => 'components.alert', 'keywords' => 'peringatan pesan'],
                     ['label' => 'Toast', 'route' => 'components.toast', 'keywords' => 'notifikasi'],
                     ['label' => 'Card', 'route' => 'components.card', 'keywords' => 'kartu'],
@@ -75,6 +77,7 @@ final class Navigation
                     ['label' => 'Footer', 'route' => 'components.footer', 'keywords' => 'kaki halaman'],
                     ['label' => 'Breadcrumb', 'route' => 'components.breadcrumb', 'keywords' => 'jejak remah'],
                     ['label' => 'Pagination', 'route' => 'components.pagination', 'keywords' => 'halaman paginasi'],
+                    ['label' => 'Table', 'route' => 'components.table', 'keywords' => 'tabel data baris kolom urutkan'],
                 ],
             ],
             'form' => [
