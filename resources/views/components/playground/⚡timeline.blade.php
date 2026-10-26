@@ -145,6 +145,13 @@ new class extends Component
         </x-docs.stage>
 
         <x-docs.controls>
+            <x-docs.control label="Mode">
+                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Light'],
+                    ['value' => true, 'label' => 'Dark'],
+                ]" />
+            </x-docs.control>
+
             <x-docs.control label="Platform">
                 <x-docs.segmented label="Pilih platform" model="platform" :value="$platform" :options="[
                     ['value' => 'desktop', 'label' => 'Desktop'],
@@ -156,13 +163,6 @@ new class extends Component
                 <x-docs.segmented label="Pilih ukuran" model="size" :value="$size" :options="[
                     ['value' => 'large', 'label' => 'Large'],
                     ['value' => 'small', 'label' => 'Small'],
-                ]" />
-            </x-docs.control>
-
-            <x-docs.control label="Mode">
-                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Light'],
-                    ['value' => true, 'label' => 'Dark'],
                 ]" />
             </x-docs.control>
 
