@@ -24,6 +24,7 @@ class PlaygroundTest extends TestCase
             'input-field', 'input-field-validate', 'floating-label', 'floating-label-fill', 'text-area', 'text-area-send',
             'select', 'select-region', 'search', 'search-live', 'datepicker', 'datepicker-filter', 'upload', 'upload-livewire',
             'radio', 'radio-livewire', 'toggle', 'toggle-livewire', 'checkbox', 'checkbox-livewire',
+            'timeline', 'timeline-livewire',
         ];
 
         return array_combine($names, array_map(fn (string $name) => ["playground.{$name}"], $names));
@@ -84,6 +85,53 @@ class PlaygroundTest extends TestCase
         $dom = $this->domOf(Livewire::test('playground.button')->set('as', 'anchor'));
 
         $this->assertSame(route('foundations.colors'), $this->find($dom, 'div.min-h-45 > a')->getAttribute('href'));
+    }
+
+    public function test_timeline_menulis_isi_lengkap_item_dan_mengikuti_kontrol(): void
+    {
+        $component = Livewire::test('playground.timeline')
+            ->set('count', 2)
+            ->set('lampiran', 'unduh')
+            ->set('platform', 'mobile');
+
+        $code = $component->get('usage');
+
+        $this->assertStringContainsString("'role' => 'Role / Department',", $code);
+        $this->assertStringContainsString("'time' => '2026-01-01 09:05',", $code);
+        $this->assertStringContainsString("'elapsed' => '5 minutes',", $code);
+        $this->assertStringContainsString("'details' => 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',", $code);
+        $this->assertStringContainsString("['name' => 'sample-document-02.pdf', 'href' => asset('files/sample-document.pdf'), ⟦'download'⟧ => 'sample-document-02.pdf'],", $code);
+        $this->assertStringContainsString("'status' => ['label' => 'Badge', 'icon' => 'ceplok-s-clock', 'dismissible' => true],", $code);
+        $this->assertStringContainsString('⟦platform⟧="mobile"', $code);
+        $this->assertSame(2, substr_count($code, "'name' => 'User 0"));
+        $this->assertStringNotContainsString('⟦size⟧', $code);
+
+        $dom = $this->domOf($component);
+        $links = $dom->querySelectorAll('ol a');
+
+        $this->assertSame('01 Jan 2026 · 09:05', $dom->querySelectorAll('ol time')->item(1)->textContent);
+        $this->assertCount(2, $links);
+        $this->assertSame('sample-document-02.pdf', $links->item(0)->getAttribute('download'));
+        $this->assertSame(asset('files/sample-document.pdf'), $links->item(0)->getAttribute('href'));
+    }
+
+    public function test_timeline_menutup_status_lewat_wire_dismiss(): void
+    {
+        $component = Livewire::test('playground.timeline-livewire');
+        $badges = fn () => $this->domOf($component)->querySelectorAll('ol [wire\:dismiss]');
+
+        $this->assertCount(3, $badges());
+        $this->assertSame('tutupStatus(1)', $badges()->item(1)->getAttribute('wire:dismiss'));
+
+        $component->call('tutupStatus', 1);
+
+        $this->assertCount(2, $badges());
+        $this->assertStringNotContainsString('Terverifikasi', $component->html());
+        $this->assertStringContainsString('1 dari 3 status ditutup.', $component->html());
+
+        $component->call('pulihkan');
+
+        $this->assertCount(3, $badges());
     }
 
     public function test_filter_badge_terikat_wire_model_dan_wire_dismiss(): void

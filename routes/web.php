@@ -21,6 +21,7 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/footer', 'pages.components.footer')->name('footer');
     Route::view('/breadcrumb', 'pages.components.breadcrumb')->name('breadcrumb');
     Route::view('/pagination', 'pages.components.pagination')->name('pagination');
+    Route::view('/timeline', 'pages.components.timeline')->name('timeline');
 });
 
 Route::prefix('form')->name('form.')->group(function () {

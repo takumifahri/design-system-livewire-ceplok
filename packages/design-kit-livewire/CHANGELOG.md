@@ -14,6 +14,18 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
   `button`, `card`, `container`, `dropdown`, `footer`, `hero`, `icon`,
   `pagination`, `spinner`, dan `toast`. Markup, class, dan atribut ARIA-nya
   diuji sama dengan `@ceplok-ui/design-kit-react` di browser.
+- `timeline` (eksperimental, desainnya belum final): riwayat kejadian
+  berurutan dengan avatar di sepanjang satu garis, setara `Timeline` di kit
+  React. `platform` `desktop` atau `mobile`, `size` `large` atau `small`,
+  `labels`, dan `dark-mode`. Tiap item memuat `name`, `role`, `time`,
+  `elapsed`, `description`, `details`, `attachments` (dengan `href`,
+  `target`, dan `download`), `status`, `avatar`, dan `initials`. `time`
+  menerima string waktu ISO 8601 dengan jam atau `DateTimeInterface`, dan
+  selalu ditulis dengan format desain, mis. `01 Jan 2026 · 09:05`, di zona
+  waktu nilainya; singkatan bulannya diganti lewat `labels['months']`. Avatar dan
+  status memakai `<x-ceplok::avatar>` dan `<x-ceplok::badge>`; kunci
+  `attributes` pada status diteruskan ke Badge, mis.
+  `['wire:dismiss' => 'tutupStatus(2)']`.
 - Elemen form setara kit React: `checkbox`, `datepicker`, `floating-label`,
   `input-field`, `radio`, `search`, `select`, `text-area`, `toggle`, dan
   `upload`. Kontrol aslinya (`<input>`, `<textarea>`, `<select>`) tetap ada,
