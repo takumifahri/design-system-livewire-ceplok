@@ -78,6 +78,7 @@ final class Navigation
                     ['label' => 'Breadcrumb', 'route' => 'components.breadcrumb', 'keywords' => 'jejak remah'],
                     ['label' => 'Pagination', 'route' => 'components.pagination', 'keywords' => 'halaman paginasi'],
                     ['label' => 'Table', 'route' => 'components.table', 'keywords' => 'tabel data baris kolom urutkan'],
+                    ['label' => 'Timeline View', 'route' => 'components.timeline', 'keywords' => 'linimasa riwayat aktivitas jejak proses persetujuan'],
                 ],
             ],
             'form' => [
