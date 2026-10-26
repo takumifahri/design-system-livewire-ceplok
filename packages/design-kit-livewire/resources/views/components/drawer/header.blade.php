@@ -6,13 +6,21 @@
 @props([
     'eyebrow' => null,
     'closeLabel' => 'Tutup drawer',
-    'showCloseButton' => true,
     'closeButton' => null,
     'darkMode' => false,
 ])
 
 @php
-    $showCloseButton = Prop::bool($showCloseButton, true, 'drawer.header', 'show-close-button');
+    // Blaze mengekstrak named slot ke scope yang sama dengan prop. Saat
+    // Livewire merender ulang, nilai prop ini bisa tertimpa slot. Baca
+    // atributnya langsung dengan nama internal yang tidak berbenturan.
+    $shouldShowCloseButton = Prop::bool(
+        $attributes->get('show-close-button', $attributes->get('showCloseButton', true)),
+        true,
+        'drawer.header',
+        'show-close-button',
+    );
+    $attributes = $attributes->except(['show-close-button', 'showCloseButton']);
     $darkMode = Prop::bool($darkMode, false, 'drawer.header', 'dark-mode');
 @endphp
 
@@ -34,7 +42,7 @@
 
     @if (Content::filled($closeButton))
         {{ $closeButton }}
-    @elseif ($showCloseButton)
+    @elseif ($shouldShowCloseButton)
         <button
             type="button"
             x-on:click="typeof close === 'function' ? close() : $dispatch('close')"

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Docs;
 
+use CeplokUi\DesignKit\Enums\DrawerNavItemTheme;
 use Dom\HTMLDocument;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -176,6 +177,47 @@ class PlaygroundTest extends TestCase
         $this->assertStringContainsString('collapsed', $this->code($dom));
         $this->assertStringContainsString('dark-mode', $this->code($dom));
         $this->assertStringContainsString(':items="$items"', $this->code($dom));
+    }
+
+    public function test_drawer_playground_merender_ulang_kontrol_dan_bisa_ditutup(): void
+    {
+        $component = Livewire::test('playground.drawer');
+
+        $component->assertSet('open', false)
+            ->call('toggle')
+            ->set('theme', 'purple')
+            ->set('icons', false)
+            ->set('dark', true)
+            ->call('toggle');
+
+        $component->assertSet('theme', DrawerNavItemTheme::Purple)
+            ->assertSet('icons', false)
+            ->assertSet('dark', true)
+            ->assertSet('open', false);
+
+        $dom = $this->domOf($component);
+
+        $this->assertSame('Dark', trim($this->find($dom, '[aria-label="Pilih mode"] [aria-pressed="true"]')->textContent));
+        $this->assertSame('Tidak Ada', trim($this->find($dom, '[aria-label="Pilih ikon"] [aria-pressed="true"]')->textContent));
+        $this->assertNotNull($this->find($dom, '[data-initial-open="false"]'));
+        $this->assertNotNull($this->find($dom, '[x-on\\:close="closeDrawer()"]'));
+        $this->assertStringContainsString('theme="purple"', $this->code($dom));
+        $this->assertStringContainsString('dark-mode', $this->code($dom));
+    }
+
+    public function test_canvas_livewire_drawer_membuka_panel_dan_memilih_menu(): void
+    {
+        $component = Livewire::test('playground.drawer-livewire');
+
+        $component->assertSet('buka', false)
+            ->set('buka', true)
+            ->assertSeeText('Beranda')
+            ->assertSeeText('Pesan Masuk')
+            ->call('pilihMenu', 'Laporan')
+            ->assertSet('buka', false)
+            ->assertSet('menuTerpilih', 'Laporan')
+            ->assertSeeText('Menu terpilih:')
+            ->assertDontSee('<dialog', false);
     }
 
     private function domOf(Testable $component): HTMLDocument

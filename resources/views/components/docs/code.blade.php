@@ -27,6 +27,7 @@
     'title' => null,
     'description' => null,
     'flush' => false,
+    'wrap' => false,
     'mark' => [],
 ])
 
@@ -70,6 +71,10 @@
                 <span x-text="copied === @js($id) ? 'Tersalin!' : 'Salin'">Salin</span>
             </button>
         </div>
-        <pre class="ds-scroll-x overflow-x-auto bg-gray-900 p-5 text-xs leading-6 text-gray-300"><code>{{ Code::highlight($source) }}</code></pre>
+        <pre @class([
+            'bg-gray-900 p-5 text-xs leading-6 text-gray-300',
+            'ds-scroll-x overflow-x-auto' => ! $wrap,
+            'whitespace-pre-wrap break-words' => $wrap,
+        ])><code>{{ Code::highlight($source) }}</code></pre>
     </article>
 </div>

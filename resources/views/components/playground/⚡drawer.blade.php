@@ -7,11 +7,12 @@ use Livewire\Component;
 /*
  * Playground halaman Drawer: setiap kontrol mengubah satu properti, Livewire
  * merender ulang tampilannya di server, dan blok Penggunaan menyusun kode
- * yang sama persis dengan yang sedang aktif.
+ * yang sama persis dengan yang sedang aktif. Buka/tutup canvas ditangani
+ * Alpine terlebih dahulu agar responsif, lalu diantrikan ke Livewire.
  */
 new class extends Component
 {
-    public bool $open = true;
+    public bool $open = false;
 
     public DrawerNavItemTheme $theme = DrawerNavItemTheme::Primary;
 
@@ -116,7 +117,24 @@ new class extends Component
         </x-docs.lead>
 
         <x-docs.stage max-width="max-w-[700px]" :dark="$dark">
-            <div class="flex h-[520px] w-full items-center justify-center py-4">
+            <div
+                x-data="{
+                    open: true,
+                    init() {
+                        this.open = this.$el.dataset.initialOpen === 'true'
+                    },
+                    showDrawer() {
+                        this.open = true
+                        $wire.set('open', true, false)
+                    },
+                    closeDrawer() {
+                        this.open = false
+                        $wire.set('open', false, false)
+                    },
+                }"
+                data-initial-open="{{ $open ? 'true' : 'false' }}"
+                class="flex h-[520px] w-full items-center justify-center py-4"
+            >
                 {{-- Mockup layar mobile --}}
                 <div @class([
                     'relative flex h-full w-[380px] max-w-full flex-col overflow-hidden rounded-xl border shadow-md',
@@ -133,7 +151,7 @@ new class extends Component
                             </div>
                             <span @class(['text-base font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>CEPLOK</span>
                         </div>
-                        <x-ceplok::drawer.trigger :dark-mode="$dark" wire:click="toggle" />
+                        <x-ceplok::drawer.trigger :dark-mode="$dark" x-on:click="showDrawer()" />
                     </div>
 
                     {{-- Konten halaman mobile dummy --}}
@@ -147,16 +165,21 @@ new class extends Component
                     </div>
 
                     {{-- Overlay dan Panel Drawer Mobile --}}
-                    @if ($open)
-                        <div
-                            class="absolute inset-0 z-10 bg-gray-900/40 transition-opacity"
-                            wire:click="toggle"
-                        ></div>
-                        <div @class([
+                    <div
+                        x-cloak
+                        x-show="open"
+                        x-on:click="closeDrawer()"
+                        class="absolute inset-0 z-10 bg-gray-900/40 transition-opacity"
+                    ></div>
+                    <div
+                        x-cloak
+                        x-show="open"
+                        @class([
                             'absolute right-0 top-0 bottom-0 z-20 flex h-full w-[260px] flex-col border-l shadow-2xl rounded-none',
                             $dark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200',
-                        ])>
-                            <x-ceplok::drawer.header eyebrow="MENU" :dark-mode="$dark" wire:close="toggle" />
+                        ])
+                    >
+                            <x-ceplok::drawer.header eyebrow="MENU" :dark-mode="$dark" x-on:close="closeDrawer()" />
 
                             <x-ceplok::drawer.body class="p-3 space-y-1" :dark-mode="$dark">
                                 <x-ceplok::drawer.nav-item
@@ -257,8 +280,7 @@ new class extends Component
                                     />
                                 </x-ceplok::drawer.nav-item>
                             </x-ceplok::drawer.body>
-                        </div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </x-docs.stage>

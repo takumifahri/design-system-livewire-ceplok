@@ -225,10 +225,16 @@
                         <x-ceplok::drawer.nav-item icon="ceplok-s-inbox" label="Menu 3" />
                     </div>
 
-                    <x-docs.code>
+                    <x-docs.code wrap>
                         @verbatim
-                        <x-ceplok::drawer.nav-item icon="ceplok-s-chart-pie" label="Menu 1" />
-                        <x-ceplok::drawer.nav-item icon="ceplok-s-file-lines" label="Menu 2" />
+                        <x-ceplok::drawer.nav-item
+                            icon="ceplok-s-chart-pie"
+                            label="Menu 1"
+                        />
+                        <x-ceplok::drawer.nav-item
+                            icon="ceplok-s-file-lines"
+                            label="Menu 2"
+                        />
                         @endverbatim
                     </x-docs.code>
                 </div>
@@ -242,9 +248,13 @@
                         </x-ceplok::drawer.nav-item>
                     </div>
 
-                    <x-docs.code>
+                    <x-docs.code wrap>
                         @verbatim
-                        <x-ceplok::drawer.nav-item icon="ceplok-s-cart" label="Menu 3" :expanded="true">
+                        <x-ceplok::drawer.nav-item
+                            icon="ceplok-s-cart"
+                            label="Menu 3"
+                            :expanded="true"
+                        >
                             <x-ceplok::drawer.sub-item label="sub menu 1" />
                             <x-ceplok::drawer.sub-item label="sub menu 2" />
                         </x-ceplok::drawer.nav-item>
@@ -260,12 +270,10 @@
         {{-- SECTION 5: LIVEWIRE --}}
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Kendalikan buka/tutup Drawer dari state komponen Livewire dengan <span class="text-primary-500">wire:model</span> (atau <span class="text-primary-500">wire:model.live</span>).
-                Event penutupan (<span class="text-primary-500">close</span>) saat tombol ×, backdrop, atau tombol Esc ditekan dapat ditangkap dengan <span class="text-primary-500">wire:close</span>.
+                Gunakan <span class="text-primary-500">wire:model</span> untuk state buka/tutup dan <span class="text-primary-500">wire:close</span> untuk menangkap event penutupan.
             </x-docs.lead>
-            <x-docs.demo>
-                <livewire:playground.drawer-livewire />
-            </x-docs.demo>
+            <livewire:playground.drawer-livewire />
+            {{--
             <x-docs.code>
                 @verbatim
                 <x-ceplok::button wire:click="$set('buka', true)">
@@ -286,6 +294,7 @@
                 />
                 @endverbatim
             </x-docs.code>
+            --}}
         </x-docs.section>
 
         {{-- SECTION 6: PROPERTIES --}}
