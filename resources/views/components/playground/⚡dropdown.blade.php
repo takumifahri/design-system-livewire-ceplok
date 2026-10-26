@@ -247,6 +247,12 @@ new class extends Component
         </x-docs.stage>
 
         <x-docs.controls x-on:pointerdown.capture="remember($event)">
+            <x-docs.control label="Tampilan">
+                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Light'],
+                    ['value' => true, 'label' => 'Dark'],
+                ]" />
+            </x-docs.control>
             <x-docs.control label="Mode">
                 <x-docs.segmented label="Pilih mode Dropdown" model="mode" :value="$mode" :options="[
                     ['value' => 'action', 'label' => 'Action'],
@@ -285,12 +291,6 @@ new class extends Component
                 ]" />
             </x-docs.control>
 
-            <x-docs.control label="Tampilan">
-                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Light'],
-                    ['value' => true, 'label' => 'Dark'],
-                ]" />
-            </x-docs.control>
 
             <x-docs.control label="Contoh">
                 <x-docs.segmented

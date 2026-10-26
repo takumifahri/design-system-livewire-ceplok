@@ -13,7 +13,9 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/badge', 'pages.components.badge')->name('badge');
     Route::view('/avatar', 'pages.components.avatar')->name('avatar');
     Route::view('/spinner', 'pages.components.spinner')->name('spinner');
+    Route::view('/popover', 'pages.components.popover')->name('popover');
     Route::view('/dropdown', 'pages.components.dropdown')->name('dropdown');
+    Route::view('/modal', 'pages.components.modal')->name('modal');
     Route::view('/alert', 'pages.components.alert')->name('alert');
     Route::view('/toast', 'pages.components.toast')->name('toast');
     Route::view('/card', 'pages.components.card')->name('card');
@@ -21,6 +23,7 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/footer', 'pages.components.footer')->name('footer');
     Route::view('/breadcrumb', 'pages.components.breadcrumb')->name('breadcrumb');
     Route::view('/pagination', 'pages.components.pagination')->name('pagination');
+    Route::view('/table', 'pages.components.table')->name('table');
     Route::view('/timeline', 'pages.components.timeline')->name('timeline');
 });
 

@@ -25,9 +25,13 @@ import dismissible from './components/dismissible.js';
 import dropdown from './components/dropdown.js';
 import floatingLabel from './components/floating-label.js';
 import inputField from './components/input-field.js';
+import modal from './components/modal.js';
 import pagination from './components/pagination.js';
+import popover from './components/popover.js';
 import search from './components/search.js';
 import select from './components/select.js';
+import table from './components/table.js';
+import tablePreview from './components/table-preview.js';
 import textArea from './components/text-area.js';
 import upload from './components/upload.js';
 
@@ -38,11 +42,15 @@ export default function ceplok(Alpine) {
     Alpine.data('ceplokDropdown', dropdown);
     Alpine.data('ceplokFloatingLabel', floatingLabel);
     Alpine.data('ceplokInputField', inputField);
+    Alpine.data('ceplokModal', modal);
     Alpine.data('ceplokPagination', pagination);
+    Alpine.data('ceplokPopover', popover);
     Alpine.data('ceplokSearch', search);
     Alpine.data('ceplokSelect', select);
+    Alpine.data('ceplokTable', table);
+    Alpine.data('ceplokTablePreview', tablePreview);
     Alpine.data('ceplokTextArea', textArea);
     Alpine.data('ceplokUpload', upload);
 }
 
-export { avatar, datepicker, dismissible, dropdown, floatingLabel, inputField, pagination, search, select, textArea, upload };
+export { avatar, datepicker, dismissible, dropdown, floatingLabel, inputField, modal, pagination, popover, search, select, table, tablePreview, textArea, upload };
