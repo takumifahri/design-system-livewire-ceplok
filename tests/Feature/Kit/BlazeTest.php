@@ -18,8 +18,8 @@ class BlazeTest extends TestCase
     {
         $names = [
             'alert', 'avatar', 'badge', 'breadcrumb', 'button', 'card', 'checkbox', 'container', 'datepicker', 'drawer', 'dropdown',
-            'floating-label', 'footer', 'hero', 'icon', 'input-field', 'pagination', 'radio', 'search', 'select', 'sidebar', 'spinner',
-            'text-area', 'toast', 'toggle', 'upload',
+            'floating-label', 'footer', 'hero', 'icon', 'input-field', 'modal', 'pagination', 'popover', 'radio', 'search', 'select', 'sidebar',
+            'spinner', 'table', 'table-file', 'table-image', 'text-area', 'toast', 'toggle', 'upload',
         ];
 
         return array_combine($names, array_map(fn (string $name) => [$name], $names));

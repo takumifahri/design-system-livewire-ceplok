@@ -104,6 +104,12 @@ new class extends Component
         </x-docs.stage>
 
         <x-docs.controls>
+            <x-docs.control label="Mode">
+                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Terang'],
+                    ['value' => true, 'label' => 'Gelap'],
+                ]" />
+            </x-docs.control>
             <x-docs.control label="Lebar kolom">
                 <x-docs.segmented label="Pilih lebar kolom" model="view" :value="$view" :options="[
                     ['value' => 'mobile', 'label' => 'Mobile'],
@@ -129,12 +135,6 @@ new class extends Component
                 />
             </x-docs.control>
 
-            <x-docs.control label="Mode">
-                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Terang'],
-                    ['value' => true, 'label' => 'Gelap'],
-                ]" />
-            </x-docs.control>
         </x-docs.controls>
     </x-docs.section>
 

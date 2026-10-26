@@ -32,4 +32,8 @@ Alpine.directive('tilt', tilt);
 Alpine.directive('scroll-progress', scrollProgress);
 Alpine.directive('parallax', parallax);
 
+// Font pratinjau Playground (kontrol "Font" di x-docs.controls, dipakai
+// x-docs.stage). Store, karena kontrol dan panggungnya elemen terpisah.
+Alpine.store('preview', { font: 'sans' });
+
 Livewire.start();

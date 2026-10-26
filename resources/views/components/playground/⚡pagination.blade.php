@@ -61,6 +61,12 @@ new class extends Component
         </x-docs.stage>
 
         <x-docs.controls>
+            <x-docs.control label="Mode">
+                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Light'],
+                    ['value' => true, 'label' => 'Dark'],
+                ]" />
+            </x-docs.control>
             <x-docs.control label="Theme">
                 <x-docs.segmented label="Pilih theme" model="theme" :value="$theme" :options="[
                     ['value' => 'default', 'label' => 'Default'],
@@ -78,12 +84,6 @@ new class extends Component
                 />
             </x-docs.control>
 
-            <x-docs.control label="Mode">
-                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Light'],
-                    ['value' => true, 'label' => 'Dark'],
-                ]" />
-            </x-docs.control>
         </x-docs.controls>
     </x-docs.section>
 

@@ -146,7 +146,13 @@ new class extends Component
             </div>
         </div>
 
-        <x-docs.controls>
+        <x-docs.controls :fonts="false">
+            <x-docs.control label="Mode">
+                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Terang'],
+                    ['value' => true, 'label' => 'Gelap'],
+                ]" />
+            </x-docs.control>
             <x-docs.control label="Varian">
                 <x-docs.segmented
                     label="Pilih varian lebar container"
@@ -164,12 +170,6 @@ new class extends Component
                 ]" />
             </x-docs.control>
 
-            <x-docs.control label="Mode">
-                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Terang'],
-                    ['value' => true, 'label' => 'Gelap'],
-                ]" />
-            </x-docs.control>
 
             @if ($view === 'custom')
                 <x-docs.control label="Lebar Custom">

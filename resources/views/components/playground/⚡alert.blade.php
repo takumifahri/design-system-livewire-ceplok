@@ -82,6 +82,12 @@ new class extends Component
         </x-docs.stage>
 
         <x-docs.controls>
+            <x-docs.control label="Tampilan">
+                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Light'],
+                    ['value' => true, 'label' => 'Dark'],
+                ]" />
+            </x-docs.control>
             <x-docs.control label="Variant">
                 <x-docs.segmented label="Pilih variant" model="variant" :value="$variant" item-class="px-2.5" wrap :options="[
                     ['value' => 'success', 'label' => 'Success'],
@@ -120,12 +126,6 @@ new class extends Component
                 ]" />
             </x-docs.control>
 
-            <x-docs.control label="Tampilan">
-                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Light'],
-                    ['value' => true, 'label' => 'Dark'],
-                ]" />
-            </x-docs.control>
         </x-docs.controls>
 
         <button
