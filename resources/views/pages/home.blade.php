@@ -141,7 +141,9 @@
         <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="pointer-events-none absolute -top-16 -right-40 hidden w-152 opacity-[0.035] xl:block">
 
         <x-ceplok::container :padded="false" class="relative">
-            <div class="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-16">
+            {{-- grid-cols-1 (minmax(0,1fr)) wajib di bawah lg: tanpa itu kolom implisitnya
+                 melebar mengikuti baris kode terpanjang di jendela kode dan hero meluber dari layar. --}}
+            <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-16">
                 <div>
                     @php $headline = 'Menyatukan layanan digital lewat desain dan kode'; @endphp
                     {{-- Satu baris tanpa spasi antar-span: jarak antarkata sudah dari mr-[0.26em]. --}}
@@ -193,7 +195,9 @@
                     </div>
                 </div>
 
-                <div x-tilt class="ds-tilt">
+                {{-- x-reveal menggeser pembungkus ini, x-tilt memutar pelat di dalamnya:
+                     transform keduanya ada di elemen berbeda, jadi tidak saling menimpa. --}}
+                <div x-tilt x-reveal data-delay="0.4" class="ds-tilt">
                     <div class="ds-tilt-plate">
                         {{-- Jendela kode yang mengetik sendiri; logikanya di resources/js/docs/motion.js (codeWindow). --}}
                         <div x-data="docsCodeWindow(@js($snippets))" class="relative">
