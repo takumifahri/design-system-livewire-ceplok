@@ -1,0 +1,142 @@
+# Deploy situs docs ke server homelab setiap ada push ke main. Push ke main di
+# GitHub datang dari mirror GitLab, jadi alurnya:
+#
+#   GitLab → mirror GitHub → quality check → build image dan push ke GHCR
+#   → runner masuk tailnet lewat Tailscale → SSH ke server → pull image → up
+#
+# Image di-build di runner, bukan di server, karena server terlalu kecil untuk
+# build Vite dan Composer (CPU dua core, RAM dan /var terbatas).
+name: Deploy
+
+on:
+    push:
+        # `fahri` hanya untuk uji coba pipeline. Hapus sebelum merge ke staging.
+        branches: [main, fahri]
+    workflow_dispatch:
+
+# Deploy dijalankan satu per satu. Push baru menunggu deploy sebelumnya selesai,
+# bukan membatalkannya di tengah jalan.
+concurrency:
+    group: deploy-production
+    cancel-in-progress: false
+
+jobs:
+    test:
+        name: Quality check
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  # gd dipakai UploadedFile::fake()->image() di tes Playground Upload.
+                  extensions: dom, gd, intl, mbstring, pdo_sqlite
+                  coverage: none
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: npm
+
+            - run: composer validate --strict --no-check-publish
+            - run: composer install --no-interaction --prefer-dist --no-progress
+            - run: npm ci
+            # Halaman docs memakai manifest Vite, jadi build harus jalan sebelum tes.
+            - run: npm run build
+            - run: cp .env.example .env && php artisan key:generate
+            - run: vendor/bin/pint --test
+            - run: php artisan test
+            # tokens:check dan icons:check butuh checkout kit React di sebelahnya,
+            # yang tidak ada di runner. Keduanya tetap dijalankan secara lokal.
+            - run: composer audit --locked
+            - run: npm audit --audit-level=high
+
+    build:
+        name: Build image
+        needs: test
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        outputs:
+            image: ${{ steps.image.outputs.name }}
+        steps:
+            - uses: actions/checkout@v4
+
+            # Nama image GHCR harus huruf kecil, sedangkan nama owner atau repo
+            # GitHub boleh berhuruf besar.
+            - name: Tentukan nama image
+              id: image
+              run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
+            - uses: docker/setup-buildx-action@v3
+
+            - uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  push: true
+                  # :latest hanya untuk build dari main, supaya build uji coba
+                  # dari branch lain tidak menimpanya.
+                  tags: |
+                      ${{ steps.image.outputs.name }}:${{ github.sha }}
+                      ${{ github.ref == 'refs/heads/main' && format('{0}:latest', steps.image.outputs.name) || '' }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+    deploy:
+        name: Deploy ke server
+        needs: build
+        runs-on: ubuntu-latest
+        environment: production
+        permissions:
+            contents: read
+            packages: read
+        steps:
+            # Server ada di jaringan lokal, jadi runner masuk ke tailnet dulu
+            # sebagai tag:ci supaya bisa SSH ke alamat Tailscale server.
+            - uses: tailscale/github-action@v3
+              with:
+                  oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+                  oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+                  tags: tag:ci
+
+            - name: Tarik commit dan jalankan deploy
+              env:
+                  VPS_HOST: ${{ secrets.VPS_HOST }}
+                  VPS_USER: ${{ secrets.VPS_USER }}
+                  VPS_PATH: ${{ secrets.VPS_PATH }}
+                  APP_IMAGE: ${{ needs.build.outputs.image }}
+                  GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              # Server memakai Tailscale SSH: izin masuknya diatur aturan `ssh`
+              # di kebijakan akses Tailscale (tag:ci → tag:server sebagai user
+              # deploy), jadi tidak ada kunci SSH. Identitas server sudah
+              # dijamin WireGuard Tailscale, sehingga pemeriksaan host key
+              # dilewati dan known_hosts tidak perlu disimpan.
+              #
+              # Nilai dikirim lewat isi skrip (stdin), bukan argumen ssh, supaya
+              # token tidak terlihat di daftar proses server. Kode ditarik dulu
+              # sebelum deploy.sh dijalankan, supaya yang dieksekusi adalah versi
+              # skrip dan compose.yaml dari commit baru. Token GITHUB_TOKEN hanya
+              # berlaku selama job ini, dan server logout lagi setelah pull.
+              run: |
+                  {
+                      printf 'export VPS_PATH=%q APP_IMAGE=%q APP_TAG=%q APP_BRANCH=%q GHCR_USER=%q GHCR_TOKEN=%q\n' \
+                          "$VPS_PATH" "$APP_IMAGE" "$GITHUB_SHA" "$GITHUB_REF_NAME" "$GITHUB_ACTOR" "$GHCR_TOKEN"
+                      cat <<'EOF'
+                  set -euo pipefail
+                  cd "$VPS_PATH"
+                  git fetch --prune origin "$APP_BRANCH"
+                  git reset --hard "$APP_TAG"
+                  printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+                  trap 'docker logout ghcr.io >/dev/null' EXIT
+                  bash scripts/deploy.sh
+                  EOF
+                  } | ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+                      "$VPS_USER@$VPS_HOST" bash -s
