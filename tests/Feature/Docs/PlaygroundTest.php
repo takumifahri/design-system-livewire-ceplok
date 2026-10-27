@@ -115,6 +115,21 @@ class PlaygroundTest extends TestCase
         $this->assertSame(asset('files/sample-document.pdf'), $links->item(0)->getAttribute('href'));
     }
 
+    public function test_timeline_desktop_tidak_menyempit_di_bawah_lebar_minimumnya(): void
+    {
+        $component = Livewire::test('playground.timeline');
+        $timeline = $this->find($this->domOf($component), 'ol');
+
+        $this->assertSame('min-width: 41rem', $timeline->parentElement->getAttribute('style'));
+        $this->assertHasClasses($timeline->parentElement->parentElement, 'ds-scroll-x overflow-x-auto');
+
+        // Mobile mengikuti lebar artboard desainnya, jadi panggungnya tidak perlu digeser.
+        $timeline = $this->find($this->domOf($component->set('platform', 'mobile')), 'ol');
+
+        $this->assertFalse($timeline->parentElement->hasAttribute('style'));
+        $this->assertLacksClasses($timeline->parentElement->parentElement, 'ds-scroll-x overflow-x-auto');
+    }
+
     public function test_timeline_menutup_status_lewat_wire_dismiss(): void
     {
         $component = Livewire::test('playground.timeline-livewire');

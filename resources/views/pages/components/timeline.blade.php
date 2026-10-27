@@ -20,6 +20,11 @@
         ], [2, 3, 4]),
     ];
 
+    // Lebar paling kecil Timeline desktop. Nama dan jabatan di sebelah Badge status baru muat
+    // sebaris mulai sekitar 625px, jadi 40rem menyisakan sedikit ruang. Di layar yang lebih
+    // sempit kotak contohnya digeser ke samping, alih-alih kartunya diperas.
+    $desktopMinWidth = '40rem';
+
     // Tiga variant Badge untuk tiga tahap proses yang berbeda.
     $statusItems = [
         ['name' => 'User 01', 'role' => 'Role / Department', 'time' => '2026-01-01 09:00', 'status' => ['label' => 'Menunggu', 'variant' => 'warning', 'icon' => 'ceplok-s-exclamation-circle']],
@@ -147,7 +152,7 @@
             </x-docs.lead>
 
             <div class="space-y-5">
-                <x-docs.demo label="desktop">
+                <x-docs.demo label="desktop" :min-width="$desktopMinWidth">
                     <x-ceplok::timeline :items="array_slice($designItems, 0, 3)" />
                 </x-docs.demo>
                 <x-docs.demo label="mobile">
@@ -199,7 +204,7 @@
                 kelompok berikutnya, dan <span class="text-primary-500">status</span> menjadi Badge di pojok kanan atas kartu.
             </x-docs.lead>
 
-            <x-docs.demo label="ringkas dan lengkap">
+            <x-docs.demo label="ringkas dan lengkap" :min-width="$desktopMinWidth">
                 <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" />
             </x-docs.demo>
 
@@ -364,7 +369,7 @@
                 status.
             </x-docs.lead>
 
-            <x-docs.demo label="dark-mode" dark>
+            <x-docs.demo label="dark-mode" dark :min-width="$desktopMinWidth">
                 <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" dark-mode />
             </x-docs.demo>
 
