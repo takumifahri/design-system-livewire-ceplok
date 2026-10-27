@@ -27,6 +27,7 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/pagination', 'pages.components.pagination')->name('pagination');
     Route::view('/sidebar', 'pages.components.sidebar')->name('sidebar');
     Route::view('/table', 'pages.components.table')->name('table');
+    Route::view('/timeline', 'pages.components.timeline')->name('timeline');
 });
 
 Route::prefix('form')->name('form.')->group(function () {

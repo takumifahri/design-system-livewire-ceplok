@@ -33,6 +33,7 @@ class PagesTest extends TestCase
             'pagination' => ['components.pagination', 'Pagination', 'Pagination'],
             'sidebar' => ['components.sidebar', 'Sidebar', 'Sidebar'],
             'table' => ['components.table', 'Table', 'Table'],
+            'timeline' => ['components.timeline', 'Timeline View', 'Timeline View'],
             'form' => ['form.index', 'Form', 'Form'],
             'input-field-form' => ['form.input-field', 'Input Field Form', 'Input Field Form'],
             'input-field' => ['form.input-field.input', 'Input Field', 'Input Field'],
