@@ -41,8 +41,8 @@ contoh kode, dan tabel props, mengikuti dokumentasi kit React.
 - Composer 2.
 - Node.js 20.19 atau lebih baru, dan npm.
 
-Font Lato dan Inter dimuat dari Google Fonts oleh browser, jadi build tidak
-butuh koneksi internet.
+Font Lato 2.0 ikut paket kit dan disalin Vite ke `public/build`. Inter dimuat
+dari Google Fonts oleh browser, jadi build tidak butuh koneksi internet.
 
 ## Instalasi
 
@@ -80,7 +80,7 @@ app/Docs/                       navigasi dan pengolah cuplikan kode situs docs
 resources/views/pages/          halaman dokumentasi
 resources/views/components/     komponen situs (x-docs.*) dan Playground Livewire
 resources/js/, resources/css/   entry Vite: plugin kit + perilaku situs docs
-scripts/                        sinkronisasi token dan ikon dari kit React
+scripts/                        sinkronisasi token, ikon, dan font dari kit React
 tests/                          tes kit, halaman docs, dan Playground
 ```
 
@@ -92,15 +92,17 @@ alur kerja paket (development lokal, menambah komponen, publikasi) di
 
 ## Kesetaraan dengan kit React
 
-Token dan ikon disalin dari kit React, bukan ditulis ulang. Kit React dibaca
-dari folder `react-design-system` yang bersebelahan dengan repo ini, atau dari
-`CEPLOK_REACT_DIR`.
+Token, ikon, dan font Lato disalin dari kit React, bukan ditulis ulang. Kit
+React dibaca dari folder `react-design-system` yang bersebelahan dengan repo
+ini, atau dari `CEPLOK_REACT_DIR`.
 
 ```bash
 npm run tokens:check    # gagal bila token tertinggal dari kit React
 npm run tokens:sync
 npm run icons:check     # gagal bila ikon tertinggal dari flowbite-react-icons
 npm run icons:sync
+npm run fonts:check     # gagal bila font Lato tertinggal dari kit React
+npm run fonts:sync
 ```
 
 ## Quality check lokal
@@ -115,6 +117,7 @@ vendor/bin/pint --test
 php artisan test
 npm run tokens:check
 npm run icons:check
+npm run fonts:check
 composer audit --locked
 npm audit --audit-level=high
 ```
@@ -128,8 +131,8 @@ Vite.
 Repo GitLab di-mirror ke GitHub. Setiap push ke `main` di GitHub menjalankan
 `.github/workflows/deploy.yml`:
 
-1. **Quality check**: urutan di atas, kecuali `tokens:check` dan
-   `icons:check` yang butuh checkout kit React di sebelahnya.
+1. **Quality check**: urutan di atas, kecuali `tokens:check`, `icons:check`,
+   dan `fonts:check` yang butuh checkout kit React di sebelahnya.
 2. **Build image**: bila quality check lolos, runner mem-build image Docker
    dan mendorongnya ke GitHub Container Registry sebagai
    `ghcr.io/<owner>/<repo>:<commit>` dan `:latest`.

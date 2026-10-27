@@ -12,8 +12,10 @@
     urutan; pilihannya dipegang Alpine (`urut`), kecuali `model` diisi nama
     properti Livewire — barisnya lalu memanggil $set.
 
-    Kelas scrollbar gelap ditulis utuh di sini supaya ikut dipindai Tailwind:
-    [@supports_not_selector(::-webkit-scrollbar)]:[scrollbar-color:var(--color-gray-600)_var(--color-gray-800)]
+    Kelas scrollbar gelap ditulis utuh di sini supaya ikut dipindai Tailwind.
+    Varian not-supports-[…] dipakai, bukan [@supports_not_…]: ekstensi PHP di
+    editor membaca `@nama(…)` di string sebagai direktif Blade dan salah lapor:
+    not-supports-[selector(::-webkit-scrollbar)]:[scrollbar-color:var(--color-gray-600)_var(--color-gray-800)]
 --}}
 @props([
     'example' => 'actions',
@@ -41,7 +43,7 @@
     $hr = $dark ? 'my-1 border-0 border-t border-gray-700' : 'my-1 border-0 border-t border-border';
     $scroll = $dark
         ? 'ds-scroll-y [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb:hover]:bg-gray-500 [&::-webkit-scrollbar-button]:hidden '
-          .'[@supports_not_selector(::-webkit-scrollbar)]:[scrollbar-color:var(--color-gray-600)_var(--color-gray-800)]'
+          .'not-supports-[selector(::-webkit-scrollbar)]:[scrollbar-color:var(--color-gray-600)_var(--color-gray-800)]'
         : '';
     $chevron = svg('ceplok-o-chevron-down', 'size-3.5 shrink-0', ['aria-hidden' => 'true']);
 

@@ -243,6 +243,33 @@
                 </div>
             </x-docs.overview-card>
 
+            <x-docs.overview-card route="components.table-of-contents" name="Table of Contents" desc="Daftar isi “On this page” yang menyorot bagian yang sedang dibaca.">
+                {{-- Isi halamannya skeleton, seperti di overview React; daftar isinya komponen asli. --}}
+                <div class="relative flex h-66 gap-6 overflow-hidden rounded-xl bg-surface-subtle p-5">
+                    <div class="min-w-0 flex-1 space-y-3 rounded-lg bg-white p-5 shadow-sm" aria-hidden="true">
+                        <div class="h-2 w-2/5 rounded bg-primary-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-5/6 rounded bg-gray-200"></div>
+                        <div class="mt-6 h-2 w-1/3 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-4/6 rounded bg-gray-200"></div>
+                        <div class="mt-6 h-2 w-1/4 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-5/6 rounded bg-gray-200"></div>
+                    </div>
+                    <x-ceplok::table-of-contents
+                        class="w-36! shrink-0 bg-transparent! pt-1"
+                        :anchor="false"
+                        :items="[
+                            ['id' => 'ov-dasar', 'label' => 'Tampilan dasar'],
+                            ['id' => 'ov-variasi', 'label' => 'Variasi'],
+                            ['id' => 'ov-dark', 'label' => 'Dark mode'],
+                            ['id' => 'ov-playground', 'label' => 'Playground'],
+                            ['id' => 'ov-props', 'label' => 'Properties'],
+                        ]"
+                    />
+                </div>
+            </x-docs.overview-card>
+
             <x-docs.overview-card route="components.timeline" name="Timeline View" desc="Riwayat kejadian berurutan dengan avatar, waktu, dan status di tiap langkah. Desainnya belum final.">
                 <div class="rounded-xl bg-surface-subtle p-5">
                     <x-ceplok::timeline platform="mobile" size="small" :items="[
