@@ -166,8 +166,9 @@ Server-nya Debian 13 di jaringan lokal, terhubung ke Tailscale.
 - Pasang Docker Engine dan plugin Compose dari repository apt resmi Docker
   untuk Debian. Buat user `deploy` yang masuk grup `docker`. Jangan memakai
   `root`.
-- Clone repo GitHub ke folder aplikasi. Bila repo privat, pasang deploy key
-  read-only agar server bisa `git fetch`.
+- Clone repo GitHub ke folder aplikasi. Bila repo privat, clone pertama
+  memakai login sendiri. Deploy berikutnya menarik kode dengan `GITHUB_TOKEN`
+  dari workflow, jadi server tidak butuh deploy key.
 - Buat `.env` produksi di folder itu: `APP_ENV=production`,
   `APP_DEBUG=false`, `APP_URL=https://<domain>`, `APP_KEY` (buat dengan
   `php artisan key:generate --show` di lokal), `LOG_CHANNEL=stderr` supaya
