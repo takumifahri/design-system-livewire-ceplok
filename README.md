@@ -16,6 +16,7 @@ System dengan paket `tpl/design-kit`; paket itu kini digantikan
 | --- | --- |
 | Fase 1 (selesai) | Alert, Avatar, Badge, Breadcrumb, Button, Card, Container, Footer, Hero, Icon, Pagination, Spinner, Toast |
 | Fase 2 (selesai) | Komponen form: Input Field, Floating Label, Text Area, Select, Search, Datepicker, Upload, Radio, Toggle, Checkbox — serta Dropdown |
+| Eksperimental | Timeline View — desainnya belum final, jadi prop dan ukurannya masih bisa berubah |
 
 Setiap komponen punya halaman dokumentasi dengan demo, Playground Livewire,
 contoh kode, dan tabel props, mengikuti dokumentasi kit React.

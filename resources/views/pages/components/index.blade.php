@@ -242,6 +242,15 @@
                     </div>
                 </div>
             </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.timeline" name="Timeline View" desc="Riwayat kejadian berurutan dengan avatar, waktu, dan status di tiap langkah. Desainnya belum final.">
+                <div class="rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::timeline platform="mobile" size="small" :items="[
+                        ['name' => 'User 01', 'role' => 'Role / Department', 'time' => '2026-01-01 09:00'],
+                        ['name' => 'User 02', 'role' => 'Role / Department', 'time' => '2026-01-01 09:05', 'status' => ['label' => 'Badge', 'icon' => 'ceplok-s-clock', 'dismissible' => true]],
+                    ]" />
+                </div>
+            </x-docs.overview-card>
         </div>
     </div>
 </x-docs.layout>
