@@ -10,7 +10,8 @@
     />
 
     <div class="mx-auto max-w-5xl px-5 py-9 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
-        <div class="grid gap-5 sm:grid-cols-2">
+        {{-- grid-cols-1 (minmax(0,1fr)): tanpa itu kolom di bawah sm melebar mengikuti pratinjau terlebar. --}}
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <x-docs.overview-card route="foundations.colors" name="Colors" desc="Delapan palet primitive dan lapisan semantic token yang memisahkan makna dari nilai warna." wide>
                 <div class="rounded-xl bg-surface-subtle p-5">
                     <div class="flex gap-2">

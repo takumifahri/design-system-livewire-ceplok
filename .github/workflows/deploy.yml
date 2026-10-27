@@ -11,7 +11,7 @@ name: Deploy
 on:
     push:
         # `fahri` hanya untuk uji coba pipeline. Hapus sebelum merge ke staging.
-        branches: [main, fahri]
+        branches: [main]
     workflow_dispatch:
 
 # Deploy dijalankan satu per satu. Push baru menunggu deploy sebelumnya selesai,

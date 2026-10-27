@@ -23,7 +23,8 @@
     'has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-primary-600',
     'sm:col-span-2' => $wide,
 ])>
-    <div class="grid flex-1" inert>{{ $slot }}</div>
+    {{-- grid-cols-1 (minmax(0,1fr)): kotak pratinjau selebar kartu, tidak melebar mengikuti isinya. --}}
+    <div class="grid flex-1 grid-cols-1" inert>{{ $slot }}</div>
     <h2 class="mt-4 text-heading-4 font-black text-gray-900">
         <a href="{{ route($route) }}" wire:navigate class="rounded-sm after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none">{{ $name }}</a>
     </h2>
