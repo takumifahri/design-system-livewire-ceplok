@@ -146,9 +146,7 @@ new class extends Component
                         $dark ? 'border-white/10 bg-gray-800' : 'border-gray-200 bg-white',
                     ])>
                         <div class="flex items-center gap-2.5">
-                            <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-600 text-xs font-bold text-white">
-                                C
-                            </div>
+                            <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 shrink-0 object-contain">
                             <span @class(['text-base font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>CEPLOK</span>
                         </div>
                         <x-ceplok::drawer.trigger :dark-mode="$dark" x-on:click="showDrawer()" />

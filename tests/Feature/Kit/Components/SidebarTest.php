@@ -12,12 +12,14 @@ class SidebarTest extends TestCase
         $aside = $this->find($dom, 'aside');
 
         $this->assertNotNull($aside);
-        $this->assertSame('ceplokSidebar({ collapsed: false })', $aside->getAttribute('x-data'));
+        $this->assertSame('ceplokSidebar', $aside->getAttribute('x-data'));
         $this->assertSame('false', $aside->getAttribute('data-initial-collapsed'));
+        $this->assertSame('width: 280px', $aside->getAttribute('style'));
+        $this->assertSame("{ width: collapsed ? '72px' : '280px' }", $aside->getAttribute('x-bind:style'));
 
         $this->assertHasClasses(
             $aside,
-            'flex min-h-screen flex-col border-r border-border bg-sidebar-surface text-content transition-all duration-200 w-[280px]'
+            'flex min-h-screen flex-col border-r border-border bg-sidebar-surface text-content transition-all duration-200'
         );
     }
 
@@ -27,9 +29,9 @@ class SidebarTest extends TestCase
         $aside = $this->find($dom, 'aside');
 
         $this->assertNotNull($aside);
-        $this->assertSame('ceplokSidebar({ collapsed: true })', $aside->getAttribute('x-data'));
+        $this->assertSame('ceplokSidebar', $aside->getAttribute('x-data'));
         $this->assertSame('true', $aside->getAttribute('data-initial-collapsed'));
-        $this->assertHasClasses($aside, 'w-[72px]');
+        $this->assertSame('width: 72px', $aside->getAttribute('style'));
     }
 
     public function test_sidebar_sticky_dan_dark_mode(): void
@@ -55,12 +57,14 @@ class SidebarTest extends TestCase
         $header = $this->find($aside, 'header');
 
         $this->assertNotNull($header);
-        $this->assertHasClasses($header, 'flex shrink-0 items-center px-4 h-[72px] justify-between');
+        $this->assertHasClasses($header, 'flex shrink-0 items-center px-4');
+        $this->assertSame("collapsed ? 'flex-col gap-3 py-4' : 'h-[72px] justify-between'", $header->getAttribute('x-bind:class'));
         $this->assertNotNull($this->find($header, '#logo'));
 
         $button = $this->find($header, 'button');
         $this->assertNotNull($button);
         $this->assertSame('Tutup sidebar', $button->getAttribute('aria-label'));
+        $this->assertTrue($button->hasAttribute('disabled'));
         $this->assertNotNull($button->querySelector('svg'));
     }
 
@@ -168,6 +172,24 @@ class SidebarTest extends TestCase
 
         $this->assertNotNull($footer);
         $this->assertNotNull($this->find($footer, '#foot'));
+    }
+
+    public function test_sidebar_submenu_aktif_selalu_terbuka_dan_ringkas_memerlukan_listener(): void
+    {
+        $items = [[
+            'label' => 'Parent',
+            'icon' => 'ceplok-s-cart',
+            'children' => [['label' => 'Aktif', 'href' => '#aktif', 'active' => true]],
+        ]];
+
+        $dom = $this->dom('<x-ceplok::sidebar collapsed :items="$items" />', ['items' => $items]);
+        $submenu = $this->find($dom, '[x-data="ceplokSidebarSubmenu"]');
+        $button = $this->find($submenu, 'button');
+
+        $this->assertSame('true', $submenu->getAttribute('data-has-active-child'));
+        $this->assertSame('false', $submenu->getAttribute('data-can-expand'));
+        $this->assertTrue($button->hasAttribute('disabled'));
+        $this->assertSame('display: none;', $this->find($submenu, 'ul')->getAttribute('style'));
     }
 
     public function test_prop_yang_tidak_sah_ditolak(): void

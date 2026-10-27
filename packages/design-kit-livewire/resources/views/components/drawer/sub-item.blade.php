@@ -9,6 +9,7 @@
     'active' => false,
     'theme' => 'primary',
     'href' => null,
+    'disabled' => false,
     'darkMode' => false,
 ])
 
@@ -16,6 +17,7 @@
     $theme = Prop::oneOf(DrawerNavItemTheme::class, $theme, DrawerNavItemTheme::Primary, 'drawer.sub-item', 'theme');
     $active = Prop::bool($active, false, 'drawer.sub-item', 'active');
     $darkMode = Prop::bool($darkMode, false, 'drawer.sub-item', 'dark-mode');
+    $disabled = Prop::bool($disabled, false, 'drawer.sub-item', 'disabled');
     $component = filled($href) ? 'a' : 'button';
 
     $subItemHoverClasses = [
@@ -33,9 +35,15 @@
 @endphp
 
 <{{ $component }}
-    @if ($href) href="{{ $href }}" @else type="button" @endif
+    @if ($href)
+        @if (!$disabled) href="{{ $href }}" @endif
+    @else
+        type="button"
+    @endif
+    @if ($disabled && !$href) disabled @endif
+    @if ($disabled) aria-disabled="true" tabindex="-1" @endif
     {{ $attributes->class([
-        'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-base text-left transition-colors font-medium',
+        'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-base text-left transition-colors font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
         $darkMode
             ? ($active ? 'bg-gray-700/50 hover:bg-gray-600 text-white' : 'text-gray-50 hover:bg-gray-700 hover:text-white')
             : ($subItemHoverClasses[$theme] . ' ' . ($active ? $activeLightClass : 'text-gray-900')),

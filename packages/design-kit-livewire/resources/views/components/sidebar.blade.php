@@ -45,6 +45,9 @@
         return false;
     });
     $hasCollapseButton = $hasMenuIcons && $showCollapseButton;
+    $hasCollapseListener = $attributes->has('wire:collapse')
+        || $attributes->has('x-on:collapse')
+        || $attributes->has('@collapse');
     $hasHeader = Content::filled($logo) || Content::filled($collapsedLogo) || $hasCollapseButton;
     $sidebarId = FieldId::for($attributes, 'sidebar');
 
@@ -61,26 +64,27 @@
 @endphp
 
 <aside
-    x-data="ceplokSidebar({ collapsed: {{ $collapsed ? 'true' : 'false' }} })"
+    x-data="ceplokSidebar"
     data-initial-collapsed="{{ $collapsed ? 'true' : 'false' }}"
     @keydown.window="handleKeyDown($event)"
+    x-on:expand-sidebar="expand()"
     {{ $attributes
         ->class([
             'flex min-h-screen flex-col border-r border-border bg-sidebar-surface text-content transition-all duration-200',
             $sticky ? 'sticky top-0 h-screen self-start' : '',
-            $collapsed ? 'w-[72px]' : 'w-[280px]',
         ])
         ->merge($darkMode ? ['data-theme' => 'dark'] : []) }}
-    x-bind:class="collapsed ? 'w-[72px]' : 'w-[280px]'"
+    style="width: {{ $collapsed ? '72px' : '280px' }}"
+    x-bind:style="{ width: collapsed ? '72px' : '280px' }"
 >
     @if ($hasHeader)
         <header
-            class="flex shrink-0 items-center px-4 {{ $collapsed ? 'flex-col gap-3 py-4' : 'h-[72px] justify-between' }}"
+            class="flex shrink-0 items-center px-4"
             x-bind:class="collapsed ? 'flex-col gap-3 py-4' : 'h-[72px] justify-between'"
         >
             @if (Content::filled($collapsedLogo) && Content::filled($logo))
                 <div
-                    class="flex min-w-0 items-center text-content {{ $collapsed ? 'order-2 w-full max-w-full justify-center' : '' }}"
+                    class="flex min-w-0 items-center text-content"
                     x-bind:class="collapsed ? 'order-2 w-full max-w-full justify-center' : ''"
                 >
                     <span x-show="!collapsed" @if ($collapsed) style="display: none;" @endif>{{ $logo }}</span>
@@ -88,14 +92,14 @@
                 </div>
             @elseif (Content::filled($logo))
                 <div
-                    class="flex min-w-0 items-center text-content {{ $collapsed ? 'order-2 w-full max-w-full justify-center' : '' }}"
+                    class="flex min-w-0 items-center text-content"
                     x-bind:class="collapsed ? 'order-2 w-full max-w-full justify-center' : ''"
                 >
                     {{ $logo }}
                 </div>
             @elseif (Content::filled($collapsedLogo))
                 <div
-                    class="flex min-w-0 items-center text-content {{ $collapsed ? 'order-2 w-full max-w-full justify-center' : '' }}"
+                    class="flex min-w-0 items-center text-content"
                     x-bind:class="collapsed ? 'order-2 w-full max-w-full justify-center' : ''"
                 >
                     {{ $collapsedLogo }}
@@ -108,11 +112,12 @@
                     aria-label="{{ $collapsed ? 'Buka sidebar' : 'Tutup sidebar' }}"
                     x-bind:aria-label="collapsed ? 'Buka sidebar' : 'Tutup sidebar'"
                     x-on:click="toggleCollapse()"
-                    class="flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors disabled:cursor-default disabled:hover:bg-transparent text-content-muted hover:bg-surface {{ $collapsed ? 'order-1' : '' }}"
+                    @if (!$hasCollapseListener) disabled @endif
+                    class="flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors disabled:cursor-default disabled:hover:bg-transparent text-content-muted hover:bg-surface"
                     x-bind:class="collapsed ? 'order-1' : ''"
                 >
                     <x-ceplok-o-chevron-left
-                        class="w-[28px] h-[28px] shrink-0 text-content transition-transform {{ $collapsed ? 'rotate-180' : '' }}"
+                        class="w-[28px] h-[28px] shrink-0 text-content transition-transform"
                         x-bind:class="collapsed ? 'rotate-180' : ''"
                     />
                 </button>
@@ -128,7 +133,7 @@
                     <a
                         href="{{ !empty($user['href']) ? $user['href'] : '#' }}"
                         @if (!empty($user['external'])) target="_blank" rel="noreferrer noopener" @endif
-                        class="flex transition-colors {{ $collapsed ? 'justify-center' : 'items-center gap-3 rounded-lg bg-primary-50 px-3 py-2.5 hover:bg-primary-100/70 in-data-[theme=dark]:bg-gray-600 in-data-[theme=dark]:hover:bg-gray-600/80' }}"
+                        class="flex transition-colors"
                         x-bind:class="collapsed ? 'justify-center' : 'items-center gap-3 rounded-lg bg-primary-50 px-3 py-2.5 hover:bg-primary-100/70 in-data-[theme=dark]:bg-gray-600 in-data-[theme=dark]:hover:bg-gray-600/80'"
                     >
                         @if ($avatarSrc)
@@ -166,7 +171,7 @@
                         aria-expanded="false"
                         aria-label="Menu profil {{ $userName }}"
                         x-on:click="toggleUserMenu()"
-                        class="flex w-full text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 {{ $collapsed ? 'justify-center p-0 rounded-full' : 'items-center gap-3 rounded-lg bg-primary-50 px-3 py-2.5 hover:bg-primary-100/70 text-content in-data-[theme=dark]:bg-gray-600 in-data-[theme=dark]:hover:bg-gray-600/80' }}"
+                        class="flex w-full text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                         x-bind:class="collapsed ? 'justify-center p-0 rounded-full' : 'items-center gap-3 rounded-lg bg-primary-50 px-3 py-2.5 hover:bg-primary-100/70 text-content in-data-[theme=dark]:bg-gray-600 in-data-[theme=dark]:hover:bg-gray-600/80'"
                     >
                         @if ($avatarSrc)
@@ -328,7 +333,10 @@
                                 $isActive = !empty($item['active']);
                                 $isDisabled = !empty($item['disabled']);
                                 $isSubmenuDisabled = !empty($item['submenuToggleDisabled']);
-                                $defaultOpen = !empty($item['defaultOpen']) || $isActive;
+                                $hasActiveChild = collect($item['children'] ?? [])->contains(fn ($child) => !empty($child['active']));
+                                $defaultOpen = !empty($item['defaultOpen']);
+                                $isOpen = $defaultOpen || $isActive || $hasActiveChild;
+                                $itemAttributes = new \Illuminate\View\ComponentAttributeBag($item['attributes'] ?? []);
                                 $menuItemClasses = 'group flex w-full rounded-lg text-sm font-medium transition-colors text-content hover:bg-gray-100 in-data-[theme=dark]:hover:bg-gray-600 ' . (
                                     $collapsed ? 'justify-center px-2 py-2.5 ' : 'items-center gap-3 px-3 py-2.5 '
                                 ) . (
@@ -341,6 +349,7 @@
                                 @if (!$hasChildren)
                                     <a
                                         href="{{ $isDisabled ? null : ($item['href'] ?? '#') }}"
+                                        {{ $itemAttributes }}
                                         class="{{ $menuItemClasses }}"
                                         x-bind:class="collapsed ? 'justify-center px-2 py-2.5' : 'items-center gap-3 px-3 py-2.5'"
                                         @if ($isActive) aria-current="page" @endif
@@ -372,16 +381,23 @@
                                         @endif
                                     </a>
                                 @else
-                                    <div x-data="{ open: {{ $defaultOpen ? 'true' : 'false' }} }">
+                                    <div
+                                        x-data="ceplokSidebarSubmenu"
+                                        data-initial-open="{{ $defaultOpen ? 'true' : 'false' }}"
+                                        data-active="{{ $isActive ? 'true' : 'false' }}"
+                                        data-has-active-child="{{ $hasActiveChild ? 'true' : 'false' }}"
+                                        data-can-expand="{{ $hasCollapseListener ? 'true' : 'false' }}"
+                                    >
                                         <button
                                             type="button"
                                             class="{{ $menuItemClasses }}"
                                             x-bind:class="collapsed ? 'justify-center px-2 py-2.5' : 'items-center gap-3 px-3 py-2.5'"
-                                            x-on:click="open = !open"
-                                            aria-expanded="{{ $defaultOpen ? 'true' : 'false' }}"
-                                            x-bind:aria-expanded="open ? 'true' : 'false'"
+                                            x-on:click="toggle()"
+                                            aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
+                                            x-bind:aria-expanded="collapsed ? null : isOpen ? 'true' : 'false'"
                                             aria-controls="sidebar-submenu-{{ $itemId }}"
-                                            @if ($isDisabled || $isSubmenuDisabled) disabled aria-disabled="true" @endif
+                                            x-bind:disabled="collapsed && !canExpand"
+                                            @if ($isDisabled || $isSubmenuDisabled || ($collapsed && !$hasCollapseListener)) disabled aria-disabled="true" @endif
                                             @if ($collapsed) title="{{ $item['label'] ?? '' }}" @endif
                                             x-bind:title="collapsed ? '{{ addslashes($item['label'] ?? '') }}' : null"
                                         >
@@ -414,25 +430,27 @@
                                             >
                                                 <x-ceplok-o-chevron-down
                                                     class="w-[28px] h-[28px] shrink-0 text-content transition-transform {{ $defaultOpen ? 'rotate-180' : '' }}"
-                                                    x-bind:class="open ? 'rotate-180' : ''"
+                                                    x-bind:class="isOpen ? 'rotate-180' : ''"
                                                 />
                                             </span>
                                         </button>
 
                                         <ul
-                                            x-show="!collapsed && open"
+                                            x-show="!collapsed && isOpen"
                                             id="sidebar-submenu-{{ $itemId }}"
                                             class="mt-1 space-y-1 pl-8"
-                                            @if ($collapsed || !$defaultOpen) style="display: none;" @endif
+                                            @if ($collapsed || !$isOpen) style="display: none;" @endif
                                         >
                                             @foreach ($item['children'] as $child)
                                                 @php
                                                     $childActive = !empty($child['active']);
                                                     $childDisabled = !empty($child['disabled']);
+                                                    $childAttributes = new \Illuminate\View\ComponentAttributeBag($child['attributes'] ?? []);
                                                 @endphp
                                                 <li>
                                                     <a
                                                         href="{{ $childDisabled ? null : ($child['href'] ?? '#') }}"
+                                                        {{ $childAttributes }}
                                                         class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors text-content-subtle hover:bg-gray-100 hover:text-content in-data-[theme=dark]:hover:bg-gray-600 {{ $childActive ? 'bg-gray-100 font-medium text-content in-data-[theme=dark]:bg-gray-600 ' : '' }}{{ $childDisabled ? 'pointer-events-none cursor-not-allowed opacity-50 ' : '' }}"
                                                         @if ($childActive) aria-current="page" @endif
                                                         @if ($childDisabled) aria-disabled="true" @endif

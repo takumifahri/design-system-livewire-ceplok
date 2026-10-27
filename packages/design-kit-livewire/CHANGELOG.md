@@ -8,12 +8,38 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 Rilis pertama, direncanakan sebagai `0.1.0`.
 
+### Diperbaiki
+
+- `ListView`: `action-wire-click` meneruskan event Livewire hanya ke tombol
+  aksi bawaan, sehingga interaksi `Open` tidak menjadikan seluruh kartu sebagai
+  target klik.
+- `ListView`: ukuran simple dan article kini mengikuti referensi React pada
+  setiap varian. Typography metadata, wadah serta ukuran ikon, padding,
+  tinggi minimum, dan ukuran tombol aksi S/M/L tidak lagi dikompensasi oleh
+  halaman dokumentasi.
+- `Sidebar`: state collapse Alpine kini tersinkron dengan prop server tanpa
+  mencampurkan class lebar statis dan dinamis. Submenu aktif selalu terbuka;
+  saat Sidebar ringkas, parent submenu hanya dapat membuka Sidebar bila event
+  `collapse` didengarkan.
+- `DrawerSubItem`: item dengan `href` tetap berupa tautan, item tanpa `href`
+  berupa tombol, dan item nonaktif tidak lagi memiliki tujuan tautan serta
+  mengikuti atribut ARIA disabled.
+
 ### Ditambahkan
 
 - Komponen Blade setara kit React: `alert`, `avatar`, `badge`, `breadcrumb`,
   `button`, `card`, `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`,
-  `pagination`, `sidebar`, `spinner`, dan `toast`. Markup, class, dan atribut ARIA-nya
+  `list-view` (beserta `list-view.item` dan `list-view.article`), `pagination`,
+  `sidebar`, `spinner`, dan `toast`. Markup, class, dan atribut ARIA-nya
   diuji sama dengan `@ceplok-ui/design-kit-react` di browser.
+- `Drawer` dengan komponen pendukung `drawer.header`, `drawer.body`,
+  `drawer.nav-item`, dan `drawer.sub-item`; mendukung posisi empat sisi,
+  ukuran `s` hingga `full`, dark mode, `wire:model`, serta event `close`.
+- `Sidebar` dengan group menu, submenu, logo/mark ringkas, profil pengguna,
+  separator, dark mode, dan event `collapse` untuk integrasi state Livewire.
+- `List View` simple dan article: ukuran responsif, metadata, ikon, dekorasi,
+  badge, aksi, dark mode, dan `action-wire-click` agar aksi item dapat
+  dikendalikan Livewire tanpa membuat seluruh kartu dapat diklik.
 - Elemen form setara kit React: `checkbox`, `datepicker`, `floating-label`,
   `input-field`, `radio`, `search`, `select`, `text-area`, `toggle`, dan
   `upload`. Kontrol aslinya (`<input>`, `<textarea>`, `<select>`) tetap ada,

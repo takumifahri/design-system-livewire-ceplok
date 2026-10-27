@@ -119,10 +119,13 @@ new class extends Component
         $lines[] = '>';
         if ($hasLogo) {
             $lines[] = '    <x-slot:⟦logo⟧>';
-            $lines[] = '        <span class="flex items-center gap-2 font-bold text-sm">CEPLOK</span>';
+            $lines[] = '        <span class="flex items-center gap-2 font-bold text-sm">';
+            $lines[] = '            <img src="/images/ceplok.svg" alt="CEPLOK" class="size-9 object-contain">';
+            $lines[] = '            CEPLOK';
+            $lines[] = '        </span>';
             $lines[] = '    </x-slot:logo>';
             $lines[] = '    <x-slot:⟦collapsed-logo⟧>';
-            $lines[] = '        <span class="font-bold text-sm">C</span>';
+            $lines[] = '        <img src="/images/ceplok.svg" alt="CEPLOK" class="size-9 object-contain">';
             $lines[] = '    </x-slot:collapsed-logo>';
         }
         $lines[] = '</x-ceplok::sidebar>';
@@ -196,8 +199,10 @@ new class extends Component
         <x-docs.stage max-width="max-w-[768px]" :dark="$isDark">
             <div
                 wire:key="sidebar-stage-{{ $separator }}-{{ $resolvedCollapse }}-{{ $theme }}"
+                x-on:click="const item = $event.target.closest('nav a, nav button'); if (item) { $event.preventDefault(); $wire.selectMenu(item.textContent.trim()) }"
+                style="height: 920px"
                 @class([
-                    'flex min-h-[760px] w-full items-stretch overflow-hidden border rounded-xl',
+                    'flex w-full items-stretch overflow-hidden rounded-xl border',
                     $isDark ? 'border-gray-700 bg-gray-900 text-white' : 'border-gray-200 bg-white text-gray-900',
                 ])
             >
@@ -214,22 +219,12 @@ new class extends Component
                     @if ($logoWeb === 'show')
                         <x-slot:logo>
                             <span class="flex items-center gap-2">
-                                <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                    <span class="rounded-sm bg-white"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-white"></span>
-                                </span>
+                                <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                                 <span class="text-sm font-black tracking-tight">CEPLOK</span>
                             </span>
                         </x-slot:logo>
                         <x-slot:collapsed-logo>
-                            <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                <span class="rounded-sm bg-white"></span>
-                                <span class="rounded-sm bg-primary-300"></span>
-                                <span class="rounded-sm bg-primary-300"></span>
-                                <span class="rounded-sm bg-white"></span>
-                            </span>
+                            <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                         </x-slot:collapsed-logo>
                     @endif
                 </x-ceplok::sidebar>
@@ -244,14 +239,6 @@ new class extends Component
                         </p>
                     </div>
 
-                    {{-- Tombol simulasi ganti halaman aktif --}}
-                    <div class="mt-4 flex flex-wrap gap-2 pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
-                        <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 self-center mr-2">Simulasi Klik:</span>
-                        <button type="button" wire:click="selectMenu('Menu 1')" class="rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Menu 1</button>
-                        <button type="button" wire:click="selectMenu('Menu 2')" class="rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Menu 2</button>
-                        <button type="button" wire:click="selectMenu('Sub - Menu 1')" class="rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Sub - Menu 1</button>
-                        <button type="button" wire:click="selectMenu('Menu 4')" class="rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Menu 4</button>
-                    </div>
                 </div>
             </div>
         </x-docs.stage>

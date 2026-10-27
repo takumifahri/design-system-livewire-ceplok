@@ -20,7 +20,8 @@ berulang kali di dalam komponen Livewire.
   (`font-alt-2`). Disalin apa adanya dari kit React.
 - **Komponen**: `alert`, `avatar`, `badge`, `breadcrumb`, `button`, `card`,
   `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`, `modal`,
-  `pagination`, `popover`, `sidebar`, `spinner`, `table` (beserta
+  `list-view` (beserta `list-view.item` dan `list-view.article`), `pagination`,
+  `popover`, `sidebar`, `spinner`, `table` (beserta
   `table-image` dan `table-file`), `toast`.
 - **Elemen form**: `checkbox`, `datepicker`, `floating-label`, `input-field`,
   `radio`, `search`, `select`, `text-area`, `toggle`, `upload`.
@@ -149,7 +150,9 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 | `icon` | slot berisi `<svg>` yang memakai `currentColor` |
 | `breadcrumb` | `items` (`label`, `href`, `icon`, `attributes`), slot `separator`, `size`: `sm \| base`, `background`: `bg \| none`, `dark-mode` |
 | `pagination` | `current-page`, `total-pages`, `theme`: `default \| primary \| purple`, `size`: `base \| s \| responsive`, `url`, `dark-mode` |
+| `drawer` | `open`, `position`: `right \| left \| top \| bottom`, `size`: `s \| m \| l \| xl \| full`, `close-on-overlay-click`, `close-on-esc`, `eyebrow`, `header`, `items`, `theme`, `footer`, `dark-mode`; atau isi slot memakai `drawer.header`, `drawer.body`, `drawer.nav-item`, dan `drawer.sub-item` |
 | `sidebar` | `items`, `groups`, `logo`, `collapsed-logo`, `user`, `sticky`, `collapsed`, `show-collapse-button`, `footer`, `dark-mode` |
+| `list-view` | `items` atau slot item, `gap`: `none \| sm \| md \| lg`, `size`, `platform`: `desktop \| mobile`, `decoration`, `dark-mode`, `as`. `list-view.item`: `variant`: `simple \| article`, `title`, `description`, `metadata`, `icon`, `badge`, `action-label`, `action-href`, `action-wire-click`, `href` |
 | `popover` | slot `trigger` (atribut slot menjadi props Button kit, atau `<button>` polos dengan `raw`), `title` (prop atau slot), slot isi, `side`: `top \| right \| bottom \| left`, `dark-mode`, `open` |
 | `modal` | slot `trigger` (seperti Popover; opsional bila diikat `wire:model`/`x-model`), `variant`: `default \| popup`, `size`: `s \| m`, `title` (prop atau slot), slot `footer`, `close-on-backdrop`, `close-on-escape`, `show-close-button`, `close-label`, `open` |
 | `table` | `columns` (array kolom: `key`, `header`, `cell`, `actions`, `image`, `file`, `children`, `sortable`, `sort-value`, `sort-fn`, `sort-directions`, `sort-resettable`, `sort-icon`, `align`, `header-align`, `emphasis`, `width`, `min-width`, `hideable`, `wrap`), `data` (array, Collection, atau `LengthAwarePaginator`), `row-key`, `size`: `normal \| compact`, `sticky`, `search`, `filter`, slot `actions`, `selectable`, `selected-keys`, `sort`, `sort-icon`, `header-align`, `pagination`, `manual`, `striped`, `loading`, `empty-text` |
@@ -183,6 +186,9 @@ terluar. `id` kontrol dibuat stabil bila tidak diisi, jadi `<label for>` dan
 | --- | --- |
 | `badge`, `alert`, `toast` | `wire:model` mengikat tampil/sembunyi ke properti boolean, dan nilai awalnya dibaca dari properti itu, jadi HTML pertama dari server sudah benar. Tombol tutup memicu event `dismiss`: `wire:dismiss="hapusFilter('aktif')"`. |
 | `pagination` | `wire:model.live="page"` mengikat halaman aktif. Setiap klik juga mengirim event `page-change` dengan `detail.page`. Untuk halaman Blade biasa, `url="/pengajuan?page={page}"` atau closure membuat setiap halaman menjadi tautan. |
+| `drawer` | `wire:model` (atau `wire:model.live`) mengikat buka/tutup Drawer. Saat tombol tutup, backdrop, atau Esc menutup panel, event `close` dapat ditangkap: `wire:close="tutupDrawer"`. |
+| `sidebar` | Tombol collapse mengirim event `collapse` dengan `detail.collapsed`; tangkap dengan `wire:collapse="$set('collapsed', $event.detail.collapsed)"`. Klik menu tetap mengikuti `href` atau atribut `wire:*` yang diberikan pada item. |
+| `list-view` | Tambahkan `action-wire-click` pada `list-view.item` atau data `items` untuk menjadikan tombol aksi bawaannya target Livewire, mis. `action-wire-click="openBrief"`. Kartu tidak otomatis menjadi target klik. |
 | `breadcrumb` | `'attributes' => ['wire:navigate' => true]` pada item diteruskan ke tautannya. |
 | `hero` | `:button-attributes="['wire:click' => 'mulai']"` diteruskan ke tombolnya. |
 | `input-field`, `floating-label`, `text-area` | `wire:model` diteruskan ke kontrolnya, dan nilai awalnya dirender server (kecuali kata sandi). Tombol hapus memicu event `clear`; Text Area editor memicu `submit` dan `toolbar-action` (`detail.action`): `wire:submit="kirim"`, `wire:toolbar-action="sisipkan($event.detail.action)"`. |
@@ -219,7 +225,7 @@ Warna komponen berasal dari token semantik, jadi tema gelap cukup mengganti
 nilai token lewat atribut `data-theme="dark"`:
 
 - Prop `dark-mode` memasang `data-theme="dark"` pada elemen terluar `card`,
-  `hero`, `container`, `alert`, `toast`, `breadcrumb`, `input-field`,
+  `hero`, `container`, `drawer`, `sidebar`, `list-view`, `alert`, `toast`, `breadcrumb`, `input-field`,
   `floating-label`, `text-area`, `select`, `search`, `checkbox`, `radio`, dan
   `toggle`. Panel pilihan Select tetap terang, sesuai desain.
 - Komponen tersebut ikut gelap bila salah satu pembungkusnya memakai

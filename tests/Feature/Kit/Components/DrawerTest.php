@@ -101,6 +101,17 @@ class DrawerTest extends TestCase
         $this->assertNotNull($button->querySelector('svg'));
     }
 
+    public function test_drawer_sub_item_disabled_tidak_memiliki_tujuan_link(): void
+    {
+        $dom = $this->dom('<x-ceplok::drawer.sub-item label="Arsip" href="/arsip" disabled />');
+        $item = $this->find($dom, 'a');
+
+        $this->assertNull($item->getAttribute('href'));
+        $this->assertSame('true', $item->getAttribute('aria-disabled'));
+        $this->assertSame('-1', $item->getAttribute('tabindex'));
+        $this->assertHasClasses($item, 'aria-disabled:pointer-events-none');
+    }
+
     public function test_prop_yang_tidak_sah_ditolak(): void
     {
         $this->assertPropError(

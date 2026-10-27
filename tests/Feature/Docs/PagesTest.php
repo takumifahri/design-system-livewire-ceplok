@@ -26,6 +26,7 @@ class PagesTest extends TestCase
             'alert' => ['components.alert', 'Alert', 'Alert'],
             'toast' => ['components.toast', 'Toast', 'Toast'],
             'card' => ['components.card', 'Card', 'Card'],
+            'list-view' => ['components.list-view', 'List View', 'List View'],
             'hero' => ['components.hero', 'Hero', 'Hero'],
             'footer' => ['components.footer', 'Footer', 'Footer'],
             'breadcrumb' => ['components.breadcrumb', 'Breadcrumb', 'Breadcrumb'],

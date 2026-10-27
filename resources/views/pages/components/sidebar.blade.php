@@ -15,7 +15,7 @@
 
     $sidebarItemProps = [
         ['label', 'string', 'required', 'Teks menu yang ditampilkan.'],
-        ['href', 'string', 'null', 'Tujuan tautan menu.'],
+        ['href', 'string', 'null', 'Tujuan tautan menu; diabaikan bila item memiliki children karena item menjadi tombol disclosure.'],
         ['external', 'bool', 'false', 'Menandai tautan eksternal; otomatis membuka tab baru dengan rel="noreferrer noopener".'],
         ['icon', 'Htmlable | string', 'null', 'Icon opsional di sebelah label menu.'],
         ['badge', 'Htmlable | string | int', 'null', 'Konten badge pada sisi kanan menu.'],
@@ -162,7 +162,7 @@
                         <p class="mt-1 text-xs leading-5 text-gray-500">Navigasi dasar tanpa logo dan informasi akun.</p>
                     </div>
                     <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50">
-                        <x-ceplok::sidebar class="!min-h-0 h-full" :items="$menuOnlyItems" />
+                        <x-ceplok::sidebar class="!min-h-0 h-full" x-on:click.capture="$event.target.closest('a') && $event.preventDefault()" :items="$menuOnlyItems" />
                     </div>
                 </article>
 
@@ -175,28 +175,20 @@
                     <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
+                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
+                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
                             :items="$standardItems"
                             :user="$dummyUser"
                             show-collapse-button
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
-                                    <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                        <span class="rounded-sm bg-white"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-white"></span>
-                                    </span>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                                     <span class="text-sm font-black tracking-tight">CEPLOK</span>
                                 </span>
                             </x-slot:logo>
                             <x-slot:collapsed-logo>
-                                <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                    <span class="rounded-sm bg-white"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-white"></span>
-                                </span>
+                                <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                             </x-slot:collapsed-logo>
                         </x-ceplok::sidebar>
                     </div>
@@ -211,28 +203,20 @@
                     <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
+                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
+                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
                             :items="$nestedItems"
                             :user="$dummyUser"
                             show-collapse-button
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
-                                    <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                        <span class="rounded-sm bg-white"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-white"></span>
-                                    </span>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                                     <span class="text-sm font-black tracking-tight">CEPLOK</span>
                                 </span>
                             </x-slot:logo>
                             <x-slot:collapsed-logo>
-                                <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                    <span class="rounded-sm bg-white"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-white"></span>
-                                </span>
+                                <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                             </x-slot:collapsed-logo>
                         </x-ceplok::sidebar>
                     </div>
@@ -247,42 +231,36 @@
                     <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
+                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
+                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
                             :groups="$iconGroups"
                             :user="$dummyUser"
                             show-collapse-button
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
-                                    <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                        <span class="rounded-sm bg-white"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-white"></span>
-                                    </span>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                                     <span class="text-sm font-black tracking-tight">CEPLOK</span>
                                 </span>
                             </x-slot:logo>
                             <x-slot:collapsed-logo>
-                                <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                    <span class="rounded-sm bg-white"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-white"></span>
-                                </span>
+                                <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                             </x-slot:collapsed-logo>
                         </x-ceplok::sidebar>
                     </div>
                 </article>
 
                 {{-- Varian 5 --}}
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white lg:col-span-2 max-w-[480px]">
+                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white lg:col-span-2">
                     <div class="border-b border-gray-200 px-4 py-3">
                         <h3 class="text-sm font-bold text-gray-900">5. Collapsed</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500">Konfigurasi varian 4 dalam kondisi tertutup: icon, user, dan logo mark tetap terlihat.</p>
                     </div>
-                    <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50 flex justify-center py-2">
+                    <div class="flex h-[440px] items-start overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
+                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
+                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
                             :groups="$iconGroups"
                             :user="$dummyUser"
                             collapsed
@@ -290,22 +268,12 @@
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
-                                    <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                        <span class="rounded-sm bg-white"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-white"></span>
-                                    </span>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                                     <span class="text-sm font-black tracking-tight">CEPLOK</span>
                                 </span>
                             </x-slot:logo>
                             <x-slot:collapsed-logo>
-                                <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                    <span class="rounded-sm bg-white"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-white"></span>
-                                </span>
+                                <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                             </x-slot:collapsed-logo>
                         </x-ceplok::sidebar>
                     </div>
@@ -356,6 +324,7 @@
                     <div class="mb-4 max-w-[280px] overflow-hidden rounded-xl border border-gray-200 bg-white">
                         <x-ceplok::sidebar
                             class="!min-h-0"
+                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
                             :items="[
                                 [
                                     'label' => 'Menu 3',
@@ -423,7 +392,7 @@
             </x-docs.lead>
 
             <div class="mb-4 max-w-[280px] overflow-hidden rounded-xl border border-gray-200 bg-white">
-                <x-ceplok::sidebar class="!min-h-0" :groups="$separatorGroups" />
+                <x-ceplok::sidebar class="!min-h-0" x-on:click.capture="$event.target.closest('a') && $event.preventDefault()" :groups="$separatorGroups" />
             </div>
 
             <x-docs.code>
@@ -455,19 +424,21 @@
         {{-- SECTION 5: DARK MODE --}}
         <x-docs.section id="dark-mode" title="Dark mode">
             <x-docs.lead>
-                Prop <code>dark-mode</code> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Sidebar.
+                Prop <span class="text-primary-500">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Sidebar.
                 Komponen secara otomatis menyesuaikan warna ikon, teks aktif/inaktif, badge, profil, dan border untuk menjaga rasio kontras.
             </x-docs.lead>
 
             <div class="mb-4 grid gap-4 lg:grid-cols-2">
-                <article class="overflow-hidden rounded-xl border border-gray-800 bg-gray-900">
-                    <div class="border-b border-gray-800 px-4 py-3">
-                        <h3 class="text-sm font-bold text-white">1. Multi-level menu + icon, user info, logo web</h3>
-                        <p class="mt-1 text-xs leading-5 text-gray-400">Menu berikon dikelompokkan; separator membedakan area konten.</p>
+                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                    <div class="border-b border-gray-200 px-4 py-3">
+                        <h3 class="text-sm font-bold text-gray-900">1. Multi-level menu + icon, user info, logo web</h3>
+                        <p class="mt-1 text-xs leading-5 text-gray-500">Menu berikon dikelompokkan; separator membedakan area konten.</p>
                     </div>
                     <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-950">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
+                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
+                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
                             :groups="$iconGroups"
                             :user="$dummyUser"
                             dark-mode
@@ -475,35 +446,27 @@
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
-                                    <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                        <span class="rounded-sm bg-white"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-white"></span>
-                                    </span>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                                     <span class="text-sm font-black tracking-tight text-white">CEPLOK</span>
                                 </span>
                             </x-slot:logo>
                             <x-slot:collapsed-logo>
-                                <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                    <span class="rounded-sm bg-white"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-white"></span>
-                                </span>
+                                <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                             </x-slot:collapsed-logo>
                         </x-ceplok::sidebar>
                     </div>
                 </article>
 
-                <article class="overflow-hidden rounded-xl border border-gray-800 bg-gray-900">
-                    <div class="border-b border-gray-800 px-4 py-3">
-                        <h3 class="text-sm font-bold text-white">2. Collapsed</h3>
-                        <p class="mt-1 text-xs leading-5 text-gray-400">Konfigurasi varian 1 dalam kondisi tertutup: icon, user, dan logo terlihat.</p>
+                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                    <div class="border-b border-gray-200 px-4 py-3">
+                        <h3 class="text-sm font-bold text-gray-900">2. Collapsed</h3>
+                        <p class="mt-1 text-xs leading-5 text-gray-500">Konfigurasi varian 1 dalam kondisi tertutup: icon, user, dan logo terlihat.</p>
                     </div>
-                    <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-950 flex justify-center py-2">
+                    <div class="flex h-[440px] items-start overflow-y-auto overscroll-contain bg-gray-950">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
+                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
+                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
                             :groups="$iconGroups"
                             :user="$dummyUser"
                             collapsed
@@ -512,22 +475,12 @@
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
-                                    <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                        <span class="rounded-sm bg-white"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-primary-300"></span>
-                                        <span class="rounded-sm bg-white"></span>
-                                    </span>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                                     <span class="text-sm font-black tracking-tight text-white">CEPLOK</span>
                                 </span>
                             </x-slot:logo>
                             <x-slot:collapsed-logo>
-                                <span class="grid size-9 grid-cols-2 gap-0.5 rounded-md bg-primary-700 p-1.5">
-                                    <span class="rounded-sm bg-white"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-primary-300"></span>
-                                    <span class="rounded-sm bg-white"></span>
-                                </span>
+                                <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                             </x-slot:collapsed-logo>
                         </x-ceplok::sidebar>
                     </div>
@@ -546,34 +499,6 @@
 
             <livewire:playground.sidebar-livewire />
 
-            <div class="mt-6">
-                <x-docs.code>
-                    @verbatim
-                    {{-- Komponen Livewire --}}
-                    <x-ceplok::sidebar
-                        :collapsed="$collapsed"
-                        ⟦show-collapse-button⟧
-                        ⟦wire:collapse⟧="toggleCollapse"
-                        :items="[
-                            [
-                                'label' => 'Dashboard',
-                                'icon' => 'ceplok-s-chart-pie',
-                                'active' => $halaman === 'Dashboard',
-                                'attributes' => ['wire:click.prevent' => 'navigasi(\'Dashboard\')'],
-                            ],
-                            [
-                                'label' => 'Pesanan',
-                                'icon' => 'ceplok-s-cart',
-                                'active' => $halaman === 'Pesanan',
-                                'badge' => 3,
-                                'attributes' => ['wire:click.prevent' => 'navigasi(\'Pesanan\')'],
-                            ],
-                        ]"
-                        :user="$user"
-                    />
-                    @endverbatim
-                </x-docs.code>
-            </div>
         </x-docs.section>
 
         {{-- SECTION 8: PROPERTIES --}}

@@ -27,7 +27,7 @@ new class extends Component
             <div class="relative flex h-full w-[380px] max-w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md">
                 <div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3.5">
                     <div class="flex items-center gap-2.5">
-                        <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-600 text-xs font-bold text-white">C</div>
+                        <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 shrink-0 object-contain">
                         <span class="text-base font-bold tracking-tight text-gray-900">CEPLOK</span>
                     </div>
                     <x-ceplok::drawer.trigger wire:click="$set('buka', true)" />

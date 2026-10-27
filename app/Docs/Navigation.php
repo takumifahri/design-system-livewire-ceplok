@@ -74,6 +74,7 @@ final class Navigation
                     ['label' => 'Alert', 'route' => 'components.alert', 'keywords' => 'peringatan pesan'],
                     ['label' => 'Toast', 'route' => 'components.toast', 'keywords' => 'notifikasi'],
                     ['label' => 'Card', 'route' => 'components.card', 'keywords' => 'kartu'],
+                    ['label' => 'List View', 'route' => 'components.list-view', 'keywords' => 'daftar dokumen artikel diskusi'],
                     ['label' => 'Hero', 'route' => 'components.hero', 'keywords' => 'banner'],
                     ['label' => 'Footer', 'route' => 'components.footer', 'keywords' => 'kaki halaman'],
                     ['label' => 'Breadcrumb', 'route' => 'components.breadcrumb', 'keywords' => 'jejak remah'],

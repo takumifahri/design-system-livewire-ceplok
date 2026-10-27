@@ -20,6 +20,24 @@
      */
     --font-alt-2: Arial, 'Helvetica Neue', Helvetica, 'Liberation Sans', sans-serif;
 
+    /*
+     * Ketebalan huruf (utility `font-thin` sampai `font-black`). Namanya sama
+     * dengan bawaan Tailwind, jadi token ini yang dipakai utility-nya.
+     *
+     * Lato (Lato 2.0 di fonts/lato.css) dan Inter punya kesembilan tingkat.
+     * Arial umumnya hanya 400 dan 700; tingkat lain digantikan browser dengan
+     * yang terdekat, mis. semibold (600) tampil 700.
+     */
+    --font-weight-thin: 100;
+    --font-weight-extralight: 200;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --font-weight-black: 900;
+
     --color-primary-50: #ebf5ff;
     --color-primary-100: #e1effe;
     --color-primary-200: #c3ddfd;
@@ -526,6 +544,20 @@
     --color-alert-purple-close: var(--color-purple-800);
 }
 
+/* Table of Contents */
+@theme static {
+    --color-toc-surface: var(--color-gray-50);
+}
+
+[data-theme='dark'] {
+    --color-toc-surface: var(--color-gray-800);
+}
+
+[data-theme='light'],
+.ds-theme-light {
+    --color-toc-surface: var(--color-gray-50);
+}
+
 /* Sidebar */
 @theme static {
     --color-sidebar-surface: #ffffff;
@@ -557,6 +589,49 @@
     --color-search-field-surface: var(--color-gray-50);
 }
 
+/* Dropdown */
+@theme static {
+    --color-dropdown-surface: #ffffff;
+    --color-dropdown-content: var(--color-gray-900);
+    --color-dropdown-item-content: var(--color-gray-700);
+    --color-dropdown-item-icon: var(--color-gray-500);
+    --color-dropdown-item-description: var(--color-gray-500);
+    --color-dropdown-item-disabled: var(--color-gray-700);
+    --color-dropdown-item-support-disabled: var(--color-gray-500);
+    --color-dropdown-item-hover-surface: var(--color-gray-100);
+    --color-dropdown-item-danger-hover-surface: var(--color-red-50);
+    --color-dropdown-item-current-surface: var(--color-gray-100);
+    --color-dropdown-group-label: var(--color-gray-400);
+}
+
+[data-theme='dark'] {
+    --color-dropdown-surface: var(--color-gray-800);
+    --color-dropdown-content: var(--color-gray-300);
+    --color-dropdown-item-content: var(--color-gray-300);
+    --color-dropdown-item-icon: var(--color-gray-300);
+    --color-dropdown-item-description: var(--color-gray-400);
+    --color-dropdown-item-disabled: var(--color-gray-500);
+    --color-dropdown-item-support-disabled: var(--color-gray-500);
+    --color-dropdown-item-hover-surface: var(--color-gray-700);
+    --color-dropdown-item-danger-hover-surface: var(--color-gray-700);
+    --color-dropdown-item-current-surface: var(--color-gray-700);
+    --color-dropdown-group-label: var(--color-gray-400);
+}
+
+[data-theme='light'],
+.ds-theme-light {
+    --color-dropdown-surface: #ffffff;
+    --color-dropdown-content: var(--color-gray-900);
+    --color-dropdown-item-content: var(--color-gray-700);
+    --color-dropdown-item-icon: var(--color-gray-500);
+    --color-dropdown-item-description: var(--color-gray-500);
+    --color-dropdown-item-disabled: var(--color-gray-700);
+    --color-dropdown-item-support-disabled: var(--color-gray-500);
+    --color-dropdown-item-hover-surface: var(--color-gray-100);
+    --color-dropdown-item-danger-hover-surface: var(--color-red-50);
+    --color-dropdown-item-current-surface: var(--color-gray-100);
+    --color-dropdown-group-label: var(--color-gray-400);
+}
 /* Breadcrumb */
 @theme static {
     --color-breadcrumb-surface: var(--color-gray-100);
@@ -575,6 +650,33 @@
     --color-breadcrumb-surface: var(--color-gray-100);
     --color-breadcrumb-active: var(--color-gray-900);
     --color-breadcrumb-link-hover: var(--color-primary-700);
+}
+
+/*
+ * Timeline. Garis, latar avatar, dan tepi kartu memakai token semantik
+ * `border` (gray-200/gray-700), nama dan jabatan memakai `brand`
+ * (primary-600/primary-400), dan status memakai Badge, persis seperti
+ * desainnya. Nilai di bawah adalah token terdekat dari warna desain: teks isi
+ * #1F2A37 menjadi gray-800, siluet avatar hitam menjadi gray-900, dan latar
+ * kartu gelap #1C2634 menjadi gray-800.
+ */
+@theme static {
+    --color-timeline-surface: #ffffff;
+    --color-timeline-content: var(--color-gray-800);
+    --color-timeline-avatar: var(--color-gray-900);
+}
+
+[data-theme='dark'] {
+    --color-timeline-surface: var(--color-gray-800);
+    --color-timeline-content: var(--color-gray-100);
+    --color-timeline-avatar: var(--color-gray-100);
+}
+
+[data-theme='light'],
+.ds-theme-light {
+    --color-timeline-surface: #ffffff;
+    --color-timeline-content: var(--color-gray-800);
+    --color-timeline-avatar: var(--color-gray-900);
 }
 
 @media (max-width: 639px) {

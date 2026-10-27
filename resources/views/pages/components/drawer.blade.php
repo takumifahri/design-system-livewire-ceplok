@@ -78,9 +78,7 @@
                         <div class="relative flex h-full w-[360px] max-w-full flex-col overflow-hidden rounded-none border-x border-gray-200 bg-white shadow-md">
                             <div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3.5">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-600 text-xs font-bold text-white">
-                                        C
-                                    </div>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 shrink-0 object-contain">
                                     <span class="text-base font-bold tracking-tight text-gray-900">CEPLOK</span>
                                 </div>
                                 <x-ceplok::drawer.trigger />
@@ -119,9 +117,7 @@
                         <div class="relative flex h-full w-[360px] max-w-full flex-col overflow-hidden rounded-none border-x border-gray-200 bg-white shadow-md">
                             <div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3.5">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-600 text-xs font-bold text-white">
-                                        C
-                                    </div>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 shrink-0 object-contain">
                                     <span class="text-base font-bold tracking-tight text-gray-900">CEPLOK</span>
                                 </div>
                                 <x-ceplok::drawer.trigger />
@@ -153,9 +149,7 @@
                         <div class="relative flex h-full w-[360px] max-w-full flex-col overflow-hidden rounded-none border-x border-white/10 bg-gray-800 shadow-2xl">
                             <div class="flex shrink-0 items-center justify-between border-b border-gray-800 bg-gray-900 px-4 py-3.5">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-600 text-xs font-bold text-white">
-                                        C
-                                    </div>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 shrink-0 object-contain">
                                     <span class="text-base font-bold tracking-tight text-white">CEPLOK</span>
                                 </div>
                                 <x-ceplok::drawer.trigger dark-mode />
@@ -193,9 +187,7 @@
                         <div class="relative flex h-full w-[360px] max-w-full flex-col overflow-hidden rounded-none border-x border-white/10 bg-gray-800 shadow-2xl">
                             <div class="flex shrink-0 items-center justify-between border-b border-gray-800 bg-gray-900 px-4 py-3.5">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-600 text-xs font-bold text-white">
-                                        C
-                                    </div>
+                                    <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 shrink-0 object-contain">
                                     <span class="text-base font-bold tracking-tight text-white">CEPLOK</span>
                                 </div>
                                 <x-ceplok::drawer.trigger dark-mode />

@@ -15,11 +15,6 @@ new class extends Component
 
     public int $jumlahKlik = 0;
 
-    public function toggleCollapse(): void
-    {
-        $this->collapsed = ! $this->collapsed;
-    }
-
     public function navigasi(string $nama): void
     {
         $this->halaman = $nama;
@@ -28,28 +23,31 @@ new class extends Component
 };
 ?>
 
-<div class="space-y-4">
-    <div class="flex flex-wrap items-center gap-3">
-        <x-ceplok::button size="s" wire:click="toggleCollapse">
-            {{ $collapsed ? 'Buka Sidebar' : 'Tutup Sidebar' }}
-        </x-ceplok::button>
-        <span class="text-sm text-gray-600 dark:text-gray-400">
+<div class="flex flex-col gap-4">
+    <div class="order-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-gray-600">
+        <span>
             <code class="text-xs font-bold text-gray-700 dark:text-gray-300">$collapsed</code> = {{ $collapsed ? 'true' : 'false' }}
             · Halaman aktif: <strong class="text-primary-600 dark:text-primary-400">{{ $halaman }}</strong>
             · Diklik {{ $jumlahKlik }}×
         </span>
     </div>
 
-    <div class="flex h-[360px] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <x-docs.stage max-width="max-w-[768px]">
+        <div class="flex h-[520px] w-full items-center justify-center py-4">
+            <div
+        class="flex h-full w-full overflow-hidden rounded-xl border border-gray-200 bg-white"
+            >
         <x-ceplok::sidebar
             class="!min-h-0 h-full shrink-0"
+            style="transition: width 200ms ease-out"
             :collapsed="$collapsed"
             show-collapse-button
-            wire:collapse="toggleCollapse"
+            x-on:collapse="$wire.set('collapsed', $event.detail.collapsed)"
+            x-on:click.capture="const link = $event.target.closest('nav a'); if (link) { $event.preventDefault(); $wire.navigasi(link.textContent.trim()) }"
             :items="[
-                ['label' => 'Dashboard', 'icon' => 'ceplok-s-chart-pie', 'active' => $halaman === 'Dashboard', 'href' => '#', 'attributes' => ['wire:click.prevent' => 'navigasi(\'Dashboard\')']],
-                ['label' => 'Pesanan', 'icon' => 'ceplok-s-cart', 'active' => $halaman === 'Pesanan', 'badge' => 3, 'href' => '#', 'attributes' => ['wire:click.prevent' => 'navigasi(\'Pesanan\')']],
-                ['label' => 'Kotak Masuk', 'icon' => 'ceplok-s-inbox', 'active' => $halaman === 'Kotak Masuk', 'href' => '#', 'attributes' => ['wire:click.prevent' => 'navigasi(\'Kotak Masuk\')']],
+                ['label' => 'Dashboard', 'icon' => 'ceplok-s-chart-pie', 'active' => $halaman === 'Dashboard', 'href' => '#'],
+                ['label' => 'Pesanan', 'icon' => 'ceplok-s-cart', 'active' => $halaman === 'Pesanan', 'href' => '#'],
+                ['label' => 'Kotak Masuk', 'icon' => 'ceplok-s-inbox', 'active' => $halaman === 'Kotak Masuk', 'href' => '#'],
             ]"
             :user="[
                 'name' => 'Admin Livewire',
@@ -64,12 +62,14 @@ new class extends Component
             </x-slot:collapsed-logo>
         </x-ceplok::sidebar>
 
-        <div class="flex-1 p-6 overflow-y-auto">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Konten {{ $halaman }}</h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <div class="flex-1 overflow-y-auto p-6">
+            <h3 class="text-lg font-bold text-gray-900">Konten {{ $halaman }}</h3>
+            <p class="mt-2 text-sm text-gray-600">
                 Komponen Livewire memproses navigasi menu tanpa memuat ulang halaman penuh.
                 Sidebar diperbarui secara instan lewat re-render Livewire.
             </p>
         </div>
-    </div>
+            </div>
+        </div>
+    </x-docs.stage>
 </div>

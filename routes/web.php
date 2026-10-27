@@ -20,6 +20,7 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/alert', 'pages.components.alert')->name('alert');
     Route::view('/toast', 'pages.components.toast')->name('toast');
     Route::view('/card', 'pages.components.card')->name('card');
+    Route::view('/list-view', 'pages.components.list-view')->name('list-view');
     Route::view('/hero', 'pages.components.hero')->name('hero');
     Route::view('/footer', 'pages.components.footer')->name('footer');
     Route::view('/breadcrumb', 'pages.components.breadcrumb')->name('breadcrumb');

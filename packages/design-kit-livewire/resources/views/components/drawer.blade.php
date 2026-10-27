@@ -121,6 +121,7 @@
                                     :active="!empty($sub['active'])"
                                     :theme="$sub['theme'] ?? $itemTheme"
                                     :href="$sub['href'] ?? null"
+                                    :disabled="!empty($sub['disabled'])"
                                     :dark-mode="$darkMode"
                                 />
                             @endforeach
