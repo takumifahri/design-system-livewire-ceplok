@@ -65,7 +65,7 @@ $containerProps = [
                                 tombol aksi XS.</p>
                             <x-docs.demo>
                                 <div class="w-full max-w-[410px]">
-                                    <x-ceplok::list-view.item size="s" title="Project brief"
+                                    <x-ceplok::list-view size="s" title="Project brief"
                                         :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
                                 </div>
                             </x-docs.demo>
@@ -76,7 +76,7 @@ $containerProps = [
                                 tombol aksi S.</p>
                             <x-docs.demo>
                                 <div class="w-full max-w-[514px]">
-                                    <x-ceplok::list-view.item title="Project brief"
+                                    <x-ceplok::list-view title="Project brief"
                                         :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
                                 </div>
                             </x-docs.demo>
@@ -87,7 +87,7 @@ $containerProps = [
                                 tombol aksi Base.</p>
                             <x-docs.demo>
                                 <div class="w-full max-w-[600px]">
-                                    <x-ceplok::list-view.item size="l" title="Project brief"
+                                    <x-ceplok::list-view size="l" title="Project brief"
                                         :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
                                 </div>
                             </x-docs.demo>
@@ -101,7 +101,7 @@ $containerProps = [
                         baris yang ringkas.</p>
                     <x-docs.demo>
                         <div class="w-full max-w-[348px]">
-                            <x-ceplok::list-view.item platform="mobile" title="Project brief"
+                            <x-ceplok::list-view platform="mobile" title="Project brief"
                                 :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" />
                         </div>
                     </x-docs.demo>
@@ -110,34 +110,42 @@ $containerProps = [
 
             <x-docs.code>@verbatim
                 {{-- Desktop S (410 px) --}}
-                <x-ceplok::list-view.item ⟦size⟧="s" title="Project brief" :metadata="['PDF', '2.4 MB']"
+                <x-ceplok::list-view ⟦size⟧="s" title="Project brief" :metadata="['PDF', '2.4 MB']"
                     action-label="Open" />
 
                 {{-- Desktop M · default (514 px) --}}
-                <x-ceplok::list-view.item title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
+                <x-ceplok::list-view title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
 
                 {{-- Desktop L (600 px) --}}
-                <x-ceplok::list-view.item ⟦size⟧="l" title="Project brief" :metadata="['PDF', '2.4 MB']"
+                <x-ceplok::list-view ⟦size⟧="l" title="Project brief" :metadata="['PDF', '2.4 MB']"
                     action-label="Open" />
 
                 {{-- Mobile · ukuran standar (348 px) --}}
-                <x-ceplok::list-view.item ⟦platform⟧="mobile" title="Project brief" :metadata="['PDF', '2.4 MB']" />
+                <x-ceplok::list-view ⟦platform⟧="mobile" title="Project brief" :metadata="['PDF', '2.4 MB']" />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="article" title="List View Article">
-            <p class="mb-6 text-body-sm text-gray-500">Varian article tersedia dalam ukuran S, M, L, dan XL untuk
-                menampilkan topik, metadata, pin, serta metrik interaksi.</p>
+            <p class="mb-6 max-w-2xl text-body-sm text-gray-500">
+                Varian <span class="text-primary-500">variant="article"</span> untuk artikel, diskusi, atau utas topik.
+                Garis aksen selalu aktif; header memuat <span class="text-primary-500">subject</span>, metadata, dan pin,
+                sementara judul semibold serta metrik berada di bawah.
+            </p>
             <div class="space-y-6">
-                @foreach ([['s', 'max-w-[410px]'], ['m', 'max-w-[514px]'], ['l', 'max-w-[728px]'], ['xl',
-                'max-w-[1028px]']] as [$size, $widthClass])
+                @foreach ([
+                    ['size' => 's', 'width' => 'max-w-[410px]', 'label' => 'Small (S)', 'description' => 'Ukuran ringkas (410 px) dengan judul semibold 14px dan metrik interaksi 12px.'],
+                    ['size' => 'm', 'width' => 'max-w-[514px]', 'label' => 'Medium (M) · Default', 'description' => 'Ukuran standar bawaan (514 px) dengan judul semibold 16px dan proporsi yang seimbang.'],
+                    ['size' => 'l', 'width' => 'max-w-[728px]', 'label' => 'Large (L)', 'description' => 'Ukuran lapang (728 px) dengan judul semibold 18px untuk keterbacaan yang lebih tinggi.'],
+                    ['size' => 'xl', 'width' => 'max-w-[1028px]', 'label' => 'Extra Large (XL)', 'description' => 'Ukuran ekstra besar (1028 px) dengan judul semibold 20px dan bantalan lebih luas, ideal untuk judul panjang atau artikel sorotan utama.'],
+                ] as $articleVariant)
+                    @php($size = $articleVariant['size'])
                 <div>
-                    <h4 class="mb-3 text-sm font-bold text-gray-900">
-                        {{ strtoupper($size) }}{{ $size === 'm' ? ' · Default' : '' }}</h4>
+                    <h4 class="mb-2 text-sm font-bold text-gray-900">{{ $articleVariant['label'] }}</h4>
+                    <p class="mb-3 text-body-sm text-gray-500">{{ $articleVariant['description'] }}</p>
                     <x-docs.demo>
-                        <div class="w-full {{ $widthClass }}">
-                            <x-ceplok::list-view.article :size="$size" subject="Subject Name" category="Category"
+                        <div class="w-full {{ $articleVariant['width'] }}">
+                            <x-ceplok::list-view variant="article" :size="$size" subject="Subject Name" category="Category"
                                 timestamp="12 Okt 2026 09:59 WIB"
                                 :title="$size === 'xl' ? 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi. Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi.' : 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi'"
                                 :views="609" :comments="3" :likes="16" />
@@ -148,22 +156,22 @@ $containerProps = [
             </div>
             <x-docs.code>@verbatim
                 {{-- Article S (410 px) --}}
-                <x-ceplok::list-view.article ⟦size⟧="s" subject="Subject Name" category="Category"
+                <x-ceplok::list-view variant="article" ⟦size⟧="s" subject="Subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
                     :comments="3" :likes="16" />
 
                 {{-- Article M · default (514 px) --}}
-                <x-ceplok::list-view.article subject="Subject Name" category="Category"
+                <x-ceplok::list-view variant="article" subject="Subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
                     :comments="3" :likes="16" />
 
                 {{-- Article L (728 px) --}}
-                <x-ceplok::list-view.article ⟦size⟧="l" subject="Subject Name" category="Category"
+                <x-ceplok::list-view variant="article" ⟦size⟧="l" subject="Subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
                     :comments="3" :likes="16" />
 
                 {{-- Article XL (1028 px) --}}
-                <x-ceplok::list-view.article ⟦size⟧="xl" subject="Subject Name" category="Category"
+                <x-ceplok::list-view variant="article" ⟦size⟧="xl" subject="Subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
                     :comments="3" :likes="16" />
                 @endverbatim
@@ -176,23 +184,23 @@ $containerProps = [
             <div class="space-y-5">
                 <x-docs.demo label="Desktop">
                     <div class="w-full max-w-[514px]">
-                        <x-ceplok::list-view.item decoration title="Project brief"
+                        <x-ceplok::list-view decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
                     </div>
                 </x-docs.demo>
                 <x-docs.demo label="Mobile">
                     <div class="w-full max-w-[348px]">
-                        <x-ceplok::list-view.item platform="mobile" decoration title="Project brief"
+                        <x-ceplok::list-view platform="mobile" decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" />
                     </div>
                 </x-docs.demo>
             </div>
             <x-docs.code>@verbatim
                 {{-- Tanpa decoration · default --}}
-                <x-ceplok::list-view.item title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
+                <x-ceplok::list-view title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
 
                 {{-- Dengan decoration --}}
-                <x-ceplok::list-view.item ⟦decoration⟧ title="Project brief" :metadata="['PDF', '2.4 MB']"
+                <x-ceplok::list-view ⟦decoration⟧ title="Project brief" :metadata="['PDF', '2.4 MB']"
                     action-label="Open" />
                 @endverbatim
             </x-docs.code>
@@ -204,45 +212,45 @@ $containerProps = [
             <div class="space-y-5">
                 <x-docs.demo label="Desktop">
                     <div class="w-full max-w-[514px]">
-                        <x-ceplok::list-view.item title="Project brief"
+                        <x-ceplok::list-view title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open">
                             <x-slot:badge>
                                 <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                                 </x-ceplok::badge>
                             </x-slot:badge>
-                        </x-ceplok::list-view.item>
+                        </x-ceplok::list-view>
                     </div>
                 </x-docs.demo>
                 <x-docs.demo label="Mobile">
                     <div class="w-full max-w-[348px]">
-                        <x-ceplok::list-view.item platform="mobile" title="Project brief"
+                        <x-ceplok::list-view platform="mobile" title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']">
                             <x-slot:badge>
                                 <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                                 </x-ceplok::badge>
                             </x-slot:badge>
-                        </x-ceplok::list-view.item>
+                        </x-ceplok::list-view>
                     </div>
                 </x-docs.demo>
             </div>
             <x-docs.code>@verbatim
                 {{-- Desktop · Dengan badge --}}
-                <x-ceplok::list-view.item title="Project brief" :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']"
+                <x-ceplok::list-view title="Project brief" :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']"
                     action-label="Open">
                     <x-slot:⟦badge⟧>
                         <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                         </x-ceplok::badge>
                         </x-slot:badge>
-                </x-ceplok::list-view.item>
+                </x-ceplok::list-view>
 
                 {{-- Mobile · Dengan badge --}}
-                <x-ceplok::list-view.item ⟦platform⟧="mobile" title="Project brief"
+                <x-ceplok::list-view ⟦platform⟧="mobile" title="Project brief"
                     :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']">
                     <x-slot:⟦badge⟧>
                         <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                         </x-ceplok::badge>
                         </x-slot:badge>
-                </x-ceplok::list-view.item>
+                </x-ceplok::list-view>
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
@@ -253,45 +261,45 @@ $containerProps = [
             <div class="space-y-5">
                 <x-docs.demo dark label="Desktop">
                     <div class="w-full max-w-[514px]">
-                        <x-ceplok::list-view.item dark-mode decoration title="Project brief"
+                        <x-ceplok::list-view dark-mode decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open">
                             <x-slot:badge>
                                 <x-ceplok::badge dark-mode variant="success" size="sm" :icon="svg('ceplok-s-clock')">
                                     Badge</x-ceplok::badge>
                             </x-slot:badge>
-                        </x-ceplok::list-view.item>
+                        </x-ceplok::list-view>
                     </div>
                 </x-docs.demo>
                 <x-docs.demo dark label="Mobile">
                     <div class="w-full max-w-[348px]">
-                        <x-ceplok::list-view.item dark-mode platform="mobile" decoration title="Project brief"
+                        <x-ceplok::list-view dark-mode platform="mobile" decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']">
                             <x-slot:badge>
                                 <x-ceplok::badge dark-mode variant="success" size="sm" :icon="svg('ceplok-s-clock')">
                                     Badge</x-ceplok::badge>
                             </x-slot:badge>
-                        </x-ceplok::list-view.item>
+                        </x-ceplok::list-view>
                     </div>
                 </x-docs.demo>
             </div>
             <x-docs.code>@verbatim
                 {{-- Desktop · dark mode, decoration, dan badge --}}
-                <x-ceplok::list-view.item ⟦dark-mode⟧ ⟦decoration⟧ title="Project brief" :metadata="['PDF', '2.4 MB']"
+                <x-ceplok::list-view ⟦dark-mode⟧ ⟦decoration⟧ title="Project brief" :metadata="['PDF', '2.4 MB']"
                     action-label="Open">
                     <x-slot:⟦badge⟧>
                         <x-ceplok::badge dark-mode variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                         </x-ceplok::badge>
                         </x-slot:badge>
-                </x-ceplok::list-view.item>
+                </x-ceplok::list-view>
 
                 {{-- Mobile · dark mode, decoration, dan badge --}}
-                <x-ceplok::list-view.item ⟦platform⟧="mobile" ⟦dark-mode⟧ ⟦decoration⟧ title="Project brief"
+                <x-ceplok::list-view ⟦platform⟧="mobile" ⟦dark-mode⟧ ⟦decoration⟧ title="Project brief"
                     :metadata="['PDF', '2.4 MB']">
                     <x-slot:⟦badge⟧>
                         <x-ceplok::badge dark-mode variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                         </x-ceplok::badge>
                         </x-slot:badge>
-                </x-ceplok::list-view.item>
+                </x-ceplok::list-view>
                 @endverbatim
             </x-docs.code>
         </x-docs.section>

@@ -8,8 +8,8 @@ class ListViewTest extends TestCase
 {
     public function test_list_view_item_simple_dan_article_merender(): void
     {
-        $simple = $this->dom('<x-ceplok::list-view.item title="Project brief" :metadata="[\'PDF\', \'2.4 MB\']" />');
-        $article = $this->dom('<x-ceplok::list-view.item variant="article" title="Diskusi" subject="Admin" :views="12" />');
+        $simple = $this->dom('<x-ceplok::list-view title="Project brief" :metadata="[\'PDF\', \'2.4 MB\']" />');
+        $article = $this->dom('<x-ceplok::list-view variant="article" title="Diskusi" subject="Admin" :views="12" />');
 
         $simpleItem = $this->find($simple, 'article');
         $articleItem = $this->find($article, 'article');
@@ -29,7 +29,7 @@ class ListViewTest extends TestCase
         ];
 
         foreach ($expected as $size => [$box, $icon, $metadata, $button]) {
-            $item = $this->find($this->dom("<x-ceplok::list-view.item size=\"{$size}\" title=\"Project brief\" :metadata=\"['PDF', '2.4 MB']\" action-label=\"Open\" />"), 'article');
+            $item = $this->find($this->dom("<x-ceplok::list-view size=\"{$size}\" title=\"Project brief\" :metadata=\"['PDF', '2.4 MB']\" action-label=\"Open\" />"), 'article');
 
             $this->assertHasClasses($this->find($item, 'div > div'), $box);
             $this->assertHasClasses($this->find($item, 'svg'), $icon);
@@ -48,7 +48,7 @@ class ListViewTest extends TestCase
         ];
 
         foreach ($expected as $size => $classes) {
-            $article = $this->find($this->dom("<x-ceplok::list-view.article size=\"{$size}\" title=\"Diskusi\" subject=\"Admin\" :views=\"12\" />"), 'article');
+            $article = $this->find($this->dom("<x-ceplok::list-view variant=\"article\" size=\"{$size}\" title=\"Diskusi\" subject=\"Admin\" :views=\"12\" />"), 'article');
 
             $this->assertHasClasses($article, implode(' ', array_slice($classes, 0, 2)));
             $this->assertHasClasses($this->find($article, 'h4'), $classes[2]);
@@ -59,7 +59,7 @@ class ListViewTest extends TestCase
     public function test_event_aksi_diteruskan_hanya_ke_tombol_open(): void
     {
         $item = $this->find($this->dom(<<<'BLADE'
-            <x-ceplok::list-view.item
+            <x-ceplok::list-view
                 title="Project brief"
                 action-label="Open"
                 action-wire-click="openDocument(1)"

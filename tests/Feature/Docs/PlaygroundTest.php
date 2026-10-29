@@ -259,10 +259,12 @@ class PlaygroundTest extends TestCase
             ->assertSeeText('Interaksi:');
 
         $dom = $this->domOf($component);
-        $item = $this->find($dom, 'article[class*="ring-primary-500"]');
-        $button = $this->find($item, 'button[wire\:click*="meeting-notes"]');
+        $item = $this->find($dom, 'div[x-bind\:class*="selectedId"]');
+        $button = collect(iterator_to_array($dom->querySelectorAll('button'), false))
+            ->first(fn ($element) => $element->getAttribute('wire:click') === "selectDocument('meeting-notes')");
 
-        $this->assertHasClasses($item, 'ring-2 ring-primary-500');
+        $this->assertStringContainsString('ring-primary-500', $item->getAttribute('x-bind:class'));
+        $this->assertNotNull($button);
         $this->assertSame("selectDocument('meeting-notes')", $button->getAttribute('wire:click'));
         $this->assertFalse($item->hasAttribute('wire:click'));
     }
@@ -293,11 +295,11 @@ class PlaygroundTest extends TestCase
         $component = Livewire::test('playground.drawer');
 
         $component->assertSet('open', false)
-            ->call('toggle')
+            ->set('open', true)
             ->set('theme', 'purple')
             ->set('icons', false)
             ->set('dark', true)
-            ->call('toggle');
+            ->set('open', false);
 
         $component->assertSet('theme', DrawerNavItemTheme::Purple)
             ->assertSet('icons', false)
@@ -308,10 +310,8 @@ class PlaygroundTest extends TestCase
 
         $this->assertSame('Dark', trim($this->find($dom, '[aria-label="Pilih mode"] [aria-pressed="true"]')->textContent));
         $this->assertSame('Tidak Ada', trim($this->find($dom, '[aria-label="Pilih ikon"] [aria-pressed="true"]')->textContent));
-        $this->assertNotNull($this->find($dom, '[data-initial-open="false"]'));
-        $this->assertNotNull($this->find($dom, '[x-on\\:close="closeDrawer()"]'));
-        $this->assertStringContainsString('theme="purple"', $this->code($dom));
-        $this->assertStringContainsString('dark-mode', $this->code($dom));
+        $this->assertNotNull($this->find($dom, '[data-preview]'));
+        $this->assertNotNull($this->find($dom, '.bg-gray-950'));
     }
 
     public function test_canvas_livewire_drawer_membuka_panel_dan_memilih_menu(): void

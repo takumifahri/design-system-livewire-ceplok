@@ -10,6 +10,10 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
 
 ### Diperbaiki
 
+- `Drawer` dan `ListView` kini masing-masing memakai satu berkas komponen.
+  API menu Drawer disusun melalui `items` dan `children`, sedangkan ListView
+  menerima konfigurasi item melalui `items` atau props komponen utamanya;
+  subkomponen `drawer.*` dan `list-view.*` telah dihapus.
 - `ListView`: `action-wire-click` meneruskan event Livewire hanya ke tombol
   aksi bawaan, sehingga interaksi `Open` tidak menjadikan seluruh kartu sebagai
   target klik.

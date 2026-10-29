@@ -294,8 +294,8 @@
 
             <x-docs.overview-card route="components.list-view" name="List View" desc="Kartu daftar berkas dan dokumen dengan wadah ikon, metadata ringkas, dan aksi cepat.">
                 <div class="flex flex-col justify-center gap-2 rounded-xl bg-surface-subtle p-3">
-                    <x-ceplok::list-view.item size="s" title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
-                    <x-ceplok::list-view.item size="s" title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
+                    <x-ceplok::list-view size="s" title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
+                    <x-ceplok::list-view size="s" title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
                 </div>
             </x-docs.overview-card>
 

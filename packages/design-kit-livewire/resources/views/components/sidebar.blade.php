@@ -249,7 +249,7 @@
                                             $isDisabled = !empty($uItem['disabled']);
                                             $itemClasses = 'group flex w-full items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors focus-visible:outline-none ' . (
                                                 $isDisabled
-                                                    ? 'cursor-not-allowed opacity-50 pointer-events-none'
+                                                    ? 'cursor-not-allowed opacity-50'
                                                     : ($isDanger
                                                         ? 'text-feedback-error hover:bg-red-50 hover:text-red-700 in-data-[theme=dark]:hover:bg-red-950/40 in-data-[theme=dark]:hover:text-red-300 focus-visible:bg-red-50 in-data-[theme=dark]:focus-visible:bg-red-950/40'
                                                         : 'text-content hover:bg-gray-100 in-data-[theme=dark]:hover:bg-surface focus-visible:bg-gray-100 in-data-[theme=dark]:focus-visible:bg-surface')
@@ -259,8 +259,7 @@
                                             <a
                                                 href="{{ $isDisabled ? null : $uItem['href'] }}"
                                                 role="menuitem"
-                                                @if ($isDisabled) aria-disabled="true" tabindex="-1" @else tabindex="0" @endif
-                                                x-on:click="closeUserMenu()"
+                                                @if ($isDisabled) aria-disabled="true" tabindex="-1" x-on:click.prevent @else tabindex="0" x-on:click="closeUserMenu()" @endif
                                                 @if (!empty($uItem['external'])) target="_blank" rel="noreferrer noopener" @endif
                                                 class="{{ $itemClasses }}"
                                             >
@@ -342,7 +341,7 @@
                                 ) . (
                                     $isActive ? 'bg-gray-100 in-data-[theme=dark]:bg-gray-600 text-content ' : ''
                                 ) . (
-                                    $isDisabled ? 'pointer-events-none cursor-not-allowed opacity-50 ' : ''
+                                    $isDisabled ? 'cursor-not-allowed opacity-50 ' : ''
                                 );
                             @endphp
                             <li>
@@ -353,7 +352,7 @@
                                         class="{{ $menuItemClasses }}"
                                         x-bind:class="collapsed ? 'justify-center px-2 py-2.5' : 'items-center gap-3 px-3 py-2.5'"
                                         @if ($isActive) aria-current="page" @endif
-                                        @if ($isDisabled) aria-disabled="true" @endif
+                                        @if ($isDisabled) aria-disabled="true" tabindex="-1" x-on:click.prevent @endif
                                         @if ($collapsed) title="{{ $item['label'] ?? '' }}" @endif
                                         x-bind:title="collapsed ? '{{ addslashes($item['label'] ?? '') }}' : null"
                                         @if (!empty($item['external'])) target="_blank" rel="noreferrer noopener" @endif
@@ -390,6 +389,7 @@
                                     >
                                         <button
                                             type="button"
+                                            {{ $itemAttributes }}
                                             class="{{ $menuItemClasses }}"
                                             x-bind:class="collapsed ? 'justify-center px-2 py-2.5' : 'items-center gap-3 px-3 py-2.5'"
                                             x-on:click="toggle()"
@@ -451,9 +451,9 @@
                                                     <a
                                                         href="{{ $childDisabled ? null : ($child['href'] ?? '#') }}"
                                                         {{ $childAttributes }}
-                                                        class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors text-content-subtle hover:bg-gray-100 hover:text-content in-data-[theme=dark]:hover:bg-gray-600 {{ $childActive ? 'bg-gray-100 font-medium text-content in-data-[theme=dark]:bg-gray-600 ' : '' }}{{ $childDisabled ? 'pointer-events-none cursor-not-allowed opacity-50 ' : '' }}"
+                                                        class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors text-content-subtle hover:bg-gray-100 hover:text-content in-data-[theme=dark]:hover:bg-gray-600 {{ $childActive ? 'bg-gray-100 font-medium text-content in-data-[theme=dark]:bg-gray-600 ' : '' }}{{ $childDisabled ? 'cursor-not-allowed opacity-50 ' : '' }}"
                                                         @if ($childActive) aria-current="page" @endif
-                                                        @if ($childDisabled) aria-disabled="true" @endif
+                                                        @if ($childDisabled) aria-disabled="true" tabindex="-1" x-on:click.prevent @endif
                                                         @if (!empty($child['external'])) target="_blank" rel="noreferrer noopener" @endif
                                                     >
                                                         @if (!empty($child['icon']))

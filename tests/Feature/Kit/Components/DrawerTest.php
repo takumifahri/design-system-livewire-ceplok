@@ -76,36 +76,21 @@ class DrawerTest extends TestCase
         $this->assertSame('Sub 1', trim($subItems[0]->textContent));
     }
 
-    public function test_drawer_nav_item_themes(): void
+    public function test_drawer_item_mendukung_theme_link_dan_disabled(): void
     {
-        // Primary
-        $primary = $this->find($this->dom('<x-ceplok::drawer.nav-item label="A" active theme="primary" />'), 'button');
-        $this->assertHasClasses($primary, 'bg-blue-50 text-blue-600 font-medium');
-
-        // Purple
-        $purple = $this->find($this->dom('<x-ceplok::drawer.nav-item label="B" active theme="purple" />'), 'button');
-        $this->assertHasClasses($purple, 'bg-purple-100/70 text-purple-700 font-medium');
-
-        // Gray
-        $gray = $this->find($this->dom('<x-ceplok::drawer.nav-item label="C" active theme="gray" />'), 'button');
-        $this->assertHasClasses($gray, 'bg-gray-100 text-gray-900 font-medium');
-    }
-
-    public function test_drawer_trigger(): void
-    {
-        $dom = $this->dom('<x-ceplok::drawer.trigger />');
-        $button = $this->find($dom, 'button');
-
-        $this->assertNotNull($button);
-        $this->assertSame('Buka menu drawer', $button->getAttribute('aria-label'));
-        $this->assertNotNull($button->querySelector('svg'));
-    }
-
-    public function test_drawer_sub_item_disabled_tidak_memiliki_tujuan_link(): void
-    {
-        $dom = $this->dom('<x-ceplok::drawer.sub-item label="Arsip" href="/arsip" disabled />');
+        $items = [
+            ['label' => 'Primary', 'active' => true],
+            ['label' => 'Purple', 'active' => true, 'theme' => 'purple'],
+            ['label' => 'Gray', 'active' => true, 'theme' => 'gray'],
+            ['label' => 'Arsip', 'href' => '/arsip', 'disabled' => true],
+        ];
+        $dom = $this->dom('<x-ceplok::drawer :items="$items" />', ['items' => $items]);
+        $buttons = iterator_to_array($dom->querySelectorAll('button.group'), false);
         $item = $this->find($dom, 'a');
 
+        $this->assertHasClasses($buttons[0], 'bg-blue-50 text-blue-600');
+        $this->assertHasClasses($buttons[1], 'bg-purple-100/70 text-purple-700');
+        $this->assertHasClasses($buttons[2], 'bg-gray-100 text-gray-900');
         $this->assertNull($item->getAttribute('href'));
         $this->assertSame('true', $item->getAttribute('aria-disabled'));
         $this->assertSame('-1', $item->getAttribute('tabindex'));

@@ -4,314 +4,102 @@ use CeplokUi\DesignKit\Enums\DrawerNavItemTheme;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
-/*
- * Playground halaman Drawer: setiap kontrol mengubah satu properti, Livewire
- * merender ulang tampilannya di server, dan blok Penggunaan menyusun kode
- * yang sama persis dengan yang sedang aktif. Buka/tutup canvas ditangani
- * Alpine terlebih dahulu agar responsif, lalu diantrikan ke Livewire.
- */
 new class extends Component
 {
     public bool $open = false;
-
     public DrawerNavItemTheme $theme = DrawerNavItemTheme::Primary;
-
+    public string $font = 'lato';
     public bool $icons = true;
-
     public bool $dark = false;
-
-    public bool $expandedMenu2 = false;
-
-    public bool $expandedMenu3 = true;
-
-    public bool $expandedMenu5 = false;
-
     public string $activeMenu = 'Menu 3 - sub menu 1';
 
-    public function toggle(): void
+    #[Computed]
+    public function items(): array
     {
-        $this->open = ! $this->open;
-    }
-
-    public function selectMenu(string $label): void
-    {
-        $this->activeMenu = $label;
-        $this->open = false;
+        return [
+            ['label' => 'Menu 1', 'icon' => $this->icons ? 'ceplok-s-chart-pie' : null],
+            ['label' => 'Menu 2', 'icon' => $this->icons ? 'ceplok-s-file-lines' : null, 'expanded' => false, 'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']]],
+            ['label' => 'Menu 3', 'icon' => $this->icons ? 'ceplok-s-cart' : null, 'active' => true, 'expanded' => true, 'children' => [['label' => 'sub menu 1', 'active' => true], ['label' => 'sub menu 2']]],
+            ['label' => 'Menu 4', 'icon' => $this->icons ? 'ceplok-s-inbox' : null, 'disabled' => true],
+            ['label' => 'Menu 5', 'icon' => $this->icons ? 'ceplok-s-lock' : null, 'expanded' => false, 'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']]],
+        ];
     }
 
     #[Computed]
     public function usage(): string
     {
-        $showIcons = $this->icons;
-        $themeStr = $this->theme->value;
-
-        $lines = [
+        $attributes = [
             '<x-ceplok::drawer',
-            '    ⟦:open⟧="$open"',
+            '    ⟦x-model⟧="drawerOpen"',
             '    position="right"',
             '    size="s"',
             '    eyebrow="MENU"',
             $this->dark ? '    ⟦dark-mode⟧' : null,
-            '    ⟦theme⟧="'.$themeStr.'"',
+            $this->font !== 'lato' ? '    font="⟦'.$this->font.'⟧"' : null,
+            '    theme="⟦'.$this->theme->value.'⟧"',
             '    :⟦items⟧="[',
         ];
 
-        if ($showIcons) {
-            $lines[] = "        ['icon' => 'ceplok-s-chart-pie', 'label' => 'Menu 1'],";
-            $lines[] = '        [';
-            $lines[] = "            'icon' => 'ceplok-s-file-lines',";
-            $lines[] = "            'label' => 'Menu 2',";
-            $lines[] = "            'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']],";
-            $lines[] = '        ],';
-            $lines[] = '        [';
-            $lines[] = "            'icon' => 'ceplok-s-cart',";
-            $lines[] = "            'label' => 'Menu 3',";
-            $lines[] = "            'active' => true,";
-            $lines[] = "            'children' => [";
-            $lines[] = "                ['label' => 'sub menu 1', 'active' => true],";
-            $lines[] = "                ['label' => 'sub menu 2'],";
-            $lines[] = "                ['label' => 'sub menu 3'],";
-            $lines[] = '            ],';
-            $lines[] = '        ],';
-            $lines[] = "        ['icon' => 'ceplok-s-inbox', 'label' => 'Menu 4'],";
-            $lines[] = '        [';
-            $lines[] = "            'icon' => 'ceplok-s-lock',";
-            $lines[] = "            'label' => 'Menu 5',";
-            $lines[] = "            'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']],";
-            $lines[] = '        ],';
-        } else {
-            $lines[] = "        ['label' => 'Menu 1'],";
-            $lines[] = '        [';
-            $lines[] = "            'label' => 'Menu 2',";
-            $lines[] = "            'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']],";
-            $lines[] = '        ],';
-            $lines[] = '        [';
-            $lines[] = "            'label' => 'Menu 3',";
-            $lines[] = "            'active' => true,";
-            $lines[] = "            'children' => [";
-            $lines[] = "                ['label' => 'sub menu 1', 'active' => true],";
-            $lines[] = "                ['label' => 'sub menu 2'],";
-            $lines[] = "                ['label' => 'sub menu 3'],";
-            $lines[] = '            ],';
-            $lines[] = '        ],';
-            $lines[] = "        ['label' => 'Menu 4'],";
-            $lines[] = '        [';
-            $lines[] = "            'label' => 'Menu 5',";
-            $lines[] = "            'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']],";
-            $lines[] = '        ],';
+        foreach ($this->items as $item) {
+            $parts = [];
+            if ($this->icons && $item['icon']) $parts[] = "⟦'icon' => '{$item['icon']}'⟧";
+            $parts[] = "'label' => '{$item['label']}'";
+            if (! empty($item['active'])) $parts[] = "'active' => true";
+            if (! empty($item['expanded'])) $parts[] = "'expanded' => true";
+            if (! empty($item['children'])) {
+                $children = collect($item['children'])->map(fn ($child) => "['label' => '{$child['label']}'".(! empty($child['active']) ? ", 'active' => true" : '').']')->implode(', ');
+                $parts[] = "'children' => [{$children}]";
+            }
+            $attributes[] = '        ['.implode(', ', $parts).'],';
         }
 
-        $lines[] = '    ]"';
-        $lines[] = '/>';
+        $attributes[] = '    ]"';
+        $attributes[] = '/>';
 
-        return implode("\n", array_filter($lines));
+        return implode("\n", array_filter($attributes));
     }
 };
 ?>
 
-<div class="space-y-16">
+<div class="space-y-12">
     <x-docs.section id="playground" title="Playground">
-        <x-docs.lead>
-            Coba konfigurasi Drawer secara langsung melalui kontrol di bawah ini untuk melihat
-            perubahan theme, ikon, dan mode gelap.
-        </x-docs.lead>
+        <x-docs.lead>Uji coba perilaku dan variasi konfigurasi Drawer secara langsung pada tampilan mobile.</x-docs.lead>
 
-        <x-docs.stage max-width="max-w-[700px]" :dark="$dark">
-            <div
-                x-data="{
-                    open: true,
-                    init() {
-                        this.open = this.$el.dataset.initialOpen === 'true'
-                    },
-                    showDrawer() {
-                        this.open = true
-                        $wire.set('open', true, false)
-                    },
-                    closeDrawer() {
-                        this.open = false
-                        $wire.set('open', false, false)
-                    },
-                }"
-                data-initial-open="{{ $open ? 'true' : 'false' }}"
-                class="flex h-[520px] w-full items-center justify-center py-4"
-            >
-                {{-- Mockup layar mobile --}}
-                <div @class([
-                    'relative flex h-full w-[380px] max-w-full flex-col overflow-hidden rounded-xl border shadow-md',
-                    $dark ? 'bg-gray-800 border-white/10 shadow-2xl' : 'bg-white border-gray-200',
-                ])>
-                    {{-- Topbar Header --}}
-                    <div @class([
-                        'flex shrink-0 items-center justify-between border-b px-4 py-3.5',
-                        $dark ? 'border-white/10 bg-gray-800' : 'border-gray-200 bg-white',
-                    ])>
-                        <div class="flex items-center gap-2.5">
-                            <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 shrink-0 object-contain">
-                            <span @class(['text-base font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>CEPLOK</span>
+        <x-docs.stage max-width="max-w-[760px]" :dark="$dark">
+            <div @class(['flex min-h-[668px] w-full items-center justify-center rounded-xl p-5', $dark ? 'bg-gray-950' : 'bg-gray-50'])>
+                <div
+                    x-data="{ drawerOpen: true, activeMenu: @js($activeMenu) }"
+                    x-on:drawer-navigate="activeMenu = $event.detail.label"
+                    @class(['relative flex max-w-full overflow-hidden border-x shadow-md', $dark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200', $font === 'lato' ? 'font-sans' : ($font === 'inter' ? 'font-alt' : 'font-alt-2')])
+                    style="width: 420px; height: 588px"
+                >
+                    <div class="w-full">
+                        <div @class(['flex items-center border-b', $dark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white']) style="padding: 14px 16px">
+                            <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 object-contain">
+                            <span @class(['ml-2.5 text-base font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>CEPLOK</span>
+                            <button type="button" x-on:click="drawerOpen = true" aria-label="Buka drawer" @class(['ml-auto inline-flex size-8 items-center justify-center rounded-lg transition-colors', $dark ? 'text-gray-400 hover:bg-gray-700 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'])><x-ceplok-o-bars-from-left class="size-6" /></button>
                         </div>
-                        <x-ceplok::drawer.trigger :dark-mode="$dark" x-on:click="showDrawer()" />
+                        <div @class([$dark ? 'text-gray-300' : 'text-gray-600']) style="padding: 24px">
+                            <h4 x-text="activeMenu" @class(['text-xl font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>{{ $activeMenu }}</h4>
+                            <p class="mt-4 text-sm">Anda sedang berada di halaman <span x-text="activeMenu">{{ $activeMenu }}</span>.</p>
+                        </div>
                     </div>
-
-                    {{-- Konten halaman mobile dummy --}}
-                    <div @class(['flex-1 min-w-0 p-6 overflow-y-auto', $dark ? 'bg-gray-700' : 'bg-gray-50/50'])>
-                        <h4 @class(['text-lg font-bold tracking-tight mb-2', $dark ? 'text-white' : 'text-gray-900'])>
-                            {{ $activeMenu }}
-                        </h4>
-                        <p @class(['text-xs leading-5', $dark ? 'text-gray-300' : 'text-gray-500'])>
-                            Anda sedang berada di halaman utama {{ $activeMenu }}. Klik tombol hamburger di kanan atas untuk membuka menu Drawer.
-                        </p>
-                    </div>
-
-                    {{-- Overlay dan Panel Drawer Mobile --}}
-                    <div
-                        x-cloak
-                        x-show="open"
-                        x-on:click="closeDrawer()"
-                        class="absolute inset-0 z-10 bg-gray-900/40 transition-opacity"
-                    ></div>
-                    <div
-                        x-cloak
-                        x-show="open"
-                        @class([
-                            'absolute right-0 top-0 bottom-0 z-20 flex h-full w-[260px] flex-col border-l shadow-2xl rounded-none',
-                            $dark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200',
-                        ])
-                    >
-                            <x-ceplok::drawer.header eyebrow="MENU" :dark-mode="$dark" x-on:close="closeDrawer()" />
-
-                            <x-ceplok::drawer.body class="p-3 space-y-1" :dark-mode="$dark">
-                                <x-ceplok::drawer.nav-item
-                                    :icon="$icons ? 'ceplok-s-chart-pie' : null"
-                                    label="Menu 1"
-                                    :active="$activeMenu === 'Menu 1'"
-                                    :theme="$theme"
-                                    :dark-mode="$dark"
-                                    wire:click="selectMenu('Menu 1')"
-                                />
-
-                                <x-ceplok::drawer.nav-item
-                                    :icon="$icons ? 'ceplok-s-file-lines' : null"
-                                    label="Menu 2"
-                                    :expanded="$expandedMenu2"
-                                    :theme="$theme"
-                                    :dark-mode="$dark"
-                                    wire:click="$toggle('expandedMenu2')"
-                                >
-                                    <x-ceplok::drawer.sub-item
-                                        label="sub menu 1"
-                                        :active="$activeMenu === 'Menu 2 - sub menu 1'"
-                                        :theme="$theme"
-                                        :dark-mode="$dark"
-                                        wire:click="selectMenu('Menu 2 - sub menu 1')"
-                                    />
-                                    <x-ceplok::drawer.sub-item
-                                        label="sub menu 2"
-                                        :active="$activeMenu === 'Menu 2 - sub menu 2'"
-                                        :theme="$theme"
-                                        :dark-mode="$dark"
-                                        wire:click="selectMenu('Menu 2 - sub menu 2')"
-                                    />
-                                </x-ceplok::drawer.nav-item>
-
-                                <x-ceplok::drawer.nav-item
-                                    :icon="$icons ? 'ceplok-s-cart' : null"
-                                    label="Menu 3"
-                                    active
-                                    :expanded="$expandedMenu3"
-                                    :theme="$theme"
-                                    :dark-mode="$dark"
-                                    wire:click="$toggle('expandedMenu3')"
-                                >
-                                    <x-ceplok::drawer.sub-item
-                                        label="sub menu 1"
-                                        :active="$activeMenu === 'Menu 3 - sub menu 1'"
-                                        :theme="$theme"
-                                        :dark-mode="$dark"
-                                        wire:click="selectMenu('Menu 3 - sub menu 1')"
-                                    />
-                                    <x-ceplok::drawer.sub-item
-                                        label="sub menu 2"
-                                        :active="$activeMenu === 'Menu 3 - sub menu 2'"
-                                        :theme="$theme"
-                                        :dark-mode="$dark"
-                                        wire:click="selectMenu('Menu 3 - sub menu 2')"
-                                    />
-                                    <x-ceplok::drawer.sub-item
-                                        label="sub menu 3"
-                                        :active="$activeMenu === 'Menu 3 - sub menu 3'"
-                                        :theme="$theme"
-                                        :dark-mode="$dark"
-                                        wire:click="selectMenu('Menu 3 - sub menu 3')"
-                                    />
-                                </x-ceplok::drawer.nav-item>
-
-                                <x-ceplok::drawer.nav-item
-                                    :icon="$icons ? 'ceplok-s-inbox' : null"
-                                    label="Menu 4"
-                                    :active="$activeMenu === 'Menu 4'"
-                                    :theme="$theme"
-                                    :dark-mode="$dark"
-                                    wire:click="selectMenu('Menu 4')"
-                                />
-
-                                <x-ceplok::drawer.nav-item
-                                    :icon="$icons ? 'ceplok-s-lock' : null"
-                                    label="Menu 5"
-                                    :expanded="$expandedMenu5"
-                                    :theme="$theme"
-                                    :dark-mode="$dark"
-                                    wire:click="$toggle('expandedMenu5')"
-                                >
-                                    <x-ceplok::drawer.sub-item
-                                        label="sub menu 1"
-                                        :active="$activeMenu === 'Menu 5 - sub menu 1'"
-                                        :theme="$theme"
-                                        :dark-mode="$dark"
-                                        wire:click="selectMenu('Menu 5 - sub menu 1')"
-                                    />
-                                    <x-ceplok::drawer.sub-item
-                                        label="sub menu 2"
-                                        :active="$activeMenu === 'Menu 5 - sub menu 2'"
-                                        :theme="$theme"
-                                        :dark-mode="$dark"
-                                        wire:click="selectMenu('Menu 5 - sub menu 2')"
-                                    />
-                                </x-ceplok::drawer.nav-item>
-                            </x-ceplok::drawer.body>
-                    </div>
+                    <div x-show="drawerOpen" x-on:click="drawerOpen = false" @class(['absolute inset-0', $dark ? 'bg-gray-900/50' : 'bg-gray-900/20'])></div>
+                    <x-ceplok::drawer preview x-model="drawerOpen" style="width: 260px" eyebrow="MENU" :font="$font" :theme="$theme" :dark-mode="$dark" :items="$this->items" />
                 </div>
             </div>
         </x-docs.stage>
 
-        <x-docs.controls>
-            <x-docs.control label="Theme">
-                <x-docs.segmented label="Pilih theme" model="theme" :value="$theme" :options="[
-                    ['value' => 'primary', 'label' => 'Primary'],
-                    ['value' => 'purple', 'label' => 'Purple'],
-                ]" />
-            </x-docs.control>
-
-            <x-docs.control label="Icons">
-                <x-docs.segmented label="Pilih ikon" model="icons" :value="$icons" :options="[
-                    ['value' => true, 'label' => 'Ada'],
-                    ['value' => false, 'label' => 'Tidak Ada'],
-                ]" />
-            </x-docs.control>
-
-            <x-docs.control label="Mode">
-                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
-                    ['value' => false, 'label' => 'Light'],
-                    ['value' => true, 'label' => 'Dark'],
-                ]" />
-            </x-docs.control>
+        <x-docs.controls :fonts="false">
+            <x-docs.control label="Font"><x-docs.segmented label="Pilih font" model="font" :value="$font" :options="[['value' => 'lato', 'label' => 'Lato'], ['value' => 'inter', 'label' => 'Inter'], ['value' => 'arial', 'label' => 'Arial']]" /></x-docs.control>
+            <x-docs.control label="Mode"><x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[['value' => false, 'label' => 'Light'], ['value' => true, 'label' => 'Dark']]" /></x-docs.control>
+            <x-docs.control label="Theme"><x-docs.segmented label="Pilih theme" model="theme" :value="$theme" :options="[['value' => 'primary', 'label' => 'Primary'], ['value' => 'purple', 'label' => 'Purple']]" /></x-docs.control>
+            <x-docs.control label="Icons"><x-docs.segmented label="Pilih ikon" model="icons" :value="$icons" :options="[['value' => true, 'label' => 'Ada'], ['value' => false, 'label' => 'Tidak Ada']]" /></x-docs.control>
         </x-docs.controls>
     </x-docs.section>
 
-    <x-docs.section id="penggunaan" title="Penggunaan">
-        <x-docs.lead>
-            Praktik terbaik dan panduan integrasi Drawer dalam aplikasi Laravel dan Livewire.
-            Gunakan <span class="text-primary-500">$open</span> sebagai properti publik di komponen Livewire Anda.
-        </x-docs.lead>
+    <x-docs.section id="penggunaan" title="Penggunaan" class="pt-10">
+        <x-docs.lead>Contoh berikut mengikuti konfigurasi Playground di atas secara langsung.</x-docs.lead>
         <x-docs.code :code="$this->usage" flush />
     </x-docs.section>
 </div>

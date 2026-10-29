@@ -70,8 +70,8 @@ new class extends Component
         $lines[] = '        [\'label\' => \'Menu 4\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-inbox\'' : '').($hasBadge ? ', \'badge\' => 1' : '').'],';
         $lines[] = '        [\'label\' => \'Menu 5\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-lock\'' : '').'],';
         $lines[] = '        [\'label\' => \'Menu 6\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-clipboard\'' : '').'],';
-        $lines[] = '        [\'label\' => \'Menu 7\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-layers\'' : '').'],';
-        $lines[] = '        [\'label\' => \'Menu 8\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-chart-pie\'' : '').'],';
+        $lines[] = '        [\'label\' => \'Menu 7\', \'href\' => \'#\', \'disabled\' => true'.($hasIcons ? ', \'icon\' => \'ceplok-s-layers\'' : '').'],';
+        $lines[] = '        [\'label\' => \'Menu 8\', \'href\' => \'#\', \'disabled\' => true'.($hasIcons ? ', \'icon\' => \'ceplok-s-chart-pie\'' : '').'],';
         $lines[] = '    ];';
 
         if ($hasSep) {
@@ -142,23 +142,24 @@ new class extends Component
     $isDark = ($theme === 'dark');
 
     $rawItems = [
-        ['label' => 'Menu 1', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-chart-pie' : null)],
-        ['label' => 'Menu 2', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-clipboard' : null)],
+        ['label' => 'Menu 1', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-chart-pie' : null), 'attributes' => ['wire:click.prevent' => "selectMenu('Menu 1')"]],
+        ['label' => 'Menu 2', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-clipboard' : null), 'attributes' => ['wire:click.prevent' => "selectMenu('Menu 2')"]],
         [
             'label' => 'Menu 3',
             'icon' => ($menuIcon === 'show' ? 'ceplok-s-cart' : null),
             'defaultOpen' => true,
+            'attributes' => ['wire:click' => "selectMenu('Menu 3')"],
             'children' => [
-                ['label' => 'Sub - Menu 1', 'href' => '#'],
-                ['label' => 'Sub - Menu 2', 'href' => '#'],
-                ['label' => 'Sub - Menu 3', 'href' => '#'],
+                ['label' => 'Sub - Menu 1', 'href' => '#', 'attributes' => ['wire:click.prevent' => "selectMenu('Sub - Menu 1')"]],
+                ['label' => 'Sub - Menu 2', 'href' => '#', 'attributes' => ['wire:click.prevent' => "selectMenu('Sub - Menu 2')"]],
+                ['label' => 'Sub - Menu 3', 'href' => '#', 'attributes' => ['wire:click.prevent' => "selectMenu('Sub - Menu 3')"]],
             ],
         ],
-        ['label' => 'Menu 4', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-inbox' : null), 'badge' => ($badge === 'show' ? 1 : null)],
-        ['label' => 'Menu 5', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-lock' : null)],
-        ['label' => 'Menu 6', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-clipboard' : null)],
-        ['label' => 'Menu 7', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-layers' : null)],
-        ['label' => 'Menu 8', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-chart-pie' : null)],
+        ['label' => 'Menu 4', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-inbox' : null), 'badge' => ($badge === 'show' ? 1 : null), 'attributes' => ['wire:click.prevent' => "selectMenu('Menu 4')"]],
+        ['label' => 'Menu 5', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-lock' : null), 'attributes' => ['wire:click.prevent' => "selectMenu('Menu 5')"]],
+        ['label' => 'Menu 6', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-clipboard' : null), 'attributes' => ['wire:click.prevent' => "selectMenu('Menu 6')"]],
+        ['label' => 'Menu 7', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-layers' : null), 'disabled' => true],
+        ['label' => 'Menu 8', 'href' => '#', 'icon' => ($menuIcon === 'show' ? 'ceplok-s-chart-pie' : null), 'disabled' => true],
     ];
 
     $items = array_map(function ($item) use ($activeMenu) {
@@ -199,7 +200,6 @@ new class extends Component
         <x-docs.stage max-width="max-w-[768px]" :dark="$isDark">
             <div
                 wire:key="sidebar-stage-{{ $separator }}-{{ $resolvedCollapse }}-{{ $theme }}"
-                x-on:click="const item = $event.target.closest('nav a, nav button'); if (item) { $event.preventDefault(); $wire.selectMenu(item.textContent.trim()) }"
                 style="height: 920px"
                 @class([
                     'flex w-full items-stretch overflow-hidden rounded-xl border',

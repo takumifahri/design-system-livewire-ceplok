@@ -42,7 +42,7 @@ new class extends Component
                 $this->dark ? '    ⟦*dark-mode⟧' : null,
             ])->filter()->implode("\n");
 
-            return "<x-ceplok::list-view.article\n{$props}\n/>";
+            return "<x-ceplok::list-view\n    variant=\"article\"\n{$props}\n/>";
         }
 
         $props = collect([
@@ -59,7 +59,7 @@ new class extends Component
             ? "\n    <x-slot:⟦*badge⟧>\n        <x-ceplok::badge variant=\"success\" size=\"sm\" :icon=\"svg('ceplok-s-clock')\">Badge</x-ceplok::badge>\n    </x-slot:badge>"
             : '';
 
-        return "<x-ceplok::list-view.item\n{$props}{$badge}\n/>";
+        return "<x-ceplok::list-view\n{$props}{$badge}\n/>";
     }
 };
 ?>
@@ -83,13 +83,13 @@ new class extends Component
         <div class="flex min-h-[328px] items-center justify-center py-4">
             <div class="w-full transition-[max-width] duration-300 {{ $canvasWidth }}">
                 @if ($variant === 'article')
-                    <x-ceplok::list-view.article :size="$size" subject="subject Name" category="Category" timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi" :views="609" :comments="3" :likes="16" :dark-mode="$dark" />
+                    <x-ceplok::list-view variant="article" :size="$size" subject="subject Name" category="Category" timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi" :views="609" :comments="3" :likes="16" :dark-mode="$dark" />
                 @else
-                    <x-ceplok::list-view.item :platform="$platform" :size="$size" :decoration="$decoration" title="Project brief" :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" :dark-mode="$dark" :action-label="$platform === 'mobile' ? null : 'Open'">
+                    <x-ceplok::list-view :platform="$platform" :size="$size" :decoration="$decoration" title="Project brief" :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" :dark-mode="$dark" :action-label="$platform === 'mobile' ? null : 'Open'">
                         @if ($hasBadge)
                             <x-slot:badge><x-ceplok::badge variant="success" size="sm" :dark-mode="$dark" :icon="svg('ceplok-s-clock')">Badge</x-ceplok::badge></x-slot:badge>
                         @endif
-                    </x-ceplok::list-view.item>
+                    </x-ceplok::list-view>
                 @endif
             </div>
         </div>

@@ -28,6 +28,7 @@
     'description' => null,
     'flush' => false,
     'wrap' => false,
+    'scroll' => false,
     'mark' => [],
 ])
 
@@ -39,6 +40,7 @@
     }
 
     $id = 'code-'.substr(md5($source), 0, 8);
+    $preStyle = $scroll && ! $wrap ? 'overflow-x: scroll' : null;
 @endphp
 
 <div {{ $attributes->class([$title ? 'mt-8' : 'mt-4' => ! $flush]) }}>
@@ -71,9 +73,12 @@
                 <span x-text="copied === @js($id) ? 'Tersalin!' : 'Salin'">Salin</span>
             </button>
         </div>
-        <pre @class([
+        <pre
+            @if ($preStyle) style="{{ $preStyle }}" @endif
+            @class([
             'bg-gray-900 p-5 text-xs leading-6 text-gray-300',
-            'ds-scroll-x overflow-x-auto' => ! $wrap,
+            'ds-scroll-x overflow-x-scroll' => $scroll && ! $wrap,
+            'ds-scroll-x overflow-x-auto' => ! $scroll && ! $wrap,
             'whitespace-pre-wrap break-words' => $wrap,
         ])><code>{{ Code::highlight($source) }}</code></pre>
     </article>
