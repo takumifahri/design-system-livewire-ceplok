@@ -30,6 +30,7 @@ class PagesTest extends TestCase
             'breadcrumb' => ['components.breadcrumb', 'Breadcrumb', 'Breadcrumb'],
             'pagination' => ['components.pagination', 'Pagination', 'Pagination'],
             'table' => ['components.table', 'Table', 'Table'],
+            'table-of-contents' => ['components.table-of-contents', 'Table of Contents', 'Table of Contents'],
             'timeline' => ['components.timeline', 'Timeline View', 'Timeline View'],
             'form' => ['form.index', 'Form', 'Form'],
             'input-field-form' => ['form.input-field', 'Input Field Form', 'Input Field Form'],

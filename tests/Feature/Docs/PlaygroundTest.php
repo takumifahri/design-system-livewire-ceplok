@@ -24,7 +24,7 @@ class PlaygroundTest extends TestCase
             'input-field', 'input-field-validate', 'floating-label', 'floating-label-fill', 'text-area', 'text-area-send',
             'select', 'select-region', 'search', 'search-live', 'datepicker', 'datepicker-filter', 'upload', 'upload-livewire',
             'radio', 'radio-livewire', 'toggle', 'toggle-livewire', 'checkbox', 'checkbox-livewire',
-            'timeline', 'timeline-livewire',
+            'timeline', 'timeline-livewire', 'table-of-contents',
         ];
 
         return array_combine($names, array_map(fn (string $name) => ["playground.{$name}"], $names));

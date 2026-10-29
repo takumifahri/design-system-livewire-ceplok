@@ -24,6 +24,7 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/breadcrumb', 'pages.components.breadcrumb')->name('breadcrumb');
     Route::view('/pagination', 'pages.components.pagination')->name('pagination');
     Route::view('/table', 'pages.components.table')->name('table');
+    Route::view('/table-of-contents', 'pages.components.table-of-contents')->name('table-of-contents');
     Route::view('/timeline', 'pages.components.timeline')->name('timeline');
 });
 

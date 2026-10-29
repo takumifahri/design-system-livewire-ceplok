@@ -275,10 +275,14 @@ export function codeWindow(snippets = []) {
             // utuh tidak sempat berkedip muncul lalu hilang.
             this.place(0, 0);
             this.$refs.code.classList.add('is-ready');
-            this.play(true);
+            // Mulai mengetik saat jendelanya terlihat, dengan ambang yang sama
+            // dengan x-reveal, supaya ketikan pertama tidak terlewat selagi
+            // jendelanya masih di bawah layar atau baru masuk.
+            this.stopWatching = onceVisible(this.$el, 0.85, () => this.play(true));
         },
 
         destroy() {
+            this.stopWatching?.();
             this.timers.forEach(clearTimeout);
         },
 

@@ -6,7 +6,8 @@
     />
 
     <div class="mx-auto max-w-5xl px-5 py-9 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
-        <div class="grid gap-5 sm:grid-cols-2">
+        {{-- grid-cols-1 (minmax(0,1fr)): tanpa itu kolom di bawah sm melebar mengikuti pratinjau terlebar. --}}
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <x-docs.overview-card route="form.input-field" name="Input Field Form" desc="Isian teks satu baris, floating label, dan text area — lengkap dengan state dan warna per aplikasi." wide>
                 {{--
                     Satu latar, dua kolom: Input Field dan Floating Label ditumpuk di
@@ -19,7 +20,7 @@
                     naik itulah yang membedakan keduanya.
                 --}}
                 <div class="rounded-xl bg-surface-subtle p-5">
-                    <div class="grid gap-5 md:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                         <div class="flex flex-col justify-between gap-5">
                             <x-ceplok::input-field
                                 label="Nama lengkap"
@@ -75,7 +76,7 @@
                     sebelahnya, dan rata atas membuatnya terbaca menggantung di sudut.
                 --}}
                 <div class="rounded-xl bg-surface-subtle p-5">
-                    <div class="grid gap-5 md:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                         <div class="flex flex-col justify-center">
                             <x-ceplok::upload label="Unggah dokumen" helper-text="PDF atau JPG, maksimal 2 MB." />
                         </div>
