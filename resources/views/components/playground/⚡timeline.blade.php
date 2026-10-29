@@ -78,6 +78,19 @@ new class extends Component
         return $this->size === TimelineSize::Large ? 'max-w-102' : 'max-w-82';
     }
 
+    /**
+     * Lebar paling kecil Timeline desktop. Satu rem lebih lebar daripada demo
+     * desktop di halaman, karena kontrol Font bisa memilih Inter, font yang
+     * paling lebar: dengan Inter, nama dan jabatan di sebelah Badge status baru
+     * muat sebaris mulai sekitar 645px. Di layar yang lebih sempit panggungnya
+     * digeser ke samping.
+     */
+    #[Computed]
+    public function stageMinWidth(): ?string
+    {
+        return $this->platform === TimelinePlatform::Desktop ? '41rem' : null;
+    }
+
     /** Isi lengkap item yang tampil; `target` dan `download` disorot karena mengikuti kontrol Lampiran. */
     #[Computed]
     public function usage(): string
@@ -140,7 +153,7 @@ new class extends Component
             sampai keempat menautkan PDF dummy. Kode di bagian Penggunaan ikut berubah.
         </x-docs.lead>
 
-        <x-docs.stage :max-width="$this->stageWidth" :dark="$dark">
+        <x-docs.stage :max-width="$this->stageWidth" :min-width="$this->stageMinWidth" :dark="$dark">
             <x-ceplok::timeline :items="$this->items" :platform="$platform" :size="$size" :dark-mode="$dark" />
         </x-docs.stage>
 

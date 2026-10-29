@@ -162,6 +162,28 @@ class PagesTest extends TestCase
         $this->assertNotNull($dom->querySelector('a[aria-current="page"][href*="hal=7"]'));
     }
 
+    public function test_timeline_desktop_digeser_ke_samping_alih_alih_diperas(): void
+    {
+        $dom = $this->page(route('components.timeline'));
+        $widths = [];
+
+        foreach ($dom->querySelectorAll('ol[class~="before:left-1/2"]') as $timeline) {
+            $this->assertHasClasses($timeline->parentElement->parentElement, 'ds-scroll-x overflow-x-auto');
+            $widths[$timeline->closest('section')->getAttribute('id')] = $timeline->parentElement->getAttribute('style');
+        }
+
+        // Playground satu rem lebih lebar karena kontrol Font-nya bisa memilih Inter.
+        $this->assertSame([
+            'platform' => 'min-width: 40rem',
+            'isi-item' => 'min-width: 40rem',
+            'dark-mode' => 'min-width: 40rem',
+            'playground' => 'min-width: 41rem',
+        ], $widths);
+
+        // Timeline mobile tetap mengikuti lebar kolomnya.
+        $this->assertCount(4, $dom->querySelectorAll('div[style^="min-width"]'));
+    }
+
     /** @param  array<string, string>  $cookies */
     private function page(string $url, array $cookies = []): HTMLDocument
     {
