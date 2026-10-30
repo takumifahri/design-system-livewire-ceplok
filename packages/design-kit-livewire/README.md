@@ -16,13 +16,16 @@ berulang kali di dalam komponen Livewire.
 - **Token** (`@theme`): palet warna, alias semantik (`brand`, `feedback-*`,
   `content`, `surface`, `border`), token komponen (`alert-*`, `toast-*`,
   `breadcrumb-*`, …), skala tipografi (`display` → `caption`), spacing,
-  radius, shadow, font Lato serta font alternatif Inter (`font-alt`) dan Arial
-  (`font-alt-2`). Disalin apa adanya dari kit React.
+  radius, shadow, ketebalan huruf (`font-thin` → `font-black`), font Lato
+  serta font alternatif Inter (`font-alt`) dan Arial (`font-alt-2`). Disalin
+  apa adanya dari kit React.
+- **Font**: Lato 2.0 (sembilan ketebalan plus italic, lisensi OFL) yang ikut
+  paket, salinan persis dari kit React.
 - **Komponen**: `alert`, `avatar`, `badge`, `breadcrumb`, `button`, `card`,
   `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`, `modal`,
-  `list-view`, `pagination`,
-  `popover`, `sidebar`, `spinner`, `table` (beserta `table-image` dan
-  `table-file`), `timeline` (eksperimental, desainnya belum final), `toast`.
+  `list-view`, `pagination`, `popover`, `sidebar`, `spinner`, `table`
+  (beserta `table-image` dan `table-file`), `table-of-contents` (baru layout
+  `list`), `timeline` (eksperimental, desainnya belum final), `toast`.
 - **Elemen form**: `checkbox`, `datepicker`, `floating-label`, `input-field`,
   `radio`, `search`, `select`, `text-area`, `toggle`, `upload`.
 - **Ikon**: 411 ikon outline dan 340 ikon solid Flowbite (salinan persis
@@ -31,8 +34,8 @@ berulang kali di dalam komponen Livewire.
   Toast, foto Avatar yang gagal dimuat, Pagination, panel Dropdown beserta
   daftar pilihan Select dan kategori Search, kalender Datepicker, Upload,
   label Floating Label, kata sandi dan tombol hapus Input Field, seleksi
-  baris dan filter kolom Table, posisi Popover, buka/tutup Modal, serta
-  toolbar Text Area.
+  baris dan filter kolom Table, posisi Popover, buka/tutup Modal, scroll-spy
+  Table of Contents, serta toolbar Text Area.
 
 ## Persyaratan
 
@@ -47,9 +50,26 @@ berulang kali di dalam komponen Livewire.
 composer require ceplok-ui/design-kit-livewire
 ```
 
-Service provider terdaftar otomatis (package discovery). Selama paket belum
-dipublikasikan ke registry, pasang lewat path repository; lihat
-[packages/README.md](../README.md).
+Paketnya tersedia di [Packagist](https://packagist.org/packages/ceplok-ui/design-kit-livewire).
+Service provider terdaftar otomatis (package discovery), jadi komponen
+`<x-ceplok::…>` langsung bisa dipakai setelah CSS dan JavaScript di bawah
+dipasang.
+
+Selama versinya masih `0.x`, rilis minor (mis. `0.1` ke `0.2`) boleh memutus
+kompatibilitas; `^0.1` hanya mengambil `0.1.x`. Perubahan yang memutus
+kompatibilitas ditandai di [CHANGELOG.md](CHANGELOG.md).
+
+Untuk mengembangkan kit dari salinan lokal, arahkan Composer ke foldernya
+lewat path repository di `composer.json` aplikasi:
+
+```json
+"repositories": [
+    { "type": "path", "url": "../design-kit-livewire" }
+]
+```
+
+lalu `composer require ceplok-ui/design-kit-livewire:@dev`. Composer membuat
+symlink, jadi perubahan di folder kit langsung terbaca aplikasi.
 
 ### CSS
 
@@ -77,8 +97,11 @@ Bila aplikasi sudah punya base style sendiri dan hanya butuh token:
 Dengan cara ini font, base layer, class `.ds-*`, dan animasi masuk Alert,
 Badge, serta Toast ikut hilang.
 
-Font Lato dan Inter dimuat dari Google Fonts oleh browser, jadi build tidak
-butuh koneksi internet.
+Font Lato 2.0 ikut paket (`resources/fonts`, lisensi OFL) dengan kesembilan
+ketebalan, jadi setiap token `--font-weight-*` tampil apa adanya. Vite menyalin
+berkas `.woff2`-nya ke `public/build`, dan browser hanya mengunduh ketebalan
+yang dipakai halaman (sekitar 180 KB per ketebalan). Inter dimuat dari Google
+Fonts oleh browser, jadi build tidak butuh koneksi internet.
 
 ### JavaScript
 
@@ -157,6 +180,7 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 | `modal` | slot `trigger` (seperti Popover; opsional bila diikat `wire:model`/`x-model`), `variant`: `default \| popup`, `size`: `s \| m`, `title` (prop atau slot), slot `footer`, `close-on-backdrop`, `close-on-escape`, `show-close-button`, `close-label`, `open` |
 | `table` | `columns` (array kolom: `key`, `header`, `cell`, `actions`, `image`, `file`, `children`, `sortable`, `sort-value`, `sort-fn`, `sort-directions`, `sort-resettable`, `sort-icon`, `align`, `header-align`, `emphasis`, `width`, `min-width`, `hideable`, `wrap`), `data` (array, Collection, atau `LengthAwarePaginator`), `row-key`, `size`: `normal \| compact`, `sticky`, `search`, `filter`, slot `actions`, `selectable`, `selected-keys`, `sort`, `sort-icon`, `header-align`, `pagination`, `manual`, `striped`, `loading`, `empty-text` |
 | `table-image`, `table-file` | Gambar atau berkas di sel Table, dengan pratinjau. `table-image`: `src`, `alt`, `caption`, `show-caption`, `preview`, `thumb-class`. `table-file`: `name`, `href`, `type`: `image \| pdf \| file`, `preview` |
+| `table-of-contents` | `items` (`id`, `label`, `href`), `title` (`:title="false"` menyembunyikannya, padanan `title={null}`), `active-id`, `scroll-spy`, `offset`, `get-href` (pola dengan `{id}` atau closure), `anchor`, `max-height`, `scroll-container` (selector CSS, padanan `scrollContainer`), `dark-mode`. Baru layout `list`: layout `auto` dan `drawer` menunggu Drawer di-port |
 | `timeline` | Eksperimental. `items` (`name`, `role`, `time` (string ISO 8601 dengan jam atau `DateTimeInterface`, ditulis `01 Jan 2026 · 09:05`), `elapsed`, `description`, `details`, `attachments` (`name`, `href`, `target`, `download`), `status` (kunci Badge + `label`, `class`, `attributes`), `avatar`, `initials`), `platform`: `desktop \| mobile`, `size`: `large \| small`, `labels` (`elapsed`, `details`, `attachments`, `months`), `dark-mode` |
 | `hero` | `type`, `centered-content`, `platform`, `heading`, `sub-heading`, `description`, `show-heading`, `show-button`, `button-label`, `button-href`, `button-attributes`, `image`, `image-alt`, `image-orientation`, slot `image-content`, `dark-mode` |
 | `footer` | `logo`/`logo-alt` atau slot `logo-content`, `menus`, `copyright` (prop atau slot), `socials`, `fluid` |
@@ -190,6 +214,7 @@ terluar. `id` kontrol dibuat stabil bila tidak diisi, jadi `<label for>` dan
 | `drawer` | `wire:model` (atau `wire:model.live`) mengikat buka/tutup Drawer. Saat tombol tutup, backdrop, atau Esc menutup panel, event `close` dapat ditangkap: `wire:close="tutupDrawer"`. |
 | `sidebar` | Tombol collapse mengirim event `collapse` dengan `detail.collapsed`; tangkap dengan `wire:collapse="$set('collapsed', $event.detail.collapsed)"`. Klik menu tetap mengikuti `href` atau atribut `wire:*` yang diberikan pada item. |
 | `list-view` | Tambahkan `action-wire-click` pada item langsung atau data `items` untuk menjadikan tombol aksi bawaannya target Livewire, mis. `action-wire-click="openBrief"`. Kartu tidak otomatis menjadi target klik. |
+| `table-of-contents` | `wire:model` mengikat id entri yang disorot. Event `active-change` (`detail.id`) saat scroll-spy atau klik memindahkan sorotan, dan `item-click` (`detail.id`) sebelum tautan berjalan; `wire:item-click.prevent` membatalkan tautannya. Dengan `active-id` dari properti Livewire, nilai barunya diikuti setelah render ulang. |
 | `timeline` | `'attributes' => ['wire:dismiss' => 'tutupStatus(2)']` pada `status` diteruskan ke Badge-nya; tombol tutup Badge yang `dismissible` memicu event `dismiss`. |
 | `breadcrumb` | `'attributes' => ['wire:navigate' => true]` pada item diteruskan ke tautannya. |
 | `hero` | `:button-attributes="['wire:click' => 'mulai']"` diteruskan ke tombolnya. |
@@ -229,9 +254,9 @@ nilai token lewat atribut `data-theme="dark"`:
 - Prop `dark-mode` memasang `data-theme="dark"` pada elemen terluar `card`,
   `hero`, `container`, `drawer`, `sidebar`, `list-view`, `alert`, `toast`,
   `breadcrumb`, `input-field`, `floating-label`, `text-area`, `select`,
-  `search`, `checkbox`, `radio`, `toggle`, dan `timeline`. Panel pilihan Select
-  tetap terang, sesuai desain, dan Badge status Timeline ikut gelap lewat
-  `dark-mode` Timeline, bukan lewat pembungkusnya.
+  `search`, `checkbox`, `radio`, `toggle`, `table-of-contents`, dan `timeline`. Panel pilihan Select tetap terang, sesuai desain,
+  dan Badge status Timeline ikut gelap lewat `dark-mode` Timeline, bukan lewat
+  pembungkusnya.
 - Komponen tersebut ikut gelap bila salah satu pembungkusnya memakai
   `data-theme="dark"`. Bagian di dalamnya bisa dikembalikan terang dengan
   `data-theme="light"`.

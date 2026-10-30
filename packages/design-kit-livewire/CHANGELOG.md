@@ -87,8 +87,24 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
   `close-on-backdrop`, `close-on-escape`, `show-close-button`, `wire:model`
   dan event `open-change`. `<dialog>`-nya `wire:ignore.self` supaya tidak
   ditutup morph Livewire saat komponen di sekitarnya dirender ulang.
+- Table of Contents (`table-of-contents`) setara layout `list` di kit React:
+  daftar isi "On this page" 208px dengan scroll-spy, garis brand 2px yang
+  meluncur ke entri aktif, `max-height` yang mengikuti entri aktif,
+  `scroll-container` (selector wadah gulir), `anchor`, `get-href`,
+  `active-id`, dan `dark-mode`. `wire:model` mengikat id entri aktif, dengan
+  event `active-change` dan `item-click`. Layout `auto` dan `drawer` belum
+  ada karena Drawer belum di-port, dan judul disembunyikan dengan
+  `:title="false"` (padanan `title={null}`).
 - Token CSS (`resources/css/tokens.css`) dan entry stylesheet
-  (`resources/css/styles.css`), disalin dari kit React.
+  (`resources/css/styles.css`), disalin dari kit React, termasuk token
+  ketebalan huruf `--font-weight-*` (`thin` 100 sampai `black` 900) yang
+  dipakai utility `font-thin` sampai `font-black`.
+- Font Lato 2.0 ikut paket (`resources/fonts`, lisensi OFL), salinan persis
+  dari kit React, dengan kesembilan ketebalan. `font-medium` dan
+  `font-semibold` kini tampil 500 dan 600; Lato dari Google Fonts hanya punya
+  100, 300, 400, 700, dan 900, jadi sebelumnya keduanya tampil 400 dan 700.
+  `styles.css` tidak lagi memuat Lato dari Google Fonts; Vite menyalin berkas
+  `.woff2`-nya ke `public/build`.
 - 411 ikon outline dan 340 ikon solid Flowbite (`ceplok-o-*`, `ceplok-s-*`)
   dari `flowbite-react-icons` 1.3.1, plus 30 logo brand (`brand-*`) yang
   bawaannya `aria-hidden="true"`.
@@ -96,7 +112,7 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
   `ceplokSidebar`, `ceplokAvatar`, `ceplokPagination`, `ceplokDropdown`, `ceplokSelect`,
   `ceplokSearch`, `ceplokDatepicker`, `ceplokUpload`, `ceplokFloatingLabel`,
   `ceplokInputField`, `ceplokTextArea`, `ceplokTable`, `ceplokTablePreview`,
-  `ceplokPopover`, dan `ceplokModal`.
+  `ceplokPopover`, `ceplokModal`, dan `ceplokTableOfContents`.
 - Enum untuk setiap prop berpilihan (`CeplokUi\DesignKit\Enums`) dan
   pemeriksa prop saat render: error yang jelas saat `app.debug` aktif, nilai
   bawaan plus laporan ke log di production.

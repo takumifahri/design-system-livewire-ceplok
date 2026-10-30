@@ -33,6 +33,7 @@ import search from './components/search.js';
 import select from './components/select.js';
 import sidebar, { sidebarSubmenu } from './components/sidebar.js';
 import table from './components/table.js';
+import tableOfContents from './components/table-of-contents.js';
 import tablePreview from './components/table-preview.js';
 import textArea from './components/text-area.js';
 import upload from './components/upload.js';
@@ -53,9 +54,10 @@ export default function ceplok(Alpine) {
     Alpine.data('ceplokSidebar', sidebar);
     Alpine.data('ceplokSidebarSubmenu', sidebarSubmenu);
     Alpine.data('ceplokTable', table);
+    Alpine.data('ceplokTableOfContents', tableOfContents);
     Alpine.data('ceplokTablePreview', tablePreview);
     Alpine.data('ceplokTextArea', textArea);
     Alpine.data('ceplokUpload', upload);
 }
 
-export { avatar, datepicker, dismissible, drawer, dropdown, floatingLabel, inputField, modal, pagination, popover, search, select, sidebar, sidebarSubmenu, table, tablePreview, textArea, upload };
+export { avatar, datepicker, dismissible, drawer, dropdown, floatingLabel, inputField, modal, pagination, popover, search, select, sidebar, sidebarSubmenu, table, tableOfContents, tablePreview, textArea, upload };

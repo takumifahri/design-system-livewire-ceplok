@@ -12,6 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Di produksi, container hanya menerima request dari reverse proxy di
+        // VPS (port-nya terikat ke 127.0.0.1, lihat compose.yaml). Header
+        // X-Forwarded-* dipercaya supaya URL aset ikut memakai https.
+        $middleware->trustProxies(at: '*');
+
         // Keadaan panel samping docs, ditulis JavaScript (resources/js/docs/layout.js).
         $middleware->encryptCookies(except: ['ceplok_docs_panel']);
     })

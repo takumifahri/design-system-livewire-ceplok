@@ -41,6 +41,8 @@ class StableAlpineDataTest extends TestCase
 
             public bool $info = false;
 
+            public string $bagian = 'dasar';
+
             public function render(): string
             {
                 return <<<'BLADE'
@@ -63,6 +65,7 @@ class StableAlpineDataTest extends TestCase
                         />
                         <x-ceplok::modal wire:model="dialog" title="Edit">Isi</x-ceplok::modal>
                         <x-ceplok::popover wire:model="info" title="Info"><x-slot:trigger>Buka</x-slot:trigger>Isi</x-ceplok::popover>
+                        <x-ceplok::table-of-contents :active-id="$bagian" :items="[['id' => 'dasar', 'label' => 'Dasar'], ['id' => 'variasi', 'label' => 'Variasi']]" />
                     </div>
                     BLADE;
             }
@@ -84,7 +87,8 @@ class StableAlpineDataTest extends TestCase
             ->set('urutan', ['key' => 'nama', 'direction' => 'desc'])
             ->set('terpilih', [2])
             ->set('dialog', true)
-            ->set('info', true);
+            ->set('info', true)
+            ->set('bagian', 'variasi');
 
         $this->assertSame($before, $xData());
     }

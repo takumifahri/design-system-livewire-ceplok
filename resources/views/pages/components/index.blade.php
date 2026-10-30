@@ -22,7 +22,8 @@
     />
 
     <div class="mx-auto max-w-5xl px-5 py-9 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
-        <div class="grid gap-5 sm:grid-cols-2">
+        {{-- grid-cols-1 (minmax(0,1fr)): tanpa itu kolom di bawah sm melebar mengikuti pratinjau terlebar. --}}
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <x-docs.overview-card route="components.container" name="Container" desc="Pembungkus lebar konten: 380px di mobile (rounded), maksimum 1126px di desktop." wide>
                 <div class="rounded-xl bg-surface-subtle p-5">
                     <div class="mx-auto max-w-55 rounded-lg border-2 border-dashed border-primary-300 bg-white px-4 py-6 text-center">
@@ -70,21 +71,22 @@
 
             {{-- Skeleton seperti di docs React: Popover asli merender <button>, sedangkan kartu ini sudah berupa <a>. --}}
             <x-docs.overview-card route="components.popover" name="Popover" desc="Menampilkan informasi kontekstual secara ringkas di dekat elemen yang memicunya.">
-                <div class="flex items-center justify-center rounded-xl bg-surface-subtle p-5" aria-hidden="true">
-                    <div class="flex items-center gap-3">
+                <div class="@container flex items-center justify-center rounded-xl bg-surface-subtle p-5" aria-hidden="true">
+                    <div class="flex min-w-0 items-center gap-3">
                         <span class="inline-flex size-8 shrink-0 items-center justify-center text-gray-500">
                             <x-ceplok::icon class="size-5">{{ svg('ceplok-o-info-circle') }}</x-ceplok::icon>
                         </span>
-                        <div class="relative w-56 shrink-0 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.08))]">
+                        <div class="relative w-56 min-w-0 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.08))]">
                             <span class="pointer-events-none absolute top-1/2 left-[-8px] z-30 size-4 -translate-y-1/2 -rotate-90">
                                 <span class="absolute top-[3.25px] left-[3px] size-2.5 rotate-45 border-t border-l border-border bg-surface"></span>
                             </span>
                             <div class="relative z-10 overflow-hidden rounded-md bg-surface">
                                 <div class="border-b border-border bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-900">Informasi</div>
                                 <div class="bg-surface px-3 py-2 text-xs font-medium text-gray-500">
-                                    <span class="whitespace-nowrap">Informasi tambahan yang relevan</span>
-                                    <br>
-                                    <span class="whitespace-nowrap">untuk membantu memahami konteks.</span>
+                                    {{-- Dua baris tetap bila kotaknya muat (≥ 268px); bila tidak, teksnya dibungkus. --}}
+                                    <span class="@min-[17rem]:whitespace-nowrap">Informasi tambahan yang relevan</span>
+                                    <br class="hidden @min-[17rem]:inline">
+                                    <span class="@min-[17rem]:whitespace-nowrap">untuk membantu memahami konteks.</span>
                                 </div>
                                 <span aria-hidden="true" class="pointer-events-none absolute inset-0 z-20 rounded-md border border-border"></span>
                             </div>
@@ -159,8 +161,14 @@
             </x-docs.overview-card>
 
             <x-docs.overview-card route="components.breadcrumb" name="Breadcrumb" desc="Jejak lokasi halaman dengan pemisah chevron, dua ukuran teks, dan latar opsional.">
-                <div class="flex items-center rounded-xl bg-surface-subtle p-5">
-                    <x-ceplok::breadcrumb :items="[['label' => 'Beranda'], ['label' => 'Komponen'], ['label' => 'Breadcrumb']]" />
+                {{--
+                    Ukuran dipilih dari lebar kotak ini: ukuran base butuh 242px, di bawahnya
+                    sm (12px). Padding sampingnya diciutkan di kartu tersempit: ponsel di
+                    bawah 360px, dan 640–767px saat grid baru dua kolom.
+                --}}
+                <div class="@container flex items-center rounded-xl bg-surface-subtle p-5 max-[359px]:px-3 sm:max-md:px-3">
+                    <div class="@min-[15.25rem]:hidden"><x-ceplok::breadcrumb size="sm" :items="[['label' => 'Beranda'], ['label' => 'Komponen'], ['label' => 'Breadcrumb']]" /></div>
+                    <div class="hidden @min-[15.25rem]:block"><x-ceplok::breadcrumb :items="[['label' => 'Beranda'], ['label' => 'Komponen'], ['label' => 'Breadcrumb']]" /></div>
                 </div>
             </x-docs.overview-card>
 
@@ -188,6 +196,18 @@
                 </div>
             </x-docs.overview-card>
 
+            <x-docs.overview-card route="components.pagination" name="Pagination" desc="Navigasi antar halaman daftar data, dengan tema warna mengikuti aplikasi.">
+                {{--
+                    Lebar kartu berganti mengikuti jumlah kolom dan sidebar, jadi ukurannya
+                    dipilih dari lebar kotak ini (container query), bukan lebar layar:
+                    tujuh kotak 40px butuh 282px, di bawahnya pakai size s (kotak 32px) dengan
+                    empat halaman, supaya muat di kartu tersempit (±230px).
+                --}}
+                <div class="@container flex justify-center rounded-xl bg-surface-subtle p-5 max-[359px]:px-3 sm:max-md:px-3">
+                    <div class="@min-[17.75rem]:hidden"><x-ceplok::pagination size="s" :current-page="2" :total-pages="4" /></div>
+                    <div class="hidden @min-[17.75rem]:block"><x-ceplok::pagination :current-page="2" :total-pages="5" /></div>
+                </div>
+            </x-docs.overview-card>
             <x-docs.overview-card route="components.table" name="Table" desc="Tabel data dengan pencarian, filter kolom, pengurutan, pagination, dan aksi per baris." wide>
                 {{--
                     Skeleton, bukan Table asli, sama seperti di docs React. Kotak cari,
@@ -206,23 +226,24 @@
                             <div class="ml-auto hidden h-7 w-24 rounded-md bg-primary-700 sm:block"></div>
                         </div>
                         {{-- Header --}}
-                        <div class="grid grid-cols-[1fr_1.4fr_1fr] items-center gap-4 border-y border-gray-200 bg-gray-50 px-4 py-3 sm:grid-cols-[1fr_1.4fr_1.4fr_1fr_0.8fr]">
-                            <div class="h-1.5 w-10 rounded bg-gray-300"></div>
-                            <div class="h-1.5 w-14 rounded bg-gray-300"></div>
+                        {{-- Kolom minmax(0,…) dan bar max-w-full: di kartu sempit (320px) bar ikut menyempit, tidak terdorong keluar. --}}
+                        <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] items-center gap-4 border-y border-gray-200 bg-gray-50 px-4 py-3 sm:grid-cols-[1fr_1.4fr_1.4fr_1fr_0.8fr]">
+                            <div class="h-1.5 w-10 max-w-full rounded bg-gray-300"></div>
+                            <div class="h-1.5 w-14 max-w-full rounded bg-gray-300"></div>
                             <div class="hidden h-1.5 w-14 rounded bg-gray-300 sm:block"></div>
-                            <div class="h-1.5 w-10 rounded bg-gray-300"></div>
+                            <div class="h-1.5 w-10 max-w-full rounded bg-gray-300"></div>
                             <div class="hidden h-1.5 w-8 rounded bg-gray-300 sm:block"></div>
                         </div>
                         {{-- Baris: nomor, nama tebal, layanan, pill status, tombol aksi --}}
                         @foreach (['bg-green-100', 'bg-primary-100', 'bg-yellow-100'] as $pill)
                             <div @class([
-                                'grid grid-cols-[1fr_1.4fr_1fr] items-center gap-4 px-4 py-3.5 sm:grid-cols-[1fr_1.4fr_1.4fr_1fr_0.8fr]',
+                                'grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] items-center gap-4 px-4 py-3.5 sm:grid-cols-[1fr_1.4fr_1.4fr_1fr_0.8fr]',
                                 'border-b border-gray-200' => ! $loop->last,
                             ])>
-                                <div class="h-1.5 w-12 rounded bg-gray-200"></div>
+                                <div class="h-1.5 w-12 max-w-full rounded bg-gray-200"></div>
                                 <div class="h-2 w-24 max-w-full rounded bg-gray-300"></div>
                                 <div class="hidden h-1.5 w-28 max-w-full rounded bg-gray-200 sm:block"></div>
-                                <div class="h-4 w-14 rounded-full {{ $pill }}"></div>
+                                <div class="h-4 w-14 max-w-full rounded-full {{ $pill }}"></div>
                                 <div class="hidden gap-1.5 sm:flex">
                                     <div class="size-4 rounded bg-primary-700"></div>
                                     <div class="size-4 rounded border border-gray-300"></div>
@@ -240,6 +261,33 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.table-of-contents" name="Table of Contents" desc="Daftar isi “On this page” yang menyorot bagian yang sedang dibaca.">
+                {{-- Isi halamannya skeleton, seperti di overview React; daftar isinya komponen asli. --}}
+                <div class="relative flex h-66 gap-6 overflow-hidden rounded-xl bg-surface-subtle p-5">
+                    <div class="min-w-0 flex-1 space-y-3 rounded-lg bg-white p-5 shadow-sm" aria-hidden="true">
+                        <div class="h-2 w-2/5 rounded bg-primary-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-5/6 rounded bg-gray-200"></div>
+                        <div class="mt-6 h-2 w-1/3 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-4/6 rounded bg-gray-200"></div>
+                        <div class="mt-6 h-2 w-1/4 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-5/6 rounded bg-gray-200"></div>
+                    </div>
+                    <x-ceplok::table-of-contents
+                        class="w-36! shrink-0 bg-transparent! pt-1"
+                        :anchor="false"
+                        :items="[
+                            ['id' => 'ov-dasar', 'label' => 'Tampilan dasar'],
+                            ['id' => 'ov-variasi', 'label' => 'Variasi'],
+                            ['id' => 'ov-dark', 'label' => 'Dark mode'],
+                            ['id' => 'ov-playground', 'label' => 'Playground'],
+                            ['id' => 'ov-props', 'label' => 'Properties'],
+                        ]"
+                    />
                 </div>
             </x-docs.overview-card>
 

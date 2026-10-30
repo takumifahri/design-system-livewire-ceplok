@@ -41,8 +41,8 @@ contoh kode, dan tabel props, mengikuti dokumentasi kit React.
 - Composer 2.
 - Node.js 20.19 atau lebih baru, dan npm.
 
-Font Lato dan Inter dimuat dari Google Fonts oleh browser, jadi build tidak
-butuh koneksi internet.
+Font Lato 2.0 ikut paket kit dan disalin Vite ke `public/build`. Inter dimuat
+dari Google Fonts oleh browser, jadi build tidak butuh koneksi internet.
 
 ## Instalasi
 
@@ -80,7 +80,7 @@ app/Docs/                       navigasi dan pengolah cuplikan kode situs docs
 resources/views/pages/          halaman dokumentasi
 resources/views/components/     komponen situs (x-docs.*) dan Playground Livewire
 resources/js/, resources/css/   entry Vite: plugin kit + perilaku situs docs
-scripts/                        sinkronisasi token dan ikon dari kit React
+scripts/                        sinkronisasi token, ikon, dan font dari kit React
 tests/                          tes kit, halaman docs, dan Playground
 ```
 
@@ -92,15 +92,17 @@ alur kerja paket (development lokal, menambah komponen, publikasi) di
 
 ## Kesetaraan dengan kit React
 
-Token dan ikon disalin dari kit React, bukan ditulis ulang. Kit React dibaca
-dari folder `react-design-system` yang bersebelahan dengan repo ini, atau dari
-`CEPLOK_REACT_DIR`.
+Token, ikon, dan font Lato disalin dari kit React, bukan ditulis ulang. Kit
+React dibaca dari folder `react-design-system` yang bersebelahan dengan repo
+ini, atau dari `CEPLOK_REACT_DIR`.
 
 ```bash
 npm run tokens:check    # gagal bila token tertinggal dari kit React
 npm run tokens:sync
 npm run icons:check     # gagal bila ikon tertinggal dari flowbite-react-icons
 npm run icons:sync
+npm run fonts:check     # gagal bila font Lato tertinggal dari kit React
+npm run fonts:sync
 ```
 
 ## Quality check lokal
@@ -115,6 +117,7 @@ vendor/bin/pint --test
 php artisan test
 npm run tokens:check
 npm run icons:check
+npm run fonts:check
 composer audit --locked
 npm audit --audit-level=high
 ```
@@ -125,12 +128,113 @@ Vite.
 
 ## CI/CD
 
-Repo ini belum memuat konfigurasi pipeline. Urutan quality check di atas
-siap dipakai sebagai job-nya: `validate` (composer validate), `build` (npm ci,
-npm run build), lalu `test` (Pint, PHPUnit, pemeriksaan token dan ikon, audit
-dependency). Tahap `test` memakai artifact `public/build` dari tahap `build`.
-Pemeriksaan token dan ikon butuh checkout kit React di sebelahnya; lewati
-keduanya bila checkout itu tidak tersedia di runner.
+Repo GitLab di-mirror ke GitHub. Setiap push ke `main` di GitHub menjalankan
+`.github/workflows/deploy.yml`:
+
+1. **Quality check**: urutan di atas, kecuali `tokens:check`, `icons:check`,
+   dan `fonts:check` yang butuh checkout kit React di sebelahnya.
+2. **Build image**: bila quality check lolos, runner mem-build image Docker
+   dan mendorongnya ke GitHub Container Registry sebagai
+   `ghcr.io/<owner>/<repo>:<commit>` dan `:latest`.
+3. **Deploy ke server**: runner masuk ke tailnet lewat Tailscale, SSH ke
+   server, menarik commit yang sama (`git fetch` + `git reset --hard`), lalu
+   menjalankan `scripts/deploy.sh`. Skrip itu menarik image dari GHCR,
+   mengganti container-nya, lalu menunggu healthcheck `/up` lolos.
+
+Server tidak pernah mem-build image sendiri, karena build Vite dan Composer
+terlalu berat untuk server homelab. Workflow juga bisa dijalankan manual dari
+tab Actions (Run workflow).
+
+### Docker
+
+- `Dockerfile` mem-build image FrankenPHP (PHP 8.4 + Caddy) dalam tiga tahap:
+  dependency Composer, aset Vite, lalu image akhir tanpa Node dan tanpa
+  dependency dev.
+- `docker/start.sh` jalan setiap container start dan menjalankan `optimize`.
+  Cache config dibuat dari env container, jadi `.env` tidak ikut masuk ke
+  image.
+- `compose.yaml` membaca `.env` di root repo, menyimpan `storage/` di volume
+  `storage`, dan membuka port hanya di `127.0.0.1:${APP_PORT:-8080}`.
+- Situs docs tidak memakai database. `compose.yaml` memaksa
+  `SESSION_DRIVER=file`, `CACHE_STORE=file`, dan `QUEUE_CONNECTION=sync`,
+  apa pun isi `.env`. Bila nanti butuh database, hapus ketiganya dan tambahkan
+  service database di `compose.yaml`.
+
+Uji di lokal dengan `docker compose up -d --build`, lalu buka
+<http://localhost:8080>.
+
+### Persiapan server (sekali saja)
+
+Server-nya Debian 13 di jaringan lokal, terhubung ke Tailscale.
+
+- Pasang Docker Engine dan plugin Compose dari repository apt resmi Docker
+  untuk Debian. Buat user `deploy` yang masuk grup `docker`. Jangan memakai
+  `root`.
+- Clone repo GitHub ke folder aplikasi. Bila repo privat, clone pertama
+  memakai login sendiri. Deploy berikutnya menarik kode dengan `GITHUB_TOKEN`
+  dari workflow, jadi server tidak butuh deploy key.
+- Buat `.env` produksi di folder itu: `APP_ENV=production`,
+  `APP_DEBUG=false`, `APP_URL=https://<domain>`, `APP_KEY` (buat dengan
+  `php artisan key:generate --show` di lokal), `LOG_CHANNEL=stderr` supaya
+  log terbaca lewat `docker compose logs`, dan
+  `APP_IMAGE=ghcr.io/<owner>/<repo>` (huruf kecil) supaya `docker compose`
+  yang dijalankan manual memakai image yang sama.
+- Deploy pertama berjalan lewat workflow (Run workflow di tab Actions), karena
+  image-nya baru ada di GHCR setelah job build pertama.
+- Pasang `cloudflared` dan buat Cloudflare Tunnel yang meneruskan domain ke
+  `http://127.0.0.1:8080`. HTTPS diurus Cloudflare, jadi tidak perlu membuka
+  port di router. `bootstrap/app.php` mempercayai header `X-Forwarded-*` dari
+  tunnel, supaya URL aset memakai `https`.
+
+### Tailscale
+
+Runner GitHub masuk ke tailnet sebagai `tag:ci` hanya selama job deploy.
+Server bertag `tag:server` dan memakai Tailscale SSH (`tailscale set --ssh`),
+jadi izin masuknya diatur kebijakan akses Tailscale, bukan kunci SSH atau
+`authorized_keys`.
+
+1. Di kebijakan akses Tailscale, daftarkan `tag:ci` di `tagOwners`, izinkan
+   `tag:ci` menjangkau `tag:server` di port 22, dan izinkan Tailscale SSH dari
+   `tag:ci` ke `tag:server` sebagai user `deploy`:
+
+   ```json
+   "tagOwners": {
+       "tag:ci": ["autogroup:admin"]
+   },
+   "acls": [
+       { "action": "accept", "src": ["tag:ci"], "dst": ["tag:server:22"] }
+   ],
+   "ssh": [
+       { "action": "accept", "src": ["tag:ci"], "dst": ["tag:server"], "users": ["deploy"] }
+   ]
+   ```
+
+   Gabungkan dengan isi kebijakan yang sudah ada, jangan menimpanya. Bila
+   kebijakannya memakai `grants`, tulis izin port 22 sebagai grant.
+2. Buat OAuth client di Settings → OAuth clients dengan scope
+   **Auth Keys: write** dan tag `tag:ci`.
+3. `VPS_HOST` diisi nama MagicDNS atau IP Tailscale server (`100.x.y.z`),
+   bukan IP LAN `10.10.10.x`.
+
+### Secrets GitHub
+
+Isi di Settings → Secrets and variables → Actions:
+
+| Secret | Isi |
+| --- | --- |
+| `TS_OAUTH_CLIENT_ID` | ID OAuth client Tailscale |
+| `TS_OAUTH_SECRET` | secret OAuth client Tailscale |
+| `VPS_HOST` | nama MagicDNS atau IP Tailscale server |
+| `VPS_USER` | user deploy (`deploy`) |
+| `VPS_PATH` | folder aplikasi di server |
+
+Login ke GHCR tidak butuh secret tambahan. Workflow memakai `GITHUB_TOKEN`
+bawaan untuk push image, dan meneruskannya ke server untuk pull. Token itu
+kedaluwarsa begitu job selesai, dan server logout setelah pull.
+
+Token mirror GitLab ke GitHub harus punya izin **Workflows: read and write**
+(fine-grained) atau scope `workflow` (classic). Tanpa izin itu, GitHub menolak
+push yang menyentuh `.github/workflows/`, dan mirror berhenti.
 
 ## Alur Branch dan Merge Request
 

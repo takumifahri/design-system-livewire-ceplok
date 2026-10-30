@@ -160,8 +160,8 @@
                 @verbatim
                 @php
                     $columns = [
-                        ['key' => 'field1', 'header' => 'Field 1', ⟦'sortable'⟧ => true, 'emphasis' => true],
-                        ['key' => 'status', 'header' => 'Field 4', ⟦'cell'⟧ => fn ($row) => view('badge-status', ['row' => $row])],
+                        ['key' => 'field1', 'header' => 'Field 1', 'sortable' => true, 'emphasis' => true],
+                        ['key' => 'status', 'header' => 'Field 4', 'cell' => fn ($row) => view('badge-status', ['row' => $row])],
                     ];
                 @endphp
 
@@ -169,16 +169,16 @@
                     :columns="$columns"
                     :data="$rows"
                     row-key="id"
-                    ⟦selectable⟧
+                    selectable
                     wire:model.live="selected"
-                    :⟦search⟧="['wire:model.live.debounce.300ms' => 'q']"
-                    :⟦filter⟧="[]"
+                    :search="['wire:model.live.debounce.300ms' => 'q']"
+                    :filter="[]"
                     :sort="$sort"
                     wire:sort-change="$set('sort', $event.detail.sort)"
-                    :⟦pagination⟧="['page' => $page, 'page-size-options' => [5, 10, 25, 50, 100]]"
+                    :pagination="['page' => $page, 'page-size-options' => [5, 10, 25, 50, 100]]"
                     wire:page-change="$set('page', $event.detail.page)"
                 >
-                    <x-slot:⟦actions⟧>
+                    <x-slot:actions>
                         <x-ceplok::button size="s" :left-icon="svg('ceplok-o-plus')">Tambah Data</x-ceplok::button>
                     </x-slot:actions>
                 </x-ceplok::table>

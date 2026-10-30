@@ -1,0 +1,34 @@
+# Situs docs. Konfigurasi diambil dari .env di root repo, yang tidak ikut masuk
+# ke image.
+#
+# Di server, image ditarik dari GHCR (APP_IMAGE dan APP_TAG, lihat
+# scripts/deploy.sh). Di lokal, `docker compose up -d --build` mem-build image
+# `ceplok-docs:latest` dari Dockerfile.
+services:
+    app:
+        build: .
+        image: ${APP_IMAGE:-ceplok-docs}:${APP_TAG:-latest}
+        restart: unless-stopped
+        env_file: .env
+        # Situs docs tidak memakai database. Session dan cache disimpan sebagai
+        # berkas di volume storage, dan queue dijalankan langsung.
+        environment:
+            SESSION_DRIVER: file
+            CACHE_STORE: file
+            QUEUE_CONNECTION: sync
+        # Hanya bisa diakses dari server itu sendiri. Domain dan HTTPS diurus
+        # Cloudflare Tunnel (cloudflared) di server, yang meneruskan ke port ini.
+        ports:
+            - '127.0.0.1:${APP_PORT:-8080}:80'
+        volumes:
+            - storage:/app/storage
+        healthcheck:
+            test: ['CMD', 'curl', '-fsS', 'http://localhost/up']
+            interval: 30s
+            timeout: 5s
+            start_period: 30s
+            start_interval: 2s
+            retries: 3
+
+volumes:
+    storage:

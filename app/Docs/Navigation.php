@@ -81,6 +81,7 @@ final class Navigation
                     ['label' => 'Pagination', 'route' => 'components.pagination', 'keywords' => 'halaman paginasi'],
                     ['label' => 'Sidebar', 'route' => 'components.sidebar', 'keywords' => 'menu samping navigasi'],
                     ['label' => 'Table', 'route' => 'components.table', 'keywords' => 'tabel data baris kolom urutkan'],
+                    ['label' => 'Table of Contents', 'route' => 'components.table-of-contents', 'keywords' => 'daftar isi halaman ini bagian navigasi sorot'],
                     ['label' => 'Timeline View', 'route' => 'components.timeline', 'keywords' => 'linimasa riwayat aktivitas jejak proses persetujuan'],
                 ],
             ],

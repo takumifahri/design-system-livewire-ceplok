@@ -33,6 +33,7 @@ class PagesTest extends TestCase
             'pagination' => ['components.pagination', 'Pagination', 'Pagination'],
             'sidebar' => ['components.sidebar', 'Sidebar', 'Sidebar'],
             'table' => ['components.table', 'Table', 'Table'],
+            'table-of-contents' => ['components.table-of-contents', 'Table of Contents', 'Table of Contents'],
             'timeline' => ['components.timeline', 'Timeline View', 'Timeline View'],
             'form' => ['form.index', 'Form', 'Form'],
             'input-field-form' => ['form.input-field', 'Input Field Form', 'Input Field Form'],
@@ -162,6 +163,28 @@ class PagesTest extends TestCase
         $dom = $this->page(route('components.pagination', ['hal' => 7]));
 
         $this->assertNotNull($dom->querySelector('a[aria-current="page"][href*="hal=7"]'));
+    }
+
+    public function test_timeline_desktop_digeser_ke_samping_alih_alih_diperas(): void
+    {
+        $dom = $this->page(route('components.timeline'));
+        $widths = [];
+
+        foreach ($dom->querySelectorAll('ol[class~="before:left-1/2"]') as $timeline) {
+            $this->assertHasClasses($timeline->parentElement->parentElement, 'ds-scroll-x overflow-x-auto');
+            $widths[$timeline->closest('section')->getAttribute('id')] = $timeline->parentElement->getAttribute('style');
+        }
+
+        // Playground satu rem lebih lebar karena kontrol Font-nya bisa memilih Inter.
+        $this->assertSame([
+            'platform' => 'min-width: 40rem',
+            'isi-item' => 'min-width: 40rem',
+            'dark-mode' => 'min-width: 40rem',
+            'playground' => 'min-width: 41rem',
+        ], $widths);
+
+        // Timeline mobile tetap mengikuti lebar kolomnya.
+        $this->assertCount(4, $dom->querySelectorAll('div[style^="min-width"]'));
     }
 
     /** @param  array<string, string>  $cookies */
