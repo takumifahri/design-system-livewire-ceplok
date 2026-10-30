@@ -241,7 +241,7 @@ class PlaygroundTest extends TestCase
         $this->assertStringContainsString('dark-mode', $this->code($dom));
         $this->assertStringContainsString(':items="$items"', $this->code($dom));
         $component->assertSet('activeMenu', 'Menu 4')->assertSeeText('Menu 4');
-        $this->assertNotNull($this->find($dom, '[x-on\\:click*="selectMenu"]'));
+        $this->assertNotNull($this->find($dom, '[wire\\:click*="selectMenu"]'));
         $this->assertStringContainsString("width: collapsed ? '72px' : '280px'", $component->html());
         $this->assertNotNull($this->find($dom, '[x-bind\\:class*="$store.preview.font"]'));
     }
