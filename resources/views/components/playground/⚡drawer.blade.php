@@ -65,7 +65,7 @@ new class extends Component
     <x-docs.section id="playground" title="Playground">
         <x-docs.lead>Uji coba perilaku dan variasi konfigurasi Drawer secara langsung pada tampilan mobile.</x-docs.lead>
 
-        <x-docs.stage max-width="max-w-[760px]" :dark="$dark">
+        <x-docs.stage max-width="max-w-[760px]" min-width="760px" :dark="$dark">
             <div @class(['flex min-h-[668px] w-full items-center justify-center rounded-xl p-5', $dark ? 'bg-gray-950' : 'bg-gray-50'])>
                 <div
                     x-data="{ drawerOpen: true, activeMenu: @js($activeMenu) }"

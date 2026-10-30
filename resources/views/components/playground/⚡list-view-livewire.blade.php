@@ -45,7 +45,7 @@ new class extends Component
 <x-docs.section id="livewire" title="Livewire">
     <x-docs.lead>Klik tombol Open untuk memperbarui dokumen terpilih tanpa memuat ulang halaman.</x-docs.lead>
 
-    <x-docs.stage max-width="max-w-6xl">
+    <x-docs.stage max-width="max-w-6xl" min-width="52rem">
         <div x-data="{ selectedId: @entangle('selectedId'), documents: @js(self::DOCUMENTS) }" class="grid min-h-[360px] gap-6 lg:grid-cols-[minmax(0,514px)_minmax(0,1fr)] lg:items-center">
             <x-ceplok::list-view gap="sm">
                 @foreach (self::DOCUMENTS as $id => $document)

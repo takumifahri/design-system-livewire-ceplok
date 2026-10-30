@@ -78,8 +78,18 @@ new class extends Component
             $size === 'l' => 'max-w-[600px]',
             default => 'max-w-[514px]',
         };
+        $canvasMinWidth = match (true) {
+            $variant === 'article' && $size === 's' => '410px',
+            $variant === 'article' && $size === 'l' => '728px',
+            $variant === 'article' && $size === 'xl' => '1028px',
+            $variant === 'article' => '514px',
+            $platform === 'mobile' => '348px',
+            $size === 's' => '410px',
+            $size === 'l' => '600px',
+            default => '514px',
+        };
     @endphp
-    <x-docs.stage max-width="max-w-6xl" :dark="$dark">
+    <x-docs.stage max-width="max-w-6xl" :min-width="$canvasMinWidth" :dark="$dark">
         <div class="flex min-h-[328px] items-center justify-center py-4">
             <div class="w-full transition-[max-width] duration-300 {{ $canvasWidth }}">
                 @if ($variant === 'article')

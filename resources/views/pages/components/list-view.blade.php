@@ -63,7 +63,7 @@ $containerProps = [
                             <h4 class="mb-1 text-sm font-bold text-gray-900">Small (S)</h4>
                             <p class="mb-3 text-body-sm text-gray-500">Ukuran ringkas dengan wadah ikon 32 × 32 px dan
                                 tombol aksi XS.</p>
-                            <x-docs.demo>
+                            <x-docs.demo min-width="410px">
                                 <div class="w-full max-w-[410px]">
                                     <x-ceplok::list-view size="s" title="Project brief"
                                         :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
@@ -74,7 +74,7 @@ $containerProps = [
                             <h4 class="mb-1 text-sm font-bold text-gray-900">Medium (M) · Default</h4>
                             <p class="mb-3 text-body-sm text-gray-500">Ukuran standar dengan wadah ikon 40 × 40 px dan
                                 tombol aksi S.</p>
-                            <x-docs.demo>
+                            <x-docs.demo min-width="514px">
                                 <div class="w-full max-w-[514px]">
                                     <x-ceplok::list-view title="Project brief"
                                         :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
@@ -85,7 +85,7 @@ $containerProps = [
                             <h4 class="mb-1 text-sm font-bold text-gray-900">Large (L)</h4>
                             <p class="mb-3 text-body-sm text-gray-500">Ukuran lapang dengan wadah ikon 48 × 48 px dan
                                 tombol aksi Base.</p>
-                            <x-docs.demo>
+                            <x-docs.demo min-width="600px">
                                 <div class="w-full max-w-[600px]">
                                     <x-ceplok::list-view size="l" title="Project brief"
                                         :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
@@ -99,7 +99,7 @@ $containerProps = [
                     <h3 class="mb-2 text-base font-bold text-gray-900">2. Mobile</h3>
                     <p class="mb-3 text-body-sm text-gray-500">Mobile menggunakan satu ukuran standar dengan layout satu
                         baris yang ringkas.</p>
-                    <x-docs.demo>
+                    <x-docs.demo min-width="348px">
                         <div class="w-full max-w-[348px]">
                             <x-ceplok::list-view platform="mobile" title="Project brief"
                                 :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" />
@@ -143,7 +143,7 @@ $containerProps = [
                 <div>
                     <h4 class="mb-2 text-sm font-bold text-gray-900">{{ $articleVariant['label'] }}</h4>
                     <p class="mb-3 text-body-sm text-gray-500">{{ $articleVariant['description'] }}</p>
-                    <x-docs.demo>
+                    <x-docs.demo :min-width="match ($size) { 's' => '410px', 'm' => '514px', 'l' => '728px', 'xl' => '1028px' }">
                         <div class="w-full {{ $articleVariant['width'] }}">
                             <x-ceplok::list-view variant="article" :size="$size" subject="Subject Name" category="Category"
                                 timestamp="12 Okt 2026 09:59 WIB"
@@ -182,13 +182,13 @@ $containerProps = [
             <p class="mb-6 text-body-sm text-gray-500">Prop <span class="text-primary-500">decoration</span> menambahkan
                 garis aksen vertikal pada sisi kiri kartu sebagai penanda visual.</p>
             <div class="space-y-5">
-                <x-docs.demo label="Desktop">
+                <x-docs.demo label="Desktop" min-width="514px">
                     <div class="w-full max-w-[514px]">
                         <x-ceplok::list-view decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
                     </div>
                 </x-docs.demo>
-                <x-docs.demo label="Mobile">
+                <x-docs.demo label="Mobile" min-width="348px">
                     <div class="w-full max-w-[348px]">
                         <x-ceplok::list-view platform="mobile" decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" />
@@ -210,7 +210,7 @@ $containerProps = [
             <p class="mb-6 text-body-sm text-gray-500">Slot <span class="text-primary-500">badge</span> menempatkan
                 label status di bawah metadata dan menyesuaikan tinggi kartu secara otomatis.</p>
             <div class="space-y-5">
-                <x-docs.demo label="Desktop">
+                <x-docs.demo label="Desktop" min-width="514px">
                     <div class="w-full max-w-[514px]">
                         <x-ceplok::list-view title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open">
@@ -221,7 +221,7 @@ $containerProps = [
                         </x-ceplok::list-view>
                     </div>
                 </x-docs.demo>
-                <x-docs.demo label="Mobile">
+                <x-docs.demo label="Mobile" min-width="348px">
                     <div class="w-full max-w-[348px]">
                         <x-ceplok::list-view platform="mobile" title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']">
@@ -259,7 +259,7 @@ $containerProps = [
             <p class="mb-6 text-body-sm text-gray-500">Prop <span class="text-primary-500">dark-mode</span> menyesuaikan
                 surface, teks, ikon, badge, dan border untuk latar gelap.</p>
             <div class="space-y-5">
-                <x-docs.demo dark label="Desktop">
+                <x-docs.demo dark label="Desktop" min-width="514px">
                     <div class="w-full max-w-[514px]">
                         <x-ceplok::list-view dark-mode decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open">
@@ -270,7 +270,7 @@ $containerProps = [
                         </x-ceplok::list-view>
                     </div>
                 </x-docs.demo>
-                <x-docs.demo dark label="Mobile">
+                <x-docs.demo dark label="Mobile" min-width="348px">
                     <div class="w-full max-w-[348px]">
                         <x-ceplok::list-view dark-mode platform="mobile" decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']">

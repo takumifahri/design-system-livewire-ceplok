@@ -22,7 +22,7 @@ new class extends Component
 ?>
 
 <div class="space-y-4">
-    <x-docs.stage max-width="max-w-[520px]">
+    <x-docs.stage max-width="max-w-[520px]" min-width="520px">
         <div class="flex h-[520px] w-full items-center justify-center py-4">
             <div class="relative flex h-full w-[380px] max-w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md">
                 <div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3.5">

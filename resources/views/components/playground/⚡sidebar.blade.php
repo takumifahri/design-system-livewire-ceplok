@@ -197,7 +197,7 @@ new class extends Component
             collapse, badge, separator, logo, user info, dan tombol collapse.
         </x-docs.lead>
 
-        <x-docs.stage max-width="max-w-[768px]" :dark="$isDark">
+        <x-docs.stage max-width="max-w-[768px]" min-width="768px" :dark="$isDark">
             <div
                 wire:key="sidebar-stage-{{ $separator }}-{{ $resolvedCollapse }}-{{ $theme }}"
                 style="height: 920px"

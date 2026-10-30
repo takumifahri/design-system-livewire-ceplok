@@ -32,7 +32,7 @@ new class extends Component
         </span>
     </div>
 
-    <x-docs.stage max-width="max-w-[768px]">
+    <x-docs.stage max-width="max-w-[768px]" min-width="768px">
         <div class="flex h-[520px] w-full items-center justify-center py-4">
             <div
         class="flex h-full w-full overflow-hidden rounded-xl border border-gray-200 bg-white"

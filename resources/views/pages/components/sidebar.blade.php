@@ -161,7 +161,7 @@
                         <h3 class="text-sm font-bold text-gray-900">1. Menu Only</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500">Navigasi dasar tanpa logo dan informasi akun.</p>
                     </div>
-                    <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar class="!min-h-0 h-full" x-on:click.capture="$event.target.closest('a') && $event.preventDefault()" :items="$menuOnlyItems" />
                     </div>
                 </article>
@@ -172,7 +172,7 @@
                         <h3 class="text-sm font-bold text-gray-900">2. Menu, user info, logo web</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500">Navigasi dasar dengan identitas aplikasi dan area akun.</p>
                     </div>
-                    <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
                             x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
@@ -200,7 +200,7 @@
                         <h3 class="text-sm font-bold text-gray-900">3. Multi-level menu, user info, logo web</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500">Menu anak dipakai untuk mengelompokkan navigasi yang berkaitan.</p>
                     </div>
-                    <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
                             x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
@@ -228,7 +228,7 @@
                         <h3 class="text-sm font-bold text-gray-900">4. Multi-level menu + icon, user info, logo web</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500">Menu berikon dikelompokkan; separator membedakan area konten.</p>
                     </div>
-                    <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-50">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
                             x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
@@ -256,7 +256,7 @@
                         <h3 class="text-sm font-bold text-gray-900">5. Collapsed</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500">Konfigurasi varian 4 dalam kondisi tertutup: icon, user, dan logo mark tetap terlihat.</p>
                     </div>
-                    <div class="flex h-[440px] items-start overflow-y-auto overscroll-contain bg-gray-50">
+                    <div class="ds-scroll-x flex h-[440px] items-start overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
                             x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
@@ -434,7 +434,7 @@
                         <h3 class="text-sm font-bold text-gray-900">1. Multi-level menu + icon, user info, logo web</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500">Menu berikon dikelompokkan; separator membedakan area konten.</p>
                     </div>
-                    <div class="h-[440px] overflow-y-auto overscroll-contain bg-gray-950">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-950">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
                             x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
@@ -462,7 +462,7 @@
                         <h3 class="text-sm font-bold text-gray-900">2. Collapsed</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500">Konfigurasi varian 1 dalam kondisi tertutup: icon, user, dan logo terlihat.</p>
                     </div>
-                    <div class="flex h-[440px] items-start overflow-y-auto overscroll-contain bg-gray-950">
+                    <div class="ds-scroll-x flex h-[440px] items-start overflow-x-auto overflow-y-auto overscroll-contain bg-gray-950">
                         <x-ceplok::sidebar
                             class="!min-h-0 h-full"
                             x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
