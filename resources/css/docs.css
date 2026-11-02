@@ -202,3 +202,10 @@
         display: none;
     }
 }
+
+/* ── Scrollbar gelap untuk contoh dropdown (Firefox/standar) ────────────── */
+
+.ds-scrollbar-dark {
+    scrollbar-color: var(--color-gray-600) var(--color-gray-800);
+}
+

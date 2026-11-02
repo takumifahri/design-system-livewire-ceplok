@@ -30,6 +30,7 @@
     'type' => 'button',
     'leftIcon' => null,
     'rightIcon' => null,
+    'wireClick' => null,
 ])
 
 @php
@@ -39,7 +40,7 @@
     $tone = Prop::oneOf(ButtonTone::class, $tone, ButtonTone::Light, 'button', 'tone');
     $iconOnly = Prop::bool($iconOnly, false, 'button', 'icon-only');
     $anchor = $as === null
-        ? $attributes->has('href')
+        ? filled($attributes->get('href'))
         : Prop::oneOf(ButtonAs::class, $as, ButtonAs::Button, 'button', 'as') === 'anchor';
 
     $sizes = [
@@ -117,7 +118,7 @@
 
     $s = $sizes[$size];
     $tag = $anchor ? 'a' : 'button';
-    $classes = 'inline-flex items-center justify-center font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:pointer-events-none disabled:opacity-50 '
+    $classes = 'inline-flex cursor-pointer items-center justify-center font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-50 '
         .$colors[$theme][$tone][$variant].' '
         .($iconOnly ? $s['iconOnly'] : $s['button']);
     // Content::filled, bukan (string): svg() mengembalikan objek Htmlable yang
@@ -126,7 +127,14 @@
     $hasRightIcon = ! $iconOnly && Content::filled($rightIcon);
 @endphp
 
-<{{ $tag }} {{ $attributes->class($classes)->merge($anchor ? [] : ['type' => Prop::oneOf(ButtonType::class, $type, ButtonType::Button, 'button', 'type')]) }}>
+<{{ $tag }}
+    @if (filled($wireClick))
+        wire:click="{{ $wireClick }}"
+        wire:loading.attr="disabled"
+        wire:target="{{ $wireClick }}"
+    @endif
+    {{ $attributes->class($classes)->merge($anchor ? [] : ['type' => Prop::oneOf(ButtonType::class, $type, ButtonType::Button, 'button', 'type')]) }}
+>
     @if ($hasLeftIcon)
         <span class="flex shrink-0 items-center justify-center {{ $s['icon'] }}">{{ $leftIcon }}</span>
     @endif

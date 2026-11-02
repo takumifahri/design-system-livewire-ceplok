@@ -172,6 +172,12 @@
                 </div>
             </x-docs.overview-card>
 
+            <x-docs.overview-card route="components.pagination" name="Pagination" desc="Navigasi antar halaman daftar data, dengan tema warna mengikuti aplikasi.">
+                <div class="flex justify-center rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::pagination :current-page="2" :total-pages="5" />
+                </div>
+            </x-docs.overview-card>
+
             <x-docs.overview-card route="components.hero" name="Hero" desc="Pembuka halaman: judul, sub heading, deskripsi, satu tombol, dan gambar di kiri atau kanan." wide>
                 <div class="overflow-hidden rounded-xl border border-border bg-white">
                     <x-ceplok::hero heading="Judul Halaman" sub-heading="Sub heading" description="Paragraf pembuka yang menjelaskan isi halaman secara singkat." button-label="Selengkapnya" image="/images/hero-sample.svg" image-alt="" />
@@ -202,7 +208,6 @@
                     <div class="hidden @min-[17.75rem]:block"><x-ceplok::pagination :current-page="2" :total-pages="5" /></div>
                 </div>
             </x-docs.overview-card>
-
             <x-docs.overview-card route="components.table" name="Table" desc="Tabel data dengan pencarian, filter kolom, pengurutan, pagination, dan aksi per baris." wide>
                 {{--
                     Skeleton, bukan Table asli, sama seperti di docs React. Kotak cari,
@@ -283,6 +288,62 @@
                             ['id' => 'ov-props', 'label' => 'Properties'],
                         ]"
                     />
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.drawer" name="Drawer" desc="Panel kontekstual di tepi layar (Side Sheet / Off-canvas) untuk form, filter, atau detail data.">
+                <div class="relative flex h-[264px] flex-col overflow-hidden rounded-xl bg-surface-subtle p-5" aria-hidden="true">
+                    <div class="space-y-3 opacity-60">
+                        <div class="h-2 w-2/5 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-5/6 rounded bg-gray-200"></div>
+                        <div class="mt-6 h-2 w-1/3 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-4/6 rounded bg-gray-200"></div>
+                        <div class="mt-6 h-2 w-2/5 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                    </div>
+                    <div class="absolute inset-0 bg-gray-900/40"></div>
+                    <div class="absolute inset-y-0 right-0 flex w-48 flex-col border-l border-gray-200 bg-white shadow-2xl">
+                        <div class="px-4 pt-5 pb-3 text-xs font-semibold tracking-wide text-gray-500">MENU</div>
+                        <div class="space-y-1 p-3 text-sm">
+                            <div class="rounded-lg bg-primary-50 px-3 py-2 text-primary-700">Beranda</div>
+                            <div class="px-3 py-2 text-gray-900">Layanan</div>
+                            <div class="px-3 py-2 text-gray-900">Laporan</div>
+                        </div>
+                    </div>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.sidebar" name="Sidebar" desc="Navigasi samping dengan grup menu, submenu, profil akun, dan mode ringkas.">
+                <div class="relative flex h-[264px] flex-col overflow-hidden rounded-xl bg-surface-subtle p-5" aria-hidden="true">
+                    <div class="ml-56 hidden space-y-3 opacity-60 sm:block">
+                        <div class="h-2 w-2/5 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-5/6 rounded bg-gray-200"></div>
+                        <div class="mt-6 h-2 w-1/3 rounded bg-gray-300"></div>
+                        <div class="h-1.5 w-full rounded bg-gray-200"></div>
+                        <div class="h-1.5 w-4/6 rounded bg-gray-200"></div>
+                    </div>
+                    <div class="absolute inset-y-0 left-0 w-56 border-r border-gray-200 bg-white p-5 shadow-sm">
+                        <div class="mb-8 flex items-center gap-2">
+                            <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-8 shrink-0 object-contain">
+                            <span class="text-sm font-black tracking-tight text-gray-900">CEPLOK</span>
+                        </div>
+                        <div class="space-y-1 text-sm">
+                            <div class="rounded-lg bg-gray-100 px-3 py-2.5 text-gray-900">Beranda</div>
+                            <div class="px-3 py-2.5 text-gray-900">Layanan</div>
+                            <div class="px-3 py-2.5 text-gray-900">Laporan</div>
+                            <div class="px-3 py-2.5 text-gray-900">Pengaturan</div>
+                        </div>
+                    </div>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.list-view" name="List View" desc="Kartu daftar berkas dan dokumen dengan wadah ikon, metadata ringkas, dan aksi cepat.">
+                <div class="flex flex-col justify-center gap-2 rounded-xl bg-surface-subtle p-3">
+                    <x-ceplok::list-view size="s" title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
+                    <x-ceplok::list-view size="s" title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
                 </div>
             </x-docs.overview-card>
 

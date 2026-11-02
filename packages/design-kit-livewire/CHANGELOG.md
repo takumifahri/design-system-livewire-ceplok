@@ -8,12 +8,42 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 Rilis pertama, direncanakan sebagai `0.1.0`.
 
+### Diperbaiki
+
+- `Drawer` dan `ListView` kini masing-masing memakai satu berkas komponen.
+  API menu Drawer disusun melalui `items` dan `children`, sedangkan ListView
+  menerima konfigurasi item melalui `items` atau props komponen utamanya;
+  subkomponen `drawer.*` dan `list-view.*` telah dihapus.
+- `ListView`: `action-wire-click` meneruskan event Livewire hanya ke tombol
+  aksi bawaan, sehingga interaksi `Open` tidak menjadikan seluruh kartu sebagai
+  target klik.
+- `ListView`: ukuran simple dan article kini mengikuti referensi React pada
+  setiap varian. Typography metadata, wadah serta ukuran ikon, padding,
+  tinggi minimum, dan ukuran tombol aksi S/M/L tidak lagi dikompensasi oleh
+  halaman dokumentasi.
+- `Sidebar`: state collapse Alpine kini tersinkron dengan prop server tanpa
+  mencampurkan class lebar statis dan dinamis. Submenu aktif selalu terbuka;
+  saat Sidebar ringkas, parent submenu hanya dapat membuka Sidebar bila event
+  `collapse` didengarkan.
+- `DrawerSubItem`: item dengan `href` tetap berupa tautan, item tanpa `href`
+  berupa tombol, dan item nonaktif tidak lagi memiliki tujuan tautan serta
+  mengikuti atribut ARIA disabled.
+
 ### Ditambahkan
 
 - Komponen Blade setara kit React: `alert`, `avatar`, `badge`, `breadcrumb`,
-  `button`, `card`, `container`, `dropdown`, `footer`, `hero`, `icon`,
-  `pagination`, `spinner`, dan `toast`. Markup, class, dan atribut ARIA-nya
+  `button`, `card`, `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`,
+  `list-view` (beserta `list-view.item` dan `list-view.article`), `pagination`,
+  `sidebar`, `spinner`, dan `toast`. Markup, class, dan atribut ARIA-nya
   diuji sama dengan `@ceplok-ui/design-kit-react` di browser.
+- `Drawer` dengan komponen pendukung `drawer.header`, `drawer.body`,
+  `drawer.nav-item`, dan `drawer.sub-item`; mendukung posisi empat sisi,
+  ukuran `s` hingga `full`, dark mode, `wire:model`, serta event `close`.
+- `Sidebar` dengan group menu, submenu, logo/mark ringkas, profil pengguna,
+  separator, dark mode, dan event `collapse` untuk integrasi state Livewire.
+- `List View` simple dan article: ukuran responsif, metadata, ikon, dekorasi,
+  badge, aksi, dark mode, dan `action-wire-click` agar aksi item dapat
+  dikendalikan Livewire tanpa membuat seluruh kartu dapat diklik.
 - `timeline` (eksperimental, desainnya belum final): riwayat kejadian
   berurutan dengan avatar di sepanjang satu garis, setara `Timeline` di kit
   React. `platform` `desktop` atau `mobile`, `size` `large` atau `small`,
@@ -78,8 +108,8 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
 - 411 ikon outline dan 340 ikon solid Flowbite (`ceplok-o-*`, `ceplok-s-*`)
   dari `flowbite-react-icons` 1.3.1, plus 30 logo brand (`brand-*`) yang
   bawaannya `aria-hidden="true"`.
-- Plugin Alpine (`resources/js/index.js`): `ceplokDismissible`,
-  `ceplokAvatar`, `ceplokPagination`, `ceplokDropdown`, `ceplokSelect`,
+- Plugin Alpine (`resources/js/index.js`): `ceplokDismissible`, `ceplokDrawer`,
+  `ceplokSidebar`, `ceplokAvatar`, `ceplokPagination`, `ceplokDropdown`, `ceplokSelect`,
   `ceplokSearch`, `ceplokDatepicker`, `ceplokUpload`, `ceplokFloatingLabel`,
   `ceplokInputField`, `ceplokTextArea`, `ceplokTable`, `ceplokTablePreview`,
   `ceplokPopover`, `ceplokModal`, dan `ceplokTableOfContents`.

@@ -43,19 +43,19 @@ new class extends Component
         $buttons = in_array($this->action, ['two', 'one'], true);
         $secondary = $this->dark
             ? [
-                '            <x-ceplok::button variant="outline" size="s"',
+                '            <'.'x-ceplok::button variant="outline" size="s"',
                 '                class="border-primary-400! text-primary-400! hover:bg-primary-400/10!">',
                 '                Button text',
-                '            </x-ceplok::button>',
+                '            </'.'x-ceplok::button>',
             ]
-            : ['            <x-ceplok::button size="s">Button text</x-ceplok::button>'];
+            : ['            <'.'x-ceplok::button size="s">Button text</'.'x-ceplok::button>'];
 
         return collect([
             "{{-- {$summary} --}}",
             '{{-- Kartu tidak punya prop ukuran — lebarnya mengikuti kolom',
             '     tempatnya berada. Yang berubah cuma kolomnya. --}}',
             '<div class="⟦*'.$width.'⟧">',
-            '    <x-ceplok::card',
+            '    <'.'x-ceplok::card',
             $this->dark ? '        ⟦*dark-mode⟧' : null,
             $this->image ? '        ⟦*image⟧="/images/card-sample.svg"' : null,
             $this->image ? '        ⟦*image-alt⟧="Suasana kerja tim"' : null,
@@ -64,9 +64,9 @@ new class extends Component
             $this->action === 'link' ? '        ⟦*href⟧="/panduan"' : null,
             $this->action === 'link' ? '        ⟦*link-label⟧="See our guideline"' : null,
             $buttons ? '    >' : '    />',
-            ...($buttons ? ['        <x-slot:⟦*actions⟧>'] : []),
+            ...($buttons ? ['        <'.'x-slot:⟦*actions⟧>'] : []),
             ...($this->action === 'two' ? $secondary : []),
-            ...($buttons ? ['            <x-ceplok::button size="s">Button text</x-ceplok::button>', '        </x-slot:actions>', '    </x-ceplok::card>'] : []),
+            ...($buttons ? ['            <'.'x-ceplok::button size="s">Button text</'.'x-ceplok::button>', '        </'.'x-slot:actions>', '    </'.'x-ceplok::card>'] : []),
             '</div>',
         ])->filter()->implode("\n");
     }

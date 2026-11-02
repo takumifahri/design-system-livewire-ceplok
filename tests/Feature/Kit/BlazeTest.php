@@ -17,9 +17,9 @@ class BlazeTest extends TestCase
     public static function komponen(): array
     {
         $names = [
-            'alert', 'avatar', 'badge', 'breadcrumb', 'button', 'card', 'checkbox', 'container', 'datepicker', 'dropdown',
-            'floating-label', 'footer', 'hero', 'icon', 'input-field', 'modal', 'pagination', 'popover', 'radio', 'search', 'select', 'spinner',
-            'table', 'table-file', 'table-image', 'table-of-contents', 'text-area', 'timeline', 'toast', 'toggle', 'upload',
+            'alert', 'avatar', 'badge', 'breadcrumb', 'button', 'card', 'checkbox', 'container', 'datepicker', 'drawer', 'dropdown',
+            'floating-label', 'footer', 'hero', 'icon', 'input-field', 'list-view', 'modal', 'pagination', 'popover', 'radio', 'search', 'select', 'sidebar',
+            'spinner', 'table', 'table-file', 'table-image', 'table-of-contents', 'text-area', 'timeline', 'toast', 'toggle', 'upload',
         ];
 
         return array_combine($names, array_map(fn (string $name) => [$name], $names));

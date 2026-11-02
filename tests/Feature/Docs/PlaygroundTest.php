@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Docs;
 
+use CeplokUi\DesignKit\Enums\DrawerNavItemTheme;
 use Dom\HTMLDocument;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -20,7 +21,7 @@ class PlaygroundTest extends TestCase
         $names = [
             'alert', 'alert-notice', 'avatar', 'badge', 'badge-filters', 'breadcrumb', 'button', 'card', 'container',
             'footer', 'hero', 'pagination', 'pagination-list', 'table', 'table-demo', 'popover', 'modal', 'modal-livewire', 'spinner', 'spinner-loading', 'toast', 'toast-saved',
-            'dropdown', 'dropdown-actions', 'dropdown-sort',
+            'dropdown', 'dropdown-actions', 'dropdown-sort', 'drawer', 'drawer-livewire', 'sidebar', 'sidebar-livewire', 'list-view', 'list-view-livewire',
             'input-field', 'input-field-validate', 'floating-label', 'floating-label-fill', 'text-area', 'text-area-send',
             'select', 'select-region', 'search', 'search-live', 'datepicker', 'datepicker-filter', 'upload', 'upload-livewire',
             'radio', 'radio-livewire', 'toggle', 'toggle-livewire', 'checkbox', 'checkbox-livewire',
@@ -225,6 +226,122 @@ class PlaygroundTest extends TestCase
         Livewire::test('playground.container')
             ->set('width', 100)->assertSet('width', 320)
             ->set('width', 5000)->assertSet('width', 1600);
+    }
+
+    public function test_sidebar_playground_menyesuaikan_state(): void
+    {
+        $component = Livewire::test('playground.sidebar')
+            ->set('collapse', 'collapsed')
+            ->set('theme', 'dark')
+            ->set('separator', 'hide')
+            ->call('selectMenu', 'Menu 4');
+
+        $dom = $this->domOf($component);
+        $this->assertStringContainsString('collapsed', $this->code($dom));
+        $this->assertStringContainsString('dark-mode', $this->code($dom));
+        $this->assertStringContainsString(':items="$items"', $this->code($dom));
+        $component->assertSet('activeMenu', 'Menu 4')->assertSeeText('Menu 4');
+        $this->assertNotNull($this->find($dom, '[wire\\:click*="selectMenu"]'));
+        $this->assertStringContainsString("width: collapsed ? '72px' : '280px'", $component->html());
+        $this->assertNotNull($this->find($dom, '[x-bind\\:class*="$store.preview.font"]'));
+    }
+
+    public function test_list_view_playground_mengirim_slot_badge_hanya_saat_kontrol_aktif(): void
+    {
+        $withoutBadge = $this->domOf(Livewire::test('playground.list-view')->set('hasBadge', false));
+        $withoutCard = $this->find($withoutBadge, 'article');
+
+        $this->assertHasClasses($withoutCard, 'min-h-[81px]');
+        $this->assertLacksClasses($withoutCard, 'min-h-[108px]');
+        $this->assertStringNotContainsString('<x-slot:badge>', $this->code($withoutBadge));
+
+        $withBadge = $this->domOf(Livewire::test('playground.list-view')->set('hasBadge', true));
+        $withCard = $this->find($withBadge, 'article');
+
+        $this->assertHasClasses($withCard, 'min-h-[108px]');
+        $this->assertStringContainsString('<x-slot:badge>', $this->code($withBadge));
+    }
+
+    public function test_list_view_livewire_memperbarui_detail_dokumen_tanpa_navigasi(): void
+    {
+        $component = Livewire::test('playground.list-view-livewire')
+            ->call('selectDocument', 'meeting-notes');
+
+        $component
+            ->assertSet('selectedId', 'meeting-notes')
+            ->assertSet('interactionCount', 1)
+            ->assertSeeText('Catatan keputusan dan tindak lanjut rapat tim terbaru.')
+            ->assertSeeText('Interaksi:');
+
+        $dom = $this->domOf($component);
+        $item = $this->find($dom, 'div[x-bind\:class*="selectedId"]');
+        $button = collect(iterator_to_array($dom->querySelectorAll('button'), false))
+            ->first(fn ($element) => $element->getAttribute('wire:click') === "selectDocument('meeting-notes')");
+
+        $this->assertStringContainsString('ring-primary-500', $item->getAttribute('x-bind:class'));
+        $this->assertNotNull($button);
+        $this->assertSame("selectDocument('meeting-notes')", $button->getAttribute('wire:click'));
+        $this->assertFalse($item->hasAttribute('wire:click'));
+    }
+
+    public function test_sidebar_livewire_memperbarui_skeleton_dan_state_tanpa_navigasi(): void
+    {
+        $component = Livewire::test('playground.sidebar-livewire')
+            ->call('navigasi', 'Pesanan')
+            ->set('collapsed', true);
+
+        $component
+            ->assertSet('halaman', 'Pesanan')
+            ->assertSet('jumlahKlik', 1)
+            ->assertSet('collapsed', true)
+            ->assertSeeText('Konten Pesanan');
+
+        $dom = $this->domOf($component);
+        $sidebar = $this->find($dom, 'aside[x-on\\:click\\.capture]');
+
+        $this->assertStringContainsString('ceplokSidebar', $sidebar->getAttribute('x-data'));
+        $this->assertStringContainsString('$wire.navigasi', $sidebar->getAttribute('x-on:click.capture'));
+        $this->assertStringContainsString('$wire.set(\'collapsed\'', $component->html());
+        $this->assertStringNotContainsString('Tutup Sidebar', $component->html());
+    }
+
+    public function test_drawer_playground_merender_ulang_kontrol_dan_bisa_ditutup(): void
+    {
+        $component = Livewire::test('playground.drawer');
+
+        $component->assertSet('open', false)
+            ->set('open', true)
+            ->set('theme', 'purple')
+            ->set('icons', false)
+            ->set('dark', true)
+            ->set('open', false);
+
+        $component->assertSet('theme', DrawerNavItemTheme::Purple)
+            ->assertSet('icons', false)
+            ->assertSet('dark', true)
+            ->assertSet('open', false);
+
+        $dom = $this->domOf($component);
+
+        $this->assertSame('Dark', trim($this->find($dom, '[aria-label="Pilih mode"] [aria-pressed="true"]')->textContent));
+        $this->assertSame('Tidak Ada', trim($this->find($dom, '[aria-label="Pilih ikon"] [aria-pressed="true"]')->textContent));
+        $this->assertNotNull($this->find($dom, '[data-preview]'));
+        $this->assertNotNull($this->find($dom, '.bg-gray-950'));
+    }
+
+    public function test_canvas_livewire_drawer_membuka_panel_dan_memilih_menu(): void
+    {
+        $component = Livewire::test('playground.drawer-livewire');
+
+        $component->assertSet('buka', false)
+            ->set('buka', true)
+            ->assertSeeText('Beranda')
+            ->assertSeeText('Pesan Masuk')
+            ->call('pilihMenu', 'Laporan')
+            ->assertSet('buka', false)
+            ->assertSet('menuTerpilih', 'Laporan')
+            ->assertSeeText('Menu terpilih:')
+            ->assertDontSee('<dialog', false);
     }
 
     private function domOf(Testable $component): HTMLDocument

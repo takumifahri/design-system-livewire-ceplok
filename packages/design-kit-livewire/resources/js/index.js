@@ -22,6 +22,7 @@
 import avatar from './components/avatar.js';
 import datepicker from './components/datepicker.js';
 import dismissible from './components/dismissible.js';
+import drawer from './components/drawer.js';
 import dropdown from './components/dropdown.js';
 import floatingLabel from './components/floating-label.js';
 import inputField from './components/input-field.js';
@@ -30,6 +31,7 @@ import pagination from './components/pagination.js';
 import popover from './components/popover.js';
 import search from './components/search.js';
 import select from './components/select.js';
+import sidebar, { sidebarSubmenu } from './components/sidebar.js';
 import table from './components/table.js';
 import tableOfContents from './components/table-of-contents.js';
 import tablePreview from './components/table-preview.js';
@@ -40,6 +42,7 @@ export default function ceplok(Alpine) {
     Alpine.data('ceplokAvatar', avatar);
     Alpine.data('ceplokDatepicker', datepicker);
     Alpine.data('ceplokDismissible', dismissible);
+    Alpine.data('ceplokDrawer', drawer);
     Alpine.data('ceplokDropdown', dropdown);
     Alpine.data('ceplokFloatingLabel', floatingLabel);
     Alpine.data('ceplokInputField', inputField);
@@ -48,6 +51,8 @@ export default function ceplok(Alpine) {
     Alpine.data('ceplokPopover', popover);
     Alpine.data('ceplokSearch', search);
     Alpine.data('ceplokSelect', select);
+    Alpine.data('ceplokSidebar', sidebar);
+    Alpine.data('ceplokSidebarSubmenu', sidebarSubmenu);
     Alpine.data('ceplokTable', table);
     Alpine.data('ceplokTableOfContents', tableOfContents);
     Alpine.data('ceplokTablePreview', tablePreview);
@@ -55,4 +60,4 @@ export default function ceplok(Alpine) {
     Alpine.data('ceplokUpload', upload);
 }
 
-export { avatar, datepicker, dismissible, dropdown, floatingLabel, inputField, modal, pagination, popover, search, select, table, tableOfContents, tablePreview, textArea, upload };
+export { avatar, datepicker, dismissible, drawer, dropdown, floatingLabel, inputField, modal, pagination, popover, search, select, sidebar, sidebarSubmenu, table, tableOfContents, tablePreview, textArea, upload };
