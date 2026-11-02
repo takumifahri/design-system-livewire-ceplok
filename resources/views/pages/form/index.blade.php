@@ -62,12 +62,6 @@
                 </div>
             </x-docs.overview-card>
 
-            <x-docs.overview-card route="form.datepicker" name="Datepicker" desc="Pemilih tanggal dengan kalender: satu tanggal, pintasan periode, atau rentang dua kalender.">
-                <div class="rounded-xl bg-surface-subtle p-5">
-                    <x-ceplok::datepicker label="Tanggal pengajuan" value="2021-06-25" />
-                </div>
-            </x-docs.overview-card>
-
             <x-docs.overview-card route="form.upload" name="Upload Form" desc="Pemilih berkas: satu baris tombol dengan nama berkas, atau area seret-lepas." wide>
                 {{--
                     Satu latar, dua kolom: baris pemilih berkas di kiri, area seret-lepas
@@ -109,6 +103,12 @@
                         <x-ceplok::checkbox label="Saya menyetujui syarat" checked />
                         <x-ceplok::checkbox label="Kirim salinan ke email" />
                     </div>
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="form.datepicker" name="Datepicker" desc="Pemilih tanggal dengan kalender: satu tanggal, pintasan periode, atau rentang dua kalender.">
+                <div class="rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::datepicker label="Tanggal pengajuan" value="2021-06-25" />
                 </div>
             </x-docs.overview-card>
         </div>
