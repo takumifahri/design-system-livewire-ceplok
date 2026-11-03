@@ -11,6 +11,9 @@ Semua komponen adalah komponen Blade anonim yang dikompilasi
 [Blaze](https://github.com/livewire/blaze), jadi tetap ringan walau dirender
 berulang kali di dalam komponen Livewire.
 
+Mengubah kode kit? Baca [HOWTO.md](HOWTO.md) untuk cara mencatat perubahan di
+[CHANGELOG.md](CHANGELOG.md) dan merilis versi baru.
+
 ## Isi
 
 - **Token** (`@theme`): palet warna, alias semantik (`brand`, `feedback-*`,
