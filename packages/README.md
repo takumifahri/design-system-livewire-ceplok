@@ -14,7 +14,7 @@ membahas alur kerja pengembangnya.
 ```text
 packages/design-kit-livewire/
 ├── composer.json
-├── README.md, CHANGELOG.md
+├── README.md, HOWTO.md, CHANGELOG.md
 ├── src/
 │   ├── DesignKitServiceProvider.php   komponen, set ikon, Blaze, vendor:publish
 │   ├── Enums/                          pilihan prop: ButtonVariant, AlertVariant, …
@@ -93,14 +93,39 @@ langsung: ubah sumbernya di kit React, lalu jalankan perintah sync.
 ## 4. Publikasi ke Composer
 
 Paket Composer harus punya `composer.json` di root repo yang dipublikasikan,
-jadi folder ini dipecah dulu ke repo sendiri:
+jadi folder ini dipecah ke repo sendiri. Job `package` di
+[deploy.yml](../.github/workflows/deploy.yml) melakukannya otomatis setiap ada
+push ke `main` setelah quality check lolos:
 
 ```bash
-git subtree split --prefix=packages/design-kit-livewire -b design-kit-livewire-split
-git push <url-repo-paket> design-kit-livewire-split:main
+git subtree split --prefix=packages/design-kit-livewire -b package-split
+git push <url-repo-paket> package-split:main
 ```
 
-Lalu beri tag versi di repo paket itu (`v0.1.0`) dan pilih registry-nya:
+Repo paketnya
+[takumifahri/ceplok-ui-design-kit-livewire](https://github.com/takumifahri/ceplok-ui-design-kit-livewire),
+yang terdaftar di
+[Packagist](https://packagist.org/packages/ceplok-ui/design-kit-livewire).
+Isinya hanya isi folder ini, tanpa aplikasi docs. Jangan commit langsung ke
+repo itu: hasil split selalu fast-forward dari riwayatnya, dan push CI tidak
+memakai `--force`, jadi commit yang hanya ada di repo paket membuat push
+berikutnya ditolak.
+
+### Rilis versi
+
+Tag versi dibuat dari CHANGELOG, bukan ditentukan CI. Untuk merilis:
+
+1. Di merge request rilis, ganti judul `## [Unreleased]` di
+   [CHANGELOG.md](design-kit-livewire/CHANGELOG.md) menjadi
+   `## [0.2.0] - 2026-11-03`, lalu tambahkan `## [Unreleased]` kosong di
+   atasnya.
+2. Setelah merge ke `main`, job `package` membuat tag `v0.2.0` di HEAD repo
+   paket, bila tag itu belum ada.
+
+Yang dibaca hanya bagian versi teratas. Merge tanpa bagian versi baru tidak
+membuat tag. Tag yang sudah ada tidak pernah ditimpa.
+
+Setelah tag ada, pilih registry-nya:
 
 - **Packagist**, bila paket boleh publik. Daftarkan URL repo paketnya sekali;
   tag berikutnya terbaca otomatis lewat webhook.
