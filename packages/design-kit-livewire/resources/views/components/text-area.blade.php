@@ -114,7 +114,7 @@
     @endif
 
     @if ($isEditor)
-        <div @class(['overflow-hidden rounded-lg border transition-colors border-gray-300', $accent['focus']])>
+        <div @class(['overflow-hidden rounded-lg border transition-colors border-text-area-frame', $accent['focus']])>
             {{-- Jarak antarikon 15px, sesuai desain. --}}
             <div class="flex h-10 items-center gap-3.75 px-4 bg-field">
                 @if ($customToolbar)
@@ -123,7 +123,7 @@
                     @foreach ($toolbarItems as $action => [$title, $paths])
                         @if ($loop->index === 3)
                             {{-- Garis pemisah alat teks dari alat sisipan: 16px dari ikon sebelumnya, 15px dari sesudahnya. --}}
-                            <span aria-hidden="true" class="ml-px h-4 w-px bg-gray-300"></span>
+                            <span aria-hidden="true" class="ml-px h-4 w-px bg-text-area-frame"></span>
                         @endif
                         <button
                             type="button"

@@ -141,7 +141,7 @@
                             @if ($href && !$disabled) href="{{ $href }}" @elseif (!$href) type="button" @endif
                             @if ($disabled && !$href) disabled @endif
                             @if ($disabled) aria-disabled="true" tabindex="-1" @endif
-                            {{ $itemAttributes->class(['group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-base font-medium transition-all disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:pointer-events-none aria-disabled:opacity-50', $active ? $activeClass : $inactiveClass]) }}
+                            {{ $itemAttributes->class(['group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-base transition-all text-left font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50', $active ? $activeClass : $inactiveClass]) }}
                         >
                             <span class="flex min-w-0 flex-1 items-center gap-3">@if (!empty($item['icon']))<span @class(['flex size-[18px] shrink-0 items-center justify-center transition-colors', $active ? $activeIconClass : $inactiveIconClass])>{!! Content::icon($item['icon']) !!}</span>@endif<span class="truncate">{{ $item['label'] ?? '' }}</span></span>
                             <span @class(['flex shrink-0 items-center gap-2', $active ? $activeIconClass : $inactiveIconClass])>@if (!empty($item['badge'])){{ $item['badge'] }}@endif @if ($hasChildren)<x-ceplok-o-chevron-down x-bind:class="expanded ? 'rotate-180' : ''" class="size-[18px] transition-transform" />@endif</span>
@@ -166,7 +166,7 @@
                                         @if ($subHref && !$subDisabled) href="{{ $subHref }}" @elseif (!$subHref) type="button" @endif
                                         @if ($subDisabled && !$subHref) disabled @endif
                                         @if ($subDisabled) aria-disabled="true" tabindex="-1" @endif
-                                        {{ $subAttributes->class(['flex w-full items-center rounded-lg px-3 py-2 text-left text-base font-medium transition-colors disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:pointer-events-none aria-disabled:opacity-50', !empty($sub['active']) ? ($darkMode ? 'bg-gray-700/50 text-white' : $subActiveClass) : ($darkMode ? 'text-gray-50 hover:bg-gray-700 hover:text-white' : 'text-gray-900 '.$subHoverClass)]) }}
+                                        {{ $subAttributes->class(['flex w-full items-center gap-2 rounded-lg px-3 py-2 text-base text-left transition-colors font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50', !empty($sub['active']) ? ($darkMode ? 'bg-gray-700/50 text-white' : $subActiveClass) : ($darkMode ? 'text-gray-50 hover:bg-gray-700 hover:text-white' : 'text-gray-900 '.$subHoverClass)]) }}
                                     ><span class="min-w-0 truncate">{{ $sub['label'] ?? '' }}</span></{{ $subTag }}>
                                 @endforeach
                             </div>
