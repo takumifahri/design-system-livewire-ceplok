@@ -10,8 +10,7 @@
 
 {{--
     Timeline — riwayat kejadian berurutan: siapa, kapan, dan apa yang terjadi,
-    dengan avatar di sepanjang satu garis. Eksperimental: desainnya belum
-    final, jadi nama prop dan ukurannya masih bisa berubah.
+    dengan avatar di sepanjang satu garis.
 
     `items` berisi array per kejadian: `name` (wajib), `role`, `time`,
     `elapsed`, `description`, `details`, `attachments`, `status`, `avatar`
