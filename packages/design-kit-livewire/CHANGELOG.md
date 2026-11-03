@@ -44,7 +44,8 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
   API: penelusuran panah, Home/End, dan ketikan; bentuk `attached` yang
   menempel pada tombolnya. Daftar pilihan Select dan kategori Search memakai
   panel yang sama.
-- Table (`table`) setara kit React: toolbar pencarian, filter kolom, dan slot
+- Table (`table`, belum stabil: prop dan markup-nya masih bisa berubah di
+  rilis minor) setara kit React: toolbar pencarian, filter kolom, dan slot
   aksi; kolom bertingkat, kolom menempel, baris zebra, size `compact`,
   pengurutan per kolom (`sort-value`, `sort-fn`, `sort-directions`,
   `sort-resettable`, `sort-icon`), seleksi baris dengan "pilih semua", tombol
