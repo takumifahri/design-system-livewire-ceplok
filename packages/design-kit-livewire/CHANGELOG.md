@@ -67,13 +67,16 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
   `close-on-backdrop`, `close-on-escape`, `show-close-button`, `wire:model`
   dan event `open-change`. `<dialog>`-nya `wire:ignore.self` supaya tidak
   ditutup morph Livewire saat komponen di sekitarnya dirender ulang.
-- Table of Contents (`table-of-contents`) setara layout `list` di kit React:
-  daftar isi "On this page" 208px dengan scroll-spy, garis brand 2px yang
-  meluncur ke entri aktif, `max-height` yang mengikuti entri aktif,
-  `scroll-container` (selector wadah gulir), `anchor`, `get-href`,
-  `active-id`, dan `dark-mode`. `wire:model` mengikat id entri aktif, dengan
-  event `active-change` dan `item-click`. Layout `auto` dan `drawer` belum
-  di-port, dan judul disembunyikan dengan `:title="false"` (padanan
+- Table of Contents (`table-of-contents`) setara kit React: daftar isi "On
+  this page" 208px dengan scroll-spy, garis brand 2px yang meluncur ke entri
+  aktif, `max-height` yang mengikuti entri aktif, `scroll-container`
+  (selector wadah gulir), `anchor`, `get-href`, `active-id`, dan
+  `dark-mode`. `layout` `auto` (bawaan; daftar mulai 1024px, di bawahnya
+  tombol yang membuka Drawer dari kanan dengan teks 14px), `list`, atau
+  `drawer`, dan `drawer-contained` untuk Drawer di dalam bingkai. Drawer-nya
+  memakai `<x-ceplok::drawer>`.
+  `wire:model` mengikat id entri aktif, dengan event `active-change` dan
+  `item-click`. Judul disembunyikan dengan `:title="false"` (padanan
   `title={null}`).
 - Token CSS (`resources/css/tokens.css`) dan entry stylesheet
   (`resources/css/styles.css`), disalin dari kit React, termasuk token
