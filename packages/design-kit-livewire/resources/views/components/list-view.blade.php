@@ -65,8 +65,14 @@
                     $mobile = ($item['platform'] ?? $platform) === 'mobile';
                     $simpleSizes = ['sm' => ['container' => 'px-4 py-3 gap-3 min-h-[63px]', 'decoration' => 'pl-5', 'iconBox' => 'size-8 rounded-lg', 'icon' => 'size-4', 'title' => 'text-sm font-bold', 'description' => 'text-xs', 'button' => 'xs'], 'default' => ['container' => 'px-5 py-3.5 gap-3.5 sm:gap-4 min-h-[81px]', 'decoration' => 'pl-6 sm:pl-7', 'iconBox' => 'size-10 rounded-lg', 'icon' => 'size-5', 'title' => 'text-base font-bold', 'description' => 'text-sm', 'button' => 's'], 'lg' => ['container' => 'px-6 py-4.5 gap-4 sm:gap-5 min-h-[103px]', 'decoration' => 'pl-7 sm:pl-8', 'iconBox' => 'size-12 rounded-lg', 'icon' => 'size-6', 'title' => 'text-lg font-bold', 'description' => 'text-sm sm:text-base', 'button' => 'base']];
                     $current = $mobile ? ['container' => $hasBadge ? 'px-3.5 py-3 gap-3 min-h-[88px]' : 'px-3.5 py-2.5 gap-3 min-h-[58px]', 'decoration' => 'pl-4 sm:pl-4.5', 'iconBox' => 'size-10 rounded-lg', 'icon' => 'size-5', 'title' => 'text-sm font-bold', 'description' => 'text-xs', 'button' => 'xs'] : $simpleSizes[$simpleSize];
-                    if (! $mobile && $hasBadge && $simpleSize === 'default') {
-                        $current['container'] = str_replace('min-h-[81px]', 'min-h-[108px]', $current['container']);
+                    if (! $mobile && $hasBadge) {
+                        $desktopBadgeSizes = [
+                            'sm' => ['container' => 'px-4 py-3 gap-3 min-h-[88px]', 'decoration' => 'pl-5'],
+                            'default' => ['container' => 'px-6 py-3.5 gap-3.5 sm:gap-4 min-h-[108px]', 'decoration' => 'pl-7 sm:pl-8'],
+                            'lg' => ['container' => 'px-8 py-4 gap-4 sm:gap-5 min-h-[134px]', 'decoration' => 'pl-9 sm:pl-10'],
+                        ];
+                        $current['container'] = $desktopBadgeSizes[$simpleSize]['container'];
+                        $current['decoration'] = $desktopBadgeSizes[$simpleSize]['decoration'];
                     }
                     $actionAttributes = new \Illuminate\View\ComponentAttributeBag($item['actionAttributes'] ?? []);
 
