@@ -16,7 +16,6 @@ System dengan paket `tpl/design-kit`; paket itu kini digantikan
 | --- | --- |
 | Fase 1 (selesai) | Alert, Avatar, Badge, Breadcrumb, Button, Card, Container, Footer, Hero, Icon, Pagination, Spinner, Toast |
 | Fase 2 (selesai) | Komponen form: Input Field, Floating Label, Text Area, Select, Search, Datepicker, Upload, Radio, Toggle, Checkbox — serta Dropdown |
-| Eksperimental | Timeline View — desainnya belum final, jadi prop dan ukurannya masih bisa berubah |
 
 Setiap komponen punya halaman dokumentasi dengan demo, Playground Livewire,
 contoh kode, dan tabel props, mengikuti dokumentasi kit React.
@@ -227,6 +226,12 @@ Isi di Settings → Secrets and variables → Actions:
 | `VPS_HOST` | nama MagicDNS atau IP Tailscale server |
 | `VPS_USER` | user deploy (`deploy`) |
 | `VPS_PATH` | folder aplikasi di server |
+| `PACKAGE_REPO_TOKEN` | fine-grained PAT dengan izin **Contents: read and write**, hanya untuk repo paket |
+
+Isi juga variable `PACKAGE_REPO` di tab Variables dengan
+`takumifahri/ceplok-ui-design-kit-livewire`, repo paket yang dibaca Packagist. Job `package` memakai keduanya untuk push hasil split
+`packages/design-kit-livewire` dan tag versinya ke repo itu. Langkahnya ada di
+[packages/README.md](packages/README.md), bagian "Publikasi ke Composer".
 
 Login ke GHCR tidak butuh secret tambahan. Workflow memakai `GITHUB_TOKEN`
 bawaan untuk push image, dan meneruskannya ke server untuk pull. Token itu

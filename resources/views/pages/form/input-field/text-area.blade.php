@@ -122,7 +122,7 @@
             <x-docs.lead>
                 Prop <span class="text-primary-500">dark-mode</span> mengganti kotak, toolbar, dan area isian ke gray-700, dengan label dan teks
                 yang diketik putih. Kotak polos tidak lagi bergaris, sedangkan bingkai editor dan garis pemisah
-                toolbarnya tetap gray-300. Tombol kirim memakai -600 (hover -700), satu tingkat lebih terang dari
+                toolbarnya menjadi gray-600. Tombol kirim memakai -600 (hover -700), satu tingkat lebih terang dari
                 tampilan terang.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">

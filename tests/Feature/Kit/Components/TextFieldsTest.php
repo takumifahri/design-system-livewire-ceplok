@@ -121,7 +121,10 @@ class TextFieldsTest extends TestCase
 
         $this->assertCount(7, $buttons);
         $this->assertSame("ceplokToolbar('code')", $this->find($editor, 'button[title="Sisipkan kode"]')->getAttribute('x-on:click'));
-        $this->assertNotNull($editor->querySelector('span.w-px[aria-hidden="true"]'));
+        // Bingkai dan garis pemisah toolbar memakai token text-area-frame:
+        // gray-300 di tema terang, gray-600 di tema gelap.
+        $this->assertHasClasses($this->find($editor, 'textarea')->parentElement, 'rounded-lg border border-text-area-frame');
+        $this->assertHasClasses($this->find($editor, 'span.w-px[aria-hidden="true"]'), 'bg-text-area-frame');
         $this->assertHasClasses($this->find($editor, 'textarea'), 'h-41.5 bg-surface');
         $this->assertSame('ceplokSubmit()', $this->find($editor, 'button:not([title])')->getAttribute('x-on:click'));
     }

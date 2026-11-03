@@ -6,56 +6,91 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
-Rilis pertama, direncanakan sebagai `0.1.0`.
+## [0.2.0] - 2026-11-03
+
+### Ditambahkan
+
+- `drawer`: panel off-canvas berbasis `<dialog>`, setara `Drawer` di kit
+  React. Menu disusun lewat `items`, dengan submenu di kunci `children`;
+  posisi empat sisi, ukuran `s` hingga `full`, `dark-mode`, `wire:model`,
+  serta event `close`. Subitem dengan `href` berupa tautan dan tanpa `href`
+  berupa tombol; subitem nonaktif tidak punya tujuan tautan dan memakai
+  `aria-disabled`.
+- `sidebar`: group menu, submenu, logo/mark ringkas, profil pengguna,
+  separator, `dark-mode`, dan event `collapse` untuk integrasi state Livewire.
+  Submenu yang aktif selalu terbuka; saat Sidebar ringkas, parent submenu
+  hanya membuka Sidebar bila event `collapse` didengarkan.
+- `list-view` simple dan article: ukuran responsif, metadata, ikon, dekorasi,
+  badge, aksi, `dark-mode`, dan `action-wire-click` agar tombol aksi item
+  dapat dikendalikan Livewire tanpa membuat seluruh kartu dapat diklik.
+- `timeline`: riwayat kejadian berurutan dengan avatar di sepanjang satu
+  garis, setara `Timeline` di kit React. `platform` `desktop` atau `mobile`,
+  `size` `large` atau `small`, `labels`, dan `dark-mode`. Tiap item memuat
+  `name`, `role`, `time`, `elapsed`, `description`, `details`, `attachments`
+  (dengan `href`, `target`, dan `download`), `status`, `avatar`, dan
+  `initials`. `time` menerima string waktu ISO 8601 dengan jam atau
+  `DateTimeInterface`, dan selalu ditulis dengan format desain, mis.
+  `01 Jan 2026 · 09:05`, di zona waktu nilainya; singkatan bulannya diganti
+  lewat `labels['months']`. Avatar dan status memakai `<x-ceplok::avatar>`
+  dan `<x-ceplok::badge>`; kunci `attributes` pada status diteruskan ke
+  Badge, mis. `['wire:dismiss' => 'tutupStatus(2)']`.
+- `table-of-contents` setara layout `list` di kit React: daftar isi "On this
+  page" 208px dengan scroll-spy, garis brand 2px yang meluncur ke entri
+  aktif, `max-height` yang mengikuti entri aktif, `scroll-container`
+  (selector wadah gulir), `anchor`, `get-href`, `active-id`, dan
+  `dark-mode`. `wire:model` mengikat id entri aktif, dengan event
+  `active-change` dan `item-click`. Layout `auto` dan `drawer` belum
+  di-port, dan judul disembunyikan dengan `:title="false"` (padanan
+  `title={null}`).
+- `button`: prop `wire-click` memasang `wire:click` dan menonaktifkan tombol
+  selama aksi itu berjalan (`wire:loading.attr="disabled"` dengan
+  `wire:target` yang sama).
+- Token ketebalan huruf `--font-weight-*` (`thin` 100 sampai `black` 900)
+  yang dipakai utility `font-thin` sampai `font-black`.
+- Token komponen `--color-toc-surface`, `--color-timeline-*`, dan
+  `--color-text-area-frame`, yang dipakai komponennya masing-masing.
+- Token `--color-dropdown-*`, `--shadow-dropdown`, `--color-popover-*`,
+  `--color-avatar-*`, `--avatar-profile-*-display`, dan `--color-clipboard-*`,
+  disalin dari kit React. Komponen Livewire belum memakainya, tetapi semuanya
+  sudah tersedia di `:root` untuk aplikasi pemakai.
+- Plugin Alpine `ceplokDrawer`, `ceplokSidebar`, `ceplokSidebarSubmenu`, dan
+  `ceplokTableOfContents`, juga diekspor bernama dari `resources/js/index.js`.
+
+### Diubah
+
+- `text-area` type `editor`: bingkai dan garis pemisah toolbar kini gray-600
+  di tema gelap (sebelumnya gray-300), sesuai desain. Warnanya dari token
+  baru `--color-text-area-frame`, yang tetap gray-300 di tema terang.
+- `button` kini memakai kursor pointer.
 
 ### Diperbaiki
 
-- `Drawer` dan `ListView` kini masing-masing memakai satu berkas komponen.
-  API menu Drawer disusun melalui `items` dan `children`, sedangkan ListView
-  menerima konfigurasi item melalui `items` atau props komponen utamanya;
-  subkomponen `drawer.*` dan `list-view.*` telah dihapus.
-- `ListView`: `action-wire-click` meneruskan event Livewire hanya ke tombol
-  aksi bawaan, sehingga interaksi `Open` tidak menjadikan seluruh kartu sebagai
-  target klik.
-- `ListView`: ukuran simple dan article kini mengikuti referensi React pada
-  setiap varian. Typography metadata, wadah serta ukuran ikon, padding,
-  tinggi minimum, dan ukuran tombol aksi S/M/L tidak lagi dikompensasi oleh
-  halaman dokumentasi.
-- `Sidebar`: state collapse Alpine kini tersinkron dengan prop server tanpa
-  mencampurkan class lebar statis dan dinamis. Submenu aktif selalu terbuka;
-  saat Sidebar ringkas, parent submenu hanya dapat membuka Sidebar bila event
-  `collapse` didengarkan.
-- `DrawerSubItem`: item dengan `href` tetap berupa tautan, item tanpa `href`
-  berupa tombol, dan item nonaktif tidak lagi memiliki tujuan tautan serta
-  mengikuti atribut ARIA disabled.
+- `font-medium` dan `font-semibold` kini tampil 500 dan 600 di Lato. Lato
+  2.0 ikut paket (`resources/fonts`, lisensi OFL), salinan persis dari kit
+  React, dengan kesembilan ketebalan; Lato dari Google Fonts hanya punya
+  100, 300, 400, 700, dan 900, jadi sebelumnya keduanya tampil 400 dan 700.
+  `styles.css` tidak lagi memuat Lato dari Google Fonts; Vite menyalin berkas
+  `.woff2`-nya ke `public/build`.
+- `button` dengan `href` kosong kini dirender sebagai `<button>`, bukan `<a>`
+  tanpa tujuan.
+
+## [0.1.1] - 2026-10-26
+
+### Diubah
+
+- README paket: petunjuk install dari Packagist, constraint `^0.1` selama
+  versi masih `0.x`, dan cara memakai salinan lokal lewat path repository.
+
+## [0.1.0] - 2026-10-26
+
+Rilis pertama.
 
 ### Ditambahkan
 
 - Komponen Blade setara kit React: `alert`, `avatar`, `badge`, `breadcrumb`,
-  `button`, `card`, `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`,
-  `list-view` (beserta `list-view.item` dan `list-view.article`), `pagination`,
-  `sidebar`, `spinner`, dan `toast`. Markup, class, dan atribut ARIA-nya
+  `button`, `card`, `container`, `dropdown`, `footer`, `hero`, `icon`,
+  `pagination`, `spinner`, dan `toast`. Markup, class, dan atribut ARIA-nya
   diuji sama dengan `@ceplok-ui/design-kit-react` di browser.
-- `Drawer` dengan komponen pendukung `drawer.header`, `drawer.body`,
-  `drawer.nav-item`, dan `drawer.sub-item`; mendukung posisi empat sisi,
-  ukuran `s` hingga `full`, dark mode, `wire:model`, serta event `close`.
-- `Sidebar` dengan group menu, submenu, logo/mark ringkas, profil pengguna,
-  separator, dark mode, dan event `collapse` untuk integrasi state Livewire.
-- `List View` simple dan article: ukuran responsif, metadata, ikon, dekorasi,
-  badge, aksi, dark mode, dan `action-wire-click` agar aksi item dapat
-  dikendalikan Livewire tanpa membuat seluruh kartu dapat diklik.
-- `timeline` (eksperimental, desainnya belum final): riwayat kejadian
-  berurutan dengan avatar di sepanjang satu garis, setara `Timeline` di kit
-  React. `platform` `desktop` atau `mobile`, `size` `large` atau `small`,
-  `labels`, dan `dark-mode`. Tiap item memuat `name`, `role`, `time`,
-  `elapsed`, `description`, `details`, `attachments` (dengan `href`,
-  `target`, dan `download`), `status`, `avatar`, dan `initials`. `time`
-  menerima string waktu ISO 8601 dengan jam atau `DateTimeInterface`, dan
-  selalu ditulis dengan format desain, mis. `01 Jan 2026 · 09:05`, di zona
-  waktu nilainya; singkatan bulannya diganti lewat `labels['months']`. Avatar dan
-  status memakai `<x-ceplok::avatar>` dan `<x-ceplok::badge>`; kunci
-  `attributes` pada status diteruskan ke Badge, mis.
-  `['wire:dismiss' => 'tutupStatus(2)']`.
 - Elemen form setara kit React: `checkbox`, `datepicker`, `floating-label`,
   `input-field`, `radio`, `search`, `select`, `text-area`, `toggle`, dan
   `upload`. Kontrol aslinya (`<input>`, `<textarea>`, `<select>`) tetap ada,
@@ -87,32 +122,16 @@ Rilis pertama, direncanakan sebagai `0.1.0`.
   `close-on-backdrop`, `close-on-escape`, `show-close-button`, `wire:model`
   dan event `open-change`. `<dialog>`-nya `wire:ignore.self` supaya tidak
   ditutup morph Livewire saat komponen di sekitarnya dirender ulang.
-- Table of Contents (`table-of-contents`) setara layout `list` di kit React:
-  daftar isi "On this page" 208px dengan scroll-spy, garis brand 2px yang
-  meluncur ke entri aktif, `max-height` yang mengikuti entri aktif,
-  `scroll-container` (selector wadah gulir), `anchor`, `get-href`,
-  `active-id`, dan `dark-mode`. `wire:model` mengikat id entri aktif, dengan
-  event `active-change` dan `item-click`. Layout `auto` dan `drawer` belum
-  ada karena Drawer belum di-port, dan judul disembunyikan dengan
-  `:title="false"` (padanan `title={null}`).
 - Token CSS (`resources/css/tokens.css`) dan entry stylesheet
-  (`resources/css/styles.css`), disalin dari kit React, termasuk token
-  ketebalan huruf `--font-weight-*` (`thin` 100 sampai `black` 900) yang
-  dipakai utility `font-thin` sampai `font-black`.
-- Font Lato 2.0 ikut paket (`resources/fonts`, lisensi OFL), salinan persis
-  dari kit React, dengan kesembilan ketebalan. `font-medium` dan
-  `font-semibold` kini tampil 500 dan 600; Lato dari Google Fonts hanya punya
-  100, 300, 400, 700, dan 900, jadi sebelumnya keduanya tampil 400 dan 700.
-  `styles.css` tidak lagi memuat Lato dari Google Fonts; Vite menyalin berkas
-  `.woff2`-nya ke `public/build`.
+  (`resources/css/styles.css`), disalin dari kit React.
 - 411 ikon outline dan 340 ikon solid Flowbite (`ceplok-o-*`, `ceplok-s-*`)
   dari `flowbite-react-icons` 1.3.1, plus 30 logo brand (`brand-*`) yang
   bawaannya `aria-hidden="true"`.
-- Plugin Alpine (`resources/js/index.js`): `ceplokDismissible`, `ceplokDrawer`,
-  `ceplokSidebar`, `ceplokAvatar`, `ceplokPagination`, `ceplokDropdown`, `ceplokSelect`,
+- Plugin Alpine (`resources/js/index.js`): `ceplokDismissible`,
+  `ceplokAvatar`, `ceplokPagination`, `ceplokDropdown`, `ceplokSelect`,
   `ceplokSearch`, `ceplokDatepicker`, `ceplokUpload`, `ceplokFloatingLabel`,
   `ceplokInputField`, `ceplokTextArea`, `ceplokTable`, `ceplokTablePreview`,
-  `ceplokPopover`, `ceplokModal`, dan `ceplokTableOfContents`.
+  `ceplokPopover`, dan `ceplokModal`.
 - Enum untuk setiap prop berpilihan (`CeplokUi\DesignKit\Enums`) dan
   pemeriksa prop saat render: error yang jelas saat `app.debug` aktif, nilai
   bawaan plus laporan ke log di production.

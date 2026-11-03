@@ -4,6 +4,10 @@
 #   GitLab → mirror GitHub → quality check → build image dan push ke GHCR
 #   → runner masuk tailnet lewat Tailscale → SSH ke server → pull image → up
 #
+# Setelah quality check lolos, job `package` juga memecah
+# packages/design-kit-livewire ke repo paket sendiri dan memberi tag versi
+# sesuai CHANGELOG paket. Job itu berjalan sejajar dengan build dan deploy.
+#
 # Image di-build di runner, bukan di server, karena server terlalu kecil untuk
 # build Vite dan Composer (CPU dua core, RAM dan /var terbatas).
 name: Deploy
@@ -149,3 +153,77 @@ jobs:
                   EOF
                   } | ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
                       "$VPS_USER@$VPS_HOST" bash -s
+
+    package:
+        name: Publikasi paket
+        needs: test
+        # Repo paket hanya menerima kode dari main, termasuk saat workflow
+        # dijalankan manual dari branch lain.
+        if: github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        env:
+            PACKAGE_PREFIX: packages/design-kit-livewire
+            PACKAGE_REPO: ${{ vars.PACKAGE_REPO }}
+            PACKAGE_TOKEN: ${{ secrets.PACKAGE_REPO_TOKEN }}
+        steps:
+            # subtree split membaca seluruh riwayat folder paket, jadi checkout
+            # tidak boleh dangkal.
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - run: composer validate --strict --no-check-publish
+              working-directory: ${{ env.PACKAGE_PREFIX }}
+
+            # Hasil split deterministik: commit yang sama di repo utama selalu
+            # menghasilkan SHA yang sama, jadi push ke repo paket selalu
+            # fast-forward. Push tidak memakai --force, supaya riwayat paket
+            # yang sudah dipakai consumer tidak pernah ditulis ulang.
+            - name: Split folder paket
+              run: git subtree split --prefix="$PACKAGE_PREFIX" -b package-split
+
+            # Token dikirim sebagai header lewat env GIT_CONFIG_*, sama seperti
+            # job deploy, supaya tidak tersimpan di .git/config dan tidak
+            # muncul di argumen proses.
+            - name: Push ke repo paket
+              run: |
+                  export GIT_CONFIG_COUNT=1
+                  export GIT_CONFIG_KEY_0=http.https://github.com/.extraheader
+                  export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$PACKAGE_TOKEN" | base64 -w0)"
+                  git push "https://github.com/$PACKAGE_REPO.git" package-split:refs/heads/main
+
+            # Versi diputuskan lewat CHANGELOG, bukan oleh CI. Tag vX.Y.Z dibuat
+            # hanya bila bagian `## [X.Y.Z]` teratas di CHANGELOG belum punya
+            # tag di repo paket. Bagian [Unreleased] tidak pernah di-tag, jadi
+            # merge yang tidak merilis apa pun tidak menghasilkan versi baru.
+            #
+            # Tag dipasang di HEAD hasil split, karena bagian versi baru masuk
+            # bersama merge yang merilisnya. Versi lama yang belum punya tag
+            # dilewati: commit-nya tidak bisa ditebak dengan pasti.
+            - name: Tag versi dari CHANGELOG
+              run: |
+                  export GIT_CONFIG_COUNT=1
+                  export GIT_CONFIG_KEY_0=http.https://github.com/.extraheader
+                  export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$PACKAGE_TOKEN" | base64 -w0)"
+
+                  version=$(grep -m1 -oP '^## \[\K[0-9]+\.[0-9]+\.[0-9]+(?=\])' "$PACKAGE_PREFIX/CHANGELOG.md" || true)
+                  if [ -z "$version" ]; then
+                      echo "CHANGELOG belum punya bagian versi rilis. Tag dilewati."
+                      exit 0
+                  fi
+
+                  tag="v$version"
+                  if git ls-remote --exit-code --tags "https://github.com/$PACKAGE_REPO.git" "refs/tags/$tag" >/dev/null; then
+                      echo "$tag sudah ada di repo paket. Tag dilewati."
+                      exit 0
+                  fi
+
+                  # -f karena checkout penuh ikut membawa tag repo utama dengan
+                  # nama yang mungkin sama tapi menunjuk commit repo utama.
+                  git -c user.name='github-actions[bot]' \
+                      -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+                      tag -f -a "$tag" package-split -m "$tag"
+                  git push "https://github.com/$PACKAGE_REPO.git" "refs/tags/$tag"
+                  echo "::notice::$tag dibuat di $PACKAGE_REPO"
