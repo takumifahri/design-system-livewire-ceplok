@@ -56,6 +56,21 @@ class ListViewTest extends TestCase
         }
     }
 
+    public function test_simple_dengan_badge_desktop_memakai_dimensi_react_untuk_semua_ukuran(): void
+    {
+        $expected = [
+            's' => ['px-4', 'py-3', 'min-h-[88px]', 'pl-5'],
+            'm' => ['px-6', 'py-3.5', 'min-h-[108px]', 'pl-7', 'sm:pl-8'],
+            'l' => ['px-8', 'py-4', 'min-h-[134px]', 'pl-9', 'sm:pl-10'],
+        ];
+
+        foreach ($expected as $size => $classes) {
+            $item = $this->find($this->dom("<x-ceplok::list-view size=\"{$size}\" title=\"Project brief\" badge=\"Aktif\" decoration />"), 'article');
+
+            $this->assertHasClasses($item, implode(' ', $classes));
+        }
+    }
+
     public function test_event_aksi_diteruskan_hanya_ke_tombol_open(): void
     {
         $item = $this->find($this->dom(<<<'BLADE'
