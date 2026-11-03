@@ -4,25 +4,36 @@ use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 /*
- * Playground halaman Table of Contents: tampilan, judul, dan anchor. Isi
- * bingkainya bagian-bagian yang bisa digulir; daftar isinya membaca wadah
- * gulir itu lewat scroll-container.
+ * Playground halaman Table of Contents: tampilan, platform, judul, dan
+ * anchor. Isi bingkainya bagian-bagian yang bisa digulir; daftar isinya
+ * membaca wadah gulir itu lewat scroll-container.
  *
- * Kontrol Platform dari docs React belum ada: layout Drawer menunggu Drawer
- * di-port ke kit Livewire.
+ * Berbeda dari docs React, platform Mobile mensimulasikan navbar ponsel
+ * (x-docs.toc-phone): ikon kiri membuka menu sidebar, ikon kanan membuka menu
+ * navbar dengan daftar isi yang bisa dilipat di bawahnya. Daftar isinya
+ * layout `list` tanpa judul, karena judulnya sudah menjadi tombol lipat;
+ * kontrol Judul karena itu dimatikan di Mobile.
  */
 new class extends Component
 {
     public bool $dark = false;
 
+    public bool $mobile = false;
+
     public bool $judul = true;
 
     public bool $anchor = true;
 
-    /** @return list<array{id: string, label: string}> */
-    public function items(): array
+    /**
+     * Entri Playground. Kedua lapis (Desktop dan Mobile) dirender bersamaan
+     * saat transisi, jadi id bagiannya diberi awalan berbeda supaya tidak
+     * bentrok.
+     *
+     * @return list<array{id: string, label: string}>
+     */
+    public function items(string $prefix): array
     {
-        return array_map(fn (array $item) => ['id' => 'pg-'.$item[0], 'label' => $item[1]], [
+        return array_map(fn (array $item) => ['id' => "pg-{$prefix}-".$item[0], 'label' => $item[1]], [
             ['dasar', 'Tampilan dasar'],
             ['variasi', 'Variasi'],
             ['platform', 'platform'],
@@ -36,6 +47,26 @@ new class extends Component
     #[Computed]
     public function usage(): string
     {
+        if ($this->mobile) {
+            return implode("\n", array_filter([
+                '<x-ceplok::drawer wire:model="menu" position="right" size="s">',
+                '    <nav>…tautan navbar…</nav>',
+                '    <div x-data="{ buka: true }">',
+                '        <button type="button" x-on:click="buka = ! buka">On this page</button>',
+                '        <x-ceplok::table-of-contents',
+                '            x-show="buka"',
+                '            :⟦items⟧="$items"',
+                '            ⟦*layout⟧="list"',
+                '            :⟦*title⟧="false"',
+                $this->dark ? '            ⟦*dark-mode⟧' : null,
+                $this->anchor ? null : '            :⟦*anchor⟧="false"',
+                '            x-on:item-click="$wire.menu = false"',
+                '        />',
+                '    </div>',
+                '</x-ceplok::drawer>',
+            ], fn ($line) => $line !== null));
+        }
+
         return implode("\n", array_filter([
             '<x-ceplok::table-of-contents',
             '    :⟦items⟧="$items"',
@@ -49,62 +80,77 @@ new class extends Component
 };
 ?>
 
+@php
+    // Lapis isi bingkai. Yang muncul memudar masuk sedikit setelah yang lama
+    // mulai memudar keluar (delay 150ms), supaya keduanya tidak tampak
+    // bertumpuk di tengah transisi.
+    $lapis = fn (bool $tampil) => $tampil
+        ? 'absolute inset-0 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none translate-y-0 opacity-100 delay-150'
+        : 'absolute inset-0 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none pointer-events-none translate-y-2 opacity-0';
+    // wire:key berganti bersama anchor: scroll-spy dipasang ulang dengan pengaturan baru.
+    $kunci = $anchor ? 'anchor' : 'tombol';
+@endphp
+
 <div class="space-y-16">
     <x-docs.section id="playground" title="Playground">
         <p class="mb-6 text-body-sm text-gray-500">
             Satu daftar isi yang bisa Anda utak-atik lewat kontrol di bawahnya; bagian Penggunaan
             menuliskan kodenya. Isi bingkai berupa bagian yang bisa digulir: klik entri untuk melompat,
-            atau gulir isinya dan lihat sorotan ikut berpindah.
+            atau gulir isinya dan lihat sorotan ikut berpindah. Di platform Mobile, ikon kiri navbar
+            membuka menu sidebar, dan ikon kanan membuka menu navbar dengan daftar isi yang bisa dilipat
+            di bawahnya.
         </p>
 
-        <x-docs.stage :dark="$dark">
-            {{-- Bingkai diberi data-theme supaya token isinya ikut Tampilan. --}}
-            <div data-theme="{{ $dark ? 'dark' : 'light' }}" class="relative h-140 overflow-hidden rounded-xl border border-border-strong bg-toc-surface transition-colors duration-300 sm:h-105">
-                <div class="flex h-full flex-col sm:flex-row sm:gap-8 sm:pl-6">
-                    <div id="pg-toc-scroll" class="order-last min-h-0 min-w-0 flex-1 overflow-y-auto px-4 py-6 sm:order-none sm:pr-2 sm:pl-0">
-                        <div class="space-y-8 pb-[60%]">
-                            @foreach ($this->items() as $i => $item)
-                                <section id="{{ $item['id'] }}" wire:key="{{ $item['id'] }}">
-                                    <h3 class="group flex items-baseline gap-2 text-base font-black text-content">
-                                        <span class="min-w-0">{{ $item['label'] }}</span>
-                                        @if ($anchor)
-                                            {{-- Tautan judul menggulir wadahnya sendiri, tanpa mengubah alamat halaman docs. --}}
-                                            <a
-                                                href="#{{ $item['id'] }}"
-                                                x-on:click.prevent="
-                                                    const root = document.getElementById('pg-toc-scroll');
-                                                    const el = document.getElementById(@js($item['id']));
-                                                    root.scrollTo({ top: el.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop - 16, behavior: 'smooth' });
-                                                "
-                                                aria-label="Tautan ke bagian {{ $item['label'] }}"
-                                                class="rounded text-brand opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                                            >#</a>
-                                        @endif
-                                    </h3>
-                                    <div class="mt-3 space-y-2" aria-hidden="true">
-                                        <div class="h-2 w-full rounded bg-border transition-colors duration-300"></div>
-                                        <div class="h-2 w-11/12 rounded bg-border transition-colors duration-300"></div>
-                                        <div class="h-2 w-4/6 rounded bg-border transition-colors duration-300"></div>
-                                        @if ($i % 3 === 1)
-                                            <div class="mt-4! h-20 rounded-lg bg-border transition-colors duration-300"></div>
-                                        @endif
-                                    </div>
-                                </section>
-                            @endforeach
+        <x-docs.stage :max-width="$mobile ? 'max-w-[360px]' : 'max-w-full'" :dark="$dark">
+            {{-- Bingkai diberi data-theme supaya token isinya ikut Tampilan, dan
+                 `relative` supaya panel menu ponsel muncul di sini. --}}
+            <div
+                data-theme="{{ $dark ? 'dark' : 'light' }}"
+                @class([
+                    'relative h-105 overflow-hidden border-border-strong bg-toc-surface transition-[border-radius,border-width,box-shadow,background-color] duration-300 motion-reduce:transition-none',
+                    'rounded-[1.75rem] border-4 shadow-lg' => $mobile,
+                    'rounded-xl border shadow-none' => ! $mobile,
+                ])
+            >
+                {{-- Dua lapis bertumpuk yang saling memudar; lapis yang tersembunyi
+                     diberi `inert` supaya tidak bisa difokus. --}}
+                <div wire:key="pg-toc-lapis-d" class="{{ $lapis(! $mobile) }}" @if ($mobile) inert @endif>
+                    <div class="flex h-full gap-8 pl-6">
+                        <div id="pg-toc-scroll-d" class="min-h-0 min-w-0 flex-1 overflow-y-auto py-6 pr-2">
+                            <x-docs.toc-sections :items="$this->items('d')" scroll="pg-toc-scroll-d" :anchors="$anchor" />
                         </div>
+                        <x-ceplok::table-of-contents
+                            wire:key="pg-toc-d-{{ $kunci }}"
+                            class="hidden shrink-0 pt-6 pr-6 sm:block"
+                            :items="$this->items('d')"
+                            layout="list"
+                            :title="$judul ? 'On this page' : false"
+                            :anchor="$anchor"
+                            :dark-mode="$dark"
+                            scroll-container="#pg-toc-scroll-d"
+                            :offset="24"
+                        />
                     </div>
+                </div>
 
-                    {{-- wire:key berganti bersama anchor: scroll-spy dipasang ulang dengan pengaturan baru. --}}
-                    <x-ceplok::table-of-contents
-                        wire:key="pg-toc-{{ $anchor ? 'anchor' : 'tombol' }}"
-                        class="shrink-0 border-b border-border p-4 sm:border-0 sm:pt-6 sm:pr-6 sm:pl-0"
-                        :items="$this->items()"
-                        :title="$judul ? 'On this page' : false"
-                        :anchor="$anchor"
-                        :dark-mode="$dark"
-                        scroll-container="#pg-toc-scroll"
-                        :offset="24"
-                    />
+                <div wire:key="pg-toc-lapis-m" class="{{ $lapis($mobile) }}" @if (! $mobile) inert @endif>
+                    <x-docs.toc-phone>
+                        <x-slot:toc>
+                            <x-ceplok::table-of-contents
+                                wire:key="pg-toc-m-{{ $kunci }}"
+                                :items="$this->items('m')"
+                                layout="list"
+                                :title="false"
+                                :anchor="$anchor"
+                                :dark-mode="$dark"
+                                scroll-container="#pg-toc-scroll-m"
+                                :offset="16"
+                            />
+                        </x-slot:toc>
+                        <div id="pg-toc-scroll-m" class="min-h-0 flex-1 overflow-y-auto p-4">
+                            <x-docs.toc-sections :items="$this->items('m')" scroll="pg-toc-scroll-m" :anchors="$anchor" />
+                        </div>
+                    </x-docs.toc-phone>
                 </div>
             </div>
         </x-docs.stage>
@@ -116,8 +162,15 @@ new class extends Component
                     ['value' => true, 'label' => 'Dark'],
                 ]" />
             </x-docs.control>
+            <x-docs.control label="Platform">
+                <x-docs.segmented label="Pilih platform" model="mobile" :value="$mobile" :options="[
+                    ['value' => false, 'label' => 'Desktop'],
+                    ['value' => true, 'label' => 'Mobile'],
+                ]" />
+            </x-docs.control>
             <x-docs.control label="Judul">
-                <x-docs.segmented label="Tampilkan judul" model="judul" :value="$judul" :options="[
+                {{-- Di Mobile judul daftar isi sudah menjadi tombol lipat di menu navbar. --}}
+                <x-docs.segmented label="Tampilkan judul" model="judul" :value="$judul" :disabled="$mobile" :options="[
                     ['value' => true, 'label' => 'Ada'],
                     ['value' => false, 'label' => 'Tidak ada'],
                 ]" />
@@ -134,7 +187,9 @@ new class extends Component
     <x-docs.section id="penggunaan" title="Penggunaan">
         <p class="mb-6 text-body-sm text-gray-500">
             Blok ini mengikuti kontrol di Playground. Prop yang nilainya masih bawaan sengaja tidak
-            ditulis.
+            ditulis. Di aplikasi, <span class="text-primary-500">layout</span> cukup dibiarkan
+            <span class="text-primary-500">auto</span>: daftar di layar 1024px ke atas, Drawer di bawahnya.
+            Untuk pola Mobile di Playground, daftar isinya diletakkan sendiri di menu navbar.
         </p>
         <x-docs.code :code="$this->usage" flush />
 

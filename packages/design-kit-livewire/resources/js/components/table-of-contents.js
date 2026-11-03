@@ -1,5 +1,6 @@
 /**
- * Table of Contents, padanan scroll-spy dan ActiveIndicator di kit React.
+ * Table of Contents, padanan scroll-spy, ActiveIndicator, dan Drawer daftar
+ * isi di kit React.
  *
  * `active` adalah id entri yang disorot, diikat x-modelable, jadi
  * `wire:model` atau `x-model` bisa membaca dan mengubahnya. Pengaturan lain
@@ -11,7 +12,15 @@
  * - `data-scroll-container`: selector wadah gulir isi halaman, bila bukan window.
  * - `data-active-id`: mode terkontrol. Hanya entri ini yang disorot, dan nilai
  *   baru dari render ulang Livewire diikuti.
- * Id tiap entri ada di `data-id`-nya.
+ * - `data-drawer-contained`: Drawer berupa panel di dalam bingkai, bukan
+ *   <dialog> modal; fokusnya diurus di sini.
+ * Id tiap entri ada di `data-id`-nya. Daftar biasa dan daftar di Drawer
+ * ditandai `data-toc-list="inline"` dan `"drawer"`, masing-masing dengan
+ * garis `data-toc-indicator`.
+ *
+ * Daftar di Drawer berada di dalam x-data <x-ceplok::drawer>, jadi method di
+ * sini juga dipanggil dari lingkup itu. Karena itu elemen <nav> disimpan saat
+ * init, bukan dibaca dari `$root` atau `$refs`.
  *
  * Event yang dikirim dari <nav>:
  * - `active-change` dengan `detail.id`, saat sorotan berpindah karena
@@ -21,19 +30,41 @@
  *   Event ini bisa dibatalkan: preventDefault juga membatalkan tautannya.
  */
 export default function tableOfContents() {
+    // Elemen <nav>; disimpan di luar data Alpine supaya tidak dibungkus proxy
+    // reaktif, yang membuat method DOM-nya gagal dipanggil.
+    let nav = null;
+
     return {
         active: '',
-        animate: false,
+        drawerOpen: false,
+        animated: { inline: false, drawer: false },
+
+        // Diisi di init. Semuanya harus dideklarasikan di sini: Alpine
+        // menaruh properti baru yang belum ada di lingkup mana pun ke lingkup
+        // x-data terluar, sehingga dipakai bersama oleh semua Table of
+        // Contents di halaman itu.
+        offset: 96,
+        anchor: true,
+        controlled: false,
+        spied: false,
+        contained: false,
+        drawerUsed: false,
+        cleanups: [],
+        stopSpy: null,
+        frames: {},
 
         init() {
-            const data = this.$root.dataset;
+            nav = this.$root;
+            const data = nav.dataset;
             this.offset = Number(data.offset ?? 96);
             this.anchor = data.anchor !== 'false';
             this.controlled = data.activeId !== undefined;
             this.spied = this.anchor && data.scrollSpy !== 'false' && !this.controlled;
+            this.contained = data.drawerContained !== undefined;
+            this.drawerUsed = false;
             this.cleanups = [];
             this.stopSpy = null;
-            this.frame = 0;
+            this.frames = {};
 
             this.active = this.controlled ? data.activeId : (this.ids()[0] ?? '');
 
@@ -41,19 +72,32 @@ export default function tableOfContents() {
             // jadi atributnya diamati untuk mengikuti nilai barunya.
             if (this.controlled) {
                 const observer = new MutationObserver(() => {
-                    if (this.$root.dataset.activeId !== undefined) this.active = this.$root.dataset.activeId;
+                    if (nav.dataset.activeId !== undefined) this.active = nav.dataset.activeId;
                 });
-                observer.observe(this.$root, { attributes: true, attributeFilter: ['data-active-id'] });
+                observer.observe(nav, { attributes: true, attributeFilter: ['data-active-id'] });
                 this.cleanups.push(() => observer.disconnect());
             }
 
             this.$watch('active', () => this.$nextTick(() => this.refresh()));
 
-            // Ukuran daftar berubah (font termuat, label memanjang, daftar baru
-            // terlihat): ukur ulang posisi garisnya.
+            // Panel di dalam bingkai: fokus pindah ke panel begitu terbuka, dan
+            // kembali ke tombol pembukanya saat tertutup. <dialog> asli mengurus
+            // ini sendiri. `drawerUsed` mencegah tombolnya difokus saat dimuat.
+            this.$watch('drawerOpen', (open) => {
+                if (open) this.drawerUsed = true;
+                this.$nextTick(() => {
+                    this.measure();
+                    if (!this.contained || !this.drawerUsed) return;
+                    if (open) nav.querySelector('[data-toc-panel]')?.focus();
+                    else nav.querySelector('[data-toc-trigger]')?.focus();
+                });
+            });
+
+            // Ukuran daftar berubah (font termuat, label memanjang, breakpoint
+            // berganti, Drawer terbuka): ukur ulang posisi garisnya.
             if (typeof ResizeObserver !== 'undefined') {
                 const resize = new ResizeObserver(() => this.measure());
-                resize.observe(this.$refs.list);
+                this.lists().forEach((list) => resize.observe(list));
                 this.cleanups.push(() => resize.disconnect());
             }
 
@@ -67,7 +111,7 @@ export default function tableOfContents() {
                 this.watchSections();
                 this.$nextTick(() => this.refresh());
             });
-            entries.observe(this.$refs.list, { childList: true, subtree: true });
+            this.lists().forEach((list) => entries.observe(list, { childList: true, subtree: true }));
             this.cleanups.push(() => entries.disconnect());
 
             this.watchSections();
@@ -77,29 +121,44 @@ export default function tableOfContents() {
         destroy() {
             this.stopSpy?.();
             this.cleanups.forEach((cleanup) => cleanup());
-            cancelAnimationFrame(this.frame);
+            Object.values(this.frames).forEach((frame) => cancelAnimationFrame(frame));
+        },
+
+        /** Daftar biasa dan daftar di Drawer yang ada di layout ini. */
+        lists() {
+            return [...nav.querySelectorAll('[data-toc-list]')];
         },
 
         /** Id tiap entri, urut seperti di daftar. */
         ids() {
-            return [...this.$refs.list.querySelectorAll('[data-id]')].map((el) => el.dataset.id);
+            const list = nav.querySelector('[data-toc-list]');
+            return list ? [...list.querySelectorAll('[data-id]')].map((el) => el.dataset.id) : [];
         },
 
         container() {
-            const selector = this.$root.dataset.scrollContainer;
+            const selector = nav.dataset.scrollContainer;
             return selector ? document.querySelector(selector) : null;
         },
 
         refresh() {
             this.measure();
             this.follow();
+            this.label();
+        },
+
+        openDrawer() {
+            this.drawerOpen = true;
+        },
+
+        closeDrawer() {
+            this.drawerOpen = false;
         },
 
         /** Memindahkan sorotan karena scroll-spy atau klik (bukan mode terkontrol). */
         select(id) {
             if (this.controlled || !id || id === this.active) return;
             this.active = id;
-            this.$dispatch('active-change', { id });
+            nav.dispatchEvent(new CustomEvent('active-change', { detail: { id }, bubbles: true }));
         },
 
         /**
@@ -163,11 +222,24 @@ export default function tableOfContents() {
             };
         },
 
-        /** Klik entri: tautan (anchor) atau tombol yang hanya memindahkan sorotan. */
-        choose(event, id) {
+        /** Mengirim `item-click`; true bila pendengarnya membatalkan tautan. */
+        clicked(id) {
             const click = new CustomEvent('item-click', { detail: { id }, bubbles: true, cancelable: true });
-            this.$root.dispatchEvent(click);
-            if (click.defaultPrevented) {
+            nav.dispatchEvent(click);
+            return click.defaultPrevented;
+        },
+
+        /** Menggulir wadah `scroll-container` sampai bagiannya tepat di bawah offset. */
+        scrollContainerTo(root, el) {
+            root.scrollTo({
+                top: el.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop - this.offset + 1,
+                behavior: 'smooth',
+            });
+        },
+
+        /** Klik entri daftar biasa: tautan (anchor) atau tombol yang hanya memindahkan sorotan. */
+        choose(event, id) {
+            if (this.clicked(id)) {
                 event.preventDefault();
                 return;
             }
@@ -183,36 +255,74 @@ export default function tableOfContents() {
             const el = document.getElementById(id);
             if (!root || !el) return;
             event.preventDefault();
-            root.scrollTo({
-                top: el.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop - this.offset + 1,
-                behavior: 'smooth',
-            });
+            this.scrollContainerTo(root, el);
         },
 
         /**
-         * Memasang garis brand di entri ber-aria-current. Diukur dari entrinya,
-         * jadi tetap pas walau label memanjang dua baris. Transisi baru
-         * dinyalakan sekali, setelah posisi pertama terpasang.
+         * Klik entri di Drawer. Tautannya tidak dibiarkan berjalan sendiri:
+         * selama dialog modal terbuka, halaman di belakangnya tidak bisa
+         * digulir. Drawer ditutup dulu, baru berpindah ke bagiannya.
          */
-        measure() {
-            const bar = this.$refs.indicator;
-            const link = this.$refs.list.querySelector('[aria-current]');
-            if (!link || !link.offsetHeight) {
-                bar.style.display = 'none';
-                this.animate = false;
+        chooseInDrawer(event, link) {
+            const id = link.dataset.id;
+            const handled = this.clicked(id);
+            event.preventDefault();
+            this.closeDrawer();
+            if (handled) return;
+            if (!this.anchor) {
+                this.select(id);
                 return;
             }
+            const href = link.getAttribute('href');
+            setTimeout(() => this.goTo(id, href), 0);
+        },
 
-            bar.style.display = '';
-            bar.style.height = `${link.offsetHeight}px`;
-            bar.style.transform = `translateY(${link.offsetTop}px)`;
-
-            if (!this.animate && !this.frame) {
-                this.frame = requestAnimationFrame(() => {
-                    this.frame = 0;
-                    this.animate = true;
-                });
+        /** Berpindah ke bagian setelah Drawer tertutup. */
+        goTo(id, href) {
+            const root = this.container();
+            const el = document.getElementById(id);
+            if (root && el) {
+                this.scrollContainerTo(root, el);
+            } else if (!href.startsWith('#') || window.location.hash !== href) {
+                // Untuk alamat `#…` ini navigasi di halaman yang sama dan memicu hashchange.
+                window.location.assign(href);
+            } else {
+                // Alamat yang sama tidak memicu hashchange, jadi gulir langsung.
+                el?.scrollIntoView({ behavior: 'smooth' });
             }
+        },
+
+        /**
+         * Memasang garis brand di entri ber-aria-current pada tiap daftar.
+         * Diukur dari entrinya, jadi tetap pas walau label memanjang dua
+         * baris. Daftar yang tersembunyi (Drawer tertutup, breakpoint lain)
+         * tidak punya ukuran: garisnya disembunyikan dan transisinya dimatikan
+         * sampai daftar itu terlihat lagi, lalu baru dinyalakan setelah posisi
+         * pertama terpasang supaya garisnya tidak meluncur dari atas.
+         */
+        measure() {
+            this.lists().forEach((list) => {
+                const variant = list.dataset.tocList;
+                const bar = list.querySelector('[data-toc-indicator]');
+                const link = list.querySelector('[aria-current]');
+                if (!bar) return;
+                if (!link || !link.offsetHeight) {
+                    bar.style.display = 'none';
+                    this.animated[variant] = false;
+                    return;
+                }
+
+                bar.style.display = '';
+                bar.style.height = `${link.offsetHeight}px`;
+                bar.style.transform = `translateY(${link.offsetTop}px)`;
+
+                if (!this.animated[variant] && !this.frames[variant]) {
+                    this.frames[variant] = requestAnimationFrame(() => {
+                        this.frames[variant] = 0;
+                        this.animated[variant] = true;
+                    });
+                }
+            });
         },
 
         /**
@@ -221,8 +331,8 @@ export default function tableOfContents() {
          * sendiri tidak ikut tergulir.
          */
         follow() {
-            const list = this.$refs.list;
-            if (list.scrollHeight <= list.clientHeight) return;
+            const list = nav.querySelector('[data-toc-list="inline"]');
+            if (!list || list.scrollHeight <= list.clientHeight) return;
             const link = list.querySelector('[aria-current]');
             if (!link) return;
             const top = link.offsetTop;
@@ -230,6 +340,13 @@ export default function tableOfContents() {
             else if (top + link.offsetHeight > list.scrollTop + list.clientHeight) {
                 list.scrollTop = top + link.offsetHeight - list.clientHeight;
             }
+        },
+
+        /** Tombol pembuka bawaan menampilkan label entri aktif. */
+        label() {
+            const current = nav.querySelector('[data-toc-current]');
+            const link = nav.querySelector('[data-toc-list] [aria-current]');
+            if (current && link) current.textContent = link.textContent;
         },
     };
 }
