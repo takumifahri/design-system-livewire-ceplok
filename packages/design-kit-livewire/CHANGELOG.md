@@ -6,6 +6,12 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Ditambahkan
+
+- `list-view`: prop `action-disabled` untuk menonaktifkan tombol aksi bawaan
+  pada varian simple. Pada aksi berupa tautan, atribut ARIA, tabindex, dan
+  state visual disabled diterapkan tanpa mengikuti tautannya.
+
 ## [0.2.0] - 2026-11-03
 
 ### Ditambahkan

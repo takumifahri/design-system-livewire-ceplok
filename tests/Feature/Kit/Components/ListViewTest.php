@@ -86,4 +86,15 @@ class ListViewTest extends TestCase
         $this->assertSame('openDocument(1)', $button->getAttribute('wire:click'));
         $this->assertFalse($item->hasAttribute('wire:click'));
     }
+
+    public function test_action_disabled_menonaktifkan_tombol_atau_tautan_aksi(): void
+    {
+        $button = $this->find($this->dom('<x-ceplok::list-view title="Project brief" action-label="Open" action-disabled />'), 'button');
+        $this->assertTrue($button->hasAttribute('disabled'));
+
+        $link = $this->find($this->dom('<x-ceplok::list-view title="Project brief" action-label="Open" action-href="/brief" action-disabled />'), 'a[href="/brief"]');
+        $this->assertSame('true', $link->getAttribute('aria-disabled'));
+        $this->assertSame('-1', $link->getAttribute('tabindex'));
+        $this->assertHasClasses($link, 'pointer-events-none opacity-50');
+    }
 }
