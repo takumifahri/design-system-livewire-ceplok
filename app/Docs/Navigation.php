@@ -44,6 +44,13 @@ final class Navigation
                 'route' => 'foundations.index',
                 'icon' => 'M12 3.5c3.8 3.2 6.5 6 6.5 9.5a6.5 6.5 0 1 1-13 0c0-3.5 2.7-6.3 6.5-9.5Z',
             ],
+            [
+                'key' => 'portal',
+                'label' => 'Portal Dashboard',
+                'route' => 'portal.index',
+                'icon' => 'M4 4h7v9H4V4Zm9 0h7v5h-7V4ZM4 15h7v5H4v-5Zm9-4h7v9h-7v-9Z',
+                'keywords' => 'dasbor beranda pegawai contoh kalender presensi anggaran wiki',
+            ],
         ];
     }
 
@@ -128,7 +135,7 @@ final class Navigation
     {
         $area = strtok((string) $route, '.');
 
-        return in_array($area, ['components', 'form', 'foundations'], true) ? $area : 'home';
+        return in_array($area, array_column(self::rail(), 'key'), true) ? $area : 'home';
     }
 
     /**

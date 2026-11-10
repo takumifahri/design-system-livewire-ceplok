@@ -125,17 +125,7 @@
     {{-- ══ Hero ══ --}}
     <section x-parallax class="relative overflow-hidden border-b border-border bg-linear-to-b from-primary-50 via-white to-white px-5 py-16 sm:px-8 lg:px-12 lg:py-24 xl:px-14">
         {{-- Latar: kisi halus, gumpalan cahaya, dan sapuan sinar — makin dalam makin pelan bergeser saat digulir. --}}
-        <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden">
-            <div data-depth="0" class="ds-grid absolute inset-[-20%]"></div>
-            <div data-depth="1" class="absolute inset-[-30%]">
-                <div class="ds-blob absolute top-[6%] left-[2%] size-136 rounded-full bg-primary-200/40 blur-[110px]" style="--duration: 11s; --x: 8%; --y: -6%"></div>
-                <div class="ds-blob absolute right-[4%] bottom-[2%] size-120 rounded-full bg-primary-100/50 blur-[120px]" style="--duration: 14.5s; --x: -8%; --y: 7%"></div>
-                <div class="ds-blob absolute top-[38%] left-[46%] size-88 rounded-full bg-primary-50/60 blur-[90px]" style="--duration: 18s; --x: 8%; --y: -6%"></div>
-            </div>
-            <div data-depth="2" class="ds-beam absolute inset-0"></div>
-            {{-- Peredam di tepi bawah: menyatukan hero dengan section putih di bawahnya. --}}
-            <div class="absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-transparent to-white"></div>
-        </div>
+        <x-docs.aurora />
 
         {{-- Lencana CEPLOK sebagai cap air yang sangat samar; hanya dari xl, di bawahnya bertabrakan dengan jendela kode. --}}
         <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="pointer-events-none absolute -top-16 -right-40 hidden w-152 opacity-[0.035] xl:block">

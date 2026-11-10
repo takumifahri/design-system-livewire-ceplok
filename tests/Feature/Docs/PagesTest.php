@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Docs;
 
+use App\Docs\Navigation;
 use Dom\HTMLDocument;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -54,6 +55,7 @@ class PagesTest extends TestCase
             'border' => ['foundations.border', 'Border', 'Radius, ketebalan, dan gaya garis'],
             'elevation' => ['foundations.elevation', 'Elevation', 'Bayangan dan kedalaman'],
             'icons' => ['foundations.icons', 'Icons', 'Icons'],
+            'portal' => ['portal.index', 'Portal Dashboard', 'Beranda portal pegawai dari komponen yang sudah ada'],
         ];
     }
 
@@ -94,8 +96,8 @@ class PagesTest extends TestCase
         $this->assertSame($areaUrl, $this->find($rail, 'a[aria-current="page"]')->getAttribute('href'));
         $this->assertSame($rail->querySelectorAll('a')->length, $rail->querySelectorAll('a[wire\:navigate]')->length);
 
-        // Panel samping desktop (tidak ada di Home): tepat satu halaman aktif.
-        if ($area !== 'home') {
+        // Panel samping desktop (tidak ada di Home dan Portal Dashboard): tepat satu halaman aktif.
+        if (isset(Navigation::sidebars()[$area])) {
             $panel = $this->find($dom, 'aside[x-bind\:inert] nav');
 
             $this->assertCount(1, $panel->querySelectorAll('a[aria-current="page"]'));

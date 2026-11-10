@@ -186,10 +186,11 @@ class TableOfContentsTest extends TestCase
         $this->assertFalse($nav->hasAttribute('data-drawer-contained'));
 
         // Urutan elemen sama dengan React: tombol, Drawer, lalu daftar biasa.
-        $children = array_map(fn ($el) => $el->tagName, iterator_to_array($nav->children, false));
-        $this->assertSame(['BUTTON', 'DIALOG', 'DIV'], $children);
+        // childrenOf, bukan ->children: properti itu baru ada di PHP 8.5, sedangkan CI memakai PHP 8.4.
+        $children = $this->childrenOf($nav);
+        $this->assertSame(['BUTTON', 'DIALOG', 'DIV'], array_map(fn ($el) => $el->tagName, $children));
 
-        $trigger = $nav->children->item(0);
+        $trigger = $children[0];
         $this->assertSame('dialog', $trigger->getAttribute('aria-haspopup'));
         $this->assertSame('false', $trigger->getAttribute('aria-expanded'));
         $this->assertSame("drawerOpen ? 'true' : 'false'", $trigger->getAttribute('x-bind:aria-expanded'));
@@ -199,7 +200,7 @@ class TableOfContentsTest extends TestCase
         $this->assertSame('Tampilan dasar', trim($this->find($trigger, '[data-toc-current]')->textContent));
         $this->assertCount(2, $trigger->querySelectorAll('svg[aria-hidden="true"]'));
 
-        $this->assertHasClasses($nav->children->item(2), 'hidden lg:block');
+        $this->assertHasClasses($children[2], 'hidden lg:block');
     }
 
     public function test_drawer_memakai_drawer_kit_dari_kanan_dengan_entri_14px(): void
