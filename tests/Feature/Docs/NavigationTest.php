@@ -20,7 +20,9 @@ class NavigationTest extends TestCase
         return collect(Router::getRoutes()->getRoutes())
             ->filter(fn (Route $route) => in_array('GET', $route->methods(), true))
             ->map(fn (Route $route) => $route->getName())
-            ->filter(fn (?string $name) => $name === 'home' || Str::startsWith((string) $name, ['components.', 'form.', 'foundations.']))
+            ->filter(fn (?string $name) => $name === 'home' || Str::startsWith((string) $name, ['components.', 'form.', 'foundations.', 'portal.']))
+            // Aplikasi Portal Dashboard yang penuh layar dibuka dari tombol di pintu masuknya, bukan dari navigasi.
+            ->reject(fn (string $name) => $name === 'portal.app')
             ->values()
             ->all();
     }
@@ -54,7 +56,7 @@ class NavigationTest extends TestCase
         $pages = Navigation::pages();
         $urls = array_column($pages, 'url');
 
-        $this->assertCount(42, $pages);
+        $this->assertCount(43, $pages);
         $this->assertSame(array_unique($urls), $urls);
         $this->assertEqualsCanonicalizing(array_map(fn (string $name) => route($name), $this->docsRoutes()), $urls);
 
@@ -85,7 +87,9 @@ class NavigationTest extends TestCase
         $this->assertSame('components', Navigation::sectionOf('components.button'));
         $this->assertSame('form', Navigation::sectionOf('form.input-field.text-area'));
         $this->assertSame('foundations', Navigation::sectionOf('foundations.index'));
+        $this->assertSame('portal', Navigation::sectionOf('portal.index'));
         $this->assertSame('home', Navigation::sectionOf('home'));
+        $this->assertSame('home', Navigation::sectionOf('tidak-ada.index'));
         $this->assertSame('home', Navigation::sectionOf(null));
     }
 
@@ -97,6 +101,7 @@ class NavigationTest extends TestCase
                 ['label' => 'Components', 'url' => route('components.index')],
                 ['label' => 'Form', 'url' => route('form.index')],
                 ['label' => 'Foundations', 'url' => route('foundations.index')],
+                ['label' => 'Portal Dashboard', 'url' => route('portal.index')],
             ],
             Navigation::footerMenus(),
         );

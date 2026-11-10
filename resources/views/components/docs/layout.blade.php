@@ -23,9 +23,11 @@
     $searchIcon = 'm20 20-4.5-4.5M17 10.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z';
 
     // Satu menu di rail: seluruh kolom (ikon + label) bisa diklik, tetapi latar
-    // penandanya hanya pill di belakang ikon. Label tanpa latar.
+    // penandanya hanya pill di belakang ikon. Label tanpa latar. text-center:
+    // label dua kata ("Portal Dashboard") turun ke baris kedua dan harus tetap
+    // di tengah, di bawah ikonnya.
     $railItem = fn (bool $active) => [
-        'group flex w-full flex-col items-center gap-1 rounded-lg py-0.5 text-[11px] font-bold transition-colors',
+        'group flex w-full flex-col items-center gap-1 rounded-lg py-0.5 text-center text-[11px] font-bold transition-colors',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600',
         $active ? 'text-primary-700' : 'text-gray-500 hover:text-gray-800',
     ];
@@ -37,28 +39,7 @@
 
 <!DOCTYPE html>
 <html lang="id">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Ceplok Design Kit — foundations dan komponen Blade + Livewire.">
-
-        <title>{{ $title }} — Ceplok Design Kit</title>
-
-        {{--
-            Sengaja tanpa varian .svg: images/ceplok.svg berisi raster ter-embed
-            1,5 MB, dan browser yang mendukung SVG akan memilihnya untuk ikon 16px.
-        --}}
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
-        <link rel="icon" type="image/png" sizes="180x180" href="/favicon.png">
-        <link rel="apple-touch-icon" href="/images/favicon-180.png">
-
-        {{-- Penanda JavaScript aktif: elemen yang punya animasi masuk baru disembunyikan bila ini ada. --}}
-        <script>document.documentElement.classList.add('ds-js')</script>
-
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @livewireStyles
-    </head>
+    <x-docs.head :title="$title" />
     <body x-data="designSystem">
         <div x-data="docsLayout(@js($panel))" class="flex min-h-screen flex-col bg-gray-50">
             {{-- ══ Top bar — mobile ══ --}}

@@ -184,6 +184,20 @@
     }
 }
 
+/* ── Tirai transisi contoh aplikasi (resources/js/docs/transition.js) ───── */
+
+/* Penandanya dipasang di <html> sebelum cat pertama halaman tujuan, jadi
+   tirainya sudah menutup layar sebelum isi halaman sempat terlihat. Animasi
+   bukanya lalu mengambil alih dari keadaan ini. */
+html[data-tirai='masuk'] [data-tirai-gelembung] {
+    translate: calc(50vw - 50%) calc(50vh - 50%);
+    scale: 1;
+}
+
+html[data-tirai='pulang'] [data-tirai-panel] {
+    translate: 0 0;
+}
+
 /* ── Hormati permintaan gerak dikurangi ─────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {

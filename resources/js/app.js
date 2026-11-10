@@ -11,6 +11,7 @@ import docsDropdownPlayground from './docs/dropdown-playground';
 import docsLayout from './docs/layout';
 import docsSearch from './docs/search';
 import docsToc from './docs/toc';
+import docsTirai from './docs/transition';
 import spotlight from './docs/spotlight';
 import { codeWindow, countUp, magnetic, parallax, reveal, scrollProgress, splitWords, tilt } from './docs/motion';
 
@@ -22,6 +23,7 @@ Alpine.data('docsLayout', docsLayout);
 Alpine.data('docsDropdownPlayground', docsDropdownPlayground);
 Alpine.data('docsSearch', docsSearch);
 Alpine.data('docsToc', docsToc);
+Alpine.data('docsTirai', docsTirai);
 Alpine.directive('spotlight', spotlight);
 Alpine.data('docsCodeWindow', codeWindow);
 Alpine.directive('reveal', reveal);
