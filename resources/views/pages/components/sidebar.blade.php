@@ -7,10 +7,10 @@
         ['user', 'array', 'null', 'Informasi pengguna yang ditampilkan pada profile section.'],
         ['sticky', 'bool', 'false', 'Menempelkan Sidebar di atas viewport dan membatasi tingginya setinggi viewport.'],
         ['collapsed', 'bool', 'false', 'State controlled untuk membuka atau menutup Sidebar.'],
-        ['show-collapse-button', 'bool', 'false', 'Menampilkan tombol collapse.'],
+        ['show-collapse-button', 'bool', 'false', 'Menampilkan tombol collapse nonaktif; independen dari prop logo.'],
         ['footer', 'Htmlable | slot', 'null', 'Area di kaki Sidebar, di bawah daftar menu — versi aplikasi, tautan bantuan, atau catatan status.'],
         ['dark-mode', 'bool', 'false', 'Mengaktifkan tampilan mode gelap pada Sidebar secara manual.'],
-        ['wire:collapse', 'event', '—', 'Event Livewire yang dipicu saat tombol collapse diklik.'],
+        ['wire:collapse', 'event', '—', 'Menampilkan tombol collapse aktif dan dipicu saat tombol itu diklik (detail.collapsed); independen dari prop logo.'],
     ];
 
     $sidebarItemProps = [
@@ -24,6 +24,7 @@
         ['children', 'array', 'null', 'Daftar submenu pada menu.'],
         ['defaultOpen', 'bool', 'false', 'Membuka submenu saat pertama dirender.'],
         ['submenuToggleDisabled', 'bool', 'false', 'Menonaktifkan tombol buka/tutup submenu tanpa menonaktifkan menu.'],
+        ['attributes', 'array', '[]', 'Atribut tambahan pada menu, mis. wire:click atau wire:navigate; padanan onClick.'],
     ];
 
     $sidebarUserProps = [
@@ -35,6 +36,7 @@
         ['initials', 'string', 'null', 'Inisial avatar fallback jika gambar tidak tersedia.'],
         ['href', 'string', 'null', 'Tautan navigasi profil jika dropdown tidak digunakan.'],
         ['external', 'bool', 'false', 'Menandai tautan eksternal (target="_blank" rel="noreferrer noopener").'],
+        ['attributes', 'array', '[]', 'Atribut tambahan pada area profil, mis. wire:click; padanan onClick. Tanpa href, tautannya tidak melompat ke "#".'],
         ['items', 'array', 'null', 'Daftar item dropdown profil pengguna (seperti Profil, Pengaturan, Keluar).'],
         ['groups', 'array', 'null', 'Kelompok item dropdown profil pengguna dengan dukungan pemisah dan label grup.'],
     ];

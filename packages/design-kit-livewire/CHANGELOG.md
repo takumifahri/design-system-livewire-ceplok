@@ -6,6 +6,30 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Ditambahkan
+
+- `sidebar`: kunci `attributes` pada `user` meneruskan atribut ke area
+  profil, mis. `['wire:click' => 'bukaProfil']`, padanan `user.onClick` di
+  kit React.
+
+### Diubah
+
+- `badge` mengikuti ukuran desain, sama dengan kit React: `sm` kini tinggi
+  22px (sebelumnya 24px) dan `lg` 25px (sebelumnya 28px). Jarak ikon ke teks
+  jadi 4px, dan ikon `lg` jadi 18px. Badge di tata letak yang ukurannya
+  dikunci bisa sedikit bergeser.
+- `sidebar`: pendengar event `collapse`, mis. `wire:collapse`, kini sudah
+  menampilkan tombol collapse dalam keadaan aktif, seperti `onCollapse` di
+  kit React. Tanpa pendengar, `show-collapse-button` tetap menampilkannya
+  nonaktif.
+
+### Diperbaiki
+
+- `sidebar`: area profil tanpa `href` tidak lagi melompat ke `#` saat
+  diklik.
+- `sidebar`: tombol collapse yang nonaktif kini berkursor `not-allowed`,
+  sama dengan kit React.
+
 ## [0.2.0] - 2026-11-03
 
 ### Ditambahkan
