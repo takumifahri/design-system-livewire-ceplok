@@ -19,9 +19,9 @@ class TableOfContentsTest extends TestCase
         return '<x-ceplok::table-of-contents :items="'.self::ITEMS.'" '.$attributes.' />';
     }
 
-    public function test_daftar_bawaan_sama_dengan_layout_list_kit_react(): void
+    public function test_layout_list_sama_dengan_kit_react(): void
     {
-        $nav = $this->find($this->dom($this->toc()), 'body > nav');
+        $nav = $this->find($this->dom($this->toc('layout="list"')), 'body > nav');
 
         $this->assertSame('Daftar isi halaman', $nav->getAttribute('aria-label'));
         $this->assertSame('ceplokTableOfContents', $nav->getAttribute('x-data'));
@@ -34,12 +34,15 @@ class TableOfContentsTest extends TestCase
         $this->assertSame('On this page', trim($title->textContent));
         $this->assertHasClasses($title, 'text-[11px] leading-4 font-bold tracking-[0.14em] text-content-disabled uppercase');
         $this->assertHasClasses($this->find($nav, 'ul'), 'relative border-l border-border mt-3');
+        $this->assertNull($nav->querySelector('button'));
+        $this->assertNull($nav->querySelector('dialog'));
+        $this->assertNull($nav->querySelector('[data-toc-list="drawer"]'));
     }
 
     public function test_entri_berupa_tautan_dan_entri_pertama_disorot(): void
     {
         $nav = $this->find($this->dom($this->toc()), 'nav');
-        $links = $nav->querySelectorAll('ul > li > a');
+        $links = $nav->querySelectorAll('[data-toc-list="inline"] > li > a');
 
         $this->assertCount(3, $links);
         $this->assertSame('#dasar', $links->item(0)->getAttribute('href'));
@@ -58,7 +61,7 @@ class TableOfContentsTest extends TestCase
 
     public function test_kelas_entri_berganti_lewat_alpine_tanpa_kunci_kembar(): void
     {
-        $link = $this->find($this->dom($this->toc()), 'a[data-id="variasi"]');
+        $link = $this->find($this->dom($this->toc()), '[data-toc-list="inline"] a[data-id="variasi"]');
         $binding = $link->getAttribute('x-bind:class');
 
         // border-transparent ada di kedua keadaan, jadi dipasang statis (pola ClassToggle).
@@ -70,12 +73,13 @@ class TableOfContentsTest extends TestCase
 
     public function test_indikator_garis_brand_tersembunyi_sampai_diukur(): void
     {
-        $indicator = $this->find($this->dom($this->toc()), 'ul > li[aria-hidden="true"]');
+        $indicator = $this->find($this->dom($this->toc()), '[data-toc-list="inline"] > li[aria-hidden="true"]');
 
-        $this->assertSame('indicator', $indicator->getAttribute('x-ref'));
+        $this->assertTrue($indicator->hasAttribute('data-toc-indicator'));
         $this->assertSame('display: none', $indicator->getAttribute('style'));
         $this->assertHasClasses($indicator, 'pointer-events-none absolute top-0 -left-px w-0.5 rounded-full bg-brand');
-        $this->assertStringContainsString('transition-[transform,height] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none', $indicator->getAttribute('x-bind:class'));
+        $this->assertSame("{ 'transition-[transform,height] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none': animated.inline }", $indicator->getAttribute('x-bind:class'));
+        $this->assertStringContainsString('animated.drawer', $this->find($this->dom($this->toc()), '[data-toc-list="drawer"] > [data-toc-indicator]')->getAttribute('x-bind:class'));
     }
 
     public function test_judul_false_atau_kosong_menyembunyikan_judul(): void
@@ -84,7 +88,7 @@ class TableOfContentsTest extends TestCase
             $nav = $this->find($this->dom($this->toc($attribute)), 'nav');
 
             $this->assertNull($nav->querySelector('p'), $attribute);
-            $this->assertStringNotContainsString('mt-3', $this->find($nav, 'ul')->getAttribute('class'), $attribute);
+            $this->assertStringNotContainsString('mt-3', $this->find($nav, '[data-toc-list="inline"]')->getAttribute('class'), $attribute);
         }
 
         $custom = $this->find($this->dom($this->toc('title="Di halaman ini"')), 'nav > div > p');
@@ -98,9 +102,10 @@ class TableOfContentsTest extends TestCase
 
         $this->assertNull($nav->querySelector('a'));
         $this->assertSame('false', $nav->getAttribute('data-anchor'));
+        $this->assertCount(3, $nav->querySelectorAll('[data-toc-list="drawer"] button[data-id]'));
         $this->assertSame('false', $nav->getAttribute('data-scroll-spy'));
 
-        $button = $this->find($nav, 'button[data-id="dasar"]');
+        $button = $this->find($nav, '[data-toc-list="inline"] button[data-id="dasar"]');
 
         $this->assertSame('button', $button->getAttribute('type'));
         $this->assertSame('true', $button->getAttribute('aria-current'));
@@ -112,8 +117,9 @@ class TableOfContentsTest extends TestCase
         $nav = $this->find($this->dom($this->toc('active-id="properties"')), 'nav');
 
         $this->assertSame('properties', $nav->getAttribute('data-active-id'));
-        $this->assertSame('location', $this->find($nav, 'a[data-id="properties"]')->getAttribute('aria-current'));
-        $this->assertFalse($this->find($nav, 'a[data-id="dasar"]')->hasAttribute('aria-current'));
+        $this->assertSame('location', $this->find($nav, '[data-toc-list="inline"] a[data-id="properties"]')->getAttribute('aria-current'));
+        $this->assertFalse($this->find($nav, '[data-toc-list="inline"] a[data-id="dasar"]')->hasAttribute('aria-current'));
+        $this->assertSame('Properties', trim($this->find($nav, '[data-toc-current]')->textContent));
     }
 
     public function test_scroll_spy_offset_dan_wadah_gulir(): void
@@ -134,15 +140,16 @@ class TableOfContentsTest extends TestCase
 
     public function test_max_height_membuat_daftar_bisa_digulir(): void
     {
-        $list = $this->find($this->dom($this->toc(':max-height="256"')), 'ul');
+        $list = $this->find($this->dom($this->toc(':max-height="256"')), '[data-toc-list="inline"]');
 
         $this->assertSame('max-height: 256px', $list->getAttribute('style'));
         $this->assertHasClasses($list, 'relative border-l border-border overflow-y-auto overscroll-contain mt-3');
 
-        $calc = $this->find($this->dom($this->toc('max-height="calc(100vh - 8rem)"')), 'ul');
+        $calc = $this->find($this->dom($this->toc('max-height="calc(100vh - 8rem)"')), '[data-toc-list="inline"]');
 
         $this->assertSame('max-height: calc(100vh - 8rem)', $calc->getAttribute('style'));
-        $this->assertFalse($this->find($this->dom($this->toc()), 'ul')->hasAttribute('style'));
+        $this->assertFalse($this->find($this->dom($this->toc()), '[data-toc-list="inline"]')->hasAttribute('style'));
+        $this->assertFalse($this->find($this->dom($this->toc(':max-height="256"')), '[data-toc-list="drawer"]')->hasAttribute('style'));
     }
 
     public function test_alamat_entri_dari_get_href_atau_href_item(): void
@@ -166,15 +173,106 @@ class TableOfContentsTest extends TestCase
     {
         $nav = $this->find($this->dom($this->toc('class="sticky top-10" aria-label="Isi panduan" wire:key="toc"')), 'nav');
 
-        $this->assertHasClasses($nav, 'bg-toc-surface w-52 sticky top-10');
+        $this->assertHasClasses($nav, 'bg-toc-surface w-full lg:w-52 sticky top-10');
         $this->assertSame('Isi panduan', $nav->getAttribute('aria-label'));
         $this->assertSame('toc', $nav->getAttribute('wire:key'));
+    }
+
+    public function test_layout_auto_tombol_drawer_di_bawah_lg_dan_daftar_mulai_lg(): void
+    {
+        $nav = $this->find($this->dom($this->toc()), 'body > nav');
+
+        $this->assertHasClasses($nav, 'bg-toc-surface transition-colors duration-300 w-full lg:w-52');
+        $this->assertFalse($nav->hasAttribute('data-drawer-contained'));
+
+        // Urutan elemen sama dengan React: tombol, Drawer, lalu daftar biasa.
+        $children = array_map(fn ($el) => $el->tagName, iterator_to_array($nav->children, false));
+        $this->assertSame(['BUTTON', 'DIALOG', 'DIV'], $children);
+
+        $trigger = $nav->children->item(0);
+        $this->assertSame('dialog', $trigger->getAttribute('aria-haspopup'));
+        $this->assertSame('false', $trigger->getAttribute('aria-expanded'));
+        $this->assertSame("drawerOpen ? 'true' : 'false'", $trigger->getAttribute('x-bind:aria-expanded'));
+        $this->assertSame('openDrawer()', $trigger->getAttribute('x-on:click'));
+        $this->assertHasClasses($trigger, 'flex w-full items-center gap-3 rounded-lg border border-border bg-surface px-4 py-2.5 text-left text-sm text-content lg:hidden');
+        $this->assertSame('On this page:', trim($this->find($trigger, '.sr-only')->textContent));
+        $this->assertSame('Tampilan dasar', trim($this->find($trigger, '[data-toc-current]')->textContent));
+        $this->assertCount(2, $trigger->querySelectorAll('svg[aria-hidden="true"]'));
+
+        $this->assertHasClasses($nav->children->item(2), 'hidden lg:block');
+    }
+
+    public function test_drawer_memakai_drawer_kit_dari_kanan_dengan_entri_14px(): void
+    {
+        $dialog = $this->find($this->dom($this->toc()), 'nav > dialog');
+
+        $this->assertSame('drawerOpen', $dialog->getAttribute('x-model'));
+        $this->assertTrue($dialog->hasAttribute('wire:ignore.self'));
+        $this->assertHasClasses($dialog, 'fixed inset-y-0 right-0 w-[320px] max-w-[calc(100vw-2rem)] bg-surface text-content lg:hidden');
+
+        $title = $this->find($dialog, 'h2');
+        $this->assertSame($title->getAttribute('id'), $dialog->getAttribute('aria-labelledby'));
+        $this->assertSame('On this page', trim($title->textContent));
+        $this->assertHasClasses($title, 'text-xs font-bold tracking-[0.14em] text-content-disabled uppercase');
+        $this->assertSame('close()', $this->find($dialog, 'button[aria-label="Tutup drawer"]')->getAttribute('x-on:click'));
+
+        $link = $this->find($dialog, '[data-toc-list="drawer"] a[data-id="dasar"]');
+        $this->assertSame('location', $link->getAttribute('aria-current'));
+        $this->assertSame('chooseInDrawer($event, $el)', $link->getAttribute('x-on:click'));
+        $this->assertHasClasses($link, 'py-2.5 text-sm leading-5 text-brand');
+        $this->assertHasClasses($this->find($dialog, '[data-toc-list="drawer"]'), 'relative border-l border-border');
+    }
+
+    public function test_layout_drawer_tanpa_daftar_biasa(): void
+    {
+        $nav = $this->find($this->dom($this->toc('layout="drawer"')), 'nav');
+
+        $this->assertHasClasses($nav, 'w-full');
+        $this->assertStringNotContainsString('lg:', $nav->getAttribute('class'));
+        $this->assertNull($nav->querySelector('[data-toc-list="inline"]'));
+        $this->assertStringNotContainsString('lg:hidden', $this->find($nav, 'nav > button')->getAttribute('class'));
+        $this->assertStringNotContainsString('lg:hidden', $this->find($nav, 'dialog')->getAttribute('class'));
+    }
+
+    public function test_drawer_contained_berupa_panel_di_dalam_bingkai(): void
+    {
+        $nav = $this->find($this->dom($this->toc('layout="drawer" drawer-contained :title="false"')), 'nav');
+
+        $this->assertTrue($nav->hasAttribute('data-drawer-contained'));
+        $this->assertNull($nav->querySelector('dialog'));
+
+        $layer = $this->find($nav, 'nav > div');
+        $this->assertTrue($layer->hasAttribute('inert'));
+        $this->assertSame('! drawerOpen', $layer->getAttribute('x-bind:inert'));
+        $this->assertHasClasses($layer, 'absolute inset-0 z-20 overflow-hidden rounded-[inherit] invisible');
+
+        $panel = $this->find($layer, '[role="dialog"]');
+        $this->assertSame('-1', $panel->getAttribute('tabindex'));
+        $this->assertSame('closeDrawer()', $panel->getAttribute('x-on:keydown.escape.stop'));
+        $this->assertHasClasses($panel, 'absolute inset-y-0 right-0 flex w-64 max-w-[85%] flex-col bg-surface shadow-2xl translate-x-full in-data-[theme=dark]:bg-gray-800');
+
+        // Tanpa judul, judul panel memakai aria-label.
+        $title = $this->find($panel, 'p');
+        $this->assertSame($title->getAttribute('id'), $panel->getAttribute('aria-labelledby'));
+        $this->assertSame('Daftar isi halaman', trim($title->textContent));
+        $this->assertSame('closeDrawer()', $this->find($layer, 'div[aria-hidden="true"]')->getAttribute('x-on:click'));
+        $this->assertNull($this->find($nav, 'nav > button')->querySelector('.sr-only'));
+    }
+
+    public function test_dark_mode_ikut_ke_drawer(): void
+    {
+        $dialog = $this->find($this->dom($this->toc('dark-mode')), 'dialog');
+
+        $this->assertSame('dark', $dialog->getAttribute('data-theme'));
+        $this->assertHasClasses($dialog, 'bg-gray-800 text-gray-300');
     }
 
     public function test_prop_tidak_sah_ditolak(): void
     {
         $this->assertPropError($this->toc(':offset="-1"'), 'Prop `offset` pada <x-ceplok::table-of-contents> harus bilangan bulat minimal 0');
         $this->assertPropError($this->toc('anchor="tidak"'), 'Prop `anchor` pada <x-ceplok::table-of-contents> harus boolean');
+        $this->assertPropError($this->toc('layout="sheet"'), 'Prop `layout` pada <x-ceplok::table-of-contents>');
+        $this->assertPropError($this->toc('drawer-contained="ya"'), 'Prop `drawer-contained` pada <x-ceplok::table-of-contents> harus boolean');
         $this->assertPropError(
             '<x-ceplok::table-of-contents :items="[[\'label\' => \'Tanpa id\']]" />',
             'Setiap item <x-ceplok::table-of-contents> butuh `id`',

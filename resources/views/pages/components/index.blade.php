@@ -279,6 +279,7 @@
                     </div>
                     <x-ceplok::table-of-contents
                         class="w-36! shrink-0 bg-transparent! pt-1"
+                        layout="list"
                         :anchor="false"
                         :items="[
                             ['id' => 'ov-dasar', 'label' => 'Tampilan dasar'],

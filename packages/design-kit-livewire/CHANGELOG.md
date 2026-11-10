@@ -58,14 +58,25 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   lewat `labels['months']`. Avatar dan status memakai `<x-ceplok::avatar>`
   dan `<x-ceplok::badge>`; kunci `attributes` pada status diteruskan ke
   Badge, mis. `['wire:dismiss' => 'tutupStatus(2)']`.
-- `table-of-contents` setara layout `list` di kit React: daftar isi "On this
-  page" 208px dengan scroll-spy, garis brand 2px yang meluncur ke entri
+- `table-of-contents` setara `TableOfContents` di kit React: daftar isi "On
+  this page" 208px dengan scroll-spy, garis brand 2px yang meluncur ke entri
   aktif, `max-height` yang mengikuti entri aktif, `scroll-container`
   (selector wadah gulir), `anchor`, `get-href`, `active-id`, dan
   `dark-mode`. `wire:model` mengikat id entri aktif, dengan event
-  `active-change` dan `item-click`. Layout `auto` dan `drawer` belum
-  di-port, dan judul disembunyikan dengan `:title="false"` (padanan
-  `title={null}`).
+  `active-change` dan `item-click`. Judul disembunyikan dengan
+  `:title="false"` (padanan `title={null}`).
+  - `layout` `auto` (bawaan), `list`, atau `drawer`. Dengan `auto`, layar
+    1024px ke atas menampilkan daftar 12px, dan layar yang lebih sempit
+    menampilkan tombol berisi bagian aktif yang membuka Drawer dari kanan
+    dengan entri 14px dan baris 40px. Drawer-nya `<x-ceplok::drawer>`;
+    klik entri menutup Drawer dulu, baru berpindah ke bagiannya.
+  - `drawer-contained`: Drawer berupa panel di dalam pembungkus `relative`
+    terdekat, bukan `<dialog>` yang menutupi layar, untuk pratinjau di
+    dalam bingkai. Escape dan klik latar menutupnya, dan fokus kembali ke
+    tombol pembukanya.
+  - Berbeda dari React, daftar di Drawer selalu dirender, tidak menunggu
+    Drawer pertama kali dibuka, supaya markup dari server sama di setiap
+    render Livewire.
 - `button`: prop `wire-click` memasang `wire:click` dan menonaktifkan tombol
   selama aksi itu berjalan (`wire:loading.attr="disabled"` dengan
   `wire:target` yang sama).
@@ -124,7 +135,8 @@ Rilis pertama.
   API: penelusuran panah, Home/End, dan ketikan; bentuk `attached` yang
   menempel pada tombolnya. Daftar pilihan Select dan kategori Search memakai
   panel yang sama.
-- Table (`table`) setara kit React: toolbar pencarian, filter kolom, dan slot
+- Table (`table`, belum stabil: prop dan markup-nya masih bisa berubah di
+  rilis minor) setara kit React: toolbar pencarian, filter kolom, dan slot
   aksi; kolom bertingkat, kolom menempel, baris zebra, size `compact`,
   pengurutan per kolom (`sort-value`, `sort-fn`, `sort-directions`,
   `sort-resettable`, `sort-icon`), seleksi baris dengan "pilih semua", tombol

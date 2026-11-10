@@ -31,6 +31,8 @@
         ['dark-mode', 'bool', 'false', 'Sama dengan data-theme="dark". Latar jadi gray-800.'],
         ['max-height', 'int | string', '—', 'Tinggi maksimum daftar; angka berarti px, mis. 256 atau "calc(100vh - 8rem)". Daftar yang lebih panjang bisa digulir dan mengikuti entri aktif.'],
         ['anchor', 'bool', 'true', 'Entri berupa tautan <a href> yang melompat ke bagiannya, dengan scroll-spy. false menjadikan entri <button>: klik hanya memindahkan sorotan, tanpa berpindah atau menggulir.'],
+        ['layout', "'auto' | 'list' | 'drawer'", "'auto'", 'auto: daftar biasa (teks 12px) mulai 1024px, di bawahnya tombol yang membuka Drawer dari kanan (teks 14px). list dan drawer memaksa salah satunya.'],
+        ['drawer-contained', 'bool', 'false', 'Drawer muncul di dalam pembungkus terdekat yang relative, bukan menutupi seluruh layar. Untuk pratinjau di dalam bingkai, mis. playground.'],
         ['scroll-container', 'string', '—', 'Selector CSS wadah gulir isi halaman bila bukan window, mis. "#panel". Scroll-spy dan klik entri bekerja di dalam wadah ini. Padanan scrollContainer.'],
         ['…atribut', '—', '—', 'Atribut lain diteruskan ke elemen <nav>, termasuk class dan aria-label.'],
     ];
@@ -43,6 +45,7 @@
         description="Daftar isi “On this page” untuk halaman panjang. Menyorot bagian yang sedang dibaca secara otomatis."
         :toc="[
             'tampilan-dasar' => 'Tampilan dasar',
+            'platform' => 'Platform',
             'dark-mode' => 'Dark mode',
             'scrollable' => 'Scrollable',
             'playground' => 'Playground',
@@ -55,23 +58,35 @@
             <x-docs.lead>
                 Daftar isi duduk di kanan isi halaman, lebar 208px dengan teks 12px. Entri aktif ditandai
                 garis brand 2px. Klik entri di contoh ini: sorotannya pindah, dan bagian yang sesuai di
-                halaman ikut ditandai.
-            </x-docs.lead>
-            <x-docs.lead>
-                Di kit React, layar di bawah 1024px memakai tombol yang membuka Drawer dari kanan. Kit
-                Livewire baru menyediakan daftarnya, karena Drawer belum di-port. Di layar sempit, letakkan
-                daftar di atas isi halaman, seperti contoh ini di ponsel, atau sembunyikan.
+                halaman ikut ditandai. Di layar di bawah 1024px daftar ini berubah jadi tombol yang membuka
+                Drawer dari kanan; lihat bagian Platform.
             </x-docs.lead>
 
-            {{-- Tiruan halaman dokumentasi: bagian yang aktif di daftar isi ikut ditandai di isinya. --}}
-            <div x-data="{ aktif: 'demo-dasar' }" class="mb-4 overflow-hidden rounded-2xl border border-border bg-toc-surface shadow-soft">
-                <div class="flex flex-col-reverse gap-6 p-5 sm:flex-row sm:gap-8 sm:p-8">
-                    <div class="min-w-0 flex-1" aria-hidden="true">
-                        <p class="text-[11px] font-bold tracking-[0.14em] text-content-disabled uppercase">Components</p>
-                        <p class="mt-1 text-heading-3 font-black text-content">Hero</p>
-                        <div class="mt-2 h-2 w-3/4 rounded bg-border"></div>
+            {{-- Tiruan halaman dokumentasi: bagian yang aktif di daftar isi ikut ditandai di isinya.
+                 Di bawah 640px daftar 208px tidak muat di samping isi, jadi daftar isinya berganti
+                 tombol yang membuka Drawer di dalam kartu ini, sama seperti layout auto di layar sempit.
+                 Demo tidak boleh berpindah halaman; kliknya hanya memindahkan sorotan. --}}
+            <div x-data="{ aktif: 'demo-dasar' }" class="relative mb-4 overflow-hidden rounded-2xl border border-border bg-toc-surface shadow-soft">
+                <div class="flex gap-8 p-5 sm:p-8">
+                    <div class="min-w-0 flex-1">
+                        <div aria-hidden="true">
+                            <p class="text-[11px] font-bold tracking-[0.14em] text-content-disabled uppercase">Components</p>
+                            <p class="mt-1 text-heading-3 font-black text-content">Hero</p>
+                            <div class="mt-2 h-2 w-3/4 rounded bg-border"></div>
+                        </div>
 
-                        <div class="mt-6 space-y-2">
+                        <x-ceplok::table-of-contents
+                            class="mt-5 sm:hidden"
+                            :items="$contoh"
+                            layout="drawer"
+                            drawer-contained
+                            active-id="demo-dasar"
+                            :scroll-spy="false"
+                            x-model="aktif"
+                            x-on:item-click.prevent="aktif = $event.detail.id"
+                        />
+
+                        <div class="mt-6 space-y-2" aria-hidden="true">
                             @foreach ($contoh as $item)
                                 <div
                                     class="rounded-lg border-l-2 px-3 py-2.5 transition-colors duration-300"
@@ -90,10 +105,10 @@
                         </div>
                     </div>
 
-                    {{-- Demo tidak boleh berpindah halaman; kliknya hanya memindahkan sorotan. --}}
                     <x-ceplok::table-of-contents
-                        class="shrink-0 sm:sticky sm:top-0"
+                        class="sticky top-0 hidden shrink-0 sm:block"
                         :items="$contoh"
+                        layout="list"
                         active-id="demo-dasar"
                         :scroll-spy="false"
                         x-model="aktif"
@@ -115,6 +130,49 @@
             </x-docs.code>
         </x-docs.section>
 
+        <x-docs.section id="platform" title="Platform">
+            <x-docs.lead>
+                Ukuran teks mengikuti platform. Di desktop entri memakai teks 12px dalam daftar 208px. Di
+                mobile daftar disimpan di Drawer yang muncul dari kanan, dengan teks 14px dan baris 40px
+                supaya mudah disentuh. Dengan <span class="text-primary-500">layout</span> bawaan
+                (<span class="text-primary-500">auto</span>) peralihannya terjadi sendiri di 1024px.
+            </x-docs.lead>
+            <x-docs.lead>
+                Bila navbar ponsel sudah punya menu sendiri, daftar isi bisa diletakkan di menu itu. Di contoh
+                Mobile, ikon kiri navbar membuka menu sidebar, dan ikon kanan membuka menu navbar dengan daftar
+                isi yang bisa dilipat di bawah tautannya. Daftar isinya <span class="text-primary-500">layout="list"</span>
+                dengan <span class="text-primary-500">:title="false"</span>, karena judulnya sudah menjadi tombol lipat.
+            </x-docs.lead>
+
+            <x-docs.toc-platform class="mb-4" :items="$contoh" />
+
+            <x-docs.code>
+                @verbatim
+                {{-- auto: 12px di desktop, Drawer 14px di mobile --}}
+                <x-ceplok::table-of-contents :items="$items" />
+
+                {{-- selalu daftar / selalu Drawer --}}
+                <x-ceplok::table-of-contents :items="$items" ⟦layout⟧="list" />
+                <x-ceplok::table-of-contents :items="$items" ⟦layout⟧="drawer" />
+
+                {{-- Menu navbar ponsel: tautan navbar, lalu daftar isi yang bisa dilipat --}}
+                <x-ceplok::drawer wire:model="menu" position="right" size="s">
+                    <nav>…tautan navbar…</nav>
+                    <div x-data="{ buka: true }">
+                        <button type="button" x-on:click="buka = ! buka">On this page</button>
+                        <x-ceplok::table-of-contents
+                            x-show="buka"
+                            :items="$items"
+                            ⟦layout⟧="list"
+                            :⟦title⟧="false"
+                            x-on:item-click="$wire.menu = false"
+                        />
+                    </div>
+                </x-ceplok::drawer>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
         <x-docs.section id="dark-mode" title="Dark mode">
             <x-docs.lead>
                 Hanya palet warnanya yang berubah: latar jadi <span class="text-primary-500">gray-800</span>, teks dan garis ikut token semantik.
@@ -122,16 +180,7 @@
                 <span class="text-primary-500">data-theme="dark"</span>.
             </x-docs.lead>
 
-            <div class="mb-4 grid gap-4 md:grid-cols-2">
-                @foreach (['light' => 'Light', 'dark' => 'Dark'] as $theme => $label)
-                    <article>
-                        <h3 class="mb-3 text-sm font-black text-gray-900">{{ $label }}</h3>
-                        <div data-theme="{{ $theme }}" class="rounded-2xl border border-border bg-surface-subtle p-6">
-                            <x-ceplok::table-of-contents :items="$contoh" :anchor="false" :dark-mode="$theme === 'dark'" />
-                        </div>
-                    </article>
-                @endforeach
-            </div>
+            <x-docs.toc-platform class="mb-4" :items="$contoh" dark />
 
             <x-docs.code>
                 @verbatim
@@ -147,8 +196,17 @@
                 menggulir panelnya.
             </x-docs.lead>
 
-            <div class="flex flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-surface-subtle p-4 sm:flex-row sm:gap-6 sm:p-6">
-                <div id="toc-gulir-panel" class="order-last h-80 min-w-0 flex-1 space-y-8 overflow-y-auto rounded-xl border border-border bg-white p-6 sm:order-none">
+            <div class="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-surface-subtle p-4 sm:flex-row sm:gap-6 sm:p-6">
+                {{-- Di layar sempit daftarnya berupa tombol Drawer di atas panel. --}}
+                <x-ceplok::table-of-contents
+                    class="bg-transparent! sm:hidden"
+                    :items="$bagianGulir"
+                    layout="drawer"
+                    drawer-contained
+                    scroll-container="#toc-gulir-panel"
+                    :offset="24"
+                />
+                <div id="toc-gulir-panel" class="h-80 min-w-0 flex-1 space-y-8 overflow-y-auto rounded-xl border border-border bg-white p-6">
                     @foreach ($bagianGulir as $bagian)
                         <section id="{{ $bagian['id'] }}">
                             <h3 class="text-heading-4 font-black text-gray-900">{{ $bagian['label'] }}</h3>
@@ -161,36 +219,42 @@
                         </section>
                     @endforeach
                 </div>
-                <x-ceplok::table-of-contents class="shrink-0" :items="$bagianGulir" scroll-container="#toc-gulir-panel" :offset="24" />
+                <x-ceplok::table-of-contents class="hidden shrink-0 sm:block" :items="$bagianGulir" layout="list" scroll-container="#toc-gulir-panel" :offset="24" />
             </div>
 
             <h3 class="mt-8 text-sm font-black text-gray-900">Daftar panjang</h3>
             <p class="mt-1 mb-3 max-w-2xl text-body-sm text-gray-500">
                 Dengan <span class="text-primary-500">max-height</span>, daftar yang panjang bisa digulir sendiri dan entri aktif tetap
                 terlihat. Contoh ini menyorot Bagian 19; klik entri lain dan judul isi halaman ikut berganti.
+                Di layar sempit daftarnya menjadi tombol yang membuka Drawer.
             </p>
 
-            {{-- Tiruan halaman desktop: judul isi mengikuti entri aktif di daftar yang digulir. --}}
+            {{-- Tiruan halaman: judul isi mengikuti entri aktif di daftar yang digulir. Di bawah
+                 640px daftarnya berganti tombol yang membuka Drawer di dalam kartu ini. --}}
             <div
                 x-data="{ aktif: 'panjang-18', get judul() { return 'Bagian ' + (Number(this.aktif.split('-')[1]) + 1) } }"
-                class="mb-4 overflow-hidden rounded-2xl border border-border bg-toc-surface shadow-soft"
+                class="relative mb-4 overflow-hidden rounded-2xl border border-border bg-toc-surface shadow-soft"
             >
-                <div class="flex items-center justify-between border-b border-border px-5 py-3 sm:px-8" aria-hidden="true">
-                    <div class="h-3 w-24 rounded bg-border-strong"></div>
-                    <div class="hidden gap-4 sm:flex">
-                        <div class="h-2 w-12 rounded bg-border"></div>
-                        <div class="h-2 w-12 rounded bg-border"></div>
-                        <div class="h-2 w-12 rounded bg-border"></div>
-                    </div>
-                </div>
+                <div class="flex gap-8 p-5 sm:p-8">
+                    <div class="min-w-0 flex-1">
+                        <div aria-hidden="true">
+                            <p class="text-[11px] font-bold tracking-[0.14em] text-content-disabled uppercase">Panduan</p>
+                            <p class="mt-1 text-heading-3 font-black text-content">Dokumentasi panjang</p>
+                            <div class="mt-2 h-2 w-3/4 rounded bg-border"></div>
+                        </div>
 
-                <div class="flex flex-col-reverse gap-6 p-5 sm:flex-row sm:gap-8 sm:p-8">
-                    <div class="min-w-0 flex-1" aria-hidden="true">
-                        <p class="text-[11px] font-bold tracking-[0.14em] text-content-disabled uppercase">Panduan</p>
-                        <p class="mt-1 text-heading-3 font-black text-content">Dokumentasi panjang</p>
-                        <div class="mt-2 h-2 w-3/4 rounded bg-border"></div>
+                        <x-ceplok::table-of-contents
+                            class="mt-5 sm:hidden"
+                            :items="$daftarPanjang"
+                            layout="drawer"
+                            drawer-contained
+                            active-id="panjang-18"
+                            :scroll-spy="false"
+                            x-model="aktif"
+                            x-on:item-click.prevent="aktif = $event.detail.id"
+                        />
 
-                        <div class="mt-6 space-y-4">
+                        <div class="mt-6 space-y-4" aria-hidden="true">
                             <div class="rounded-lg border-l-2 border-brand bg-primary-50 px-3 py-2.5">
                                 <p class="truncate text-sm font-bold text-brand" x-text="judul">Bagian 19</p>
                                 <div class="mt-2 space-y-1.5">
@@ -209,8 +273,9 @@
                     </div>
 
                     <x-ceplok::table-of-contents
-                        class="shrink-0 sm:sticky sm:top-0"
+                        class="sticky top-0 hidden shrink-0 sm:block"
                         :items="$daftarPanjang"
+                        layout="list"
                         :max-height="256"
                         active-id="panjang-18"
                         :scroll-spy="false"
