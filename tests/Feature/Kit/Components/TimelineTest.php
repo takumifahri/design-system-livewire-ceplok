@@ -267,7 +267,7 @@ class TimelineTest extends TestCase
 
         $badge = $this->find($card, 'div.flex.items-start.gap-3 > span');
 
-        $this->assertHasClasses($badge, 'inline-flex items-center rounded-md px-3 h-6 gap-1.5 text-sm bg-green-100 text-green-900 shrink-0');
+        $this->assertHasClasses($badge, 'inline-flex items-center rounded-md h-[22px] gap-1 px-2.5 py-0.5 text-sm bg-green-100 text-green-900 shrink-0');
         $this->assertSame('Badge', trim($this->find($badge, 'span.leading-none')->textContent));
         $this->assertSame('tutupStatus(2)', $badge->getAttribute('wire:dismiss'));
         $this->assertSame(

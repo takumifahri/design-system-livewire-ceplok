@@ -11,7 +11,8 @@ class BadgeTest extends TestCase
     {
         $badge = $this->find($this->dom('<x-ceplok::badge>Draf</x-ceplok::badge>'), 'body > span');
 
-        $this->assertHasClasses($badge, 'inline-flex items-center rounded-md px-3 h-6 gap-1.5 text-sm bg-gray-100 text-gray-900');
+        // Ukuran desain: sm 22px dengan padding 10px × 2px dan jarak ikon 4px.
+        $this->assertHasClasses($badge, 'inline-flex items-center rounded-md h-[22px] gap-1 px-2.5 py-0.5 text-sm bg-gray-100 text-gray-900');
         $this->assertFalse($badge->hasAttribute('x-data'));
         $this->assertLacksClasses($badge, 'animate-ceplok-fade-in');
         $this->assertSame('Draf', trim($badge->textContent));
@@ -40,8 +41,9 @@ class BadgeTest extends TestCase
     {
         $badge = $this->find($this->dom("<x-ceplok::badge size=\"lg\" :icon=\"svg('ceplok-s-clock')\">Besar</x-ceplok::badge>"), 'body > span');
 
-        $this->assertHasClasses($badge, 'h-7 gap-2 text-base');
-        $this->assertHasClasses($this->find($badge, 'span[aria-hidden="true"]'), 'size-5');
+        // lg 25px dengan padding 12px × 2px, jarak 4px, dan ikon 18px.
+        $this->assertHasClasses($badge, 'h-[25px] gap-1 px-3 py-0.5 text-base');
+        $this->assertHasClasses($this->find($badge, 'span[aria-hidden="true"]'), 'size-4.5');
     }
 
     public function test_ikon_dirender_sebelum_teks_dan_disembunyikan_dari_pembaca_layar(): void

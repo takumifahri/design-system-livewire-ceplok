@@ -65,7 +65,27 @@ class SidebarTest extends TestCase
         $this->assertNotNull($button);
         $this->assertSame('Tutup sidebar', $button->getAttribute('aria-label'));
         $this->assertTrue($button->hasAttribute('disabled'));
+        $this->assertHasClasses($button, 'disabled:cursor-not-allowed disabled:hover:bg-transparent');
         $this->assertNotNull($button->querySelector('svg'));
+    }
+
+    public function test_pendengar_collapse_menampilkan_tombol_collapse_aktif(): void
+    {
+        // Padanan onCollapse di React: tanpa show-collapse-button pun tombolnya tampil, dan aktif.
+        $items = [
+            ['label' => 'Dashboard', 'icon' => 'ceplok-o-home', 'href' => '#'],
+        ];
+
+        $dom = $this->dom('<x-ceplok::sidebar :items="$items" wire:collapse="$toggle(\'ringkas\')" />', ['items' => $items]);
+        $button = $this->find($dom, 'aside > header > button');
+
+        $this->assertSame('Tutup sidebar', $button->getAttribute('aria-label'));
+        $this->assertFalse($button->hasAttribute('disabled'));
+
+        // Tanpa ikon menu, Sidebar ringkas tidak punya apa pun untuk ditampilkan: tombolnya tetap tidak ada.
+        $tanpaIkon = $this->dom('<x-ceplok::sidebar :items="$items" wire:collapse="$toggle(\'ringkas\')" />', ['items' => [['label' => 'Dashboard', 'href' => '#']]]);
+
+        $this->assertNull($tanpaIkon->querySelector('aside > header'));
     }
 
     public function test_sidebar_user_tanpa_menu_merender_tautan(): void
@@ -83,6 +103,23 @@ class SidebarTest extends TestCase
         $this->assertStringContainsString('Budi Santoso', $link->textContent);
         $this->assertStringContainsString('Administrator', $link->textContent);
         $this->assertSame('B', trim($this->find($link, 'span[aria-hidden="true"]')->textContent));
+        // Tautan yang punya tujuan dibiarkan berpindah halaman.
+        $this->assertFalse($link->hasAttribute('x-on:click.prevent'));
+    }
+
+    public function test_profil_tanpa_tujuan_meneruskan_atribut_dan_tidak_melompat(): void
+    {
+        // Padanan user.onClick di React: atributnya untuk wire:click, dan "#" tidak diikuti.
+        $user = [
+            'name' => 'Rafli Arandhana',
+            'attributes' => ['wire:click' => "kabari('profil')"],
+        ];
+
+        $link = $this->find($this->dom('<x-ceplok::sidebar :user="$user" />', ['user' => $user]), 'a[href="#"]');
+
+        $this->assertSame("kabari('profil')", $link->getAttribute('wire:click'));
+        $this->assertTrue($link->hasAttribute('x-on:click.prevent'));
+        $this->assertHasClasses($link, 'flex transition-colors');
     }
 
     public function test_sidebar_user_dengan_menu_merender_dropdown(): void
@@ -90,6 +127,7 @@ class SidebarTest extends TestCase
         $user = [
             'name' => 'Keisha',
             'profileLabel' => 'Lihat Profil',
+            'attributes' => ['wire:click' => 'catatProfil'],
             'items' => [
                 ['label' => 'Profil Saya', 'href' => '#profile'],
                 ['label' => 'Keluar', 'tone' => 'danger', 'href' => '#logout'],
@@ -101,6 +139,8 @@ class SidebarTest extends TestCase
 
         $this->assertNotNull($trigger);
         $this->assertSame('Menu profil Keisha', $trigger->getAttribute('aria-label'));
+        // Seperti di React, user.onClick tetap dipanggil saat menu profil dibuka.
+        $this->assertSame('catatProfil', $trigger->getAttribute('wire:click'));
 
         $menu = $this->find($dom, 'div[role="menu"]');
         $this->assertNotNull($menu);

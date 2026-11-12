@@ -44,10 +44,12 @@
         }
         return false;
     });
-    $hasCollapseButton = $hasMenuIcons && $showCollapseButton;
     $hasCollapseListener = $attributes->has('wire:collapse')
         || $attributes->has('x-on:collapse')
         || $attributes->has('@collapse');
+    // Seperti onCollapse di React: pendengar event `collapse` menampilkan
+    // tombolnya dalam keadaan aktif, `show-collapse-button` saja nonaktif.
+    $hasCollapseButton = $hasMenuIcons && ($showCollapseButton || $hasCollapseListener);
     $hasHeader = Content::filled($logo) || Content::filled($collapsedLogo) || $hasCollapseButton;
     $sidebarId = FieldId::for($attributes, 'sidebar');
 
@@ -61,6 +63,10 @@
     $userInitials = $user['initials'] ?? (filled($userName) ? mb_strtoupper(mb_substr($userName, 0, 1)) : '?');
     $avatarAlt = $user['avatarAlt'] ?? $userName;
     $profileLabel = $user['profileLabel'] ?? 'Lihat Profil';
+    // Padanan user.onClick di React, sama seperti `attributes` pada item menu.
+    $userAttributes = new \Illuminate\View\ComponentAttributeBag($user['attributes'] ?? []);
+    // Profil tanpa tujuan tidak melompat ke "#", seperti di React.
+    $userWithoutHref = empty($user['href']) || $user['href'] === '#';
 @endphp
 
 <aside
@@ -113,7 +119,7 @@
                     x-bind:aria-label="collapsed ? 'Buka sidebar' : 'Tutup sidebar'"
                     x-on:click="toggleCollapse()"
                     @if (!$hasCollapseListener) disabled @endif
-                    class="flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors disabled:cursor-default disabled:hover:bg-transparent text-content-muted hover:bg-surface"
+                    class="flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent text-content-muted hover:bg-surface"
                     x-bind:class="collapsed ? 'order-1' : ''"
                 >
                     <x-ceplok-o-chevron-left
@@ -132,6 +138,8 @@
                 @if (!$hasUserMenu)
                     <a
                         href="{{ !empty($user['href']) ? $user['href'] : '#' }}"
+                        {{ $userAttributes }}
+                        @if ($userWithoutHref) x-on:click.prevent @endif
                         @if (!empty($user['external'])) target="_blank" rel="noreferrer noopener" @endif
                         class="flex transition-colors"
                         x-bind:class="collapsed ? 'justify-center' : 'items-center gap-3 rounded-lg bg-primary-50 px-3 py-2.5 hover:bg-primary-100/70 in-data-[theme=dark]:bg-gray-600 in-data-[theme=dark]:hover:bg-gray-600/80'"
@@ -166,6 +174,7 @@
                     <button
                         x-ref="userTrigger"
                         type="button"
+                        {{ $userAttributes }}
                         aria-haspopup="true"
                         x-bind:aria-expanded="userMenuOpen ? 'true' : 'false'"
                         aria-expanded="false"

@@ -94,7 +94,9 @@ class DrawerTest extends TestCase
         $this->assertNull($item->getAttribute('href'));
         $this->assertSame('true', $item->getAttribute('aria-disabled'));
         $this->assertSame('-1', $item->getAttribute('tabindex'));
-        $this->assertHasClasses($item, 'aria-disabled:pointer-events-none');
+        // Seperti di kit React: item nonaktif tetap menerima pointer, jadi kursor not-allowed-nya terlihat.
+        $this->assertHasClasses($item, 'aria-disabled:cursor-not-allowed aria-disabled:opacity-50');
+        $this->assertLacksClasses($item, 'aria-disabled:pointer-events-none');
     }
 
     public function test_prop_yang_tidak_sah_ditolak(): void

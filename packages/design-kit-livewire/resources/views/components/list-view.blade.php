@@ -34,9 +34,36 @@
                 $variant = in_array($item['variant'] ?? 'simple', ['simple', 'article'], true) ? ($item['variant'] ?? 'simple') : 'simple';
                 $itemSize = $item['size'] ?? $size;
                 $itemDarkMode = Prop::bool($item['darkMode'] ?? $darkMode, false, 'list-view', 'dark-mode');
+                $itemPlatform = $item['platform'] ?? $platform;
+                $actionDisabled = Prop::bool($item['actionDisabled'] ?? false, false, 'list-view', 'action-disabled');
+                $actionAttributes = new \Illuminate\View\ComponentAttributeBag($item['actionAttributes'] ?? []);
+                $cardOwnsAction = $variant === 'simple' && $itemPlatform === 'desktop' && $actionDisabled;
                 $itemHref = $item['href'] ?? null;
+
+                if ($cardOwnsAction && ! filled($itemHref)) {
+                    $itemHref = $item['actionHref'] ?? null;
+                }
+
                 $itemTag = filled($itemHref) ? 'a' : 'article';
                 $itemAttributes = new \Illuminate\View\ComponentAttributeBag($item['attributes'] ?? []);
+
+                if ($cardOwnsAction) {
+                    $itemAttributes = $itemAttributes->merge($actionAttributes->getAttributes());
+
+                    if (filled($item['actionWireClick'] ?? null)) {
+                        $itemAttributes = $itemAttributes->merge(['wire:click' => $item['actionWireClick']]);
+                    }
+
+                    if (filled($item['actionClick'] ?? null)) {
+                        $itemAttributes = $itemAttributes->merge(['x-on:click' => $item['actionClick']]);
+                    }
+                }
+
+                $itemIsClickable = filled($itemHref) || ($cardOwnsAction && (
+                    filled($item['actionWireClick'] ?? null)
+                    || filled($item['actionClick'] ?? null)
+                    || count($actionAttributes->getAttributes()) > 0
+                ));
                 $title = $item['title'] ?? '';
                 $badge = $item['badge'] ?? null;
                 $hasBadge = Content::filled($badge);
@@ -62,7 +89,7 @@
             @else
                 @php
                     $simpleSize = match ($itemSize) { 's', 'sm' => 'sm', 'l', 'lg', 'xl' => 'lg', default => 'default' };
-                    $mobile = ($item['platform'] ?? $platform) === 'mobile';
+                    $mobile = $itemPlatform === 'mobile';
                     $simpleSizes = ['sm' => ['container' => 'px-4 py-3 gap-3 min-h-[63px]', 'decoration' => 'pl-5', 'iconBox' => 'size-8 rounded-lg', 'icon' => 'size-4', 'title' => 'text-sm font-bold', 'description' => 'text-xs', 'button' => 'xs'], 'default' => ['container' => 'px-5 py-3.5 gap-3.5 sm:gap-4 min-h-[81px]', 'decoration' => 'pl-6 sm:pl-7', 'iconBox' => 'size-10 rounded-lg', 'icon' => 'size-5', 'title' => 'text-base font-bold', 'description' => 'text-sm', 'button' => 's'], 'lg' => ['container' => 'px-6 py-4.5 gap-4 sm:gap-5 min-h-[103px]', 'decoration' => 'pl-7 sm:pl-8', 'iconBox' => 'size-12 rounded-lg', 'icon' => 'size-6', 'title' => 'text-lg font-bold', 'description' => 'text-sm sm:text-base', 'button' => 'base']];
                     $current = $mobile ? ['container' => $hasBadge ? 'px-3.5 py-3 gap-3 min-h-[88px]' : 'px-3.5 py-2.5 gap-3 min-h-[58px]', 'decoration' => 'pl-4 sm:pl-4.5', 'iconBox' => 'size-10 rounded-lg', 'icon' => 'size-5', 'title' => 'text-sm font-bold', 'description' => 'text-xs', 'button' => 'xs'] : $simpleSizes[$simpleSize];
                     if (! $mobile && $hasBadge) {
@@ -74,20 +101,17 @@
                         $current['container'] = $desktopBadgeSizes[$simpleSize]['container'];
                         $current['decoration'] = $desktopBadgeSizes[$simpleSize]['decoration'];
                     }
-                    $actionAttributes = new \Illuminate\View\ComponentAttributeBag($item['actionAttributes'] ?? []);
-                    $actionDisabled = Prop::bool($item['actionDisabled'] ?? false, false, 'list-view', 'action-disabled');
-
-                    if (filled($item['actionClick'] ?? null)) {
+                    if (! $cardOwnsAction && filled($item['actionClick'] ?? null)) {
                         $actionAttributes = $actionAttributes->merge([
                             'x-on:click' => $item['actionClick'],
                         ]);
                     }
 
                 @endphp
-                <{{ $itemTag }} @if ($itemHref) href="{{ $itemHref }}" @endif {{ $itemAttributes->class(['group relative flex items-center justify-between overflow-hidden rounded-lg border border-border bg-surface text-content transition-all', 'data-[theme=dark]:border-gray-500 in-data-[theme=dark]:border-gray-500 data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:bg-gray-700', $current['container'], $itemDecoration ? $current['decoration'] : '', filled($itemHref) ? 'cursor-pointer hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]' : ''])->merge($itemDarkMode ? ['data-theme' => 'dark'] : []) }}>
+                <{{ $itemTag }} @if ($itemHref) href="{{ $itemHref }}" @endif {{ $itemAttributes->class(['group relative flex items-center justify-between overflow-hidden rounded-lg border border-border bg-surface text-content transition-all', 'data-[theme=dark]:border-gray-500 in-data-[theme=dark]:border-gray-500 data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:bg-gray-700', $current['container'], $itemDecoration ? $current['decoration'] : '', $itemIsClickable ? 'cursor-pointer hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]' : ''])->merge($itemDarkMode ? ['data-theme' => 'dark'] : []) }}>
                     @if ($itemDecoration)<span class="absolute inset-y-0 left-0 w-1 bg-primary-700 sm:w-1.5" aria-hidden="true"></span>@endif
                     <div class="flex min-w-0 flex-1 items-center gap-3.5 sm:gap-4">@if (($item['icon'] ?? null) !== false)<div @class(['flex shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-700 transition-colors', 'in-data-[theme=dark]:border in-data-[theme=dark]:border-gray-700 in-data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:text-gray-200', $current['iconBox'], $item['iconContainerClass'] ?? null])>@if (!empty($item['icon'])){!! Content::icon($item['icon']) !!}@else<x-ceplok-o-file-lines class="{{ $current['icon'] }} shrink-0" aria-hidden="true" />@endif</div>@endif<div class="min-w-0 flex-1"><h4 class="truncate leading-snug text-content in-data-[theme=dark]:text-white {{ $current['title'] }}">{{ $title }}</h4>@if (filled($item['description'] ?? null))<div class="mt-0.5 truncate leading-normal text-content-muted in-data-[theme=dark]:text-gray-400 {{ $current['description'] }}">{{ $item['description'] }}</div>@endif @if (!empty($item['metadata']))<div class="mt-0.5 flex flex-wrap items-center gap-1.5 leading-normal text-content-muted in-data-[theme=dark]:text-gray-400 {{ $current['description'] }}">@foreach ($item['metadata'] as $index => $meta)<span class="inline-flex items-center gap-1.5">@if ($index)<span class="select-none text-content-muted/60 in-data-[theme=dark]:text-gray-400/60" aria-hidden="true">&middot;</span>@endif<span>{{ $meta }}</span></span>@endforeach</div>@endif @if ($hasBadge)<div class="mt-2 flex items-center">@if (is_string($badge))<x-ceplok::badge variant="success" size="sm" :dark-mode="$itemDarkMode">{{ $badge }}</x-ceplok::badge>@else{{ $badge }}@endif</div>@endif</div></div>
-                    @if (filled($item['actionLabel'] ?? null))<div class="flex shrink-0 items-center pl-2"><x-ceplok::button :size="$item['actionButtonSize'] ?? $current['button']" :href="$item['actionHref'] ?? null" :wire-click="$item['actionWireClick'] ?? null" :disabled="! filled($item['actionHref'] ?? null) && $actionDisabled" @class(['pointer-events-none opacity-50' => $actionDisabled && filled($item['actionHref'] ?? null)]) @if ($actionDisabled && filled($item['actionHref'] ?? null)) aria-disabled="true" tabindex="-1" @endif {{ $actionAttributes }}>{{ $item['actionLabel'] }}</x-ceplok::button></div>@endif
+                    @if (! $cardOwnsAction && filled($item['actionLabel'] ?? null))<div class="flex shrink-0 items-center pl-2"><x-ceplok::button :size="$item['actionButtonSize'] ?? $current['button']" :href="$item['actionHref'] ?? null" :wire-click="$item['actionWireClick'] ?? null" :disabled="! filled($item['actionHref'] ?? null) && $actionDisabled" @class(['pointer-events-none opacity-50' => $actionDisabled && filled($item['actionHref'] ?? null)]) @if ($actionDisabled && filled($item['actionHref'] ?? null)) aria-disabled="true" tabindex="-1" @endif {{ $actionAttributes }}>{{ $item['actionLabel'] }}</x-ceplok::button></div>@endif
                 </{{ $itemTag }}>
             @endif
         @endforeach

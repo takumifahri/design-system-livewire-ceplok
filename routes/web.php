@@ -55,3 +55,11 @@ Route::prefix('foundations')->name('foundations.')->group(function () {
     Route::view('/elevation', 'pages.foundations.elevation')->name('elevation');
     Route::view('/icons', 'pages.foundations.icons')->name('icons');
 });
+
+// Pintu masuk di dalam kerangka docs, dan aplikasinya yang dirender penuh
+// layar tanpa kerangka. Aplikasinya dibuka dari tombol di pintu masuk, jadi
+// ia tidak masuk navigasi.
+Route::prefix('portal-dashboard')->name('portal.')->group(function () {
+    Route::view('/', 'pages.portal.index')->name('index');
+    Route::view('/app', 'pages.portal.app')->name('app');
+});
