@@ -11,9 +11,62 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - `sidebar`: kunci `attributes` pada `user` meneruskan atribut ke area
   profil, mis. `['wire:click' => 'bukaProfil']`, padanan `user.onClick` di
   kit React.
+- `table` otomatis `compact` di mobile, sama dengan kit React: bila lebar
+  tabel di bawah 640px, tabel memakai rupa `compact` apa pun nilai `size`.
+  Yang diukur lebar tabel, bukan lebar layar. Di kit Livewire ini diatur
+  container query (`@max-[638px]:`), bukan render ulang.
+- `table-image`: prop `caption-class` (khusus Livewire) membungkus caption di
+  bawah gambar kecil dengan `<span>` berkelas itu.
+- `table` punya prop `dark-mode`, sama dengan kit React. Prop ini memasang
+  `data-theme="dark"` di tabel.
+  - Toolbar berlatar gray-800, header gray-600, footer gray-700.
+  - Baris gray-700. Dengan `striped`, baris mulai dari gray-700 lalu gray-800.
+  - Di bawah 640px toolbar, baris, dan footer gray-800; header tetap gray-600.
+    Penandanya `data-table-mobile`, dipasang plugin Alpine setelah lebar tabel
+    diukur.
+  - Pagination, tombol Filter, dan Dropdown ikut gelap.
+- Token baru `--color-table-*` (disalin dari kit React). Semua warna Table kini
+  dari token ini, dengan nilai terang dan gelap. Timpa di CSS project bila
+  perlu, mis. `[data-theme='dark'] { --color-table-toolbar: #1f2a37; }`.
+- `button` punya prop `dark-mode` untuk permukaan gelap, sama dengan kit React:
+  filled menjadi gray-50 dengan teks gray-700; outline bergaris gray-50 (tone
+  light) atau gray-500 (tone dark).
+- Badge dan Button theme `gray` di sel `table` ber-`dark-mode` ikut gelap tanpa
+  perlu diberi `dark-mode` sendiri. `dark-mode` yang diisi langsung tetap
+  menang, termasuk `false`. Berbeda dari React: tombol di slot `actions`
+  dirender Blade sebelum badan Table, jadi tombol gray di toolbar perlu
+  `dark-mode` sendiri.
 
 ### Diubah
 
+- Tampilan mobile `table` (lebar tabel di bawah 576px), sama dengan kit
+  React:
+  - Toolbar: kotak pencarian satu baris penuh, lalu tombol dua per baris
+    dengan lebar sama. Tombol ganjil terakhir melebar penuh. Mulai 576px
+    kembali satu baris. Pembungkus slot `actions` kini `contents` di tabel
+    sempit, jadi tombolnya langsung ikut tata letak toolbar.
+  - Footer: pemilih jumlah baris dan Pagination rata tengah, sebelumnya rata
+    kiri.
+- Toolbar `table` mulai 576px: kotak cari kini mengisi sisa ruang sampai 22rem
+  dan boleh menyempit sampai 10rem (sebelumnya selalu minimal 22rem), supaya
+  pencarian, Filter Data, dan tombol aksi tetap sebaris. Sengaja berbeda dari
+  kit React, yang membuat tombol aksi turun ke baris kedua di tabel selebar
+  ±800px.
+- **Footer `table` disusun ulang** (memutus tampilan lama), sama dengan kit
+  React:
+  - Pemilih jumlah baris di kiri, Pagination di kanan.
+  - Labelnya kini "Menampilkan [n] Data", sebelumnya "Baris per halaman".
+  - Tombol pemilih jumlah baris kini berlatar abu-abu tanpa garis.
+  - Ringkasan "Menampilkan 1–10 dari 50 data" tidak tampil lagi, jadi
+    `pagination.summary` belum berpengaruh.
+- Warna gelap `pagination` (`dark-mode`), sama dengan kit React: kotak nomor
+  gray-700 dengan garis gray-600, sebelumnya gray-800 dengan garis gray-700.
+  Halaman aktif tema `primary` kini primary-900, `purple` kini purple-900,
+  `default` kini gray-600.
+- `table`: tombol aksi baris theme `gray` tone `dark` outline kini bergaris
+  gray-500, sebelumnya gray-700, sama dengan kit React.
+- Bawaan `dark-mode` pada `badge` kini `null` (ikut Table bila di dalam sel
+  Table, selain itu terang). Nilai yang diisi langsung berperilaku sama.
 - `badge` mengikuti ukuran desain, sama dengan kit React: `sm` kini tinggi
   22px (sebelumnya 24px) dan `lg` 25px (sebelumnya 28px). Jarak ikon ke teks
   jadi 4px, dan ikon `lg` jadi 18px. Badge di tata letak yang ukurannya

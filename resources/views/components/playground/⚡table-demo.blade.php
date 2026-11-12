@@ -38,6 +38,7 @@ new class extends Component
     public function mount(): void
     {
         $this->selected = $this->example === 'data' ? [1] : [];
+        $this->pageSize = $this->example === 'dark' ? 4 : 10;
     }
 
     /** Urutan baru dari judul kolom: halaman kembali ke 1. */
@@ -259,6 +260,7 @@ new class extends Component
             'states' => [],
             'compact', 'filter' => array_values(array_filter(self::orders(), fn ($row) => str_contains($row['kode'], $q) || str_contains(mb_strtolower($row['customer']), $q))),
             'zebra' => array_slice(self::records(), 0, 6),
+            'dark' => array_values(array_filter(array_slice(self::records(), 0, 12), fn ($row) => str_contains(mb_strtolower($row['field1']), $q))),
             'normal', 'image' => array_slice(self::records(), 0, 3),
             'align' => array_slice(self::penduduk(), 0, 3),
             'actions', 'group', 'sort', 'scroll' => self::penduduk(),
@@ -366,6 +368,24 @@ new class extends Component
                     <x-ceplok::button size="s" theme="orange" :left-icon="svg('ceplok-s-trash-bin')">Hapus Data</x-ceplok::button>
                 </x-slot:actions>
             </x-ceplok::table>
+            @break
+
+        @case ('dark')
+            {{-- Badge di kolom Field 4 ikut gelap otomatis karena dirender di sel Table ber-dark-mode. --}}
+            <x-ceplok::table
+                :columns="$this->columns()"
+                :data="$this->rows()"
+                row-key="id"
+                striped
+                dark-mode
+                :sort="$sort"
+                :search="['placeholder' => 'Cari Tabel...', 'wire:model.live.debounce.300ms' => 'q']"
+                :filter="[]"
+                :pagination="['page' => $page, 'page-size' => $pageSize, 'page-size-options' => [4, 10, 25]]"
+                wire:sort-change="sortBy($event.detail.sort)"
+                wire:page-change="$set('page', $event.detail.page)"
+                wire:page-size-change="$set('pageSize', $event.detail.pageSize)"
+            />
             @break
 
         @case ('server')

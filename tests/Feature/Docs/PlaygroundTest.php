@@ -221,6 +221,35 @@ class PlaygroundTest extends TestCase
         $this->assertStringContainsString('Pengajuan #042', $rows->item(1)->textContent);
     }
 
+    public function test_table_tampilan_mobile_menyempitkan_panggung(): void
+    {
+        $component = Livewire::test('playground.table');
+        $this->assertNotNull($this->domOf($component)->querySelector('.max-w-\[1024px\]'));
+
+        // Tabel di panggung 390px lebih sempit dari 640px, jadi rupa compact-nya muncul sendiri.
+        $dom = $this->domOf($component->set('view', 'mobile'));
+        $this->assertNotNull($dom->querySelector('.max-w-\[390px\]'));
+        $this->assertNull($dom->querySelector('.max-w-\[1024px\]'));
+    }
+
+    public function test_table_mode_gelap_memasang_dark_mode_dan_kodenya(): void
+    {
+        $component = Livewire::test('playground.table')->set('mode', 'dark');
+        $dom = $this->domOf($component);
+
+        $this->assertSame('dark', $this->find($dom, '[x-data="ceplokTable"]')->getAttribute('data-theme'));
+        $this->assertStringContainsString('dark-mode', $this->code($dom));
+    }
+
+    public function test_contoh_table_gelap_empat_baris_per_halaman_dan_badge_ikut_gelap(): void
+    {
+        $dom = $this->domOf(Livewire::test('playground.table-demo', ['example' => 'dark']));
+
+        $this->assertSame('dark', $this->find($dom, '[x-data="ceplokTable"]')->getAttribute('data-theme'));
+        $this->assertCount(4, $dom->querySelectorAll('tbody tr'));
+        $this->assertNotNull($dom->querySelector('tbody span[class*="-900"][class*="-300"]'));
+    }
+
     public function test_container_menjepit_lebar_ruang_kustom(): void
     {
         Livewire::test('playground.container')

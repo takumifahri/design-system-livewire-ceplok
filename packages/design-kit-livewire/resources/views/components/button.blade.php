@@ -6,6 +6,7 @@
     use CeplokUi\DesignKit\Enums\ButtonType;
     use CeplokUi\DesignKit\Enums\ButtonVariant;
     use CeplokUi\DesignKit\Support\Content;
+    use CeplokUi\DesignKit\Support\InheritedDarkMode;
     use CeplokUi\DesignKit\Support\Prop;
 @endphp
 
@@ -17,6 +18,11 @@
     kiri/kanan teks lewat slot `left-icon` / `right-icon`; `icon-only` membuat
     tombol bundar berisi ikon saja — beri `aria-label`.
 
+    `dark-mode` menyesuaikan warnanya untuk permukaan gelap, apa pun `theme`-nya.
+    Bila tidak diisi, Button theme `gray` di sel Table ber-`dark-mode` ikut
+    gelap otomatis; theme berwarna tetap berwarna supaya tombol utama tetap
+    menonjol (lihat InheritedDarkMode).
+
     Dirender sebagai <a> bila `as="anchor"`, atau bila `href` diisi tanpa `as`.
     `type` (bawaan "button") hanya dipasang pada <button>.
 --}}
@@ -25,6 +31,7 @@
     'size' => 'base',
     'theme' => 'primary',
     'tone' => 'light',
+    'darkMode' => null,
     'iconOnly' => false,
     'as' => null,
     'type' => 'button',
@@ -39,6 +46,9 @@
     $theme = Prop::oneOf(ButtonTheme::class, $theme, ButtonTheme::Primary, 'button', 'theme');
     $tone = Prop::oneOf(ButtonTone::class, $tone, ButtonTone::Light, 'button', 'tone');
     $iconOnly = Prop::bool($iconOnly, false, 'button', 'icon-only');
+    $darkMode = $darkMode === null
+        ? $theme === 'gray' && InheritedDarkMode::current()
+        : Prop::bool($darkMode, false, 'button', 'dark-mode');
     $anchor = $as === null
         ? filled($attributes->get('href'))
         : Prop::oneOf(ButtonAs::class, $as, ButtonAs::Button, 'button', 'as') === 'anchor';
@@ -116,10 +126,24 @@
         ],
     ];
 
+    // Warna dari spesifikasi dark mode: outline light memakai gray-50, sedangkan
+    // outline dark memakai gray-500. Keduanya menjadi white/gray-700 saat hover.
+    // `disabled:opacity-50` menghasilkan gray-400 pada gray-700, sesuai desain.
+    $darkColors = [
+        'light' => [
+            'filled' => 'bg-gray-50 text-gray-700 hover:bg-white hover:text-gray-700',
+            'outline' => 'border border-gray-50 text-gray-50 hover:border-gray-50 hover:bg-white hover:text-gray-700',
+        ],
+        'dark' => [
+            'filled' => 'bg-gray-50 text-gray-700 hover:bg-white hover:text-gray-700',
+            'outline' => 'border border-gray-500 text-gray-500 hover:border-gray-50 hover:bg-white hover:text-gray-700',
+        ],
+    ];
+
     $s = $sizes[$size];
     $tag = $anchor ? 'a' : 'button';
     $classes = 'inline-flex cursor-pointer items-center justify-center font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-50 '
-        .$colors[$theme][$tone][$variant].' '
+        .($darkMode ? $darkColors[$tone][$variant] : $colors[$theme][$tone][$variant]).' '
         .($iconOnly ? $s['iconOnly'] : $s['button']);
     // Content::filled, bukan (string): svg() mengembalikan objek Htmlable yang
     // tidak bisa di-cast ke string.

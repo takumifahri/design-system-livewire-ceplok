@@ -5,6 +5,8 @@ namespace Tests\Feature\Kit\Components;
 use Dom\Element;
 use Dom\HTMLDocument;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -41,17 +43,17 @@ class TableTest extends TestCase
         $this->assertSame('ceplokTable', $root->getAttribute('x-data'));
         $this->assertSame('selected', $root->getAttribute('x-modelable'));
         $this->assertSame('pengajuan', $root->getAttribute('id'));
-        $this->assertHasClasses($root, '@container overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm mt-4');
+        $this->assertHasClasses($root, '@container overflow-hidden rounded-lg border border-table-border bg-table-surface shadow-sm mt-4');
         $this->assertHasClasses($this->find($root, 'table'), 'w-full border-separate border-spacing-0 text-sm');
 
         // Judul tanpa align rata kiri, walau isi selnya rata tengah.
         $th = $this->find($dom, 'thead th:nth-child(2)');
-        $this->assertHasClasses($th, 'font-medium whitespace-nowrap bg-gray-50 text-xs uppercase px-4 py-3 text-left border-t border-t-gray-200 border-b border-gray-200 text-gray-500');
+        $this->assertHasClasses($th, 'font-medium whitespace-nowrap bg-table-head text-xs uppercase px-4 py-3 text-left border-t border-t-table-border border-b border-table-border text-table-head-content');
 
         // Isi sel: emphasis gelap, kosong menjadi "—", rata tengah bila align tidak diisi.
         $cells = $this->all($dom, 'tbody tr:first-child td');
-        $this->assertHasClasses($cells[0], 'border-b border-gray-200 px-4 py-4 text-left text-gray-900 whitespace-nowrap');
-        $this->assertHasClasses($cells[1], 'text-center text-gray-500');
+        $this->assertHasClasses($cells[0], 'border-b border-table-border px-4 py-4 text-left text-table-content-strong whitespace-nowrap');
+        $this->assertHasClasses($cells[1], 'text-center text-table-content');
         $this->assertSame(['Bandung', '—', 'Cimahi'], $this->texts($dom, 'tbody td:nth-child(2)'));
         // Tanpa toolbar dan pagination, hanya pembungkus gulir.
         $this->assertCount(1, $this->childrenOf($root));
@@ -61,9 +63,57 @@ class TableTest extends TestCase
     {
         $dom = $this->table('size="compact"');
 
-        $this->assertHasClasses($this->find($dom, 'thead th'), 'h-16 px-4 py-2 bg-white text-sm border-t-transparent');
+        $this->assertHasClasses($this->find($dom, 'thead th'), 'h-16 px-4 py-2 bg-table-head-compact text-sm border-t-transparent');
         $this->assertLacksClasses($this->find($dom, 'thead th'), 'uppercase');
-        $this->assertHasClasses($this->find($dom, 'tbody td:nth-child(2)'), 'h-16 text-gray-900');
+        $this->assertHasClasses($this->find($dom, 'tbody td:nth-child(2)'), 'h-16 text-table-content-strong');
+        // Sudah compact, jadi tidak perlu kelas mobile.
+        $this->assertStringNotContainsString('@max-[638px]:', $dom->saveHtml());
+    }
+
+    public function test_size_normal_otomatis_compact_di_bawah_640px(): void
+    {
+        $dom = $this->dom('<x-ceplok::table selectable :columns="'.self::COLUMNS.'" :data="'.self::ROWS.'" row-key="id" />');
+
+        // Judul: rupa compact di balik container query 638px (640px tanpa garis 1px kiri-kanan).
+        $th = $this->find($dom, 'thead th:nth-child(2)');
+        $this->assertHasClasses($th, 'px-4 py-3 bg-table-head text-xs uppercase border-t-table-border');
+        $this->assertHasClasses($th, '@max-[638px]:h-16 @max-[638px]:py-2 @max-[638px]:bg-table-head-compact @max-[638px]:text-sm @max-[638px]:normal-case @max-[638px]:border-t-transparent');
+        $this->assertHasClasses($this->find($th, 'button'), 'uppercase @max-[638px]:normal-case');
+
+        // Sel: tinggi compact, dan teks tanpa emphasis ikut gelap.
+        $cell = $this->find($dom, 'tbody tr:first-child td:nth-child(3)');
+        $this->assertHasClasses($cell, 'px-4 py-4 @max-[638px]:h-16 @max-[638px]:py-2 text-table-content @max-[638px]:text-table-content-strong');
+
+        // Checkbox: kotak 16px menjadi 14px, seperti platform mobile.
+        $this->assertHasClasses($this->find($dom, 'thead th:first-child > span'), 'size-4 @max-[638px]:size-3.5');
+        $this->assertHasClasses($this->find($dom, 'tbody tr:first-child td:first-child > span'), '@max-[638px]:[&>span]:size-3.5');
+    }
+
+    public function test_toolbar_dan_footer_menyesuaikan_lebar_tabel(): void
+    {
+        $dom = $this->dom('<x-ceplok::table :columns="'.self::COLUMNS.'" :data="'.self::ROWS.'" row-key="id" search :filter="[]" :pagination="[\'page-size-options\' => [5, 10]]"><x-slot:actions><button>Tambah</button></x-slot:actions></x-ceplok::table>');
+        $root = $this->find($dom, 'body > div');
+        [$toolbar, , $footer] = $this->childrenOf($root);
+
+        $this->assertHasClasses($toolbar, 'flex flex-wrap items-center gap-2 bg-table-toolbar p-4 @xl:gap-4');
+        // Filter dan tombol aksi dua per baris di tabel sempit, kembali ke ukuran asli mulai 576px.
+        $filter = $this->find($toolbar, '[x-data^="ceplokDropdown"]');
+        $this->assertHasClasses($filter, 'relative inline-block grow basis-[40%] @xl:grow-0 @xl:basis-auto');
+        $this->assertHasClasses($this->find($filter, 'button'), 'w-full');
+        [, , $actions] = $this->childrenOf($toolbar);
+        $this->assertHasClasses($actions, 'contents @xl:ml-auto @xl:flex [&>:not(dialog)]:grow [&>:not(dialog)]:basis-[40%] [&>.contents>:not(dialog)]:grow');
+        $this->assertSame('Tambah', trim($this->find($actions, 'button')->textContent));
+
+        // Footer: pemilih jumlah baris di kiri, Pagination di kanan; sempit bertumpuk rata tengah.
+        $this->assertHasClasses($footer, 'flex flex-col items-center gap-3 border-t border-table-border p-4 @lg:flex-row @lg:justify-between');
+        $this->assertLacksClasses($footer, 'items-start');
+        [$picker, $nav] = $this->childrenOf($footer);
+        $this->assertSame('Menampilkan', trim($this->childrenOf($picker)[0]->textContent));
+        $this->assertSame('Data', trim($this->childrenOf($picker)[2]->textContent));
+        $this->assertSame('true', $this->childrenOf($picker)[2]->getAttribute('aria-hidden'));
+        $this->assertHasClasses($picker, 'text-table-footer-content');
+        $this->assertSame('nav', $nav->localName);
+        $this->assertHasClasses($nav, '@lg:ml-auto');
     }
 
     public function test_judul_sortable_mengirim_urutan_berikutnya(): void
@@ -73,7 +123,7 @@ class TableTest extends TestCase
         $button = $this->find($th, 'button');
 
         $this->assertSame('ascending', $th->getAttribute('aria-sort'));
-        $this->assertHasClasses($th, 'text-gray-900');
+        $this->assertHasClasses($th, 'text-table-head-content-active');
         // Urutan berikutnya dihitung Alpine dari urutan terakhir dan siklus kolomnya,
         // jadi ekspresinya sama di setiap render dan klik cepat beruntun tetap benar.
         $this->assertSame('{"key":"nama","direction":"asc"}', $this->find($dom, 'body > div')->getAttribute('data-sort'));
@@ -86,14 +136,16 @@ class TableTest extends TestCase
         $this->assertSame(['Andi', 'Record 9', 'Record 10'], $this->texts($dom, 'tbody td:first-child'));
     }
 
-    public function test_pagination_bawaan_memotong_data_dan_menulis_ringkasan(): void
+    public function test_pagination_bawaan_memotong_data_tanpa_ringkasan(): void
     {
-        $dom = $this->table(":pagination=\"['page' => 2, 'page-size' => 2, 'theme' => 'purple']\"");
+        $dom = $this->table(":pagination=\"['page' => 2, 'page-size' => 2, 'theme' => 'purple', 'summary' => fn () => 'ringkasan']\"");
         $footer = $this->find($dom, 'body > div > div:last-child');
 
         $this->assertSame(['Andi'], $this->texts($dom, 'tbody td:first-child'));
-        $this->assertSame('Menampilkan 3–3 dari 3 data', preg_replace('/\s+/', ' ', trim($this->find($footer, 'p')->textContent)));
-        $this->assertHasClasses($footer, 'border-t border-gray-200 p-4 @lg:flex-row');
+        // Ringkasan "Menampilkan 1–10 dari 50 data" tidak tampil lagi, sama dengan kit React; `summary` belum berpengaruh.
+        $this->assertNull($footer->querySelector('p'));
+        $this->assertStringNotContainsString('ringkasan', $footer->textContent);
+        $this->assertHasClasses($footer, 'border-t border-table-border p-4 @lg:flex-row');
         $this->assertSame('2', trim($this->find($footer, 'nav [aria-current="page"]')->textContent));
         $this->assertHasClasses($this->find($footer, 'nav [aria-current="page"]'), 'bg-purple-50 @lg:h-10');
     }
@@ -110,13 +162,14 @@ class TableTest extends TestCase
         $dom = $this->table(":sort=\"['key' => 'nama', 'direction' => 'asc']\" manual :pagination=\"['page' => 3, 'page-size' => 3, 'total' => 30]\"");
 
         $this->assertSame(['Record 10', 'Record 9', 'Andi'], $this->texts($dom, 'tbody td:first-child'));
-        $this->assertStringContainsString('7–9 dari 30', $this->find($dom, 'body > div > div:last-child p')->textContent);
+        $this->assertSame('3', trim($this->find($dom, 'nav [aria-current="page"]')->textContent));
+        // Total dari `pagination.total`, bukan jumlah baris: 30 data / 3 = 10 halaman.
+        $this->assertContains('10', $this->texts($dom, 'nav button'));
 
         $paginator = new LengthAwarePaginator([['id' => 41, 'nama' => 'Z', 'kota' => 'A']], 45, 10, 5);
         $dom = $this->dom('<x-ceplok::table :columns="'.self::COLUMNS.'" :data="$rows" row-key="id" />', ['rows' => $paginator]);
 
         $this->assertSame(['Z'], $this->texts($dom, 'tbody td:first-child'));
-        $this->assertStringContainsString('41–45 dari 45', $this->find($dom, 'body > div > div:last-child p')->textContent);
         $this->assertSame('5', trim($this->find($dom, 'nav [aria-current="page"]')->textContent));
     }
 
@@ -126,9 +179,9 @@ class TableTest extends TestCase
         $trigger = $this->find($dom, 'button[aria-labelledby]');
         [$label, $value] = explode(' ', $trigger->getAttribute('aria-labelledby'));
 
-        $this->assertSame('Baris per halaman', trim($this->find($dom, "#{$label}")->textContent));
+        $this->assertSame('Menampilkan', trim($this->find($dom, "#{$label}")->textContent));
         $this->assertSame('2', trim($this->find($dom, "#{$value}")->textContent));
-        $this->assertHasClasses($trigger, 'inline-flex h-8 min-w-[4.5rem] rounded-lg border border-gray-300 @lg:h-10');
+        $this->assertHasClasses($trigger, 'inline-flex h-8 min-w-[4.5rem] rounded-lg bg-table-picker text-table-content-strong hover:bg-table-picker-hover @lg:h-10');
         $this->assertSame('Baris per halaman', $this->find($dom, '[role="listbox"]')->getAttribute('aria-label'));
 
         $options = $this->all($dom, '[role="option"]');
@@ -219,7 +272,7 @@ class TableTest extends TestCase
         $label = $this->find($dom, 'body > div > div:first-child > label');
         $input = $this->find($label, 'input');
 
-        $this->assertHasClasses($label, 'flex h-10 w-full rounded-lg border border-gray-300 bg-gray-50 @xl:w-auto @xl:min-w-[22rem] w-80');
+        $this->assertHasClasses($label, 'flex h-10 w-full rounded-lg border border-field-border bg-field @xl:w-auto @xl:min-w-40 @xl:max-w-[22rem] @xl:flex-1 w-80');
         $this->assertSame('search', $input->getAttribute('type'));
         $this->assertSame('Cari Data', $input->getAttribute('placeholder'));
         $this->assertSame('Cari Data', $input->getAttribute('aria-label'));
@@ -232,8 +285,8 @@ class TableTest extends TestCase
     {
         $dom = $this->dom('<x-ceplok::table :columns="'.self::COLUMNS.'" :data="[]" row-key="id"><x-slot:actions><button>Tambah</button></x-slot:actions></x-ceplok::table>');
 
-        $this->assertHasClasses($this->find($dom, 'body > div > div:first-child'), 'flex flex-wrap items-center gap-4 p-4');
-        $this->assertSame('Tambah', trim($this->find($dom, '.ml-auto > button')->textContent));
+        $this->assertHasClasses($this->find($dom, 'body > div > div:first-child'), 'flex flex-wrap items-center gap-2 bg-table-toolbar p-4 @xl:gap-4');
+        $this->assertSame('Tambah', trim($this->find($dom, '.contents > button')->textContent));
     }
 
     public function test_tombol_aksi_baris(): void
@@ -285,8 +338,11 @@ class TableTest extends TestCase
         $preview = $this->find($cells[0], 'button');
         $this->assertSame('Lihat gambar Andi', $preview->getAttribute('aria-label'));
         $this->assertSame('show()', $preview->getAttribute('x-on:click'));
-        $this->assertHasClasses($this->find($preview, 'img'), 'object-cover h-6 w-9 rounded');
-        $this->assertStringContainsString('cap-1', $cells[0]->textContent);
+        $this->assertHasClasses($this->find($preview, 'img'), 'object-cover h-6 w-9 rounded @max-[638px]:size-8 @max-[638px]:rounded-md');
+        // Caption dibungkus supaya bisa disembunyikan saat tabel sempit (mobile).
+        $caption = $this->childrenOf($this->find($cells[0], 'span'))[1];
+        $this->assertSame('cap-1', trim($caption->textContent));
+        $this->assertHasClasses($caption, '@max-[638px]:hidden');
         $this->assertSame('ceplokTablePreview', $this->find($cells[0], 'span')->getAttribute('x-data'));
         $this->assertSame('open', $this->find($cells[0], 'template')->getAttribute('x-if'));
 
@@ -333,11 +389,11 @@ class TableTest extends TestCase
         $dom = $this->table(":sticky=\"['start' => true, 'end' => true]\" selectable striped");
         $cells = $this->all($dom, 'tbody tr:first-child td');
 
-        $this->assertHasClasses($cells[0], 'sticky left-0 z-10 bg-white group-even:bg-gray-50 group-hover:bg-gray-100');
-        $this->assertHasClasses($cells[1], 'sticky z-10 left-12 shadow-[inset_-1px_0_0_var(--color-gray-200)]');
-        $this->assertHasClasses($cells[2], 'sticky z-10 right-0 shadow-[inset_1px_0_0_var(--color-gray-200)]');
-        $this->assertHasClasses($this->find($dom, 'tbody tr'), 'group transition-colors even:bg-gray-50 hover:bg-gray-100');
-        $this->assertHasClasses($this->find($dom, 'thead th:nth-child(2)'), 'sticky z-10 bg-gray-50 left-12');
+        $this->assertHasClasses($cells[0], 'sticky left-0 z-10 bg-table-row group-even:bg-table-row-striped group-hover:bg-table-row-striped-hover');
+        $this->assertHasClasses($cells[1], 'sticky z-10 left-12 shadow-[inset_-1px_0_0_var(--color-table-border)]');
+        $this->assertHasClasses($cells[2], 'sticky z-10 right-0 shadow-[inset_1px_0_0_var(--color-table-border)]');
+        $this->assertHasClasses($this->find($dom, 'tbody tr'), 'group transition-colors bg-table-row even:bg-table-row-striped hover:bg-table-row-striped-hover');
+        $this->assertHasClasses($this->find($dom, 'thead th:nth-child(2)'), 'sticky z-10 bg-table-head left-12');
     }
 
     public function test_judul_bertingkat_dan_posisi_judul(): void
@@ -349,7 +405,7 @@ class TableTest extends TestCase
 
         $this->assertSame('colgroup', $group->getAttribute('scope'));
         $this->assertSame('2', $group->getAttribute('colspan'));
-        $this->assertHasClasses($group, 'text-center pb-0 text-gray-500 border-t');
+        $this->assertHasClasses($group, 'text-center pb-0 text-table-head-content border-t');
         $this->assertSame('2', $email->getAttribute('rowspan'));
         $this->assertHasClasses($email, 'text-right align-bottom border-b');
         [$awal, $akhir] = $this->childrenOf($bottom);
@@ -359,8 +415,55 @@ class TableTest extends TestCase
         $this->assertHasClasses($akhir, 'text-right');
     }
 
+    public function test_dark_mode_memasang_tema_gelap_dan_menggelapkan_kontrolnya(): void
+    {
+        $light = $this->table('search');
+        $this->assertFalse($this->find($light, 'body > div')->hasAttribute('data-theme'));
+
+        $dom = $this->dom('<x-ceplok::table :columns="'.self::COLUMNS.'" :data="'.self::ROWS.'" row-key="id" dark-mode striped :filter="[]" :pagination="[\'page-size-options\' => [5, 10]]" />');
+        $root = $this->find($dom, 'body > div');
+
+        // Warnanya dari token `--color-table-*`, jadi cukup data-theme di tabel.
+        $this->assertSame('dark', $root->getAttribute('data-theme'));
+        $this->assertHasClasses($root, 'border-table-border bg-table-surface');
+
+        // Tombol Filter, panelnya, pemilih jumlah baris, dan Pagination ikut gelap.
+        $filter = $this->find($dom, 'button[popovertarget]');
+        $this->assertHasClasses($filter, 'border-gray-50 text-gray-50 w-full');
+        $panels = $this->all($dom, '[popover]');
+        $this->assertCount(2, $panels);
+        foreach ($panels as $panel) {
+            $this->assertHasClasses($panel, 'bg-gray-800 text-gray-300');
+        }
+        $this->assertHasClasses($this->find($dom, 'nav'), 'border-gray-600 bg-gray-700');
+    }
+
+    public function test_badge_dan_button_gray_di_sel_ikut_dark_mode(): void
+    {
+        // Isi sel dirender closure saat badan Table dirender, seperti view() atau Blade::render() di aplikasi.
+        $render = fn (string $blade) => fn () => new HtmlString(Blade::render($blade));
+        $columns = [
+            ['key' => 'status', 'header' => 'Status', 'cell' => $render('<x-ceplok::badge variant="success">Aktif</x-ceplok::badge><x-ceplok::badge variant="success" :dark-mode="false">Terang</x-ceplok::badge>')],
+            ['key' => 'aksi', 'header' => 'Aksi', 'cell' => $render('<x-ceplok::button theme="gray" variant="outline">Detail</x-ceplok::button><x-ceplok::button>Simpan</x-ceplok::button>')],
+        ];
+        $dom = $this->dom('<x-ceplok::table :columns="$columns" :data="[[\'id\' => 1]]" row-key="id" dark-mode /><x-ceplok::badge variant="success">Luar</x-ceplok::badge>', ['columns' => $columns]);
+
+        [$aktif, $terang, $luar] = $this->all($dom, 'span[class*="green-"]');
+        $this->assertHasClasses($aktif, 'bg-green-900 text-green-300');
+        // `dark-mode` yang diisi langsung tetap menang, termasuk false.
+        $this->assertHasClasses($terang, 'bg-green-100 text-green-900');
+        // Di luar Table tidak ada yang diwariskan.
+        $this->assertHasClasses($luar, 'bg-green-100 text-green-900');
+
+        [$detail, $simpan] = $this->all($dom, 'tbody button');
+        $this->assertHasClasses($detail, 'border-gray-50 text-gray-50');
+        // Theme berwarna tetap berwarna supaya tombol utama tetap menonjol.
+        $this->assertHasClasses($simpan, 'bg-primary-700');
+    }
+
     public function test_prop_tidak_sah_ditolak(): void
     {
+        $this->assertPropError('<x-ceplok::table :data="[]" row-key="id" dark-mode="ya" />', 'Prop `dark-mode` pada <x-ceplok::table>');
         $this->assertPropError('<x-ceplok::table :data="[]" row-key="id" size="besar" />', 'Prop `size` pada <x-ceplok::table>');
         $this->assertPropError('<x-ceplok::table :columns="[[\'key\' => \'a\', \'align\' => \'atas\']]" :data="[]" row-key="id" />', 'Prop `columns.align` pada <x-ceplok::table>');
         $this->assertPropError('<x-ceplok::table :columns="[[\'key\' => \'a\', \'actions\' => [[\'key\' => \'x\', \'icon\' => \'ceplok-s-eye\', \'label\' => \'X\', \'theme\' => \'biru\']]]]" :data="[[\'id\' => 1]]" row-key="id" />', 'Prop `actions.theme` pada <x-ceplok::table>');

@@ -11,6 +11,7 @@
     use CeplokUi\DesignKit\Support\ClassToggle;
     use CeplokUi\DesignKit\Support\Content;
     use CeplokUi\DesignKit\Support\FieldId;
+    use CeplokUi\DesignKit\Support\InheritedDarkMode;
     use CeplokUi\DesignKit\Support\Prop;
     use CeplokUi\DesignKit\Support\Table;
     use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -59,7 +60,21 @@
     - kolom yang disembunyikan tetap ada di markup (x-show), jadi kolom
       menempel (`sticky`) dan `colspan` dihitung dari susunan awal;
     - `filter.hidden-columns` terkendali diganti `default-hidden-columns`
-      ditambah event `hidden-columns-change`.
+      ditambah event `hidden-columns-change`;
+    - rupa mobile diatur CSS, bukan JS. React mengukur lebar tabel dengan
+      ResizeObserver lalu merender ulang sebagai `compact` bila lebarnya di
+      bawah 640px. Di sini lebar itu baru diketahui di peramban, jadi `size`
+      normal membawa kelas `@max-[638px]:` yang memasang rupa compact lewat
+      container query: tanpa kedip di HTML pertama, tanpa state Alpine yang
+      ditimpa morph Livewire. 638px = 640px dikurangi garis 1px kiri-kanan,
+      karena container query mengukur lebar isi, sedangkan React mengukur
+      lebar beserta garisnya.
+
+    `dark-mode` memasang `data-theme="dark"`: semua warna Table dari token
+    `--color-table-*`, jadi toolbar gray-800, header gray-600, baris gray-700
+    (mobile gray-800), footer gray-700, dan Pagination, Dropdown, serta tombol
+    Filter ikut gelap. Badge dan Button gray di sel ikut gelap otomatis; tombol
+    gray di slot `actions` perlu `dark-mode` sendiri (lihat InheritedDarkMode).
 
     Atribut lain ke pembungkus terluar.
 --}}
@@ -81,6 +96,7 @@
     'pagination' => null,
     'manual' => false,
     'striped' => false,
+    'darkMode' => false,
     'loading' => false,
     'emptyText' => 'Tidak ada data',
 ])
@@ -90,6 +106,7 @@
     $selectable = Prop::bool($selectable, false, 'table', 'selectable');
     $manual = Prop::bool($manual, false, 'table', 'manual');
     $striped = Prop::bool($striped, false, 'table', 'striped');
+    $darkMode = Prop::bool($darkMode, false, 'table', 'dark-mode');
     $loading = Prop::bool($loading, false, 'table', 'loading');
     $headerAlign = $headerAlign === null ? null : Prop::oneOf(TableAlign::class, $headerAlign, TableAlign::Left, 'table', 'header-align');
     $stickyStart = (bool) data_get($sticky, 'start', false);
@@ -127,8 +144,6 @@
 
     $sorted = $manual ? $rows : Table::sort($rows, $leaves, $sort);
     $visibleRows = $manual || ! $paginate ? $sorted : array_slice($sorted, ($page - 1) * $pageSize, $pageSize);
-    $from = $total === 0 ? 0 : ($page - 1) * $pageSize + 1;
-    $to = min($page * $pageSize, $total);
 
     // Kolom tersembunyi: hanya kolom teratas (grup dihitung satu).
     $filterOn = $filter !== null && $filter !== false;
@@ -161,37 +176,55 @@
      * antarbaris. `compact`: header putih tanpa garis atas, baris setinggi 64px
      * (`h-16` di sel tabel berlaku sebagai tinggi minimum), teks sel gelap, dan
      * gambar kecil persegi 32px.
+     *
+     * Di bawah 640px (mobile) tabel selalu compact, seperti React. Karena itu
+     * `normal` membawa kelas compact di balik `@max-[638px]:` (lihat komentar
+     * di atas). Kunci tambahan: `cellTextNarrow` untuk sel tanpa emphasis,
+     * `checkBox` untuk kotak "pilih semua", `checkClass` untuk checkbox baris
+     * (kotak di dalam Checkbox adalah `<span>` anak langsungnya), `sortText`
+     * untuk tombol sort, dan `caption` untuk caption gambar.
      */
     $sizes = [
         'normal' => [
-            'head' => 'px-4 py-3',
-            'cell' => 'px-4 py-4',
-            'headBg' => 'bg-gray-50',
-            'headText' => 'text-xs uppercase',
-            'border' => 'border-gray-200',
-            'headTop' => 'border-t-gray-200',
+            'head' => 'px-4 py-3 @max-[638px]:h-16 @max-[638px]:py-2',
+            'cell' => 'px-4 py-4 @max-[638px]:h-16 @max-[638px]:py-2',
+            'headBg' => 'bg-table-head @max-[638px]:bg-table-head-compact',
+            'headText' => 'text-xs uppercase @max-[638px]:text-sm @max-[638px]:normal-case',
+            'border' => 'border-table-border',
+            'headTop' => 'border-t-table-border @max-[638px]:border-t-transparent',
             'cellText' => null,
-            'thumb' => null,
+            'cellTextNarrow' => '@max-[638px]:text-table-content-strong',
+            'thumb' => 'h-6 w-9 rounded @max-[638px]:size-8 @max-[638px]:rounded-md',
             'check' => 'default',
+            'checkBox' => 'size-4 @max-[638px]:size-3.5',
+            'checkClass' => '@max-[638px]:[&>span]:size-3.5',
+            'sortText' => 'uppercase @max-[638px]:normal-case',
+            'caption' => '@max-[638px]:hidden',
         ],
         'compact' => [
             'head' => 'h-16 px-4 py-2',
             'cell' => 'h-16 px-4 py-2',
-            'headBg' => 'bg-white',
+            'headBg' => 'bg-table-head-compact',
             'headText' => 'text-sm',
-            'border' => 'border-gray-200',
+            'border' => 'border-table-border',
             'headTop' => 'border-t-transparent',
-            'cellText' => 'text-gray-900',
+            'cellText' => 'text-table-content-strong',
+            'cellTextNarrow' => null,
             'thumb' => 'size-8 rounded-md',
             'check' => 'mobile',
+            'checkBox' => 'size-3.5',
+            'checkClass' => null,
+            'sortText' => null,
+            'caption' => null,
         ],
     ];
     $density = $sizes[$size];
 
-    // Latar baris dan sel menempel, dengan dan tanpa zebra.
+    // Latar baris dan sel menempel, dengan dan tanpa zebra. Semua warna Table
+    // dari token `--color-table-*`, yang berganti nilai di `data-theme="dark"`.
     $bg = $striped
-        ? ['row' => 'even:bg-gray-50 hover:bg-gray-100', 'cell' => 'bg-white group-even:bg-gray-50 group-hover:bg-gray-100']
-        : ['row' => 'hover:bg-gray-50', 'cell' => 'bg-white group-hover:bg-gray-50'];
+        ? ['row' => 'bg-table-row even:bg-table-row-striped hover:bg-table-row-striped-hover', 'cell' => 'bg-table-row group-even:bg-table-row-striped group-hover:bg-table-row-striped-hover']
+        : ['row' => 'bg-table-row hover:bg-table-row-hover', 'cell' => 'bg-table-row group-hover:bg-table-row-hover'];
 
     $aligns = ['left' => 'text-left', 'center' => 'text-center', 'right' => 'text-right'];
 
@@ -221,7 +254,7 @@
         ],
         'gray' => [
             'light' => ['filled' => 'bg-gray-500 text-white hover:bg-gray-700', 'outline' => 'border border-gray-500 text-gray-500 hover:bg-gray-100 hover:text-gray-700'],
-            'dark' => ['filled' => 'bg-gray-700 text-white hover:bg-gray-500', 'outline' => 'border border-gray-700 text-gray-700 hover:bg-gray-100 hover:text-gray-900'],
+            'dark' => ['filled' => 'bg-gray-700 text-white hover:bg-gray-500', 'outline' => 'border border-gray-500 text-gray-700 hover:bg-gray-100 hover:text-gray-900'],
         ],
         'purple' => [
             'light' => ['filled' => 'bg-purple-700 text-white hover:bg-purple-800', 'outline' => 'border border-purple-700 text-purple-700 hover:bg-purple-50'],
@@ -262,8 +295,8 @@
             'sticky z-10',
             $head ? $density['headBg'] : 'transition-colors '.$bg['cell'],
             $isStart ? ($selectable ? 'left-12' : 'left-0') : null,
-            $isStart ? 'shadow-[inset_-1px_0_0_var(--color-gray-200)]' : null,
-            $isEnd ? 'right-0 shadow-[inset_1px_0_0_var(--color-gray-200)]' : null,
+            $isStart ? 'shadow-[inset_-1px_0_0_var(--color-table-border)]' : null,
+            $isEnd ? 'right-0 shadow-[inset_1px_0_0_var(--color-table-border)]' : null,
         ]));
     };
     // Lebar kolom sebagai atribut `style`, atau array kosong bila tidak diatur:
@@ -299,16 +332,37 @@
 
     // Kelas dengan varian container (`@xl:`, `@lg:`) dirakit di sini, bukan di
     // markup, supaya tidak terbaca sebagai direktif Blade.
-    $rootClass = '@container overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm';
+    $rootClass = '@container overflow-hidden rounded-lg border border-table-border bg-table-surface shadow-sm';
     $searchClass = implode(' ', array_filter([
-        'flex h-10 w-full items-center gap-2 rounded-lg border border-gray-300 bg-gray-50 px-3 text-sm transition-colors',
+        'flex h-10 w-full items-center gap-2 rounded-lg border border-field-border bg-field px-3 text-sm transition-colors',
         'focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500',
-        '@xl:w-auto @xl:min-w-[22rem]',
+        // Mulai 576px kotak cari yang mengalah: mengisi sisa ruang sampai 22rem
+        // dan boleh menyempit sampai 10rem, supaya pencarian, Filter, dan tombol
+        // aksi tetap sebaris. Sengaja beda dari React (`@xl:min-w-[22rem]` tetap),
+        // yang membuat tombol aksi turun ke baris kedua di tabel selebar ±800px.
+        '@xl:w-auto @xl:min-w-40 @xl:max-w-[22rem] @xl:flex-1',
         $searchDisabled ? 'cursor-not-allowed opacity-60' : null,
         $sc['class'] ?? null,
     ]));
-    $footerClass = 'flex flex-col-reverse items-start gap-3 border-t border-gray-200 p-4 @lg:flex-row @lg:items-center @lg:justify-between';
-    $pageSizeTriggerClass = 'inline-flex h-8 min-w-[4.5rem] items-center justify-between gap-2 rounded-lg border border-gray-300 bg-white pr-2 pl-3 text-sm text-gray-900 transition-colors hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:cursor-not-allowed disabled:opacity-50 @lg:h-10';
+    // Toolbar sempit: pencarian satu baris penuh, lalu tombol dua per baris dan
+    // sama lebar; tombol ganjil terakhir melebar sendiri. Pembungkus `actions`
+    // dibuat `contents` supaya tombolnya ikut tata letak ini. Mulai 576px: satu
+    // baris, tombol aksi di kanan. `:not(dialog)` dari React; `.contents>` khusus
+    // Livewire, karena Modal di sini membungkus tombol dan `<dialog>`-nya dalam
+    // `<div class="contents">`, jadi tombolnya cucu, bukan anak langsung.
+    $toolbarClass = 'flex flex-wrap items-center gap-2 bg-table-toolbar p-4 @xl:gap-4';
+    $filterClass = 'grow basis-[40%] @xl:grow-0 @xl:basis-auto';
+    $actionsClass = implode(' ', [
+        'contents @xl:ml-auto @xl:flex @xl:flex-wrap @xl:items-center @xl:gap-3',
+        '[&>:not(dialog)]:grow [&>:not(dialog)]:basis-[40%]',
+        '@xl:[&>:not(dialog)]:grow-0 @xl:[&>:not(dialog)]:basis-auto',
+        '[&>.contents>:not(dialog)]:grow [&>.contents>:not(dialog)]:basis-[40%]',
+        '@xl:[&>.contents>:not(dialog)]:grow-0 @xl:[&>.contents>:not(dialog)]:basis-auto',
+    ]);
+    // Kiri pemilih jumlah baris, kanan nomor halaman. Sempit: bertumpuk, rata tengah.
+    $footerClass = 'flex flex-col items-center gap-3 border-t border-table-border p-4 @lg:flex-row @lg:justify-between';
+    $paginationClass = '@lg:ml-auto';
+    $pageSizeTriggerClass = 'inline-flex h-8 min-w-[4.5rem] items-center justify-between gap-2 rounded-lg bg-table-picker pr-2 pl-3 text-sm text-table-content-strong transition-colors hover:bg-table-picker-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:cursor-not-allowed disabled:opacity-50 @lg:h-10';
 
     // Checkbox "pilih semua": dibuat sendiri, tidak memakai Checkbox, karena
     // butuh status sebagian terpilih (garis datar). Ukuran dan warnanya
@@ -316,14 +370,12 @@
     $filledExpression = "allSelected({$pageKeysJs}) || someSelected({$pageKeysJs})";
     $selectAll = (new ClassToggle)
         ->always('peer/all absolute inset-0 size-full cursor-pointer appearance-none rounded border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:cursor-not-allowed disabled:opacity-50')
-        ->when($filledExpression, $allPageSelected || $somePageSelected, 'border-primary-700 bg-primary-700', 'border-gray-300 bg-gray-50');
+        ->when($filledExpression, $allPageSelected || $somePageSelected, 'border-primary-700 bg-primary-700', 'border-field-border bg-field');
     $selectAllHint = $allPageSelected ? 'Batalkan pilihan di halaman ini' : 'Pilih semua di halaman ini';
     $selectAllHintExpression = "allSelected({$pageKeysJs}) ? 'Batalkan pilihan di halaman ini' : 'Pilih semua di halaman ini'";
 
-    $summary = $pg['summary'] ?? null;
-    $summaryContent = $summary instanceof Closure
-        ? $summary($from, $to, $total)
-        : new HtmlString('Menampilkan <span class="font-bold text-gray-900">'.e($from).'–'.e($to).'</span> dari <span class="font-bold text-gray-900">'.e($total).'</span> data');
+    // `pagination.summary` belum berpengaruh: ringkasan "Menampilkan 1–10 dari
+    // 50 data" tidak tampil lagi di desain, sama dengan kit React.
 
     $pageSizeItems = is_array($pageSizeOptions) ? array_map(fn ($n) => [
         'label' => new HtmlString('<span class="flex items-center justify-between gap-3">'.e($n).((int) $n === $pageSize ? svg('ceplok-o-check', 'size-4 text-primary-700', ['aria-hidden' => 'true'])->toHtml() : '').'</span>'),
@@ -332,23 +384,31 @@
     ], $pageSizeOptions) : null;
 @endphp
 
+{{-- Badge dan Button gray di sel ikut `dark-mode` (lihat InheritedDarkMode). --}}
+@php InheritedDarkMode::push($darkMode); @endphp
+
+{{--
+    `data-table-mobile` dipasang ceplokTable di peramban saat lebar tabel di
+    bawah 640px: penanda untuk token, karena tema gelap mobile berlatar gray-800.
+--}}
 <div
     x-data="ceplokTable"
     x-modelable="selected"
     data-selected="{{ json_encode($selected, JSON_THROW_ON_ERROR) }}"
     data-hidden-columns="{{ json_encode($hidden, JSON_THROW_ON_ERROR) }}"
     data-sort="{{ json_encode($sort, JSON_THROW_ON_ERROR) }}"
+    @if ($darkMode) data-theme="dark" @endif
     {{ $attributes->class($rootClass) }}
 >
     @if ($hasToolbar)
-        <div class="flex flex-wrap items-center gap-4 p-4">
+        <div class="{{ $toolbarClass }}">
             @if ($searchOn)
                 <label class="{{ $searchClass }}">
-                    {{ svg('ceplok-o-search', 'size-4 shrink-0 text-gray-500', ['aria-hidden' => 'true']) }}
+                    {{ svg('ceplok-o-search', 'size-4 shrink-0 text-content-muted', ['aria-hidden' => 'true']) }}
                     <input
                         type="search"
                         {{ $searchInput->class([
-                            'min-w-0 flex-1 bg-transparent text-gray-900 outline-none placeholder:text-gray-500',
+                            'min-w-0 flex-1 bg-transparent text-content outline-none placeholder:text-content-muted',
                             'disabled:cursor-not-allowed',
                             // Tombol silang bawaan type="search" di Chrome/Safari bukan bagian desain.
                             '[&::-webkit-search-cancel-button]:appearance-none',
@@ -358,11 +418,11 @@
             @endif
 
             @if ($filterOn)
-                <x-ceplok::dropdown content-class="w-60">
-                    <x-slot:trigger variant="outline" theme="gray" size="s" :left-icon="svg('ceplok-o-adjustments-horizontal')">{{ $fc['label'] ?? 'Filter Data' }}</x-slot:trigger>
+                <x-ceplok::dropdown :class="$filterClass" content-class="w-60" :dark-mode="$darkMode">
+                    <x-slot:trigger variant="outline" theme="gray" size="s" :dark-mode="$darkMode" class="w-full" :left-icon="svg('ceplok-o-adjustments-horizontal')">{{ $fc['label'] ?? 'Filter Data' }}</x-slot:trigger>
 
                     <div class="p-3">
-                        <p class="mb-2 text-xs font-medium text-gray-500">{{ $fc['title'] ?? 'Tampilkan kolom' }}</p>
+                        <p class="mb-2 text-xs font-medium text-content-muted">{{ $fc['title'] ?? 'Tampilkan kolom' }}</p>
                         <div class="flex max-h-72 flex-col gap-2 overflow-y-auto">
                             @foreach ($tree as $column)
                                 @php
@@ -386,7 +446,7 @@
             @endif
 
             @if ($hasActions)
-                <div class="ml-auto flex flex-wrap items-center gap-3">{{ $actions }}</div>
+                <div class="{{ $actionsClass }}">{{ $actions }}</div>
             @endif
         </div>
     @endif
@@ -396,7 +456,7 @@
         tabel bisa digeser ke samping. Firefox memakai scrollbar-*,
         Chromium/Safari memakai ::-webkit-scrollbar.
     --}}
-    <div class="overflow-x-auto [scrollbar-color:var(--color-gray-300)_var(--color-gray-100)] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:mx-4 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300">
+    <div class="overflow-x-auto [scrollbar-color:var(--color-table-scrollbar)_var(--color-table-scrollbar-track)] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:mx-4 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-table-scrollbar-track [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-table-scrollbar">
         <table class="w-full border-separate border-spacing-0 text-sm" @if ($loading) aria-busy="true" @endif>
             {{--
                 Header bisa bertingkat: garis atas milik baris header pertama, garis
@@ -418,7 +478,7 @@
                                     'sticky left-0 z-10' => $stickyStart,
                                 ])
                             >
-                                <span @class(['group/all relative inline-flex shrink-0 items-center justify-center', $density['check'] === 'mobile' ? 'size-3.5' : 'size-4'])>
+                                <span @class(['group/all relative inline-flex shrink-0 items-center justify-center', $density['checkBox']])>
                                     {{-- Sebagian terpilih: klik berikutnya memilih semua. --}}
                                     <input
                                         type="checkbox"
@@ -474,7 +534,7 @@
                             @endphp
 
                             @if ($cell['group'])
-                                <th scope="colgroup" colspan="{{ $cell['colspan'] }}" {{ $show($cell['top'])->class([...$common, 'pb-0 text-gray-500']) }}>{{ $headColumn['header'] }}</th>
+                                <th scope="colgroup" colspan="{{ $cell['colspan'] }}" {{ $show($cell['top'])->class([...$common, 'pb-0 text-table-head-content']) }}>{{ $headColumn['header'] }}</th>
                             @else
                                 @php
                                     $column = $leaves[$cell['leaf']];
@@ -494,7 +554,7 @@
                                         // Judul yang membentang beberapa baris turun ke bawah, sebaris dengan judul daun di bawah judul induk.
                                         $cell['rowspan'] > 1 ? 'align-bottom' : null,
                                         $density['border'],
-                                        $isSorted ? 'text-gray-900' : 'text-gray-500',
+                                        $isSorted ? 'text-table-head-content-active' : 'text-table-head-content',
                                         $stickyClass($cell['leaf'], true),
                                     ]) }}
                                 >
@@ -503,10 +563,10 @@
                                             type="button"
                                             x-on:click="toggleSort({{ Js::from($column['key']) }}, {{ Js::from(Table::sortCycle($column)) }})"
                                             @class([
-                                                'flex w-full items-center gap-2 transition-colors hover:text-gray-900',
+                                                'flex w-full items-center gap-2 transition-colors hover:text-table-head-content-active',
                                                 // Rata kiri: ikon sort di ujung kanan judul, di kedua size.
                                                 $sortJustify[Table::headAlign($column, $headerAlign)],
-                                                'uppercase' => $size !== 'compact',
+                                                $density['sortText'],
                                                 'rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600',
                                             ])
                                         >{{ $column['header'] }}{{ $renderSortIcon($isSorted ? $sort['direction'] : null) }}</button>
@@ -523,13 +583,13 @@
             <tbody class="[&>tr:last-child>td]:border-b-0">
                 @if ($loading)
                     <tr>
-                        <td colspan="{{ $colspan }}" class="border-b border-gray-200 py-12">
+                        <td colspan="{{ $colspan }}" class="border-b border-table-border py-12">
                             <x-ceplok::spinner class="mx-auto" aria-label="Memuat data" />
                         </td>
                     </tr>
                 @elseif ($visibleRows === [])
                     <tr>
-                        <td colspan="{{ $colspan }}" class="border-b border-gray-200 py-12 text-center text-gray-500">{{ $emptyText }}</td>
+                        <td colspan="{{ $colspan }}" class="border-b border-table-border py-12 text-center text-table-content">{{ $emptyText }}</td>
                     </tr>
                 @else
                     @foreach ($visibleRows as $index => $row)
@@ -552,6 +612,7 @@
                                     <x-ceplok::checkbox
                                         :platform="$density['check']"
                                         :attributes="new ComponentAttributeBag([
+                                            'class' => $density['checkClass'],
                                             'checked' => $rowSelected,
                                             'aria-label' => 'Pilih baris '.($index + 1),
                                             'x-bind:checked' => 'isSelected('.$keyJs.')',
@@ -567,7 +628,7 @@
                                         $cellBorder,
                                         $density['cell'],
                                         $aligns[$column['align'] ?? 'center'],
-                                        $density['cellText'] ?? (! empty($column['emphasis']) ? 'text-gray-900' : 'text-gray-500'),
+                                        $density['cellText'] ?? (! empty($column['emphasis']) ? 'text-table-content-strong' : 'text-table-content '.$density['cellTextNarrow']),
                                         empty($column['wrap']) ? 'whitespace-nowrap' : null,
                                         $stickyClass($i, false),
                                     ]) }}
@@ -648,6 +709,7 @@
                                                 :show-caption="$size !== 'compact'"
                                                 :preview="$column['image']['preview'] ?? true"
                                                 :thumb-class="$density['thumb']"
+                                                :caption-class="$density['caption']"
                                             />
                                         @endif
                                     @elseif (isset($column['file']))
@@ -675,30 +737,29 @@
     </div>
 
     @if ($paginate)
-        {{-- Kiri hanya info (ringkasan), kanan semua kontrol (jumlah baris + halaman). Sempit: kontrol di atas, ringkasan di bawahnya, rata kiri. --}}
         <div class="{{ $footerClass }}">
-            <p class="text-sm text-gray-500">{{ $summaryContent }}</p>
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-                @if ($pageSizeItems !== null)
-                    <div class="inline-flex items-center gap-2 text-sm whitespace-nowrap text-gray-500">
-                        <span id="{{ $id }}-page-size-label">Baris per halaman</span>
-                        {{--
-                            Daftar pilihan memakai Dropdown (mode listbox) supaya rupanya sama
-                            dengan Dropdown lain; <select> bawaan tidak bisa diberi gaya. Tinggi,
-                            sudut, dan garis tombolnya disamakan dengan Pagination.
-                        --}}
-                        <x-ceplok::dropdown attached content-label="Baris per halaman" :items="$pageSizeItems">
-                            <x-slot:trigger
-                                raw
-                                :disabled="$loading"
-                                :aria-labelledby="$id.'-page-size-label '.$id.'-page-size-value'"
-                                :class="$pageSizeTriggerClass"
-                            ><span id="{{ $id }}-page-size-value">{{ $pageSize }}</span>{{ svg('ceplok-o-chevron-down', 'size-4 text-gray-500', ['aria-hidden' => 'true']) }}</x-slot:trigger>
-                        </x-ceplok::dropdown>
-                    </div>
-                @endif
-                <x-ceplok::pagination :current-page="$page" :total-pages="$totalPages" :theme="$pageTheme" size="responsive" />
-            </div>
+            @if ($pageSizeItems !== null)
+                <div class="inline-flex items-center gap-2 text-sm whitespace-nowrap text-table-footer-content">
+                    <span id="{{ $id }}-page-size-label">Menampilkan</span>
+                    {{--
+                        Daftar pilihan memakai Dropdown (mode listbox) supaya rupanya sama
+                        dengan Dropdown lain; <select> bawaan tidak bisa diberi gaya. Tinggi
+                        dan sudut tombolnya disamakan dengan Pagination.
+                    --}}
+                    <x-ceplok::dropdown attached content-label="Baris per halaman" :items="$pageSizeItems" :dark-mode="$darkMode">
+                        <x-slot:trigger
+                            raw
+                            :disabled="$loading"
+                            :aria-labelledby="$id.'-page-size-label '.$id.'-page-size-value'"
+                            :class="$pageSizeTriggerClass"
+                        ><span id="{{ $id }}-page-size-value">{{ $pageSize }}</span>{{ svg('ceplok-o-chevron-down', 'size-4 text-table-content', ['aria-hidden' => 'true']) }}</x-slot:trigger>
+                    </x-ceplok::dropdown>
+                    <span aria-hidden="true">Data</span>
+                </div>
+            @endif
+            <x-ceplok::pagination :current-page="$page" :total-pages="$totalPages" :theme="$pageTheme" size="responsive" :dark-mode="$darkMode" :class="$paginationClass" />
         </div>
     @endif
 </div>
+
+@php InheritedDarkMode::pop(); @endphp

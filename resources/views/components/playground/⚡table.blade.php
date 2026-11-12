@@ -32,6 +32,16 @@ new class extends Component
 
     public bool $striped = true;
 
+    /** `light` atau `dark`. */
+    public string $mode = 'light';
+
+    /**
+     * Table tidak punya prop platform: rupa mobile muncul sendiri saat tabel
+     * lebih sempit dari 640px, jadi pratinjaunya cukup menyempitkan panggung.
+     * `desktop` atau `mobile`.
+     */
+    public string $view = 'desktop';
+
     public TableSize $size = TableSize::Normal;
 
     public bool $paginate = true;
@@ -209,6 +219,7 @@ new class extends Component
             $this->size === TableSize::Compact ? '    ⟦size⟧="compact"' : null,
             $this->headerAlign === TableAlign::Left ? null : '    ⟦header-align⟧="'.$this->headerAlign->value.'"',
             $this->striped ? '    ⟦striped⟧' : null,
+            $this->mode === 'dark' ? '    ⟦dark-mode⟧' : null,
             $this->selectable ? '    ⟦selectable⟧' : null,
             $this->selectable ? '    ⟦wire:model.live⟧="selected"' : null,
             $this->search ? "    :⟦search⟧=\"['placeholder' => 'Cari nama, email, atau layanan', 'wire:model.live.debounce.300ms' => 'q']\"" : null,
@@ -236,7 +247,7 @@ new class extends Component
             terlihat di sini, dan bagian Penggunaan menuliskan kodenya.
         </x-docs.lead>
 
-        <x-docs.stage max-width="max-w-[1024px]">
+        <x-docs.stage :max-width="$view === 'mobile' ? 'max-w-[390px]' : 'max-w-[1024px]'" :dark="$mode === 'dark'">
             <x-ceplok::table
                 wire:key="playground-table-{{ $count }}"
                 :columns="$this->columns()"
@@ -245,6 +256,7 @@ new class extends Component
                 :size="$size"
                 :header-align="$headerAlign"
                 :striped="$striped"
+                :dark-mode="$mode === 'dark'"
                 :selectable="$selectable"
                 :sort="$sort"
                 :search="$search ? ['placeholder' => 'Cari nama, email, atau layanan', 'wire:model.live.debounce.300ms' => 'q'] : null"
@@ -276,6 +288,12 @@ new class extends Component
         @endphp
 
         <x-docs.controls>
+            <x-docs.control label="Mode">
+                <x-docs.segmented label="Pilih mode" model="mode" :value="$mode" :options="[['value' => 'light', 'label' => 'Light'], ['value' => 'dark', 'label' => 'Dark']]" />
+            </x-docs.control>
+            <x-docs.control label="Tampilan">
+                <x-docs.segmented label="Pilih tampilan" model="view" :value="$view" :options="[['value' => 'desktop', 'label' => 'Desktop'], ['value' => 'mobile', 'label' => 'Mobile']]" />
+            </x-docs.control>
             <x-docs.control label="Jumlah data">
                 <x-docs.segmented label="Pilih jumlah data" model="count" :value="$count" :options="array_map(fn ($n) => ['value' => $n, 'label' => (string) $n], [50, 100, 1000])" />
             </x-docs.control>

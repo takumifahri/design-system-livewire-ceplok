@@ -4,6 +4,7 @@ namespace CeplokUi\DesignKit;
 
 use BladeUI\Icons\Factory as IconFactory;
 use CeplokUi\DesignKit\Support\FieldId;
+use CeplokUi\DesignKit\Support\InheritedDarkMode;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Blaze\Blaze;
@@ -16,6 +17,7 @@ class DesignKitServiceProvider extends ServiceProvider
         // di-reset di antara request pada server yang berumur panjang seperti
         // Octane.
         $this->app->scoped(FieldId::class);
+        $this->app->scoped(InheritedDarkMode::class);
 
         // Set ikon didaftarkan pada fase register: blade-icons meregistrasikan
         // komponen Blade-nya saat ViewFactory pertama kali di-resolve, sebelum boot.

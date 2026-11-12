@@ -15,6 +15,12 @@
     yang di sini dipasang pada `<img>`; `class` tetap ke pembungkus terluar
     seperti komponen kit lain.
 
+    `caption-class` hanya ada di kit Livewire: bila diisi, caption di bawah
+    gambar kecil dibungkus `<span>` berkelas itu (caption di pratinjau tidak).
+    Table memakainya untuk menyembunyikan caption saat tabelnya sempit, karena
+    di Livewire rupa mobile Table diatur lewat container query, bukan render
+    ulang seperti di React.
+
     Pratinjaunya `<dialog>` yang baru dibuat saat dibuka lalu dipindah ke
     `body` (lihat resources/js/components/table-preview.js).
 --}}
@@ -25,6 +31,7 @@
     'showCaption' => true,
     'preview' => true,
     'thumbClass' => null,
+    'captionClass' => null,
 ])
 
 @php
@@ -52,7 +59,11 @@
     @endif
 
     @if ($showCaption && $hasCaption)
-        {{ $caption }}
+        @if (filled($captionClass))
+            <span class="{{ $captionClass }}">{{ $caption }}</span>
+        @else
+            {{ $caption }}
+        @endif
     @endif
 
     @if ($preview)

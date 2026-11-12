@@ -44,9 +44,9 @@
         'responsive' => ['nav' => 'h-8 @lg:h-10', 'cell' => 'h-8 min-w-8 px-2 @lg:h-10 @lg:min-w-10', 'icon' => 'size-5 @lg:size-7'],
     ];
     $themes = [
-        'default' => ['active' => 'bg-gray-50', 'activeText' => 'text-gray-500', 'darkActive' => 'bg-gray-700', 'darkActiveText' => 'text-gray-300'],
-        'primary' => ['active' => 'bg-primary-50', 'activeText' => 'text-primary-500', 'darkActive' => 'bg-gray-700', 'darkActiveText' => 'text-primary-500'],
-        'purple' => ['active' => 'bg-purple-50', 'activeText' => 'text-purple-500', 'darkActive' => 'bg-gray-700', 'darkActiveText' => 'text-purple-400'],
+        'default' => ['active' => 'bg-gray-50', 'activeText' => 'text-gray-500', 'darkActive' => 'bg-gray-600', 'darkActiveText' => 'text-gray-300'],
+        'primary' => ['active' => 'bg-primary-50', 'activeText' => 'text-primary-500', 'darkActive' => 'bg-primary-900', 'darkActiveText' => 'text-primary-500'],
+        'purple' => ['active' => 'bg-purple-50', 'activeText' => 'text-purple-500', 'darkActive' => 'bg-purple-900', 'darkActiveText' => 'text-purple-400'],
     ];
     $sizing = $sizes[$size];
     $colors = $themes[$theme];
@@ -71,7 +71,7 @@
     $arrow = [
         'flex shrink-0 items-center justify-center transition-colors',
         $sizing['cell'],
-        $darkMode ? 'border-r border-gray-700 text-gray-400 hover:bg-gray-700' : 'border-r border-gray-300 text-gray-500 hover:bg-gray-50',
+        $darkMode ? 'border-r border-gray-600 text-gray-400 hover:bg-gray-600' : 'border-r border-gray-300 text-gray-500 hover:bg-gray-50',
         'disabled:cursor-not-allowed disabled:opacity-50',
     ];
     // `disabled` sama persis dengan kit React (ujung pertama dan terakhir).
@@ -92,7 +92,7 @@
         ->class([
             'inline-flex overflow-hidden rounded-lg',
             $sizing['nav'],
-            $darkMode ? 'border border-gray-700 bg-gray-800' : 'border border-gray-300 bg-white',
+            $darkMode ? 'border border-gray-600 bg-gray-700' : 'border border-gray-300 bg-white',
         ])
         ->merge(['aria-label' => 'Pagination']) }}
 >
@@ -118,7 +118,7 @@
                 @class([
                     'flex shrink-0 items-center justify-center text-sm',
                     $sizing['cell'],
-                    $darkMode ? 'border-r border-gray-700 text-gray-400' : 'border-r border-gray-300 text-gray-500',
+                    $darkMode ? 'border-r border-gray-600 text-gray-400' : 'border-r border-gray-300 text-gray-500',
                 ])
             >...</span>
         @else
@@ -127,7 +127,7 @@
                 $pageClasses = [
                     'flex shrink-0 items-center justify-center text-sm font-normal transition-colors',
                     $sizing['cell'],
-                    $darkMode ? 'border-r border-gray-700 hover:bg-gray-700' : 'border-r border-gray-300 hover:bg-gray-50',
+                    $darkMode ? 'border-r border-gray-600 hover:bg-gray-600' : 'border-r border-gray-300 hover:bg-gray-50',
                     ($darkMode ? $colors['darkActive'] : $colors['active']) => $active,
                     $active
                         ? ($darkMode ? $colors['darkActiveText'] : $colors['activeText'])

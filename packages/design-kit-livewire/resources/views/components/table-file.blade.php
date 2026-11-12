@@ -38,7 +38,7 @@
         'pdf' => ['icon' => 'ceplok-s-file-pdf', 'color' => 'text-red-500'],
         'file' => ['icon' => 'ceplok-s-file', 'color' => 'text-gray-400'],
     ];
-    $link = 'inline-flex max-w-full items-center gap-3 rounded text-left transition-colors hover:text-gray-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600';
+    $link = 'inline-flex max-w-full items-center gap-3 rounded text-left transition-colors hover:text-table-content-strong hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600';
     $mode = match (true) {
         $href === null => 'text',
         $kind === 'file' || ! $preview => 'link',

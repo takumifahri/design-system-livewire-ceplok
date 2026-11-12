@@ -16,6 +16,12 @@
  * onSelectionChange. Setiap perubahan juga mengirim `selection-change`
  * (`detail.keys`); filter kolom mengirim `hidden-columns-change`.
  *
+ * Lebar tabel juga diukur di sini, seperti ResizeObserver di React: di bawah
+ * 640px tabel diberi `data-table-mobile`, penanda token tema gelap mobile
+ * (latar gray-800). Rupa compact-nya sendiri diatur container query di Blade.
+ * Morph Livewire menghapus atribut yang tidak ada di HTML server, jadi
+ * penandanya dipasang lagi setiap kali hilang.
+ *
  * Kunci baris halaman yang sedang tampil tidak disimpan di sini, karena data
  * Alpine tidak diinisialisasi ulang saat Livewire merender halaman lain.
  * Kuncinya ditulis langsung di ekspresi tiap elemen oleh server, jadi
@@ -25,8 +31,12 @@
 /** Kunci dibandingkan sebagai teks: properti Livewire bisa berisi 1 atau "1". */
 const same = (a, b) => String(a) === String(b);
 
+/** Di bawah lebar ini (px) tabel memakai rupa mobile. */
+const MOBILE_WIDTH = 640;
+
 export default function table() {
     let watcher = null;
+    let resizer = null;
 
     return {
         selected: [],
@@ -40,16 +50,34 @@ export default function table() {
             this.hidden = read('hiddenColumns', '[]');
             this.sort = read('sort', 'null');
 
+            // Lebar tabel, bukan lebar layar, supaya pratinjau mobile di halaman
+            // lebar ikut. Lebar beserta garisnya, sama dengan React.
+            const measure = () => {
+                const narrow = this.$el.getBoundingClientRect().width < MOBILE_WIDTH;
+
+                if (narrow !== this.$el.hasAttribute('data-table-mobile')) {
+                    this.$el.toggleAttribute('data-table-mobile', narrow);
+                }
+            };
+            measure();
+            resizer = new ResizeObserver(measure);
+            resizer.observe(this.$el);
+
             // Urutan dari server menang setiap kali tabel dirender ulang, mis.
             // setelah komponen Livewire mengatur ulang urutannya sendiri.
-            watcher = new MutationObserver(() => {
-                this.sort = read('sort', 'null');
+            watcher = new MutationObserver((records) => {
+                if (records.some((record) => record.attributeName === 'data-sort')) {
+                    this.sort = read('sort', 'null');
+                }
+
+                measure();
             });
-            watcher.observe(this.$el, { attributes: true, attributeFilter: ['data-sort'] });
+            watcher.observe(this.$el, { attributes: true, attributeFilter: ['data-sort', 'data-table-mobile'] });
         },
 
         destroy() {
             watcher?.disconnect();
+            resizer?.disconnect();
         },
 
         isSelected(key) {

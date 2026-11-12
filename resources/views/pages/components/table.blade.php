@@ -9,7 +9,7 @@
         ['columns', 'array | null', 'dari data', 'Daftar kolom yang tampil. Kalau tidak diisi, kolom dibuat otomatis dari data.'],
         ['data', 'array | Collection | LengthAwarePaginator', '[]', 'Isi tabel. Dengan manual atau paginator, cukup baris halaman yang sedang tampil.'],
         ['row-key', 'string | Closure', '—', 'Field yang nilainya unik di tiap baris, biasanya "id".'],
-        ['size', '"normal" | "compact"', 'normal', 'Ukuran tabel. compact lebih rapat dan teksnya lebih kecil.'],
+        ['size', '"normal" | "compact"', 'normal', 'Ukuran tabel. compact lebih rapat dan teksnya lebih kecil. Di bawah lebar 640px (mobile) tabel otomatis compact.'],
         ['search', 'array | bool | null', 'null', 'Menampilkan kotak pencarian di kiri atas. Isi array berisi atribut <input>, mis. placeholder dan wire:model.live.debounce.300ms.'],
         ['filter', 'array | bool | null', 'null', 'Menampilkan tombol "Filter Data" untuk memilih kolom yang tampil. Isi [] untuk memakai pengaturan bawaan.'],
         ['actions', 'slot', '—', 'Tombol di kanan atas tabel, mis. "Tambah Data".'],
@@ -25,6 +25,7 @@
         ['wire:page-change', 'event', '—', 'Dipicu saat user pindah halaman, dengan $event.detail.page.'],
         ['manual', 'bool', 'false', 'Pasang kalau urutan dan halaman diurus server. Otomatis bila data berupa paginator.'],
         ['striped', 'bool', 'false', 'Baris zebra: baris genap diberi latar abu-abu muda.'],
+        ['dark-mode', 'bool', 'false', 'Tampilan gelap: toolbar gray-800, header gray-600, baris gray-700 (mobile gray-800), Pagination ikut gelap. Badge dan Button theme gray di sel ikut gelap otomatis; tombol gray di slot actions perlu dark-mode sendiri.'],
         ['loading', 'bool', 'false', 'Menampilkan ikon memuat sebagai ganti isi tabel.'],
         ['empty-text', 'string | slot', 'Tidak ada data', 'Tulisan yang tampil kalau data kosong.'],
     ];
@@ -72,7 +73,7 @@
     $imageProps = [
         ['src', 'Closure($row)', '—', 'Alamat gambar. Kalau kosong, sel berisi "—".'],
         ['alt', 'string | Closure($row)', "''", 'Keterangan gambar untuk pembaca layar.'],
-        ['caption', 'Closure($row)', 'null', 'Teks di bawah gambar, mis. nama file. Di size compact hanya tampil saat pratinjau dibuka.'],
+        ['caption', 'Closure($row)', 'null', 'Teks di bawah gambar, mis. nama file. Di size compact dan di mobile hanya tampil saat pratinjau dibuka.'],
         ['preview', 'bool', 'true', 'Klik gambar untuk melihatnya besar. Isi false kalau tidak perlu.'],
     ];
 
@@ -93,11 +94,11 @@
     $paginationProps = [
         ['page', 'int', '1', 'Halaman yang sedang tampil, biasanya properti Livewire.'],
         ['page-size', 'int', '10', 'Jumlah baris per halaman.'],
-        ['page-size-options', 'list<int>', 'null', 'Pilihan jumlah baris, mis. [5, 10, 25, 50, 100]. Kalau diisi, muncul pilihan "Baris per halaman" di samping pagination.'],
+        ['page-size-options', 'list<int>', 'null', 'Pilihan jumlah baris, mis. [5, 10, 25, 50, 100]. Kalau diisi, muncul pilihan "Menampilkan [n] Data" di kiri, pagination di kanan.'],
         ['wire:page-size-change', 'event', '—', 'Dipicu saat user mengganti jumlah baris, dengan $event.detail.pageSize, lalu page-change ke halaman 1. Pasang di tag Table.'],
         ['total', 'int', 'jumlah data', 'Jumlah seluruh data. Wajib diisi kalau memakai manual tanpa paginator.'],
         ['theme', 'PaginationTheme', 'primary', 'Warna tombol halaman yang aktif.'],
-        ['summary', 'Closure($from, $to, $total)', 'Menampilkan …', 'Ganti tulisan "Menampilkan 1–10 dari 50 data".'],
+        ['summary', 'Closure($from, $to, $total)', 'Menampilkan …', 'Belum berpengaruh: ringkasan "Menampilkan 1–10 dari 50 data" tidak tampil lagi di desain.'],
     ];
 
     $hl = 'text-primary-500';
@@ -116,6 +117,7 @@
             'states' => 'States',
             'size' => 'Size',
             'zebra' => 'Baris zebra',
+            'mode-gelap' => 'Mode gelap',
             'aksi' => 'Tombol aksi',
             'posisi' => 'Posisi judul',
             'gambar' => 'Gambar',
@@ -305,6 +307,28 @@
             <x-docs.code>
                 @verbatim
                 <x-ceplok::table :columns="$columns" :data="$rows" row-key="id" ⟦striped⟧ />
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="mode-gelap" title="Mode gelap">
+            <x-docs.lead>
+                Isi <span class="{{ $hl }}">dark-mode</span> untuk tampilan gelap. Toolbar berlatar gray-800, header gray-600,
+                dan footer gray-700. Bila digabung dengan <span class="{{ $hl }}">striped</span>, baris mulai dari gray-700 lalu
+                gray-800. Pagination, tombol Filter, dan Dropdown ikut gelap, begitu juga Badge dan Button theme gray
+                di sel. Tombol gray di slot <span class="{{ $hl }}">actions</span> perlu <span class="{{ $hl }}">dark-mode</span> sendiri.
+            </x-docs.lead>
+
+            <x-docs.demo label="Gelap" class="mb-4" dark>
+                <livewire:playground.table-demo example="dark" />
+            </x-docs.demo>
+
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::table :columns="$columns" :data="$rows" row-key="id" striped ⟦dark-mode⟧ />
+
+                {{-- Warna bisa ditimpa lewat token, mis. di CSS project: --}}
+                {{-- [data-theme='dark'] { --color-table-toolbar: #1f2a37; } --}}
                 @endverbatim
             </x-docs.code>
         </x-docs.section>

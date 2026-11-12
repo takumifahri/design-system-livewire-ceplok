@@ -3,6 +3,7 @@
     use CeplokUi\DesignKit\Enums\BadgeVariant;
     use CeplokUi\DesignKit\Support\Bound;
     use CeplokUi\DesignKit\Support\Content;
+    use CeplokUi\DesignKit\Support\InheritedDarkMode;
     use CeplokUi\DesignKit\Support\Prop;
 @endphp
 
@@ -18,6 +19,8 @@
     Alpine kit.
 
     `dark-mode` membalik pasangan warnanya: latar -900 (gray-700) dan teks -300.
+    Bila tidak diisi, Badge di sel Table ber-`dark-mode` ikut gelap otomatis
+    (lihat InheritedDarkMode).
 --}}
 @props([
     'variant' => 'gray',
@@ -25,7 +28,7 @@
     'icon' => null,
     'dismissible' => false,
     'open' => null,
-    'darkMode' => false,
+    'darkMode' => null,
 ])
 
 @php
@@ -38,7 +41,7 @@
     $open = $open === null
         ? ($bound ? Bound::bool($attributes, true) : true)
         : Prop::bool($open, true, 'badge', 'open');
-    $darkMode = Prop::bool($darkMode, false, 'badge', 'dark-mode');
+    $darkMode = $darkMode === null ? InheritedDarkMode::current() : Prop::bool($darkMode, false, 'badge', 'dark-mode');
 
     // Ikon dan teks memakai satu warna (currentColor). Tombol tutup ikut warna
     // itu, kecuali variant gray yang tombolnya lebih pucat, sesuai desain.

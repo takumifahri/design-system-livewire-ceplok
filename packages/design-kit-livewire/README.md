@@ -165,7 +165,7 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 
 | Komponen | Props utama |
 | --- | --- |
-| `button` | `variant`: `filled \| outline`, `theme`: `primary \| green \| gray \| purple \| orange \| yellow`, `tone`: `light \| dark`, `size`: `xs \| s \| base \| l \| xl`, `type`, `icon-only`, `as`: `button \| anchor`, slot/prop `left-icon`, `right-icon` |
+| `button` | `variant`: `filled \| outline`, `theme`: `primary \| green \| gray \| purple \| orange \| yellow`, `tone`: `light \| dark`, `size`: `xs \| s \| base \| l \| xl`, `type`, `icon-only`, `as`: `button \| anchor`, slot/prop `left-icon`, `right-icon`, `dark-mode` |
 | `badge` | `variant`: `gray \| brand \| danger \| warning \| success`, `size`: `sm \| lg`, `icon`, `dismissible`, `open`, `dark-mode` |
 | `avatar` | `src`, `alt`, `initials` (atau slot), `size`: `small \| default \| large`, `dark-mode` |
 | `spinner` | `size`: `default \| large`, `aria-label`, `aria-hidden` |
@@ -181,8 +181,8 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 | `list-view` | `items` atau satu item langsung lewat props; `gap`: `none \| sm \| md \| lg`, `size`, `platform`: `desktop \| mobile`, `decoration`, `dark-mode`, `as`, `variant`: `simple \| article`, `title`, `description`, `metadata`, `icon`, `badge`, `action-label`, `action-href`, `action-wire-click`, `href` |
 | `popover` | slot `trigger` (atribut slot menjadi props Button kit, atau `<button>` polos dengan `raw`), `title` (prop atau slot), slot isi, `side`: `top \| right \| bottom \| left`, `dark-mode`, `open` |
 | `modal` | slot `trigger` (seperti Popover; opsional bila diikat `wire:model`/`x-model`), `variant`: `default \| popup`, `size`: `s \| m`, `title` (prop atau slot), slot `footer`, `close-on-backdrop`, `close-on-escape`, `show-close-button`, `close-label`, `open` |
-| `table` | Belum stabil. `columns` (array kolom: `key`, `header`, `cell`, `actions`, `image`, `file`, `children`, `sortable`, `sort-value`, `sort-fn`, `sort-directions`, `sort-resettable`, `sort-icon`, `align`, `header-align`, `emphasis`, `width`, `min-width`, `hideable`, `wrap`), `data` (array, Collection, atau `LengthAwarePaginator`), `row-key`, `size`: `normal \| compact`, `sticky`, `search`, `filter`, slot `actions`, `selectable`, `selected-keys`, `sort`, `sort-icon`, `header-align`, `pagination`, `manual`, `striped`, `loading`, `empty-text` |
-| `table-image`, `table-file` | Gambar atau berkas di sel Table, dengan pratinjau. `table-image`: `src`, `alt`, `caption`, `show-caption`, `preview`, `thumb-class`. `table-file`: `name`, `href`, `type`: `image \| pdf \| file`, `preview` |
+| `table` | Belum stabil. `columns` (array kolom: `key`, `header`, `cell`, `actions`, `image`, `file`, `children`, `sortable`, `sort-value`, `sort-fn`, `sort-directions`, `sort-resettable`, `sort-icon`, `align`, `header-align`, `emphasis`, `width`, `min-width`, `hideable`, `wrap`), `data` (array, Collection, atau `LengthAwarePaginator`), `row-key`, `size`: `normal \| compact`, `sticky`, `search`, `filter`, slot `actions`, `selectable`, `selected-keys`, `sort`, `sort-icon`, `header-align`, `pagination`, `manual`, `striped`, `dark-mode`, `loading`, `empty-text`. Di bawah lebar 640px tabel otomatis `compact`, dan toolbar serta footer-nya menata ulang diri. Berbeda dari React: yang mengatur ini container query CSS (`@max-[638px]:`, yaitu lebar isi tabel tanpa garis 1px kiri-kanan), bukan ResizeObserver yang merender ulang, supaya HTML pertama dari server sudah benar dan morph Livewire tidak menimpa rupanya. Juga berbeda: mulai 576px kotak cari toolbar mengisi sisa ruang (10rem–22rem, di React minimal 22rem) supaya tombol aksi tetap sebaris |
+| `table-image`, `table-file` | Gambar atau berkas di sel Table, dengan pratinjau. `table-image`: `src`, `alt`, `caption`, `show-caption`, `preview`, `thumb-class`, `caption-class` (khusus Livewire: membungkus caption di bawah gambar kecil dengan `<span>` berkelas itu; dipakai Table untuk menyembunyikannya di mobile). `table-file`: `name`, `href`, `type`: `image \| pdf \| file`, `preview` |
 | `table-of-contents` | `items` (`id`, `label`, `href`), `title` (`:title="false"` menyembunyikannya, padanan `title={null}`), `active-id`, `scroll-spy`, `offset`, `get-href` (pola dengan `{id}` atau closure), `anchor`, `max-height`, `scroll-container` (selector CSS, padanan `scrollContainer`), `dark-mode`, `layout` (`auto`, `list`, `drawer`), `drawer-contained`. Drawer-nya `<x-ceplok::drawer>`. Berbeda dari React: daftar di Drawer selalu dirender supaya markup Livewire sama di setiap render |
 | `timeline` | `items` (`name`, `role`, `time` (string ISO 8601 dengan jam atau `DateTimeInterface`, ditulis `01 Jan 2026 · 09:05`), `elapsed`, `description`, `details`, `attachments` (`name`, `href`, `target`, `download`), `status` (kunci Badge + `label`, `class`, `attributes`), `avatar`, `initials`), `platform`: `desktop \| mobile`, `size`: `large \| small`, `labels` (`elapsed`, `details`, `attachments`, `months`), `dark-mode` |
 | `hero` | `type`, `centered-content`, `platform`, `heading`, `sub-heading`, `description`, `show-heading`, `show-button`, `button-label`, `button-href`, `button-attributes`, `image`, `image-alt`, `image-orientation`, slot `image-content`, `dark-mode` |
@@ -263,12 +263,17 @@ nilai token lewat atribut `data-theme="dark"`:
 - Komponen tersebut ikut gelap bila salah satu pembungkusnya memakai
   `data-theme="dark"`. Bagian di dalamnya bisa dikembalikan terang dengan
   `data-theme="light"`.
-- `badge`, `avatar`, `pagination`, `popover`, `dropdown`, `datepicker`, dan
+- `table` memakai token `--color-table-*`: `dark-mode` memasang
+  `data-theme="dark"`, dan Pagination, Dropdown, serta tombol Filter-nya ikut
+  gelap. Badge dan Button theme `gray` di sel ikut gelap otomatis (padanan
+  DarkModeContext di React); tombol gray di slot `actions` perlu `dark-mode`
+  sendiri, karena Blade merender slot sebelum badan Table.
+- `badge`, `avatar`, `button`, `pagination`, `popover`, `dropdown`, `datepicker`, dan
   `upload` belum berbasis token: `dark-mode` mengganti class warnanya
   langsung, sama seperti di kit React.
 - `modal` tidak punya `dark-mode`: dialognya mengikuti `data-theme`
   pembungkusnya lewat token semantik, juga saat tampil di top layer, sama
-  seperti di kit React. `table` belum punya desain gelap.
+  seperti di kit React.
 
 ## Ikon
 

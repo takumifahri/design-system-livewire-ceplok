@@ -17,6 +17,7 @@
         ['size', '"xs" | "s" | "base" | "l" | "xl"', 'base', 'Menentukan ukuran tombol.'],
         ['variant', '"filled" | "outline"', 'filled', 'Gaya utama tombol: solid atau outline.'],
         ['tone', '"light" | "dark"', 'light', 'Menyetel kontras warna untuk variant atau theme.'],
+        ['dark-mode', 'bool', 'false', 'Menyesuaikan warna Button untuk permukaan bertema gelap. Di sel Table ber-dark-mode, Button theme gray ikut gelap otomatis.'],
         ['left-icon', 'Htmlable | slot', 'null', 'Ikon di sisi kiri tombol, mis. svg(\'ceplok-s-messages\', \'size-4\').'],
         ['right-icon', 'Htmlable | slot', 'null', 'Ikon di sisi kanan tombol.'],
         ['theme', '"primary" | "green" | "gray" | "purple" | "orange" | "yellow"', 'primary', 'Warna aksen tombol.'],
