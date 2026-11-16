@@ -110,8 +110,8 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
-            Berbeda dengan Radio, tiap Checkbox berdiri sendiri — pakai <span class="text-primary-500">name</span> yang sama hanya bila
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+            Berbeda dengan Radio, tiap Checkbox berdiri sendiri — pakai <span class="text-primary-500 dark:text-primary-400">name</span> yang sama hanya bila
             server Anda memang mengharapkan satu daftar nilai dari satu nama.
         </p>
     </x-docs.section>

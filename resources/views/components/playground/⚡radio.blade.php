@@ -116,8 +116,8 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
-            Satu kelompok pilihan dibentuk dengan memberi <span class="text-primary-500">name</span> yang sama pada tiap Radio — sama seperti
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+            Satu kelompok pilihan dibentuk dengan memberi <span class="text-primary-500 dark:text-primary-400">name</span> yang sama pada tiap Radio — sama seperti
             formulir HTML biasa, jadi panah atas/bawah otomatis berpindah antar-opsi.
         </p>
     </x-docs.section>

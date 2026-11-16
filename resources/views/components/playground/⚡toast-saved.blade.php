@@ -9,6 +9,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     public bool $saved = false;
 
     public int $count = 0;
@@ -23,5 +26,5 @@ new class extends Component
 
 <div class="flex flex-col items-start gap-4">
     <x-ceplok::button wire:click="save">Simpan data</x-ceplok::button>
-    <x-ceplok::toast variant="success" wire:model="saved">Data #{{ $count }} berhasil disimpan!</x-ceplok::toast>
+    <x-ceplok::toast variant="success" wire:model="saved" :dark-mode="$dark">Data #{{ $count }} berhasil disimpan!</x-ceplok::toast>
 </div>

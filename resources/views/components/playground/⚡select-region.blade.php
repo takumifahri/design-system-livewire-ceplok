@@ -10,6 +10,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     public string $provinsi = '';
 
     public string $kota = '';
@@ -46,6 +49,7 @@ new class extends Component
         placeholder="Pilih provinsi"
         wire:model.live="provinsi"
         :options="$daftarProvinsi"
+        :dark-mode="$dark"
     />
     <x-ceplok::select
         label="Kabupaten/Kota"
@@ -53,5 +57,6 @@ new class extends Component
         wire:model="kota"
         :options="$this->daftarKota"
         :state="$provinsi ? 'default' : 'inactive'"
+        :dark-mode="$dark"
     />
 </div>

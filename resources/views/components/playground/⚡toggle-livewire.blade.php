@@ -8,6 +8,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     public bool $notifikasi = true;
 
     public int $diubah = 0;
@@ -24,9 +27,10 @@ new class extends Component
         label="Notifikasi email"
         helper-text="Kirim ringkasan permohonan baru setiap pagi."
         wire:model.live="notifikasi"
+        :dark-mode="$dark"
     />
-    <p class="text-body-sm text-gray-500" role="status">
-        Server mencatat notifikasi <span class="text-gray-900">{{ $notifikasi ? 'menyala' : 'mati' }}</span>
+    <p class="text-body-sm text-gray-500 dark:text-gray-400" role="status">
+        Server mencatat notifikasi <span class="text-gray-900 dark:text-white">{{ $notifikasi ? 'menyala' : 'mati' }}</span>
         @if ($diubah)
             · diubah {{ $diubah }}×
         @endif

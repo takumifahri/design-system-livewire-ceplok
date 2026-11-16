@@ -8,6 +8,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     public string $nama = '';
 
     public ?string $tersimpan = null;
@@ -34,11 +37,12 @@ new class extends Component
         :state="$errors->has('nama') ? 'failed' : 'default'"
         :helper-text="$errors->first('nama') ?: 'Sesuai yang tertera pada KTP.'"
         clearable
+        :dark-mode="$dark"
     />
     <div class="flex flex-wrap items-center gap-3">
         <x-ceplok::button type="submit">Simpan</x-ceplok::button>
         @if ($tersimpan !== null)
-            <span class="text-body-sm text-gray-500">Tersimpan: {{ $tersimpan }}</span>
+            <span class="text-body-sm text-gray-500 dark:text-gray-400">Tersimpan: {{ $tersimpan }}</span>
         @endif
     </div>
 </form>

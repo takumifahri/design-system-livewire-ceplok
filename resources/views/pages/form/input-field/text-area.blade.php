@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     $applications = [
         ['value' => 'default', 'label' => 'Default', 'token' => 'primary-700'],
         ['value' => 'purple', 'label' => 'Purple', 'token' => 'purple-700'],
@@ -18,6 +20,11 @@
         ['dark-mode', 'bool', 'false', 'Tampilan gelap: kotak dan toolbar gray-700, label putih.'],
         ['…atribut', 'HTML', '—', 'Seluruh atribut <textarea> standar diteruskan (rows, maxlength, name, wire:model, …); value menjadi isi awalnya. class dan wire:key ke pembungkus terluar.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
+    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
+    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Text Area">
@@ -43,10 +50,10 @@
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Desktop · 162px">
-                    <x-ceplok::text-area label="Keterangan" placeholder="Tulis keterangan tambahan…" helper-text="Maksimal 500 karakter." />
+                    <x-ceplok::text-area label="Keterangan" placeholder="Tulis keterangan tambahan…" helper-text="Maksimal 500 karakter." :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Mobile · 120px">
-                    <x-ceplok::text-area platform="mobile" label="Keterangan" placeholder="Tulis keterangan tambahan…" helper-text="Maksimal 500 karakter." />
+                    <x-ceplok::text-area platform="mobile" label="Keterangan" placeholder="Tulis keterangan tambahan…" helper-text="Maksimal 500 karakter." :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
@@ -55,22 +62,23 @@
                     label="Keterangan"
                     placeholder="Tulis keterangan tambahan…"
                     helper-text="Maksimal 500 karakter."
+                    ⟨dark-mode⟩
                 />
 
                 {{-- Mobile — kotak 120px --}}
-                <x-ceplok::text-area ⟦platform⟧="mobile" label="Keterangan" />
+                <x-ceplok::text-area ⟦platform⟧="mobile" label="Keterangan"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="editor" title="Editor">
             <x-docs.lead>
-                Type <span class="text-primary-500">editor</span> menambahkan toolbar setinggi 40px di atas area isian — tujuh alat dengan garis
+                Type <span class="text-primary-500 dark:text-primary-400">editor</span> menambahkan toolbar setinggi 40px di atas area isian — tujuh alat dengan garis
                 pemisah setelah alat ketiga. Teks di kanan label bisa dipakai sebagai penghitung karakter, dan
-                tombol kirim muncul begitu <span class="text-primary-500">submit-label</span> diisi.
+                tombol kirim muncul begitu <span class="text-primary-500 dark:text-primary-400">submit-label</span> diisi.
             </x-docs.lead>
             <x-docs.demo>
-                <x-ceplok::text-area type="editor" label="Isi pesan" hint="0/500" placeholder="Tulis pesan Anda…" submit-label="Submit Text" />
+                <x-ceplok::text-area type="editor" label="Isi pesan" hint="0/500" placeholder="Tulis pesan Anda…" submit-label="Submit Text" :dark-mode="$docsDark" />
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
@@ -82,6 +90,7 @@
                     ⟦submit-label⟧="Submit Text"
                     wire:submit="kirim"
                     x-on:toolbar-action="console.log($event.detail.action)"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -102,6 +111,7 @@
                             placeholder="Tulis pesan Anda…"
                             :helper-text="'bg-'.$a['token']"
                             submit-label="Submit Text"
+                            :dark-mode="$docsDark"
                         />
                     </x-docs.demo>
                 @endforeach
@@ -113,48 +123,49 @@
                     ⟦application⟧="purple"
                     label="Isi pesan"
                     submit-label="Submit Text"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Prop <span class="text-primary-500">dark-mode</span> mengganti kotak, toolbar, dan area isian ke gray-700, dengan label dan teks
+        <x-docs.mode-section name="Text Area">
+            <x-slot:lead>
+                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti kotak, toolbar, dan area isian ke gray-700, dengan label dan teks
                 yang diketik putih. Kotak polos tidak lagi bergaris, sedangkan bingkai editor dan garis pemisah
                 toolbarnya menjadi gray-600. Tombol kirim memakai -600 (hover -700), satu tingkat lebih terang dari
                 tampilan terang.
-            </x-docs.lead>
+            </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
-                <x-docs.demo label="Default" dark>
-                    <x-ceplok::text-area dark-mode label="Keterangan" placeholder="Tulis keterangan tambahan…" helper-text="Maksimal 500 karakter." />
+                <x-docs.demo label="Default" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::text-area :dark-mode="! $docsDark" label="Keterangan" placeholder="Tulis keterangan tambahan…" helper-text="Maksimal 500 karakter." />
                 </x-docs.demo>
-                <x-docs.demo label="Editor" dark>
-                    <x-ceplok::text-area dark-mode type="editor" label="Isi pesan" hint="Opsional" placeholder="Tulis pesan Anda…" submit-label="Submit Text" />
+                <x-docs.demo label="Editor" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::text-area :dark-mode="! $docsDark" type="editor" label="Isi pesan" hint="Opsional" placeholder="Tulis pesan Anda…" submit-label="Submit Text" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
                 <x-ceplok::text-area
-                    ⟦dark-mode⟧
+                    ⟨!⟦dark-mode⟧⟩
                     type="editor"
                     label="Isi pesan"
                     submit-label="Submit Text"
                 />
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.text-area />
+        <livewire:playground.text-area :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
                 Tombol kirim dan tombol toolbar memicu event dari elemen textarea-nya, jadi cukup pasang
-                <span class="text-primary-500">wire:submit</span> dan <span class="text-primary-500">wire:toolbar-action</span> pada tag komponennya. Tulis pesan lalu tekan
+                <span class="text-primary-500 dark:text-primary-400">wire:submit</span> dan <span class="text-primary-500 dark:text-primary-400">wire:toolbar-action</span> pada tag komponennya. Tulis pesan lalu tekan
                 Kirim, atau coba salah satu alat di toolbar.
             </x-docs.lead>
             <x-docs.example>
-                <livewire:playground.text-area-send />
+                <livewire:playground.text-area-send :dark="$docsDark" />
             </x-docs.example>
             <x-docs.code>
                 @verbatim
@@ -165,6 +176,7 @@
                     submit-label="Kirim"
                     ⟦wire:submit⟧="kirim"
                     ⟦wire:toolbar-action⟧="pakaiAlat($event.detail.action)"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -173,7 +185,7 @@
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>
                 Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut
-                <span class="text-primary-500">&lt;textarea&gt;</span> standar juga diteruskan apa adanya.
+                <span class="text-primary-500 dark:text-primary-400">&lt;textarea&gt;</span> standar juga diteruskan apa adanya.
             </x-docs.lead>
             <div class="[&_td:first-child]:whitespace-nowrap">
                 <x-docs.props-table :rows="$props" min-width="48rem" />

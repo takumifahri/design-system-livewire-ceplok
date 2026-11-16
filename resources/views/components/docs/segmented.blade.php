@@ -29,7 +29,7 @@
 
 <div
     {{ $attributes->class([
-        'inline-flex rounded-lg border border-border bg-surface p-1',
+        'inline-flex rounded-lg border border-border bg-surface p-1 dark:border-gray-700 dark:bg-gray-800',
         'flex-wrap' => $wrap,
         'opacity-50' => $disabled,
     ]) }}
@@ -47,8 +47,8 @@
                 x-on:click="{{ $model }} = @js($option['value'])"
                 x-bind:aria-pressed="{{ $model }} === @js($option['value'])"
                 x-bind:class="{
-                    'bg-primary-50 text-primary-700': {{ $model }} === @js($option['value']),
-                    'text-gray-500 hover:text-gray-800': {{ $model }} !== @js($option['value']),
+                    'bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-primary-300': {{ $model }} === @js($option['value']),
+                    'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100': {{ $model }} !== @js($option['value']),
                 }"
             @else
                 wire:click="$set(@js($model), @js($option['value']))"
@@ -57,7 +57,7 @@
             @class([
                 'inline-flex items-center gap-2 rounded-md py-1.5 text-sm font-bold transition-colors disabled:cursor-not-allowed',
                 $itemClass,
-                $selected ? 'bg-primary-50 text-primary-700' : 'text-gray-500 hover:text-gray-800',
+                $selected ? 'bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-primary-300' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100',
                 'opacity-40' => ! $disabled && $optionDisabled,
             ])
             aria-pressed="{{ $selected ? 'true' : 'false' }}"

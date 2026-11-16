@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     $lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
     $sed = 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
@@ -120,6 +122,11 @@
         ['target', 'string', 'null', 'Tempat tautan dibuka, mis. _blank untuk tab baru. Tab baru otomatis diberi rel="noreferrer".'],
         ['download', 'bool | string', 'null', 'Mengunduh berkas alih-alih membukanya; teks menjadi nama berkas hasil unduhan. Browser hanya menurutinya untuk alamat di domain yang sama, blob:, dan data:.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
+    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
+    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Timeline View">
@@ -144,8 +151,8 @@
     >
         <x-docs.section id="platform" title="Platform">
             <x-docs.lead>
-                <span class="text-primary-500">desktop</span> menaruh garis di tengah dengan kartu berselang-seling kiri dan kanan,
-                untuk halaman yang lebar. <span class="text-primary-500">mobile</span> menaruh garis di kiri dan semua kartu di
+                <span class="text-primary-500 dark:text-primary-400">desktop</span> menaruh garis di tengah dengan kartu berselang-seling kiri dan kanan,
+                untuk halaman yang lebar. <span class="text-primary-500 dark:text-primary-400">mobile</span> menaruh garis di kiri dan semua kartu di
                 kanannya, untuk layar atau kolom yang sempit. Susunannya tidak berganti sendiri mengikuti
                 lebar layar, jadi pilih platform-nya dari halaman pemakai. Lancip kartu selalu menunjuk ke
                 avatarnya.
@@ -153,59 +160,59 @@
 
             <div class="space-y-5">
                 <x-docs.demo label="desktop" :min-width="$desktopMinWidth">
-                    <x-ceplok::timeline :items="array_slice($designItems, 0, 3)" />
+                    <x-ceplok::timeline :items="array_slice($designItems, 0, 3)" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="mobile">
                     <div class="max-w-102">
-                        <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" platform="mobile" />
+                        <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" platform="mobile" :dark-mode="$docsDark" />
                     </div>
                 </x-docs.demo>
             </div>
 
             <x-docs.code>
                 @verbatim
-                <x-ceplok::timeline :items="$items" />
+                <x-ceplok::timeline :items="$items"⟨ dark-mode⟩ />
 
-                <x-ceplok::timeline :items="$items" ⟦platform="mobile"⟧ />
+                <x-ceplok::timeline :items="$items" ⟦platform="mobile"⟧⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="sizes" title="Sizes">
             <x-docs.lead>
-                <span class="text-primary-500">large</span> adalah ukuran bawaan: teks 14px, avatar 44px, padding kartu 20px, dan
-                jarak antar-item 24px. <span class="text-primary-500">small</span> untuk tampilan yang padat: teks 12px, avatar 36px,
+                <span class="text-primary-500 dark:text-primary-400">large</span> adalah ukuran bawaan: teks 14px, avatar 44px, padding kartu 20px, dan
+                jarak antar-item 24px. <span class="text-primary-500 dark:text-primary-400">small</span> untuk tampilan yang padat: teks 12px, avatar 36px,
                 padding 16px, dan jarak 18px.
             </x-docs.lead>
 
             <div class="grid gap-5 lg:grid-cols-2">
                 <x-docs.demo label="large">
-                    <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" platform="mobile" />
+                    <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" platform="mobile" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="small">
-                    <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" platform="mobile" size="small" />
+                    <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" platform="mobile" size="small" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
 
             <x-docs.code>
                 @verbatim
-                <x-ceplok::timeline :items="$items" />
+                <x-ceplok::timeline :items="$items"⟨ dark-mode⟩ />
 
-                <x-ceplok::timeline :items="$items" ⟦size="small"⟧ />
+                <x-ceplok::timeline :items="$items" ⟦size="small"⟧⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="isi-item" title="Isi item">
             <x-docs.lead>
-                Tiap item hanya wajib punya <span class="text-primary-500">name</span>; bagian lain tampil bila diisi. <span class="text-primary-500">role</span>
-                ditulis di bawah nama, lalu <span class="text-primary-500">time</span>, <span class="text-primary-500">elapsed</span>, dan <span class="text-primary-500">description</span>
-                sebagai keterangan utama. <span class="text-primary-500">details</span> dan <span class="text-primary-500">attachments</span> menyusul sebagai
-                kelompok berikutnya, dan <span class="text-primary-500">status</span> menjadi Badge di pojok kanan atas kartu.
+                Tiap item hanya wajib punya <span class="text-primary-500 dark:text-primary-400">name</span>; bagian lain tampil bila diisi. <span class="text-primary-500 dark:text-primary-400">role</span>
+                ditulis di bawah nama, lalu <span class="text-primary-500 dark:text-primary-400">time</span>, <span class="text-primary-500 dark:text-primary-400">elapsed</span>, dan <span class="text-primary-500 dark:text-primary-400">description</span>
+                sebagai keterangan utama. <span class="text-primary-500 dark:text-primary-400">details</span> dan <span class="text-primary-500 dark:text-primary-400">attachments</span> menyusul sebagai
+                kelompok berikutnya, dan <span class="text-primary-500 dark:text-primary-400">status</span> menjadi Badge di pojok kanan atas kartu.
             </x-docs.lead>
 
             <x-docs.demo label="ringkas dan lengkap" :min-width="$desktopMinWidth">
-                <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" />
+                <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" :dark-mode="$docsDark" />
             </x-docs.demo>
 
             <x-docs.code :mark="['\'name\'', '\'elapsed\'', '\'details\'', '\'attachments\'', '\'status\'']">
@@ -231,25 +238,25 @@
                     ];
                 @endphp
 
-                <x-ceplok::timeline :items="$items" />
+                <x-ceplok::timeline :items="$items"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="waktu" title="Waktu">
             <x-docs.lead>
-                <span class="text-primary-500">time</span> menerima string waktu ISO 8601 dengan jam, mis. <span class="text-primary-500">'2026-01-01 09:05'</span>, atau
-                <span class="text-primary-500">DateTimeInterface</span> seperti Carbon dari Eloquent. Timeline selalu menuliskannya dengan format
+                <span class="text-primary-500 dark:text-primary-400">time</span> menerima string waktu ISO 8601 dengan jam, mis. <span class="text-primary-500 dark:text-primary-400">'2026-01-01 09:05'</span>, atau
+                <span class="text-primary-500 dark:text-primary-400">DateTimeInterface</span> seperti Carbon dari Eloquent. Timeline selalu menuliskannya dengan format
                 desain: tanggal dua digit, singkatan bulan, tahun, lalu jam 24 jam, mis.
-                <span class="text-primary-500">01 Jan 2026 · 09:05</span>. Formatnya tidak mengikuti locale aplikasi, jadi tampilannya sama di
+                <span class="text-primary-500 dark:text-primary-400">01 Jan 2026 · 09:05</span>. Formatnya tidak mengikuti locale aplikasi, jadi tampilannya sama di
                 mana pun. Jamnya ditulis di zona waktu nilainya: string tanpa zona waktu dibaca di zona waktu
-                aplikasi. String lain, mis. <span class="text-primary-500">'01/02/2026'</span>, ditolak karena urutan hari dan bulannya rancu.
-                Singkatan bulannya bisa diganti lewat <span class="text-primary-500">labels['months']</span>; lihat bagian Label.
+                aplikasi. String lain, mis. <span class="text-primary-500 dark:text-primary-400">'01/02/2026'</span>, ditolak karena urutan hari dan bulannya rancu.
+                Singkatan bulannya bisa diganti lewat <span class="text-primary-500 dark:text-primary-400">labels['months']</span>; lihat bagian Label.
             </x-docs.lead>
 
             <x-docs.demo label="tanggal dan jam dua digit, jam 24 jam">
                 <div class="max-w-102">
-                    <x-ceplok::timeline :items="$waktuItems" platform="mobile" />
+                    <x-ceplok::timeline :items="$waktuItems" platform="mobile" :dark-mode="$docsDark" />
                 </div>
             </x-docs.demo>
 
@@ -267,16 +274,16 @@
 
         <x-docs.section id="status" title="Status">
             <x-docs.lead>
-                <span class="text-primary-500">status</span> dirender dengan komponen Badge, jadi kuncinya mengikuti prop Badge:
-                <span class="text-primary-500">variant</span>, <span class="text-primary-500">icon</span>, <span class="text-primary-500">dismissible</span>, <span class="text-primary-500">open</span>, dan lainnya,
-                dengan <span class="text-primary-500">label</span> sebagai isinya. Bawaannya mengikuti desain: variant
-                <span class="text-primary-500">success</span> ukuran <span class="text-primary-500">sm</span>. Desainnya memakai ikon jam dan tombol tutup; pilih
+                <span class="text-primary-500 dark:text-primary-400">status</span> dirender dengan komponen Badge, jadi kuncinya mengikuti prop Badge:
+                <span class="text-primary-500 dark:text-primary-400">variant</span>, <span class="text-primary-500 dark:text-primary-400">icon</span>, <span class="text-primary-500 dark:text-primary-400">dismissible</span>, <span class="text-primary-500 dark:text-primary-400">open</span>, dan lainnya,
+                dengan <span class="text-primary-500 dark:text-primary-400">label</span> sebagai isinya. Bawaannya mengikuti desain: variant
+                <span class="text-primary-500 dark:text-primary-400">success</span> ukuran <span class="text-primary-500 dark:text-primary-400">sm</span>. Desainnya memakai ikon jam dan tombol tutup; pilih
                 variant dan ikon lain untuk tahap yang berbeda.
             </x-docs.lead>
 
             <x-docs.demo label="warning, success, dan Badge seperti di desain">
                 <div class="max-w-102">
-                    <x-ceplok::timeline :items="$statusItems" platform="mobile" />
+                    <x-ceplok::timeline :items="$statusItems" platform="mobile" :dark-mode="$docsDark" />
                 </div>
             </x-docs.demo>
 
@@ -291,17 +298,17 @@
 
         <x-docs.section id="attachments" title="Attachments">
             <x-docs.lead>
-                Tiap lampiran berisi <span class="text-primary-500">name</span> dan, bila berkasnya bisa dibuka, <span class="text-primary-500">href</span>. Tanpa
-                <span class="text-primary-500">href</span> namanya tampil sebagai teks biasa seperti di desain. Dengan <span class="text-primary-500">href</span> ia
-                menjadi tautan: <span class="text-primary-500">target="_blank"</span> membukanya di tab baru, dan
-                <span class="text-primary-500">download</span> mengunduhnya. Browser hanya menuruti <span class="text-primary-500">download</span> untuk alamat di
-                domain yang sama, <span class="text-primary-500">blob:</span>, dan <span class="text-primary-500">data:</span>. Timeline tidak menyimpan berkasnya:
-                alamatnya bisa dari server, atau dari <span class="text-primary-500">temporaryUrl()</span> milik berkas unggahan Livewire.
+                Tiap lampiran berisi <span class="text-primary-500 dark:text-primary-400">name</span> dan, bila berkasnya bisa dibuka, <span class="text-primary-500 dark:text-primary-400">href</span>. Tanpa
+                <span class="text-primary-500 dark:text-primary-400">href</span> namanya tampil sebagai teks biasa seperti di desain. Dengan <span class="text-primary-500 dark:text-primary-400">href</span> ia
+                menjadi tautan: <span class="text-primary-500 dark:text-primary-400">target="_blank"</span> membukanya di tab baru, dan
+                <span class="text-primary-500 dark:text-primary-400">download</span> mengunduhnya. Browser hanya menuruti <span class="text-primary-500 dark:text-primary-400">download</span> untuk alamat di
+                domain yang sama, <span class="text-primary-500 dark:text-primary-400">blob:</span>, dan <span class="text-primary-500 dark:text-primary-400">data:</span>. Timeline tidak menyimpan berkasnya:
+                alamatnya bisa dari server, atau dari <span class="text-primary-500 dark:text-primary-400">temporaryUrl()</span> milik berkas unggahan Livewire.
             </x-docs.lead>
 
             <x-docs.demo label="teks biasa, tab baru, dan unduhan">
                 <div class="max-w-102">
-                    <x-ceplok::timeline :items="$lampiranItems" platform="mobile" />
+                    <x-ceplok::timeline :items="$lampiranItems" platform="mobile" :dark-mode="$docsDark" />
                 </div>
             </x-docs.demo>
 
@@ -318,17 +325,17 @@
 
         <x-docs.section id="label" title="Label">
             <x-docs.lead>
-                Label <span class="text-primary-500">Elapsed time:</span>, <span class="text-primary-500">Details</span>, dan <span class="text-primary-500">Attachments</span> mengikuti teks
-                desain, dan singkatan bulan di <span class="text-primary-500">time</span> bawaannya bahasa Inggris. Ganti lewat
-                <span class="text-primary-500">labels</span>, mis. untuk aplikasi berbahasa Indonesia: <span class="text-primary-500">months</span> berisi dua belas
+                Label <span class="text-primary-500 dark:text-primary-400">Elapsed time:</span>, <span class="text-primary-500 dark:text-primary-400">Details</span>, dan <span class="text-primary-500 dark:text-primary-400">Attachments</span> mengikuti teks
+                desain, dan singkatan bulan di <span class="text-primary-500 dark:text-primary-400">time</span> bawaannya bahasa Inggris. Ganti lewat
+                <span class="text-primary-500 dark:text-primary-400">labels</span>, mis. untuk aplikasi berbahasa Indonesia: <span class="text-primary-500 dark:text-primary-400">months</span> berisi dua belas
                 singkatan bulan, dimulai Januari. Label yang tidak diisi tetap memakai bawaannya. Contoh ini
-                juga memakai <span class="text-primary-500">initials</span> dan foto <span class="text-primary-500">avatar</span>, yang diteruskan ke komponen
+                juga memakai <span class="text-primary-500 dark:text-primary-400">initials</span> dan foto <span class="text-primary-500 dark:text-primary-400">avatar</span>, yang diteruskan ke komponen
                 Avatar.
             </x-docs.lead>
 
             <x-docs.demo label="labels bahasa Indonesia">
                 <div class="max-w-102">
-                    <x-ceplok::timeline :items="$contohIndonesia" platform="mobile" :labels="$labelIndonesia" />
+                    <x-ceplok::timeline :items="$contohIndonesia" platform="mobile" :labels="$labelIndonesia" :dark-mode="$docsDark" />
                 </div>
             </x-docs.demo>
 
@@ -350,47 +357,48 @@
                         'attachments' => 'Lampiran',
                         'months' => ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                     ]"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Garis, tepi kartu, dan latar avatar memakai token semantik <span class="text-primary-500">border</span>, serta nama dan
-                jabatan memakai <span class="text-primary-500">brand</span>. Warna lainnya dari token komponen
-                <span class="text-primary-500">--color-timeline-surface</span>, <span class="text-primary-500">-content</span>, dan <span class="text-primary-500">-avatar</span>. Aktifkan
-                lewat prop <span class="text-primary-500">dark-mode</span>, atau biarkan Timeline ikut
-                <span class="text-primary-500">data-theme="dark"</span> dari pembungkusnya. Kartu menjadi gray-800, garis
+        <x-docs.mode-section name="Timeline">
+            <x-slot:lead>
+                Garis, tepi kartu, dan latar avatar memakai token semantik <span class="text-primary-500 dark:text-primary-400">border</span>, serta nama dan
+                jabatan memakai <span class="text-primary-500 dark:text-primary-400">brand</span>. Warna lainnya dari token komponen
+                <span class="text-primary-500 dark:text-primary-400">--color-timeline-surface</span>, <span class="text-primary-500 dark:text-primary-400">-content</span>, dan <span class="text-primary-500 dark:text-primary-400">-avatar</span>. Aktifkan
+                lewat prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span>, atau biarkan Timeline ikut
+                <span class="text-primary-500 dark:text-primary-400">data-theme="dark"</span> dari pembungkusnya. Kartu menjadi gray-800, garis
                 dan tepinya gray-700, nama dan jabatan primary-400, serta teks isi dan siluet avatar
                 gray-100. Badge status memakai tampilan gelapnya sendiri (green-900 dengan teks
-                green-300) lewat <span class="text-primary-500">dark-mode</span>. Badge belum berbasis token, jadi ia tidak ikut gelap
-                lewat <span class="text-primary-500">data-theme</span> pembungkus; pakai prop <span class="text-primary-500">dark-mode</span> bila kartunya memuat
+                green-300) lewat <span class="text-primary-500 dark:text-primary-400">dark-mode</span>. Badge belum berbasis token, jadi ia tidak ikut gelap
+                lewat <span class="text-primary-500 dark:text-primary-400">data-theme</span> pembungkus; pakai prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> bila kartunya memuat
                 status.
-            </x-docs.lead>
+            </x-slot:lead>
 
-            <x-docs.demo label="dark-mode" dark :min-width="$desktopMinWidth">
-                <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" dark-mode />
+            <x-docs.demo :label="$docsDark ? 'tanpa dark-mode' : 'dark-mode'" :dark="! $docsDark" :light="$docsDark" :min-width="$desktopMinWidth">
+                <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" :dark-mode="! $docsDark" />
             </x-docs.demo>
 
             <x-docs.code>
                 @verbatim
-                <x-ceplok::timeline ⟦dark-mode⟧ :items="$items" />
+                <x-ceplok::timeline⟨! ⟦dark-mode⟧⟩ :items="$items" />
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.timeline />
+        <livewire:playground.timeline :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Kunci <span class="text-primary-500">attributes</span> pada <span class="text-primary-500">status</span> diteruskan ke Badge-nya. Tombol tutup Badge
-                memicu event <span class="text-primary-500">dismiss</span>, jadi <span class="text-primary-500">wire:dismiss</span> bisa memanggil metode
+                Kunci <span class="text-primary-500 dark:text-primary-400">attributes</span> pada <span class="text-primary-500 dark:text-primary-400">status</span> diteruskan ke Badge-nya. Tombol tutup Badge
+                memicu event <span class="text-primary-500 dark:text-primary-400">dismiss</span>, jadi <span class="text-primary-500 dark:text-primary-400">wire:dismiss</span> bisa memanggil metode
                 komponen Livewire. Di contoh ini status yang ditutup dicatat server, dan Timeline dirender
                 ulang tanpa status itu.
             </x-docs.lead>
             <x-docs.example>
-                <livewire:playground.timeline-livewire />
+                <livewire:playground.timeline-livewire :dark="$docsDark" />
             </x-docs.example>
             <x-docs.code mark="'attributes'">
                 @verbatim
@@ -411,17 +419,17 @@
                 <x-docs.props-table :rows="$props" min-width="46rem" />
 
                 <div>
-                    <h3 class="mb-3 text-sm font-black text-gray-900">Item</h3>
+                    <h3 class="mb-3 text-sm font-black text-gray-900 dark:text-white">Item</h3>
                     <x-docs.props-table :rows="$itemProps" min-width="46rem" />
                 </div>
 
                 <div>
-                    <h3 class="mb-3 text-sm font-black text-gray-900">Status</h3>
+                    <h3 class="mb-3 text-sm font-black text-gray-900 dark:text-white">Status</h3>
                     <x-docs.props-table :rows="$statusProps" min-width="46rem" />
                 </div>
 
                 <div>
-                    <h3 class="mb-3 text-sm font-black text-gray-900">Lampiran</h3>
+                    <h3 class="mb-3 text-sm font-black text-gray-900 dark:text-white">Lampiran</h3>
                     <x-docs.props-table :rows="$attachmentProps" min-width="46rem" />
                 </div>
             </div>

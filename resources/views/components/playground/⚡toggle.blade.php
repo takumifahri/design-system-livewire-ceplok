@@ -100,9 +100,9 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
-            Kondisi mati dan menyala diatur lewat <span class="text-primary-500">checked</span> atau <span class="text-primary-500">wire:model</span> seperti checkbox biasa —
-            bukan lewat prop <span class="text-primary-500">state</span>, yang hanya menangani <em>inactive</em>.
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+            Kondisi mati dan menyala diatur lewat <span class="text-primary-500 dark:text-primary-400">checked</span> atau <span class="text-primary-500 dark:text-primary-400">wire:model</span> seperti checkbox biasa —
+            bukan lewat prop <span class="text-primary-500 dark:text-primary-400">state</span>, yang hanya menangani <em>inactive</em>.
         </p>
     </x-docs.section>
 

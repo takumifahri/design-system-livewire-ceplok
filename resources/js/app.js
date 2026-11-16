@@ -11,6 +11,7 @@ import docsDropdownPlayground from './docs/dropdown-playground';
 import docsLayout from './docs/layout';
 import docsSearch from './docs/search';
 import docsToc from './docs/toc';
+import setDocsTheme from './docs/theme';
 import docsTirai from './docs/transition';
 import spotlight from './docs/spotlight';
 import { codeWindow, countUp, magnetic, parallax, reveal, scrollProgress, splitWords, tilt } from './docs/motion';
@@ -33,6 +34,7 @@ Alpine.directive('magnetic', magnetic);
 Alpine.directive('tilt', tilt);
 Alpine.directive('scroll-progress', scrollProgress);
 Alpine.directive('parallax', parallax);
+Alpine.magic('docsTheme', () => setDocsTheme);
 
 // Font pratinjau Playground (kontrol "Font" di x-docs.controls, dipakai
 // x-docs.stage). Store, karena kontrol dan panggungnya elemen terpisah.

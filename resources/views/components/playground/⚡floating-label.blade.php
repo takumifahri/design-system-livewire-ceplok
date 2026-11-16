@@ -129,7 +129,7 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
             Klik field di atas tanpa mengubah prop apa pun: labelnya naik saat difokus dan tetap di atas
             selama masih ada isi. Perhatikan juga posisi label saat turun — ia menyesuaikan diri bila ada ikon
             kiri.
