@@ -1,105 +1,127 @@
 <?php
 
+use CeplokUi\DesignKit\Enums\AvatarFallback;
 use CeplokUi\DesignKit\Enums\AvatarSize;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
-/*
- * Playground halaman Avatar. `wire:key` ikut berubah bersama kontrolnya:
- * berganti antara foto dan inisial mengubah struktur elemennya (ada/tidaknya
- * x-data), jadi avatarnya diganti utuh, bukan ditambal morph.
- */
 new class extends Component
 {
     public AvatarSize $size = AvatarSize::Default;
 
-    public bool $photo = true;
+    public string $content = 'auto';
 
-    public bool $named = true;
+    public AvatarFallback $profileFallback = AvatarFallback::Female;
+
+    public string $name = 'Putri Handayani';
 
     public bool $dark = false;
 
-    /** Prop yang nilainya masih bawaan sengaja tidak ditulis. */
     #[Computed]
     public function usage(): string
     {
-        return collect([
-            '<x-ceplok::avatar',
-            $this->dark ? '    ⟦dark-mode⟧' : null,
-            $this->size !== AvatarSize::Default ? '    ⟦size⟧="'.$this->size->value.'"' : null,
-            $this->photo ? '    ⟦src⟧="/foto/putri.jpg"' : null,
-            '    ⟦initials⟧="PH"',
-            $this->named ? '    ⟦alt⟧="Putri Handayani"' : null,
-            '/>',
-        ])->filter()->implode("\n");
+        $nama = trim($this->name);
+        $initials = $this->content === 'override' || ($this->content !== 'profile' && $nama === '') ? 'UI' : null;
+        $lines = ['<div class="flex items-center gap-3">', '    <x-ceplok::avatar'];
+
+        if ($this->size !== AvatarSize::Default) {
+            $lines[] = '        ⟦size⟧="'.$this->size->value.'"';
+        }
+
+        if ($this->content === 'photo') {
+            $lines[] = '        ⟦src⟧="/foto/putri.jpg"';
+        }
+
+        if ($nama !== '') {
+            $lines[] = '        ⟦name⟧="'.e($nama).'"';
+        }
+
+        $lines[] = '        ⟦alt⟧=""';
+
+        if ($initials !== null) {
+            $lines[] = '        ⟦initials⟧="UI"';
+        }
+
+        if ($this->content === 'profile') {
+            $lines[] = '        ⟦fallback⟧="'.$this->profileFallback->value.'"';
+        }
+
+        $lines[] = '    />';
+        $lines[] = '    <span>'.e($nama !== '' ? $nama : 'Tanpa nama').'</span>';
+        $lines[] = '</div>';
+        $avatar = implode("\n", $lines);
+
+        return $this->dark ? "<section ⟦data-theme⟧=\"dark\">\n".preg_replace('/^/m', '    ', $avatar)."\n</section>" : $avatar;
     }
 };
 ?>
 
 <div class="space-y-16">
+    @php
+        $nama = trim($name);
+        $initials = $content === 'override' || ($content !== 'profile' && $nama === '') ? 'UI' : null;
+    @endphp
     <x-docs.section id="playground" title="Playground">
-        <x-docs.lead>
-            Satu avatar yang bisa Anda utak-atik lewat kontrol di bawahnya. Matikan fotonya untuk
-            melihat inisialnya mengambil alih.
-        </x-docs.lead>
+        <x-docs.lead>Ubah tema, ukuran, isi, fallback profil, dan nama. Preview memakai komponen production yang sama.</x-docs.lead>
 
-        {{-- Tinggi minimum dikunci supaya kotaknya tidak naik-turun saat ukuran avatar diganti. --}}
-        <x-docs.stage max-width="max-w-[320px]" :dark="$dark">
-            <div class="flex min-h-30 items-center justify-center gap-3">
+        <x-docs.stage max-width="max-w-[360px]" :dark="$dark">
+            <div @if ($dark) data-theme="dark" @else data-theme="light" @endif class="flex min-h-30 items-center justify-center gap-3">
                 <x-ceplok::avatar
-                    wire:key="avatar-{{ $size->value }}-{{ (int) $photo }}-{{ (int) $named }}-{{ (int) $dark }}"
                     :size="$size"
-                    :src="$photo ? '/images/avatar-sample.svg' : null"
-                    initials="PH"
-                    :alt="$named ? 'Putri Handayani' : ''"
-                    :dark-mode="$dark"
+                    :src="$content === 'photo' ? '/images/avatar-sample.svg' : null"
+                    :name="$nama !== '' ? $nama : null"
+                    alt=""
+                    :initials="$initials"
+                    :fallback="$content === 'profile' ? $profileFallback : AvatarFallback::Initials"
                 />
-                <span @class(['text-sm', $dark ? 'text-gray-100' : 'text-gray-900'])>Putri Handayani</span>
+                <span class="text-sm text-content">{{ $nama !== '' ? $nama : 'Tanpa nama' }}</span>
             </div>
         </x-docs.stage>
 
         <x-docs.controls>
-            <x-docs.control label="Tampilan">
-                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
+            <x-docs.control label="Theme">
+                <x-docs.segmented label="Pilih theme" model="dark" :value="$dark" :options="[
                     ['value' => false, 'label' => 'Light'],
                     ['value' => true, 'label' => 'Dark'],
                 ]" />
             </x-docs.control>
             <x-docs.control label="Size">
                 <x-docs.segmented label="Pilih ukuran" model="size" :value="$size" :options="[
-                    ['value' => 'small', 'label' => 'Small'],
-                    ['value' => 'default', 'label' => 'Default'],
-                    ['value' => 'large', 'label' => 'Large'],
+                    ['value' => 'small', 'label' => 'S'],
+                    ['value' => 'default', 'label' => 'M'],
+                    ['value' => 'large', 'label' => 'L'],
                 ]" />
             </x-docs.control>
-
-            <x-docs.control label="Foto">
-                <x-docs.segmented label="Tampilkan foto" model="photo" :value="$photo" :options="[
-                    ['value' => true, 'label' => 'Ada'],
-                    ['value' => false, 'label' => 'Tidak ada'],
+            <x-docs.control label="Isi">
+                <x-docs.segmented label="Pilih isi Avatar" model="content" :value="$content" :options="[
+                    ['value' => 'photo', 'label' => 'Foto'],
+                    ['value' => 'auto', 'label' => 'Initials'],
+                    ['value' => 'override', 'label' => 'Override'],
+                    ['value' => 'profile', 'label' => 'Profile'],
                 ]" />
             </x-docs.control>
-
-            <x-docs.control label="Nama (alt)">
-                <x-docs.segmented label="Isi nama" model="named" :value="$named" :options="[
-                    ['value' => true, 'label' => 'Ada'],
-                    ['value' => false, 'label' => 'Tidak ada'],
+            <x-docs.control label="Profile fallback">
+                <x-docs.segmented label="Pilih ilustrasi profile" model="profileFallback" :value="$profileFallback" :disabled="$content !== 'profile'" :options="[
+                    ['value' => 'female', 'label' => 'Female'],
+                    ['value' => 'male', 'label' => 'Male'],
                 ]" />
             </x-docs.control>
-
+            <x-docs.control label="Nama">
+                <input wire:model.live="name" aria-label="Nama untuk preview Avatar" class="mt-1 w-full rounded-lg border border-field-border bg-field px-3 py-2 text-sm text-content outline-none focus:border-brand" />
+                @if ($content !== 'profile' && $nama === '')
+                    <p class="mt-1 text-xs text-feedback-error" role="status">
+                        Nama kosong memakai initials UI agar fallback tetap valid.
+                    </p>
+                @endif
+            </x-docs.control>
         </x-docs.controls>
-
-        <p class="mt-4 text-body-sm text-gray-500">
-            Contoh di atas sengaja menaruh nama di sebelah avatarnya — susunan yang paling sering
-            dipakai. Dalam keadaan itu <em>Nama (alt)</em> justru lebih baik dikosongkan, karena
-            namanya sudah terbaca dari teks di sampingnya.
-        </p>
     </x-docs.section>
 
     <x-docs.section id="penggunaan" title="Penggunaan">
         <x-docs.lead>
-            Blok ini mengikuti kontrol di Playground — ubah kontrolnya, kodenya ikut berubah. Prop yang
-            nilainya masih bawaan sengaja tidak ditulis.
+            Blok ini mengikuti kontrol di Playground. Prop yang masih memakai nilai bawaan sengaja tidak ditulis.
+            Fallback <span class="text-primary-500">initials</span> selalu membutuhkan
+            <span class="text-primary-500">name</span> atau <span class="text-primary-500">initials</span>.
         </x-docs.lead>
         <x-docs.code :code="$this->usage" flush />
     </x-docs.section>

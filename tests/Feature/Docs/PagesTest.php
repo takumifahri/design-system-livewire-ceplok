@@ -20,6 +20,7 @@ class PagesTest extends TestCase
             'badge' => ['components.badge', 'Badge', 'Badge'],
             'avatar' => ['components.avatar', 'Avatar', 'Avatar'],
             'spinner' => ['components.spinner', 'Spinner', 'Spinner'],
+            'clipboard' => ['components.clipboard', 'Clipboard', 'Clipboard'],
             'popover' => ['components.popover', 'Popover', 'Popover'],
             'dropdown' => ['components.dropdown', 'Dropdown', 'Dropdown'],
             'drawer' => ['components.drawer', 'Drawer', 'Drawer'],

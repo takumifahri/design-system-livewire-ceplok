@@ -1,5 +1,7 @@
 # Changelog
 
+- Docs Avatar: menambahkan section dan contoh integrasi state pengguna dengan Livewire.
+
 Semua perubahan penting pada `ceplok-ui/design-kit-livewire` dicatat di sini.
 Formatnya mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/)
 dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
@@ -8,12 +10,33 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Ditambahkan
 
+- Docs `popover`: menambahkan preview statis untuk empat posisi, contoh kode,
+  dan section integrasi state `wire:model`/`wire:open-change` dengan Livewire.
+- `clipboard`: nilai hanya-baca dengan variant default dan segmented, preset
+  desktop/mobile, label, helper, prefix visual, disabled, tema ambient,
+  feedback aksesibel, event `copy-success`/`copy-error`, Playground, dan docs,
+  setara kit React.
+- `avatar`: prop `name` untuk accessible name dan inisial otomatis, serta
+  `fallback` `initials`, `female`, atau `male` dengan ilustrasi profil terang
+  dan gelap, setara kit React.
+- `list-view`: prop `action-disabled` pada varian simple desktop menyembunyikan
+  tombol aksi dan memindahkan `action-href`, `action-wire-click`,
+  `action-click`, serta `action-attributes` ke seluruh kartu.
 - `sidebar`: kunci `attributes` pada `user` meneruskan atribut ke area
   profil, mis. `['wire:click' => 'bukaProfil']`, padanan `user.onClick` di
   kit React.
 
 ### Diubah
 
+- `clipboard` kini mewajibkan `value` dan nama aksesibel melalui `label`,
+  `aria-label`, atau `aria-labelledby`; docs, Playground, dan contoh Livewire
+  diselaraskan dengan kontrak terbaru kit React.
+- `avatar` kini memakai token `avatar-surface` dan `avatar-content`, sehingga
+  mengikuti scope ambient `data-theme`; prop `dark-mode` tetap tersedia sebagai
+  alias deprecated untuk kompatibilitas.
+- README `spinner` kini mendokumentasikan ukuran 50px/100px, atribut SVG yang
+  diteruskan, reduced motion, serta pola aksesibel standalone dan bersama teks
+  loading, setara README kit React.
 - `badge` mengikuti ukuran desain, sama dengan kit React: `sm` kini tinggi
   22px (sebelumnya 24px) dan `lg` 25px (sebelumnya 28px). Jarak ikon ke teks
   jadi 4px, dan ikon `lg` jadi 18px. Badge di tata letak yang ukurannya
@@ -22,9 +45,33 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menampilkan tombol collapse dalam keadaan aktif, seperti `onCollapse` di
   kit React. Tanpa pendengar, `show-collapse-button` tetap menampilkannya
   nonaktif.
+- Contoh Portal Dashboard kini memakai komponen `sidebar` yang sama pada
+  desktop dan viewport sempit. Pada viewport sempit, `drawer` hanya menjadi
+  shell off-canvas; data menu, profil, logo, status aktif, dan aksinya tetap
+  dirender oleh `sidebar`.
 
 ### Diperbaiki
 
+- `popover` kini memakai token surface, border, dan content yang sama dengan
+  React sehingga mengikuti boundary ambient `data-theme`. Cleanup listener,
+  observer, dan frame fokus dilengkapi; perubahan `side` saat panel terbuka
+  memicu pengukuran ulang; trigger anchor ditolak. Handler trigger consumer
+  kini dirangkai sebelum toggle internal dan dapat membatalkannya dengan
+  `preventDefault()`. Docs, Playground, kontrak aksesibilitas, dan Properties
+  juga diselaraskan dengan React.
+- `clipboard` mempertahankan write-lock sampai operasi Clipboard API selesai,
+  mengabaikan hasil lama setelah nilai berubah atau menjadi disabled, serta
+  melepas fokus dan seleksi input ketika dinonaktifkan. Hasil operasi yang
+  selesai setelah komponen dihancurkan juga diabaikan, dan error listener
+  event tidak lagi dapat mengubah feedback copy. Prefix pada variant default
+  kini dilaporkan sebagai kombinasi prop yang tidak valid.
+- `avatar`: URL foto yang pernah gagal kini dicoba kembali ketika `src`
+  berubah lalu kembali ke URL tersebut. Docs dan Playground juga diselaraskan
+  dengan React: snippet initials memakai `UI`, nama kosong tetap menghasilkan
+  props valid, serta preview dan kode Penggunaan mempunyai semantik aksesibel
+  yang sama. Fallback `initials` tanpa `name`, `initials`, atau slot kini
+  dilaporkan sebagai prop tidak valid; production menampilkan `?` alih-alih
+  lingkaran kosong.
 - `sidebar`: area profil tanpa `href` tidak lagi melompat ke `#` saat
   diklik.
 - `sidebar`: tombol collapse yang nonaktif kini berkursor `not-allowed`,

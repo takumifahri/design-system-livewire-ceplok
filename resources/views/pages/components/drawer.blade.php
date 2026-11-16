@@ -88,9 +88,7 @@
                 #dark-mode .ds-scroll-x { height: 600px; }
                 #dark-mode .ds-scroll-x > div { height: 100%; width: 420px; max-width: 100%; }
                 #dark-mode .absolute.inset-y-0.right-0 { z-index: 20; width: 320px; }
-                #dark-mode .ds-scroll-x > div > div:first-child > img,
                 #dark-mode .ds-scroll-x > div > .w-full > div:first-child > img { display: none; }
-                #dark-mode .ds-scroll-x > div > div:first-child::before,
                 #dark-mode .ds-scroll-x > div > .w-full > div:first-child::before {
                     display: flex;
                     width: 1.75rem;
@@ -105,7 +103,6 @@
                     font-size: .75rem;
                     font-weight: 700;
                 }
-                #dark-mode .ds-scroll-x > div > div:first-child > span,
                 #dark-mode .ds-scroll-x > div > .w-full > div:first-child > span { margin-left: .625rem; }
                 @media (min-width: 1024px) {
                     #dark-mode .ds-scroll-x { overflow-x: visible; }

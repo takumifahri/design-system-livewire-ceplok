@@ -49,7 +49,9 @@ class PortalDashboardTest extends TestCase
     public function test_menu_dan_profil_memberi_tahu_lewat_toast(): void
     {
         $dom = $this->parse(Livewire::test('portal.dashboard')->html());
-        $sidebar = $this->find($dom, 'aside[x-data="ceplokSidebar"]');
+        $sidebars = $dom->querySelectorAll('aside[x-data="ceplokSidebar"]');
+        $this->assertCount(2, $sidebars);
+        $sidebar = $sidebars->item(0);
 
         // Dashboard adalah halaman ini; menu lain belum dirancang, jadi memberi tahu lewat Toast.
         $this->assertSame('page', $this->find($sidebar, 'a[href="'.route('portal.app').'"]')->getAttribute('aria-current'));
@@ -59,10 +61,18 @@ class PortalDashboardTest extends TestCase
         // wire:collapse menampilkan tombol collapse yang aktif.
         $this->assertFalse($this->find($sidebar, 'header button')->hasAttribute('disabled'));
 
-        // Menu yang sama ada di Drawer untuk layar sempit, dengan id yang berbeda.
+        // Drawer layar sempit hanya menjadi shell off-canvas; isinya tetap komponen Sidebar.
         $drawer = $this->find($dom, 'dialog#portal-menu');
-        $this->assertSame('portal-menu-judul', $drawer->getAttribute('aria-labelledby'));
-        $this->assertNotNull($drawer->querySelector('a[wire\:click\.prevent="menuDemo(\'forum\')"]'));
+        $this->assertSame('Menu Portal Dashboard', $drawer->getAttribute('aria-label'));
+        $sidebarSeluler = $this->find($drawer, 'aside[x-data="ceplokSidebar"]');
+
+        foreach ([$sidebar, $sidebarSeluler] as $sidebarResponsif) {
+            $this->assertSame('page', $this->find($sidebarResponsif, 'a[href="'.route('portal.app').'"]')->getAttribute('aria-current'));
+            $this->assertNotNull($sidebarResponsif->querySelector('a[wire\:click\.prevent="menuDemo(\'forum\')"]'));
+            $this->assertNotNull($sidebarResponsif->querySelector('a[href="'.route('portal.index').'"][wire\:navigate]'));
+            $this->assertNotNull($sidebarResponsif->querySelector('img[alt="CEPLOK"]'));
+            $this->assertStringContainsString('RAFLI ARANDHANA', $sidebarResponsif->textContent);
+        }
     }
 
     public function test_aksi_demo_mengisi_toast(): void
@@ -81,6 +91,19 @@ class PortalDashboardTest extends TestCase
             ->assertSet('menuSeluler', false)
             ->assertSet('umpan', 'Halaman KMS belum ada di contoh ini.')
             ->assertSet('umpanKali', 4);
+    }
+
+    public function test_list_view_wiki_simple_desktop_memindahkan_aksi_ke_kartu(): void
+    {
+        $dom = $this->parse(Livewire::test('portal.dashboard')->html());
+        $kartuWiki = $dom->querySelectorAll('article[wire\:click="kabari(\'Detail wiki belum ada di contoh ini.\')"]');
+
+        $this->assertCount(2, $kartuWiki);
+
+        foreach ($kartuWiki as $kartu) {
+            $this->assertNull($kartu->querySelector('button'));
+            $this->assertHasClasses($kartu, 'cursor-pointer hover:border-primary-400/80');
+        }
     }
 
     public function test_sumber_anggaran_mengganti_angkanya(): void

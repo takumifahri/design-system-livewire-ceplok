@@ -18,14 +18,14 @@ new class extends Component
     #[Computed]
     public function usage(): string
     {
-        return implode("\n", array_filter([
+        $code = implode("\n", array_filter([
             '<x-ceplok::popover',
             '    ⟦title⟧="Popover"',
             $this->side === PopoverSide::Right ? null : '    ⟦side⟧="'.$this->side->value.'"',
-            $this->dark ? '    ⟦dark-mode⟧' : null,
             '>',
             '    <x-slot:⟦trigger⟧',
             '        raw',
+            '        type="button"',
             '        aria-label="Buka informasi"',
             '        class="inline-flex size-9 items-center justify-center rounded-md '.($this->dark ? 'text-gray-400' : 'text-gray-500').' focus-visible:outline-2"',
             '    >',
@@ -34,6 +34,12 @@ new class extends Component
             '    Popover Body Text, Popover Body Text, Popover Body Text',
             '</x-ceplok::popover>',
         ]));
+
+        if ($this->dark) {
+            return "<div ⟦data-theme⟧=\"dark\">\n".preg_replace('/^/m', '    ', $code ?? '')."\n</div>";
+        }
+
+        return $code ?? '';
     }
 };
 ?>
@@ -46,7 +52,7 @@ new class extends Component
         </x-docs.lead>
 
         <x-docs.stage max-width="max-w-[640px]" :dark="$dark">
-            <div class="flex min-h-32 items-center justify-center p-6">
+            <div data-theme="{{ $dark ? 'dark' : 'light' }}" class="flex min-h-32 items-center justify-center p-6">
                 <x-docs.popover-example label="Buka Popover Playground" :side="$side" :dark="$dark" />
             </div>
         </x-docs.stage>
@@ -72,8 +78,8 @@ new class extends Component
     <x-docs.section id="penggunaan" title="Penggunaan">
         <x-docs.lead>
             Kode mengikuti pilihan Playground. Nilai default <span class="text-primary-500">right</span> dan tampilan light tidak
-            ditulis. Trigger tetap butuh nama aksesibel sendiri; Popover memasang <span class="text-primary-500">id</span>,
-            <span class="text-primary-500">aria-controls</span>, dan <span class="text-primary-500">aria-expanded</span> di trigger itu.
+            ditulis. Trigger harus berupa satu native <span class="text-primary-500">&lt;button&gt;</span>; semantik native memastikan
+            trigger dapat menerima fokus serta diaktifkan dengan Enter dan Space.
         </x-docs.lead>
         <x-docs.code :code="$this->usage" flush />
 
@@ -81,7 +87,9 @@ new class extends Component
         <p class="mt-1 max-w-2xl text-body-sm text-gray-500">
             Popover menambahkan <span class="text-primary-500">aria-expanded</span> dan <span class="text-primary-500">aria-controls</span> pada trigger, sedangkan
             trigger tetap harus memiliki nama aksesibel. Panel bersifat non-modal dan tidak memindahkan
-            atau mengunci fokus. Role dan atribut ARIA tambahan dapat diteruskan sesuai isi panel.
+            atau mengunci fokus. Elemen non-interaktif, Fragment, button yang dibungkus elemen lain,
+            custom component, serta Button kit yang dirender sebagai anchor tidak dapat digunakan sebagai trigger.
+            Role dan atribut ARIA tambahan dapat diteruskan sesuai isi panel.
         </p>
     </x-docs.section>
 </div>

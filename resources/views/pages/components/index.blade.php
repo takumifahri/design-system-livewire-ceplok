@@ -4,8 +4,8 @@
 
     // Di mode gelap docs pratinjaunya ikut gelap: komponen dengan prop
     // `dark-mode` menerimanya, sedangkan tiruan statis dan komponen yang
-    // mengikuti tema pembungkus (Table of Contents) memakai `data-theme` di
-    // kotaknya. Modal belum punya desain gelap, jadi kerangkanya tetap terang,
+    // mengikuti tema pembungkus (Avatar, Clipboard, Table of Contents) memakai
+    // `data-theme` di kotaknya. Modal belum punya desain gelap, jadi kerangkanya tetap terang,
     // dan Button kit Livewire belum punya `dark-mode`.
     $docsDark = Theme::dark();
 
@@ -64,16 +64,24 @@
             </x-docs.overview-card>
 
             <x-docs.overview-card route="components.avatar" name="Avatar" desc="Lingkaran identitas berisi foto profil, atau inisial namanya bila fotonya tidak ada.">
-                <div class="flex items-center justify-center gap-4 rounded-xl bg-surface-subtle p-5 dark:bg-gray-900">
-                    <x-ceplok::avatar src="/images/avatar-sample.svg" alt="" size="large" />
-                    <x-ceplok::avatar initials="PH" :dark-mode="$docsDark" />
-                    <x-ceplok::avatar initials="PH" size="small" :dark-mode="$docsDark" />
+                {{-- Avatar mengikuti tema pembungkusnya lewat `data-theme`, sama seperti di docs React. --}}
+                <div @if ($docsDark) data-theme="dark" @endif class="flex items-center justify-center gap-4 rounded-xl bg-surface-subtle p-5 dark:bg-gray-900">
+                    <x-ceplok::avatar src="/images/avatar-sample.svg" name="Putri Handayani" alt="" size="large" />
+                    <x-ceplok::avatar initials="PH" />
+                    <x-ceplok::avatar initials="PH" size="small" />
                 </div>
             </x-docs.overview-card>
 
             <x-docs.overview-card route="components.spinner" name="Spinner" desc="Indikator proses berputar dalam ukuran default dan large.">
                 <div class="flex items-center justify-center rounded-xl bg-surface-subtle p-5 dark:bg-gray-900">
                     <x-ceplok::spinner aria-label="Memuat preview" />
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.clipboard" name="Clipboard" desc="Nilai hanya-baca yang dapat disalin melalui tombol aksi.">
+                {{-- Clipboard mengikuti tema pembungkusnya lewat `data-theme`, sama seperti di docs React. --}}
+                <div @if ($docsDark) data-theme="dark" @endif class="rounded-xl bg-surface-subtle p-5 dark:bg-gray-900">
+                    <x-ceplok::clipboard value="INV-2026-001" aria-label="Nomor referensi" />
                 </div>
             </x-docs.overview-card>
 
