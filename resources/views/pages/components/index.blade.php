@@ -57,7 +57,7 @@
 
             <x-docs.overview-card route="components.avatar" name="Avatar" desc="Lingkaran identitas berisi foto profil, atau inisial namanya bila fotonya tidak ada.">
                 <div class="flex items-center justify-center gap-4 rounded-xl bg-surface-subtle p-5">
-                    <x-ceplok::avatar src="/images/avatar-sample.svg" alt="" size="large" />
+                    <x-ceplok::avatar src="/images/avatar-sample.svg" name="Putri Handayani" alt="" size="large" />
                     <x-ceplok::avatar initials="PH" />
                     <x-ceplok::avatar initials="PH" size="small" />
                 </div>
@@ -66,6 +66,12 @@
             <x-docs.overview-card route="components.spinner" name="Spinner" desc="Indikator proses berputar dalam ukuran default dan large.">
                 <div class="flex items-center justify-center rounded-xl bg-surface-subtle p-5">
                     <x-ceplok::spinner aria-label="Memuat preview" />
+                </div>
+            </x-docs.overview-card>
+
+            <x-docs.overview-card route="components.clipboard" name="Clipboard" desc="Nilai hanya-baca yang dapat disalin melalui tombol aksi.">
+                <div class="rounded-xl bg-surface-subtle p-5">
+                    <x-ceplok::clipboard value="INV-2026-001" aria-label="Nomor referensi" />
                 </div>
             </x-docs.overview-card>
 

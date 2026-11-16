@@ -48,15 +48,25 @@
         ->unique()
         ->implode(' ');
 
-    $triggerAttributes = $triggerSlot->except(['id', 'aria-controls'])->merge([
-        'id' => $triggerId,
-        'aria-controls' => $controls,
-        'aria-expanded' => $open ? 'true' : 'false',
-        'x-bind:aria-expanded' => "open ? 'true' : 'false'",
-        'x-ref' => 'trigger',
-        'x-on:click' => 'toggle($event)',
-    ]);
+    $consumerClick = trim((string) $triggerSlot->get('x-on:click'));
+    $clickHandler = $consumerClick === ''
+        ? 'toggle($event)'
+        : $consumerClick.'; if (!$event.defaultPrevented) toggle($event)';
+    $triggerAttributes = $triggerSlot
+        ->except(['id', 'aria-controls', 'aria-expanded', 'x-bind:aria-expanded', 'x-ref', 'x-on:click'])
+        ->merge([
+            'id' => $triggerId,
+            'aria-controls' => $controls,
+            'aria-expanded' => $open ? 'true' : 'false',
+            'x-bind:aria-expanded' => "open ? 'true' : 'false'",
+            'x-ref' => 'trigger',
+            'x-on:click' => $clickHandler,
+        ]);
     $raw = $triggerAttributes->has('raw');
+    if (! $raw && (filled($triggerAttributes->get('href')) || $triggerAttributes->get('as') === 'anchor')) {
+        Prop::violation('Trigger <x-ceplok::popover> harus dirender sebagai <button>; href atau as="anchor" tidak didukung.');
+        $triggerAttributes = $triggerAttributes->except(['href', 'as']);
+    }
 
     $wrapperKeys = array_keys($attributes->whereStartsWith(['wire:model', 'x-model', 'wire:key'])->getAttributes());
     $wrapper = $attributes->only($wrapperKeys);
@@ -66,9 +76,10 @@
         ->always('fixed inset-auto m-0 w-[255px] shrink-0 overflow-visible border-0 bg-transparent p-0 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.08))]')
         ->when('ready', false, 'visible', 'invisible');
     $panel = $attributes
-        ->except([...$wrapperKeys, 'id', 'popover'])
+        ->except([...$wrapperKeys, 'id', 'popover', 'data-theme'])
         ->merge([
             'id' => $panelId,
+            'data-theme' => $darkMode ? 'dark' : $attributes->get('data-theme'),
             'data-side' => $side,
             'x-ref' => 'panel',
             'x-bind:style' => 'panelStyle()',
@@ -90,11 +101,9 @@
     }
 
     // Warna panah mengikuti surface yang disentuhnya: header atau badan.
-    $surfaces = $darkMode
-        ? ['header' => 'bg-gray-700', 'body' => 'bg-gray-800']
-        : ['header' => 'bg-gray-50', 'body' => 'bg-surface'];
+    $surfaces = ['header' => 'bg-popover-header-surface', 'body' => 'bg-popover-surface'];
     $arrowSurface = (new ClassToggle)
-        ->always('absolute top-[3.25px] left-[3px] size-2.5 rotate-45 border-t border-l '.($darkMode ? 'border-gray-800' : 'border-border'))
+        ->always('absolute top-[3.25px] left-[3px] size-2.5 rotate-45 border-t border-l border-popover-border')
         ->when("arrowSurface === 'header'", $side === 'bottom', $surfaces['header'], $surfaces['body']);
 @endphp
 
@@ -110,16 +119,10 @@
             <span class="{{ $arrowSurface->classes() }}" x-bind:class="{{ $arrowSurface->binding() }}"></span>
         </span>
 
-        <div @class(['relative z-10 overflow-hidden rounded-md', $darkMode ? 'bg-gray-800' : 'bg-surface'])>
-            <div @class([
-                'border-b px-3 py-1.5 text-sm leading-[1.5] font-semibold [overflow-wrap:anywhere]',
-                $darkMode ? 'border-gray-800 bg-gray-700 text-gray-50' : 'border-border bg-gray-50 text-gray-900',
-            ])>{{ $title }}</div>
-            <div @class([
-                'px-3 py-2 text-sm leading-[1.5] font-medium [overflow-wrap:anywhere]',
-                $darkMode ? 'bg-gray-800 text-gray-400' : 'bg-surface text-gray-500',
-            ])>{{ $slot }}</div>
-            <span aria-hidden="true" @class(['pointer-events-none absolute inset-0 z-20 rounded-md border', $darkMode ? 'border-gray-800' : 'border-border'])></span>
+        <div class="relative z-10 overflow-hidden rounded-md bg-popover-surface">
+            <div class="border-b border-popover-border bg-popover-header-surface px-3 py-1.5 text-sm leading-[1.5] font-semibold text-popover-header-content [overflow-wrap:anywhere]">{{ $title }}</div>
+            <div class="bg-popover-surface px-3 py-2 text-sm leading-[1.5] font-medium text-popover-body-content [overflow-wrap:anywhere]">{{ $slot }}</div>
+            <span aria-hidden="true" class="pointer-events-none absolute inset-0 z-20 rounded-md border border-popover-border"></span>
         </div>
     </div>
 </div>

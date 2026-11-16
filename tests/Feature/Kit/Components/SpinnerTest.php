@@ -31,6 +31,15 @@ class SpinnerTest extends TestCase
         $this->assertSame('status', $spinner->getAttribute('role'));
     }
 
+    public function test_role_class_dan_atribut_svg_diteruskan(): void
+    {
+        $spinner = $this->find($this->dom('<x-ceplok::spinner role="progressbar" class="text-primary-700" data-testid="loading" />'), 'svg');
+
+        $this->assertSame('progressbar', $spinner->getAttribute('role'));
+        $this->assertSame('loading', $spinner->getAttribute('data-testid'));
+        $this->assertHasClasses($spinner, 'shrink-0 animate-spin motion-reduce:animate-none size-[50px] text-primary-700');
+    }
+
     public function test_aria_hidden_melepas_role_dan_label(): void
     {
         foreach (['<x-ceplok::spinner aria-hidden="true" />', '<x-ceplok::spinner :aria-hidden="true" />'] as $markup) {
