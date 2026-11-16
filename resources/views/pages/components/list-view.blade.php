@@ -18,6 +18,7 @@ $itemProps = [
 ['badge', 'slot', 'null', 'Label status di bawah metadata pada varian simple.'],
 ['action-label', 'string | Htmlable', 'null', 'Label aksi cepat di sisi kanan item simple.'],
 ['action-href', 'string', 'null', 'Tujuan tautan tombol aksi.'],
+['action-disabled', 'bool', 'false', 'Pada simple desktop, menyembunyikan tombol dan memindahkan URL/event aksinya ke seluruh kartu.'],
 ['action-wire-click', 'string', 'null', 'Method Livewire yang dipanggil saat tombol aksi diklik.'],
 ['href', 'string', 'null', 'Menjadikan seluruh kartu sebagai tautan.'],
 ['dark-mode', 'bool', 'false', 'Mengaktifkan tema gelap secara eksplisit.'],
