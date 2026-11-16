@@ -86,4 +86,23 @@ class ListViewTest extends TestCase
         $this->assertSame('openDocument(1)', $button->getAttribute('wire:click'));
         $this->assertFalse($item->hasAttribute('wire:click'));
     }
+
+    public function test_action_disabled_desktop_menyembunyikan_tombol_dan_memindahkan_aksi_ke_kartu(): void
+    {
+        $linkedCard = $this->find($this->dom('<x-ceplok::list-view title="Project brief" action-label="Open" action-href="/brief" action-disabled />'), 'a[href="/brief"]');
+        $this->assertNull($linkedCard->querySelector('button'));
+        $this->assertHasClasses($linkedCard, 'cursor-pointer hover:border-primary-400/80');
+
+        $livewireCard = $this->find($this->dom('<x-ceplok::list-view title="Project brief" action-label="Open" action-wire-click="openDocument(1)" action-disabled />'), 'article');
+        $this->assertSame('openDocument(1)', $livewireCard->getAttribute('wire:click'));
+        $this->assertNull($livewireCard->querySelector('button'));
+        $this->assertHasClasses($livewireCard, 'cursor-pointer hover:border-primary-400/80');
+    }
+
+    public function test_action_disabled_tetap_menonaktifkan_tombol_pada_platform_mobile(): void
+    {
+        $button = $this->find($this->dom('<x-ceplok::list-view platform="mobile" title="Project brief" action-label="Open" action-disabled />'), 'button');
+
+        $this->assertTrue($button->hasAttribute('disabled'));
+    }
 }

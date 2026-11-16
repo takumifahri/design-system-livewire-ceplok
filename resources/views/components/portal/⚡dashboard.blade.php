@@ -16,7 +16,7 @@ use Livewire\Component;
  *
  * Bedanya dengan React, keadaannya hidup di komponen Livewire ini: sumber
  * anggaran (wire:model.live pada Select), pencarian (wire:model dan event
- * search), Sidebar ringkas (event collapse), menu Drawer di layar sempit,
+ * search), Sidebar ringkas (event collapse), Sidebar di dalam Drawer pada layar sempit,
  * bulan kalender, dan pesan Toast.
  */
 new class extends Component
@@ -168,6 +168,8 @@ new class extends Component
         );
 
         return array_map(fn (array $wiki) => [
+            'variant' => 'simple',
+            'platform' => 'desktop',
             'title' => $wiki['judul'],
             'icon' => svg('ceplok-o-file-lines', 'size-4', ['aria-hidden' => 'true']),
             'metadata' => [$meta('ceplok-o-calendar-month', $wiki['tanggal']), $meta('ceplok-o-user', $wiki['penulis'])],
@@ -175,6 +177,9 @@ new class extends Component
                 '<x-ceplok::badge variant="brand" size="sm" :icon="$ikon">{{ $ruang }}</x-ceplok::badge>',
                 ['ikon' => svg('ceplok-o-code-branch'), 'ruang' => $wiki['ruang']],
             )),
+            'actionLabel' => 'Buka wiki',
+            'actionDisabled' => true,
+            'actionWireClick' => "kabari('Detail wiki belum ada di contoh ini.')",
         ], self::WIKI);
     }
 
@@ -186,7 +191,10 @@ new class extends Component
             'name' => self::NAMA,
             'profileLabel' => 'Lihat Profile',
             'avatarSrc' => '/images/avatar-sample.svg',
-            'attributes' => ['wire:click' => "kabari('Halaman profil belum ada di contoh ini.')"],
+            'attributes' => [
+                'wire:click' => "kabari('Halaman profil belum ada di contoh ini.')",
+                'x-on:click' => '$wire.menuSeluler = false',
+            ],
         ];
     }
 
@@ -203,7 +211,9 @@ new class extends Component
                 'href' => route('portal.app'),
                 'icon' => svg($ikon, 'size-5'),
                 'active' => $id === 'dashboard',
-                'attributes' => $id === 'dashboard' ? ['x-on:click.prevent' => ''] : ['wire:click.prevent' => "menuDemo('{$id}')"],
+                'attributes' => $id === 'dashboard'
+                    ? ['x-on:click.prevent' => '$wire.menuSeluler = false']
+                    : ['wire:click.prevent' => "menuDemo('{$id}')"],
             ];
         }
 
@@ -218,18 +228,11 @@ new class extends Component
 
         return $menu;
     }
-
-    /** Menu yang sama di Drawer; Drawer menutup dirinya sendiri saat item diklik. */
-    #[Computed]
-    public function menuDrawer(): array
-    {
-        return array_map(fn (array $item) => array_diff_key($item, ['id' => true]) + ['id' => $item['id'].'-seluler'], $this->menuSidebar);
-    }
 };
 ?>
 
 <div class="flex min-h-screen bg-surface">
-    {{-- Di bawah lg Sidebar disembunyikan; menunya pindah ke Drawer dari tombol di header. --}}
+    {{-- Di bawah lg Sidebar tetap dipakai, tetapi ditempatkan di dalam Drawer off-canvas. --}}
     <div class="hidden lg:block">
         <x-ceplok::sidebar
             :items="$this->menuSidebar"
@@ -445,12 +448,22 @@ new class extends Component
         wire:model="menuSeluler"
         position="left"
         size="s"
-        eyebrow="Portal Dashboard"
-        aria-labelledby="portal-menu-judul"
-        :items="$this->menuDrawer"
+        aria-label="Menu Portal Dashboard"
+        style="width: 280px"
     >
-        <x-slot:header>
-            <h2 id="portal-menu-judul" class="text-base font-bold text-gray-900">Menu</h2>
-        </x-slot:header>
+        <x-ceplok::sidebar
+            :items="$this->menuSidebar"
+            :user="$this->profil"
+            :collapsed="false"
+            wire:collapse="$set('menuSeluler', false)"
+            class="h-full min-h-full border-r-0"
+        >
+            <x-slot:logo>
+                <img src="/images/ceplok.svg" alt="CEPLOK" class="h-8 w-auto">
+            </x-slot:logo>
+            <x-slot:collapsed-logo>
+                <img src="/images/ceplok.svg" alt="CEPLOK" class="size-8">
+            </x-slot:collapsed-logo>
+        </x-ceplok::sidebar>
     </x-ceplok::drawer>
 </div>

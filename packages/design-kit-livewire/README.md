@@ -176,9 +176,9 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 | `icon` | slot berisi `<svg>` yang memakai `currentColor` |
 | `breadcrumb` | `items` (`label`, `href`, `icon`, `attributes`), slot `separator`, `size`: `sm \| base`, `background`: `bg \| none`, `dark-mode` |
 | `pagination` | `current-page`, `total-pages`, `theme`: `default \| primary \| purple`, `size`: `base \| s \| responsive`, `url`, `dark-mode` |
-| `drawer` | `open`, `position`: `right \| left \| top \| bottom`, `size`: `s \| m \| l \| xl \| full`, `close-on-overlay-click`, `close-on-esc`, `eyebrow`, `header`, `items`, `theme`, `footer`, `dark-mode`; gunakan `items` untuk menu dan submenu (`children`) |
+| `drawer` | `open`, `position`: `right \| left \| top \| bottom`, `size`: `s \| m \| l \| xl \| full`, `close-on-overlay-click`, `close-on-esc`, `eyebrow`, `header`, `items`, `theme`, `footer`, `dark-mode`; gunakan `items` untuk menu dan submenu (`children`), atau slot bebas untuk konten seperti Sidebar responsif |
 | `sidebar` | `items`, `groups`, `logo`, `collapsed-logo`, `user`, `sticky`, `collapsed`, `show-collapse-button`, `footer`, `dark-mode` |
-| `list-view` | `items` atau satu item langsung lewat props; `gap`: `none \| sm \| md \| lg`, `size`, `platform`: `desktop \| mobile`, `decoration`, `dark-mode`, `as`, `variant`: `simple \| article`, `title`, `description`, `metadata`, `icon`, `badge`, `action-label`, `action-href`, `action-wire-click`, `href` |
+| `list-view` | `items` atau satu item langsung lewat props; `gap`: `none \| sm \| md \| lg`, `size`, `platform`: `desktop \| mobile`, `decoration`, `dark-mode`, `as`, `variant`: `simple \| article`, `title`, `description`, `metadata`, `icon`, `badge`, `action-label`, `action-href`, `action-disabled`, `action-wire-click`, `action-click`, `action-attributes`, `href` |
 | `popover` | slot `trigger` (atribut slot menjadi props Button kit, atau `<button>` polos dengan `raw`), `title` (prop atau slot), slot isi, `side`: `top \| right \| bottom \| left`, `dark-mode`, `open` |
 | `modal` | slot `trigger` (seperti Popover; opsional bila diikat `wire:model`/`x-model`), `variant`: `default \| popup`, `size`: `s \| m`, `title` (prop atau slot), slot `footer`, `close-on-backdrop`, `close-on-escape`, `show-close-button`, `close-label`, `open` |
 | `table` | Belum stabil. `columns` (array kolom: `key`, `header`, `cell`, `actions`, `image`, `file`, `children`, `sortable`, `sort-value`, `sort-fn`, `sort-directions`, `sort-resettable`, `sort-icon`, `align`, `header-align`, `emphasis`, `width`, `min-width`, `hideable`, `wrap`), `data` (array, Collection, atau `LengthAwarePaginator`), `row-key`, `size`: `normal \| compact`, `sticky`, `search`, `filter`, slot `actions`, `selectable`, `selected-keys`, `sort`, `sort-icon`, `header-align`, `pagination`, `manual`, `striped`, `loading`, `empty-text` |
@@ -216,7 +216,7 @@ terluar. `id` kontrol dibuat stabil bila tidak diisi, jadi `<label for>` dan
 | `pagination` | `wire:model.live="page"` mengikat halaman aktif. Setiap klik juga mengirim event `page-change` dengan `detail.page`. Untuk halaman Blade biasa, `url="/pengajuan?page={page}"` atau closure membuat setiap halaman menjadi tautan. |
 | `drawer` | `wire:model` (atau `wire:model.live`) mengikat buka/tutup Drawer. Saat tombol tutup, backdrop, atau Esc menutup panel, event `close` dapat ditangkap: `wire:close="tutupDrawer"`. |
 | `sidebar` | Tombol collapse mengirim event `collapse` dengan `detail.collapsed`; tangkap dengan `wire:collapse="$set('collapsed', $event.detail.collapsed)"`. Seperti `onCollapse` di React, pendengar itu sudah menampilkan tombolnya dalam keadaan aktif; `show-collapse-button` saja menampilkannya nonaktif. Klik menu dan area profil mengikuti `href` atau atribut `wire:*` di `attributes` item dan `user`, mis. `'attributes' => ['wire:click' => 'bukaProfil']`; profil tanpa `href` tidak melompat ke `#`. |
-| `list-view` | Tambahkan `action-wire-click` pada item langsung atau data `items` untuk menjadikan tombol aksi bawaannya target Livewire, mis. `action-wire-click="openBrief"`. Kartu tidak otomatis menjadi target klik. |
+| `list-view` | Tambahkan `action-wire-click` pada item langsung atau data `items` untuk menjadikan tombol aksi bawaannya target Livewire, mis. `action-wire-click="openBrief"`. Pada varian simple desktop, `action-disabled` menyembunyikan tombol dan memindahkan `action-href`, `action-wire-click`, `action-click`, serta `action-attributes` ke seluruh kartu. Pada platform mobile, kontrol aksinya tetap dirender dalam keadaan nonaktif. Tanpa `action-disabled`, kartu tidak otomatis menjadi target klik. |
 | `table-of-contents` | `wire:model` mengikat id entri yang disorot. Event `active-change` (`detail.id`) saat scroll-spy atau klik memindahkan sorotan, dan `item-click` (`detail.id`) sebelum tautan berjalan; `wire:item-click.prevent` membatalkan tautannya. Dengan `active-id` dari properti Livewire, nilai barunya diikuti setelah render ulang. |
 | `timeline` | `'attributes' => ['wire:dismiss' => 'tutupStatus(2)']` pada `status` diteruskan ke Badge-nya; tombol tutup Badge yang `dismissible` memicu event `dismiss`. |
 | `breadcrumb` | `'attributes' => ['wire:navigate' => true]` pada item diteruskan ke tautannya. |
@@ -231,6 +231,51 @@ terluar. `id` kontrol dibuat stabil bila tidak diisi, jadi `<label for>` dan
 | `table` | Urutan dan halaman milik server: judul kolom mengirim `sort-change` (`detail.sort`), tombol halaman `page-change` (`detail.page`), pilihan jumlah baris `page-size-change` (`detail.pageSize`): `wire:sort-change="$set('sort', $event.detail.sort)"`. Tanpa `manual` Table mengurutkan dan memotong `data` sendiri; `LengthAwarePaginator` otomatis `manual`. `wire:model` mengikat kunci baris yang dicentang (event `selection-change`). Kolom yang disembunyikan lewat Filter Data diurus Alpine (event `hidden-columns-change`). Kolom berisi closure, jadi buat di `render()` atau method, bukan properti publik. |
 | `popover` | `wire:model` mengikat buka/tutup ke properti boolean; event `open-change` (`detail.open`). Posisi dan panah dipasang lewat x-bind, jadi bertahan saat Livewire merender ulang. |
 | `modal` | `wire:model` mengikat buka/tutup, padanan `open` + `onOpenChange`; trigger lalu opsional. Event `open-change` (`detail.open`). `x-on:click="close()"` di dalam Modal menutupnya. `<dialog>`-nya `wire:ignore.self` supaya tidak ditutup morph saat komponen dirender ulang; ganti `wire:key` bila `variant`/`size` berubah dari server. |
+
+### Sidebar responsif di dalam Drawer
+
+Gunakan komponen `sidebar` yang sama untuk desktop dan viewport sempit agar
+isi, profil, status aktif, serta perilaku menu tidak menyimpang. Pada viewport
+sempit, `drawer` hanya menjadi shell off-canvas dan `sidebar` ditempatkan di
+slot utamanya. Berikan array `items` dan `user` yang sama kepada keduanya:
+
+```blade
+{{-- Desktop --}}
+<div class="hidden lg:block">
+    <x-ceplok::sidebar
+        :items="$items"
+        :user="$user"
+        sticky
+        :collapsed="$collapsed"
+        wire:collapse="$set('collapsed', $event.detail.collapsed)"
+    >
+        <x-slot:logo><img src="/logo.svg" alt="Logo"></x-slot:logo>
+    </x-ceplok::sidebar>
+</div>
+
+{{-- Viewport sempit --}}
+<x-ceplok::drawer
+    id="menu-aplikasi"
+    wire:model="menuOpen"
+    position="left"
+    size="s"
+    aria-label="Menu aplikasi"
+>
+    <x-ceplok::sidebar
+        :items="$items"
+        :user="$user"
+        :collapsed="false"
+        wire:collapse="$set('menuOpen', false)"
+        class="h-full min-h-full border-r-0"
+    >
+        <x-slot:logo><img src="/logo.svg" alt="Logo"></x-slot:logo>
+    </x-ceplok::sidebar>
+</x-ceplok::drawer>
+```
+
+Ketika Drawer diisi lewat slot, renderer menu bawaan `items` milik Drawer
+tidak digunakan. Tombol collapse Sidebar sempit dapat ditangkap untuk menutup
+Drawer, seperti contoh `wire:collapse` di atas.
 
 ```blade
 {{-- Filter yang bisa dihapus, terikat ke $filters['aktif'] --}}

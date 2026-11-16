@@ -8,6 +8,9 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Ditambahkan
 
+- `list-view`: prop `action-disabled` pada varian simple desktop menyembunyikan
+  tombol aksi dan memindahkan `action-href`, `action-wire-click`,
+  `action-click`, serta `action-attributes` ke seluruh kartu.
 - `sidebar`: kunci `attributes` pada `user` meneruskan atribut ke area
   profil, mis. `['wire:click' => 'bukaProfil']`, padanan `user.onClick` di
   kit React.
@@ -22,6 +25,10 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menampilkan tombol collapse dalam keadaan aktif, seperti `onCollapse` di
   kit React. Tanpa pendengar, `show-collapse-button` tetap menampilkannya
   nonaktif.
+- Contoh Portal Dashboard kini memakai komponen `sidebar` yang sama pada
+  desktop dan viewport sempit. Pada viewport sempit, `drawer` hanya menjadi
+  shell off-canvas; data menu, profil, logo, status aktif, dan aksinya tetap
+  dirender oleh `sidebar`.
 
 ### Diperbaiki
 
