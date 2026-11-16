@@ -25,7 +25,7 @@ Mengubah kode kit? Baca [HOWTO.md](HOWTO.md) untuk cara mencatat perubahan di
 - **Font**: Lato 2.0 (sembilan ketebalan plus italic, lisensi OFL) yang ikut
   paket, salinan persis dari kit React.
 - **Komponen**: `alert`, `avatar`, `badge`, `breadcrumb`, `button`, `card`,
-  `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`, `modal`,
+  `clipboard`, `container`, `drawer`, `dropdown`, `footer`, `hero`, `icon`, `modal`,
   `list-view`, `pagination`, `popover`, `sidebar`, `spinner`, `table`
   (beserta `table-image` dan `table-file`; belum stabil, prop dan markup-nya
   masih bisa berubah), `table-of-contents`, `timeline`, `toast`.
@@ -167,8 +167,9 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 | --- | --- |
 | `button` | `variant`: `filled \| outline`, `theme`: `primary \| green \| gray \| purple \| orange \| yellow`, `tone`: `light \| dark`, `size`: `xs \| s \| base \| l \| xl`, `type`, `icon-only`, `as`: `button \| anchor`, slot/prop `left-icon`, `right-icon` |
 | `badge` | `variant`: `gray \| brand \| danger \| warning \| success`, `size`: `sm \| lg`, `icon`, `dismissible`, `open`, `dark-mode` |
-| `avatar` | `src`, `alt`, `initials` (atau slot), `size`: `small \| default \| large`, `dark-mode` |
+| `avatar` | `src`, `name`, `alt`, `initials` (atau slot), `fallback`: `initials \| female \| male`, `size`: `small \| default \| large`, `dark-mode` (deprecated) |
 | `spinner` | `size`: `default \| large`, `aria-label`, `aria-hidden` |
+| `clipboard` | `value`, `variant`: `default \| segmented`, `platform`: `default \| mobile`, `prefix`, `label`, `helper-text`, `disabled`, `dark-mode` (deprecated) |
 | `alert` | `variant`: `success \| danger \| warning \| info \| purple`, `heading`, `icon` (slot, atau `:icon="false"`), `dismissible`, `open`, slot `actions`, `dark-mode` |
 | `toast` | `variant`, `heading`, `icon`, `dismissible`, `open`, slot `actions`, `dark-mode` |
 | `card` | `image`, `image-alt`, `title`, `description` (prop atau slot), `href`, `link-label`, slot `actions`, `dark-mode` |
@@ -208,12 +209,34 @@ pembungkus terluar. Datepicker dan Dropdown meneruskan semuanya ke pembungkus
 terluar. `id` kontrol dibuat stabil bila tidak diisi, jadi `<label for>` dan
 `aria-describedby` tetap tertaut tanpa perlu menulis id sendiri.
 
+### Spinner
+
+`Spinner` adalah indikator loading SVG dengan dua ukuran: default 50×50px dan
+`size="large"` 100×100px. Lingkaran latar memakai gray-200 dan arc proses
+memakai primary-600. Spinner meneruskan atribut SVG native yang relevan, tetapi
+geometri internalnya tetap dikendalikan komponen. Animasi berhenti saat pengguna
+mengaktifkan reduced motion.
+
+```blade
+<x-ceplok::spinner aria-label="Memuat daftar pengguna" />
+
+<div class="flex items-center gap-3">
+    <x-ceplok::spinner size="large" aria-hidden="true" />
+    <span>Memuat data…</span>
+</div>
+```
+
+Tanpa `aria-hidden`, Spinner memiliki `role="status"` dan label default
+`"Loading"`. Saat teks di sekitarnya sudah menjelaskan proses loading, gunakan
+`aria-hidden="true"` agar status tidak diumumkan dua kali.
+
 ## Livewire
 
 | Komponen | Integrasi |
 | --- | --- |
 | `badge`, `alert`, `toast` | `wire:model` mengikat tampil/sembunyi ke properti boolean, dan nilai awalnya dibaca dari properti itu, jadi HTML pertama dari server sudah benar. Tombol tutup memicu event `dismiss`: `wire:dismiss="hapusFilter('aktif')"`. |
 | `pagination` | `wire:model.live="page"` mengikat halaman aktif. Setiap klik juga mengirim event `page-change` dengan `detail.page`. Untuk halaman Blade biasa, `url="/pengajuan?page={page}"` atau closure membuat setiap halaman menjadi tautan. |
+| `clipboard` | Event `copy-success` membawa `detail.value`, sedangkan `copy-error` menandai kegagalan Clipboard API: `wire:copy-success="tersalin($event.detail.value)"`. |
 | `drawer` | `wire:model` (atau `wire:model.live`) mengikat buka/tutup Drawer. Saat tombol tutup, backdrop, atau Esc menutup panel, event `close` dapat ditangkap: `wire:close="tutupDrawer"`. |
 | `sidebar` | Tombol collapse mengirim event `collapse` dengan `detail.collapsed`; tangkap dengan `wire:collapse="$set('collapsed', $event.detail.collapsed)"`. Seperti `onCollapse` di React, pendengar itu sudah menampilkan tombolnya dalam keadaan aktif; `show-collapse-button` saja menampilkannya nonaktif. Klik menu dan area profil mengikuti `href` atau atribut `wire:*` di `attributes` item dan `user`, mis. `'attributes' => ['wire:click' => 'bukaProfil']`; profil tanpa `href` tidak melompat ke `#`. |
 | `list-view` | Tambahkan `action-wire-click` pada item langsung atau data `items` untuk menjadikan tombol aksi bawaannya target Livewire, mis. `action-wire-click="openBrief"`. Kartu tidak otomatis menjadi target klik. |
@@ -263,7 +286,7 @@ nilai token lewat atribut `data-theme="dark"`:
 - Komponen tersebut ikut gelap bila salah satu pembungkusnya memakai
   `data-theme="dark"`. Bagian di dalamnya bisa dikembalikan terang dengan
   `data-theme="light"`.
-- `badge`, `avatar`, `pagination`, `popover`, `dropdown`, `datepicker`, dan
+- `badge`, `pagination`, `popover`, `dropdown`, `datepicker`, dan
   `upload` belum berbasis token: `dark-mode` mengganti class warnanya
   langsung, sama seperti di kit React.
 - `modal` tidak punya `dark-mode`: dialognya mengikuti `data-theme`

@@ -20,6 +20,7 @@
  *   Alpine.start();
  */
 import avatar from './components/avatar.js';
+import clipboard from './components/clipboard.js';
 import datepicker from './components/datepicker.js';
 import dismissible from './components/dismissible.js';
 import drawer from './components/drawer.js';
@@ -40,6 +41,7 @@ import upload from './components/upload.js';
 
 export default function ceplok(Alpine) {
     Alpine.data('ceplokAvatar', avatar);
+    Alpine.data('ceplokClipboard', clipboard);
     Alpine.data('ceplokDatepicker', datepicker);
     Alpine.data('ceplokDismissible', dismissible);
     Alpine.data('ceplokDrawer', drawer);
@@ -60,4 +62,4 @@ export default function ceplok(Alpine) {
     Alpine.data('ceplokUpload', upload);
 }
 
-export { avatar, datepicker, dismissible, drawer, dropdown, floatingLabel, inputField, modal, pagination, popover, search, select, sidebar, sidebarSubmenu, table, tableOfContents, tablePreview, textArea, upload };
+export { avatar, clipboard, datepicker, dismissible, drawer, dropdown, floatingLabel, inputField, modal, pagination, popover, search, select, sidebar, sidebarSubmenu, table, tableOfContents, tablePreview, textArea, upload };

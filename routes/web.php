@@ -13,6 +13,7 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/badge', 'pages.components.badge')->name('badge');
     Route::view('/avatar', 'pages.components.avatar')->name('avatar');
     Route::view('/spinner', 'pages.components.spinner')->name('spinner');
+    Route::view('/clipboard', 'pages.components.clipboard')->name('clipboard');
     Route::view('/popover', 'pages.components.popover')->name('popover');
     Route::view('/dropdown', 'pages.components.dropdown')->name('dropdown');
     Route::view('/drawer', 'pages.components.drawer')->name('drawer');

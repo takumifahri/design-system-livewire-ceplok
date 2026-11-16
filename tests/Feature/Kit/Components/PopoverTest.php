@@ -41,14 +41,14 @@ class PopoverTest extends TestCase
         $this->assertSame('true', $arrow->getAttribute('aria-hidden'));
         $this->assertHasClasses($arrow, 'pointer-events-none absolute z-30 size-4 bottom-[-8px] rotate-180');
         $this->assertStringContainsString("side === 'left'", $arrow->getAttribute('x-bind:class'));
-        $this->assertHasClasses($this->find($arrow, 'span'), 'absolute size-2.5 rotate-45 border-t border-l border-border bg-surface');
+        $this->assertHasClasses($this->find($arrow, 'span'), 'absolute size-2.5 rotate-45 border-t border-l border-popover-border bg-popover-surface');
 
-        $this->assertHasClasses($surface, 'relative z-10 overflow-hidden rounded-md bg-surface');
-        $this->assertHasClasses($header, 'border-b px-3 py-1.5 text-sm font-semibold border-border bg-gray-50 text-gray-900');
+        $this->assertHasClasses($surface, 'relative z-10 overflow-hidden rounded-md bg-popover-surface');
+        $this->assertHasClasses($header, 'border-b px-3 py-1.5 text-sm font-semibold border-popover-border bg-popover-header-surface text-popover-header-content');
         $this->assertSame('Nomor referensi', trim($header->textContent));
-        $this->assertHasClasses($body, 'px-3 py-2 text-sm font-medium bg-surface text-gray-500');
+        $this->assertHasClasses($body, 'px-3 py-2 text-sm font-medium bg-popover-surface text-popover-body-content');
         $this->assertSame('Isi popover', trim($body->textContent));
-        $this->assertHasClasses($border, 'pointer-events-none absolute inset-0 z-20 rounded-md border border-border');
+        $this->assertHasClasses($border, 'pointer-events-none absolute inset-0 z-20 rounded-md border border-popover-border');
     }
 
     public function test_popover_dark_mode_dan_panah_bawah(): void
@@ -59,16 +59,40 @@ class PopoverTest extends TestCase
         [$arrow, $surface] = $this->childrenOf($panel);
 
         $this->assertSame('true', $root->getAttribute('data-open'));
+        $this->assertSame('dark', $panel->getAttribute('data-theme'));
         $this->assertSame('true', $this->find($dom, 'body > div > button')->getAttribute('aria-expanded'));
         $this->assertHasClasses($arrow, 'top-[-8px]');
         // Panah bawah menyentuh header, jadi warnanya ikut header gelap.
-        $this->assertHasClasses($this->find($arrow, 'span'), 'border-gray-800 bg-gray-700');
-        $this->assertHasClasses($surface, 'bg-gray-800');
-        $this->assertHasClasses($this->childrenOf($surface)[0], 'border-gray-800 bg-gray-700 text-gray-50');
+        $this->assertHasClasses($this->find($arrow, 'span'), 'border-popover-border bg-popover-header-surface');
+        $this->assertHasClasses($surface, 'bg-popover-surface');
+        $this->assertHasClasses($this->childrenOf($surface)[0], 'border-popover-border bg-popover-header-surface text-popover-header-content');
+    }
+
+    public function test_popover_meneruskan_boundary_tema_ambient_ke_panel(): void
+    {
+        $dom = $this->dom('<x-ceplok::popover title="P" data-theme="dark"><x-slot:trigger>Buka</x-slot:trigger>Isi</x-ceplok::popover>');
+
+        $this->assertSame('dark', $this->find($dom, '[popover]')->getAttribute('data-theme'));
+    }
+
+    public function test_popover_merangkai_handler_trigger_consumer_dengan_toggle_internal(): void
+    {
+        $dom = $this->dom(<<<'BLADE'
+            <x-ceplok::popover title="P">
+                <x-slot:trigger raw x-on:click="audit()" aria-expanded="consumer">Buka</x-slot:trigger>
+                Isi
+            </x-ceplok::popover>
+            BLADE);
+        $trigger = $this->find($dom, 'button');
+
+        $this->assertSame('audit(); if (!$event.defaultPrevented) toggle($event)', $trigger->getAttribute('x-on:click'));
+        $this->assertSame('false', $trigger->getAttribute('aria-expanded'));
+        $this->assertSame("open ? 'true' : 'false'", $trigger->getAttribute('x-bind:aria-expanded'));
     }
 
     public function test_popover_memeriksa_prop(): void
     {
         $this->assertPropError('<x-ceplok::popover title="P" side="tengah"><x-slot:trigger>Buka</x-slot:trigger>Isi</x-ceplok::popover>', 'Prop `side` pada <x-ceplok::popover>');
+        $this->assertPropError('<x-ceplok::popover title="P"><x-slot:trigger href="/tujuan">Buka</x-slot:trigger>Isi</x-ceplok::popover>', 'harus dirender sebagai <button>');
     }
 }

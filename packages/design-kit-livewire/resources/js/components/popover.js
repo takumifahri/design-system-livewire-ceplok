@@ -38,6 +38,9 @@ export default function popover() {
     let restoreFocus = false;
     let schedule = () => {};
     let markEscape = () => {};
+    let togglePanel = () => {};
+    let sideObserver = null;
+    let restoreFrame = 0;
 
     return {
         open: false,
@@ -67,7 +70,7 @@ export default function popover() {
             };
             document.addEventListener('keydown', markEscape, true);
 
-            panel.addEventListener('toggle', (event) => {
+            togglePanel = (event) => {
                 const actual = event.newState === 'open';
 
                 if (actual) {
@@ -88,7 +91,13 @@ export default function popover() {
                     this.open = actual;
                     this.$dispatch('open-change', { open: actual });
                 }
+            };
+            panel.addEventListener('toggle', togglePanel);
+
+            sideObserver = new MutationObserver(() => {
+                if (panel.matches(':popover-open')) schedule();
             });
+            sideObserver.observe(panel, { attributes: true, attributeFilter: ['data-side'] });
 
             this.$watch('open', (value) => this.sync(value));
             this.$nextTick(() => this.sync(this.open));
@@ -96,6 +105,11 @@ export default function popover() {
 
         destroy() {
             document.removeEventListener('keydown', markEscape, true);
+            this.$refs.panel?.removeEventListener('toggle', togglePanel);
+            sideObserver?.disconnect();
+            sideObserver = null;
+            cancelAnimationFrame(restoreFrame);
+            restoreFrame = 0;
             this.stopFollowing();
         },
 
@@ -150,7 +164,8 @@ export default function popover() {
             restoreFocus = false;
             if (!trigger?.isConnected || !isFocusable(trigger)) return;
 
-            requestAnimationFrame(() => {
+            restoreFrame = requestAnimationFrame(() => {
+                restoreFrame = 0;
                 if (trigger.isConnected && !this.$refs.panel.matches(':popover-open')) {
                     trigger.focus({ preventScroll: true });
                 }
