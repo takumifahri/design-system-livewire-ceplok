@@ -20,7 +20,7 @@
         ['Gap', 'gap-* · gap-x-* · gap-y-*', 'Jarak antaritem di dalam flex dan grid container.'],
     ];
 
-    $code = fn (string $c) => '<code class="text-xs font-bold text-gray-700">'.e($c).'</code>';
+    $code = fn (string $c) => '<code class="text-xs font-bold text-gray-700 dark:text-gray-300">'.e($c).'</code>';
 @endphp
 
 <x-docs.layout title="Spacing">
@@ -39,18 +39,18 @@
             <article class="ds-card overflow-hidden">
                 <div class="ds-scroll-x overflow-x-auto">
                     <div class="min-w-140">
-                        <div class="grid grid-cols-[90px_110px_90px_1fr] gap-4 border-b border-border px-5 py-3.5 sm:px-7">
-                            <p class="text-xs font-black text-gray-900">Name</p>
-                            <p class="text-xs font-black text-gray-900">Size</p>
-                            <p class="text-xs font-black text-gray-900">Pixels</p>
+                        <div class="grid grid-cols-[90px_110px_90px_1fr] gap-4 border-b border-border px-5 py-3.5 sm:px-7 dark:border-gray-700">
+                            <p class="text-xs font-black text-gray-900 dark:text-white">Name</p>
+                            <p class="text-xs font-black text-gray-900 dark:text-white">Size</p>
+                            <p class="text-xs font-black text-gray-900 dark:text-white">Pixels</p>
                             <p aria-hidden="true"></p>
                         </div>
-                        <div class="divide-y divide-gray-100">
+                        <div class="divide-y divide-gray-100 dark:divide-gray-700">
                             @foreach ($scale as [$name, $size, $px, $bar])
                                 <div class="grid grid-cols-[90px_110px_90px_1fr] items-center gap-4 px-5 py-3 sm:px-7">
-                                    <code class="text-sm font-bold text-gray-900">{{ $name }}</code>
-                                    <code class="text-sm text-gray-500">{{ $size }}</code>
-                                    <code class="text-sm text-gray-500">{{ $px }}</code>
+                                    <code class="text-sm font-bold text-gray-900 dark:text-white">{{ $name }}</code>
+                                    <code class="text-sm text-gray-500 dark:text-gray-400">{{ $size }}</code>
+                                    <code class="text-sm text-gray-500 dark:text-gray-400">{{ $px }}</code>
                                     <div><div class="{{ $bar }} h-4 rounded-xs bg-primary-600"></div></div>
                                 </div>
                             @endforeach
@@ -79,34 +79,35 @@
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($prefixes as [$label, $utilities, $description])
                     <article class="ds-card p-5">
-                        <p class="text-sm font-black text-gray-900">{{ $label }}</p>
-                        <code class="mt-1 block text-xs font-bold text-primary-700">{{ $utilities }}</code>
-                        <p class="mt-3 text-sm leading-6 text-gray-600">{{ $description }}</p>
+                        <p class="text-sm font-black text-gray-900 dark:text-white">{{ $label }}</p>
+                        <code class="mt-1 block text-xs font-bold text-primary-700 dark:text-primary-400">{{ $utilities }}</code>
+                        <p class="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">{{ $description }}</p>
                     </article>
                 @endforeach
             </div>
 
+            {{-- Di mode gelap docs ilustrasinya memakai ujung gelap tangga yang sama (primary-900, gray-700). --}}
             <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <article class="ds-card p-5">
-                    <code class="text-sm font-bold text-primary-700">.p-4</code>
-                    <div class="mt-3 rounded-lg bg-primary-100">
+                    <code class="text-sm font-bold text-primary-700 dark:text-primary-400">.p-4</code>
+                    <div class="mt-3 rounded-lg bg-primary-100 dark:bg-primary-900">
                         <div class="p-4">
-                            <div class="rounded-md bg-white px-3 py-2 text-xs font-bold text-gray-700 shadow-sm">Konten</div>
+                            <div class="rounded-md bg-white px-3 py-2 text-xs font-bold text-gray-700 shadow-sm dark:bg-gray-700 dark:text-gray-200">Konten</div>
                         </div>
                     </div>
                 </article>
                 <article class="ds-card p-5">
-                    <code class="text-sm font-bold text-primary-700">.mt-4</code>
-                    <div class="mt-3 rounded-lg border border-dashed border-primary-300 p-2">
-                        <div class="rounded-md bg-gray-100 px-3 py-2 text-xs font-bold text-gray-500">Elemen pertama</div>
-                        <div class="mt-4 rounded-md bg-primary-100 px-3 py-2 text-xs font-bold text-primary-800">Elemen kedua</div>
+                    <code class="text-sm font-bold text-primary-700 dark:text-primary-400">.mt-4</code>
+                    <div class="mt-3 rounded-lg border border-dashed border-primary-300 p-2 dark:border-primary-700">
+                        <div class="rounded-md bg-gray-100 px-3 py-2 text-xs font-bold text-gray-500 dark:bg-gray-700 dark:text-gray-300">Elemen pertama</div>
+                        <div class="mt-4 rounded-md bg-primary-100 px-3 py-2 text-xs font-bold text-primary-800 dark:bg-primary-900 dark:text-primary-200">Elemen kedua</div>
                     </div>
                 </article>
                 <article class="ds-card p-5">
-                    <code class="text-sm font-bold text-primary-700">.gap-4</code>
-                    <div class="mt-3 flex gap-4 rounded-lg border border-dashed border-primary-300 p-2">
+                    <code class="text-sm font-bold text-primary-700 dark:text-primary-400">.gap-4</code>
+                    <div class="mt-3 flex gap-4 rounded-lg border border-dashed border-primary-300 p-2 dark:border-primary-700">
                         @foreach ([1, 2, 3] as $n)
-                            <div class="flex-1 rounded-md bg-primary-100 px-3 py-2 text-center text-xs font-bold text-primary-800">{{ $n }}</div>
+                            <div class="flex-1 rounded-md bg-primary-100 px-3 py-2 text-center text-xs font-bold text-primary-800 dark:bg-primary-900 dark:text-primary-200">{{ $n }}</div>
                         @endforeach
                     </div>
                 </article>
@@ -128,7 +129,7 @@
         <x-docs.section id="prinsip" title="Prinsip penggunaan">
             <x-docs.principles>
                 <x-docs.principle>Selalu pakai langkah pada skala — hindari nilai arbitrer seperti {!! $code('p-[13px]') !!} agar ritme 4px terjaga.</x-docs.principle>
-                <x-docs.principle>Langkah kecil (<strong class="text-gray-900">1–4</strong>) untuk jarak dalam komponen, sedang (<strong class="text-gray-900">5–12</strong>) antarkomponen, besar (<strong class="text-gray-900">14+</strong>) antarseksi.</x-docs.principle>
+                <x-docs.principle>Langkah kecil (<strong class="text-gray-900 dark:text-white">1–4</strong>) untuk jarak dalam komponen, sedang (<strong class="text-gray-900 dark:text-white">5–12</strong>) antarkomponen, besar (<strong class="text-gray-900 dark:text-white">14+</strong>) antarseksi.</x-docs.principle>
                 <x-docs.principle>Pilih {!! $code('gap-*') !!} dibanding margin antaritem di flex/grid — lebih mudah dirawat dan tidak menimbulkan margin ganda.</x-docs.principle>
                 <x-docs.principle>Elemen dengan fungsi setara harus memakai jarak yang sama agar hierarki konsisten.</x-docs.principle>
             </x-docs.principles>

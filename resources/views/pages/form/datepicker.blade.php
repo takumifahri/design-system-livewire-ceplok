@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     $tanggal = '2021-06-25';
     $sepekan = ['start' => '2021-06-20', 'end' => '2021-06-26'];
     $rentang = ['start' => '2021-06-25', 'end' => '2021-07-12'];
@@ -27,6 +29,11 @@
         ['id', 'string', 'otomatis', 'id kotak pertama; label menunjuk ke sana.'],
         ['…atribut', 'HTML', '—', 'Diteruskan ke pembungkus terluar (class, style, data-*, …). Lebarnya dibatasi selebar panel; max-w-none melepasnya.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
+    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
+    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Datepicker">
@@ -52,14 +59,14 @@
         <x-docs.section id="single" title="Single">
             <x-docs.lead>
                 Kotak setinggi 42px dengan ikon kalender di kiri. Menekannya membuka kalender tepat di bawah kotak,
-                lengkap dengan tombol <span class="text-primary-500">Hari ini</span> dan <span class="text-primary-500">Hapus</span>. Memilih tanggal langsung menutup panelnya.
+                lengkap dengan tombol <span class="text-primary-500 dark:text-primary-400">Hari ini</span> dan <span class="text-primary-500 dark:text-primary-400">Hapus</span>. Memilih tanggal langsung menutup panelnya.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Belum dipilih">
-                    <x-ceplok::datepicker label="Nama Tanggal" />
+                    <x-ceplok::datepicker label="Nama Tanggal" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Sudah dipilih">
-                    <x-ceplok::datepicker label="Nama Tanggal" :value="$tanggal" />
+                    <x-ceplok::datepicker label="Nama Tanggal" :value="$tanggal" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
@@ -68,31 +75,32 @@
                 <x-ceplok::datepicker
                     label="Nama Tanggal"
                     ⟦wire:model⟧="tanggal"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
                 Kotak single selebar 325px, sama dengan di mobile, sedangkan panelnya 284px — seperti desainnya.
                 Bentuk lain selebar panelnya, 325px untuk period dan 600px untuk multiple (325px di mobile), supaya
                 tepi kotak dan kalendernya segaris. Di wadah yang lebih sempit ia ikut menyusut;
-                <span class="text-primary-500">class="max-w-none"</span> melepas batas itu.
+                <span class="text-primary-500 dark:text-primary-400">class="max-w-none"</span> melepas batas itu.
             </p>
         </x-docs.section>
 
         <x-docs.section id="period" title="Period">
             <x-docs.lead>
-                Satu kalender dengan lima pintasan — <span class="text-primary-500">Hari ini</span>, <span class="text-primary-500">Minggu ini</span>, <span class="text-primary-500">Bulan ini</span>,
-                <span class="text-primary-500">Hapus</span>, dan <span class="text-primary-500">Semua Waktu</span> — untuk menyaring daftar berdasarkan waktu. Karena Minggu ini
-                dan Bulan ini adalah rentang, nilainya berupa rentang <span class="text-primary-500">['start' => …, 'end' => …]</span>. Rentang lain dipilih
+                Satu kalender dengan lima pintasan — <span class="text-primary-500 dark:text-primary-400">Hari ini</span>, <span class="text-primary-500 dark:text-primary-400">Minggu ini</span>, <span class="text-primary-500 dark:text-primary-400">Bulan ini</span>,
+                <span class="text-primary-500 dark:text-primary-400">Hapus</span>, dan <span class="text-primary-500 dark:text-primary-400">Semua Waktu</span> — untuk menyaring daftar berdasarkan waktu. Karena Minggu ini
+                dan Bulan ini adalah rentang, nilainya berupa rentang <span class="text-primary-500 dark:text-primary-400">['start' => …, 'end' => …]</span>. Rentang lain dipilih
                 langsung di kalendernya dengan dua klik: klik pertama mengisi tanggal mulai, klik kedua tanggal selesai,
                 dan panel baru tertutup setelah klik kedua.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Satu minggu">
-                    <x-ceplok::datepicker type="period" label="Nama Tanggal" :value="$sepekan" />
+                    <x-ceplok::datepicker type="period" label="Nama Tanggal" :value="$sepekan" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Semua Waktu">
-                    <x-ceplok::datepicker type="period" label="Nama Tanggal" :value="$semuaWaktu" />
+                    <x-ceplok::datepicker type="period" label="Nama Tanggal" :value="$semuaWaktu" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
@@ -102,6 +110,7 @@
                     ⟦type⟧="period"
                     label="Nama Tanggal"
                     wire:model="periode"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -111,16 +120,16 @@
             <x-docs.lead>
                 Dua kotak — tanggal mulai dan tanggal selesai — dengan dua kalender berdampingan. Seperti period,
                 klik pertama mengisi tanggal mulai dan klik kedua tanggal selesai, baru panelnya tertutup; tanggal
-                di antaranya diberi latar abu. Seperti single, tombolnya hanya <span class="text-primary-500">Hari ini</span> dan <span class="text-primary-500">Hapus</span>;
-                prop <span class="text-primary-500">shortcuts</span> menambahkan <span class="text-primary-500">Minggu ini</span>, <span class="text-primary-500">Bulan ini</span>, dan <span class="text-primary-500">Semua Waktu</span>
+                di antaranya diberi latar abu. Seperti single, tombolnya hanya <span class="text-primary-500 dark:text-primary-400">Hari ini</span> dan <span class="text-primary-500 dark:text-primary-400">Hapus</span>;
+                prop <span class="text-primary-500 dark:text-primary-400">shortcuts</span> menambahkan <span class="text-primary-500 dark:text-primary-400">Minggu ini</span>, <span class="text-primary-500 dark:text-primary-400">Bulan ini</span>, dan <span class="text-primary-500 dark:text-primary-400">Semua Waktu</span>
                 seperti pada period.
             </x-docs.lead>
             <div class="grid gap-5">
                 <x-docs.demo label="Rentang terpilih">
-                    <x-ceplok::datepicker type="multiple" label="Nama Tanggal" :value="$rentang" />
+                    <x-ceplok::datepicker type="multiple" label="Nama Tanggal" :value="$rentang" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Dengan shortcuts">
-                    <x-ceplok::datepicker type="multiple" shortcuts label="Nama Tanggal" />
+                    <x-ceplok::datepicker type="multiple" shortcuts label="Nama Tanggal" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
@@ -129,13 +138,14 @@
                     ⟦type⟧="multiple"
                     label="Nama Tanggal"
                     wire:model="rentang"
+                    ⟨dark-mode⟩
                 />
 
                 {{-- Dengan Minggu ini, Bulan ini, dan Semua Waktu --}}
-                <x-ceplok::datepicker type="multiple" ⟦shortcuts⟧ label="Nama Tanggal" />
+                <x-ceplok::datepicker type="multiple" ⟦shortcuts⟧ label="Nama Tanggal"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
                 Kedua kalender bisa digeser sendiri-sendiri, jadi rentang yang panjang tidak perlu melewati setiap
                 bulan di antaranya. Kotak mana pun yang ditekan, pilihan selalu dimulai dari tanggal mulai; tanggal
                 selesai yang jatuh sebelum tanggal mulai dianggap memulai rentang baru. Tanggal bulan sebelah yang
@@ -148,21 +158,21 @@
 
         <x-docs.section id="mobile" title="Mobile">
             <x-docs.lead>
-                Untuk ponsel, <span class="text-primary-500">platform="mobile"</span> memakai tata letak dari desain mobile: ketiga bentuk
+                Untuk ponsel, <span class="text-primary-500 dark:text-primary-400">platform="mobile"</span> memakai tata letak dari desain mobile: ketiga bentuk
                 selebar 325px, dan panelnya selebar kotak. Single menaruh kisi tanggalnya di tengah panel, period
-                memuat <span class="text-primary-500">Hari ini</span>, <span class="text-primary-500">Minggu ini</span>, <span class="text-primary-500">Bulan ini</span>, dan <span class="text-primary-500">Hapus</span> dalam satu
+                memuat <span class="text-primary-500 dark:text-primary-400">Hari ini</span>, <span class="text-primary-500 dark:text-primary-400">Minggu ini</span>, <span class="text-primary-500 dark:text-primary-400">Bulan ini</span>, dan <span class="text-primary-500 dark:text-primary-400">Hapus</span> dalam satu
                 baris, dan multiple menumpuk kotak tanggal selesai di bawah kotak tanggal mulai serta kalender
                 kedua di bawah yang pertama.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Single">
-                    <x-ceplok::datepicker platform="mobile" label="Nama Tanggal" :value="$tanggal" />
+                    <x-ceplok::datepicker platform="mobile" label="Nama Tanggal" :value="$tanggal" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Period">
-                    <x-ceplok::datepicker type="period" platform="mobile" label="Nama Tanggal" :value="$sepekan" />
+                    <x-ceplok::datepicker type="period" platform="mobile" label="Nama Tanggal" :value="$sepekan" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Multiple">
-                    <x-ceplok::datepicker type="multiple" platform="mobile" label="Nama Tanggal" :value="$rentang" />
+                    <x-ceplok::datepicker type="multiple" platform="mobile" label="Nama Tanggal" :value="$rentang" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
@@ -172,11 +182,12 @@
                     ⟦platform⟧="mobile"
                     label="Nama Tanggal"
                     wire:model="rentang"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
-                Dengan <span class="text-primary-500">class="max-w-none"</span> ia memenuhi wadahnya dan panelnya ikut melebar. Panel
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+                Dengan <span class="text-primary-500 dark:text-primary-400">class="max-w-none"</span> ia memenuhi wadahnya dan panelnya ikut melebar. Panel
                 multiple setinggi ini jarang muat di layar ponsel, jadi bila tidak muat di bawah maupun di atas
                 kotak, tingginya dibatasi ruang yang tersedia dan isinya digulir di dalam panel. Selebihnya sama
                 dengan desktop: cara memilih, papan ketik, dan nilainya. Kedua kalender multiple juga tetap bisa
@@ -186,18 +197,18 @@
 
         <x-docs.section id="batas" title="Batas data">
             <x-docs.lead>
-                Prop <span class="text-primary-500">min</span> dan <span class="text-primary-500">max</span> menandai dari mana data tersedia sampai di mana batas akhirnya —
+                Prop <span class="text-primary-500 dark:text-primary-400">min</span> dan <span class="text-primary-500 dark:text-primary-400">max</span> menandai dari mana data tersedia sampai di mana batas akhirnya —
                 misalnya tiket pesawat yang bisa dipesan dari hari ini sampai tanggal yang sama tahun depan.
-                Tanggal di luarnya tidak bisa dipilih, dan <span class="text-primary-500">Semua Waktu</span> memilih seluruh rentang itu: dari
-                <span class="text-primary-500">min</span> sampai <span class="text-primary-500">max</span>.
+                Tanggal di luarnya tidak bisa dipilih, dan <span class="text-primary-500 dark:text-primary-400">Semua Waktu</span> memilih seluruh rentang itu: dari
+                <span class="text-primary-500 dark:text-primary-400">min</span> sampai <span class="text-primary-500 dark:text-primary-400">max</span>.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Period">
-                    <x-ceplok::datepicker type="period" label="Tanggal penerbangan" :min="$hariIni" :max="$setahunLagi" />
+                    <x-ceplok::datepicker type="period" label="Tanggal penerbangan" :min="$hariIni" :max="$setahunLagi" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <div class="sm:col-span-2">
                     <x-docs.demo label="Multiple dengan shortcuts">
-                        <x-ceplok::datepicker type="multiple" shortcuts label="Tanggal penerbangan" :min="$hariIni" :max="$setahunLagi" />
+                        <x-ceplok::datepicker type="multiple" shortcuts label="Tanggal penerbangan" :min="$hariIni" :max="$setahunLagi" :dark-mode="$docsDark" />
                     </x-docs.demo>
                 </div>
             </div>
@@ -208,82 +219,83 @@
                     label="Tanggal penerbangan"
                     :⟦min⟧="today()"
                     :⟦max⟧="today()->addYear()"
+                    ⟨dark-mode⟩
                 />
                 {{-- Semua Waktu → ['start' => hari ini, 'end' => setahun lagi] --}}
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
-                Pintasan lain ikut dipotong ke batas itu: Minggu ini yang dimulai sebelum <span class="text-primary-500">min</span> hanya diambil
-                mulai <span class="text-primary-500">min</span>, sedangkan pintasan yang seluruh rentangnya di luar batas — misalnya Hari ini saat
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+                Pintasan lain ikut dipotong ke batas itu: Minggu ini yang dimulai sebelum <span class="text-primary-500 dark:text-primary-400">min</span> hanya diambil
+                mulai <span class="text-primary-500 dark:text-primary-400">min</span>, sedangkan pintasan yang seluruh rentangnya di luar batas — misalnya Hari ini saat
                 datanya baru mulai minggu depan — dimatikan. Panah bulan berhenti di bulan pertama dan terakhir yang
-                masih punya tanggal di dalam batas, begitu pula panah papan ketik. Tanpa <span class="text-primary-500">min</span> dan <span class="text-primary-500">max</span>,
-                Semua Waktu bernilai <span class="text-primary-500">['start' => null, 'end' => null]</span> — rentang tanpa batas.
+                masih punya tanggal di dalam batas, begitu pula panah papan ketik. Tanpa <span class="text-primary-500 dark:text-primary-400">min</span> dan <span class="text-primary-500 dark:text-primary-400">max</span>,
+                Semua Waktu bernilai <span class="text-primary-500 dark:text-primary-400">['start' => null, 'end' => null]</span> — rentang tanpa batas.
             </p>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Prop <span class="text-primary-500">dark-mode</span> mengganti seluruh warnanya ke tampilan gelap: kotak dan panel gray-700,
+        <x-docs.mode-section name="Datepicker">
+            <x-slot:lead>
+                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti seluruh warnanya ke tampilan gelap: kotak dan panel gray-700,
                 tanggal terpilih primary-600, dan tombol pintasan berisi. Tata letak mobile memakai warna yang sama.
-            </x-docs.lead>
+            </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
-                <x-docs.demo label="Single" dark>
-                    <x-ceplok::datepicker dark-mode label="Nama Tanggal" :value="$tanggal" />
+                <x-docs.demo label="Single" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::datepicker :dark-mode="! $docsDark" label="Nama Tanggal" :value="$tanggal" />
                 </x-docs.demo>
-                <x-docs.demo label="Period" dark>
-                    <x-ceplok::datepicker dark-mode type="period" label="Nama Tanggal" />
+                <x-docs.demo label="Period" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::datepicker :dark-mode="! $docsDark" type="period" label="Nama Tanggal" />
                 </x-docs.demo>
                 <div class="sm:col-span-2">
-                    <x-docs.demo label="Multiple" dark>
-                        <x-ceplok::datepicker dark-mode type="multiple" label="Nama Tanggal" :value="$rentang" />
+                    <x-docs.demo label="Multiple" :dark="! $docsDark" :light="$docsDark">
+                        <x-ceplok::datepicker :dark-mode="! $docsDark" type="multiple" label="Nama Tanggal" :value="$rentang" />
                     </x-docs.demo>
                 </div>
-                <x-docs.demo label="Multiple · Mobile dengan shortcuts" dark>
-                    <x-ceplok::datepicker dark-mode type="multiple" platform="mobile" shortcuts label="Nama Tanggal" :value="$rentang" />
+                <x-docs.demo label="Multiple · Mobile dengan shortcuts" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::datepicker :dark-mode="! $docsDark" type="multiple" platform="mobile" shortcuts label="Nama Tanggal" :value="$rentang" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::datepicker ⟦dark-mode⟧ label="Nama Tanggal" />
+                <x-ceplok::datepicker⟨! ⟦dark-mode⟧⟩ label="Nama Tanggal" />
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
         <x-docs.section id="nilai" title="Nilai & formulir">
             <x-docs.lead>
-                Single bernilai <span class="text-primary-500">'YYYY-MM-DD'</span>, sedangkan period dan multiple bernilai rentang
-                <span class="text-primary-500">['start' => …, 'end' => …]</span>. Tanpa jam dan zona waktu, jadi dua tanggal cukup dibandingkan sebagai teks.
+                Single bernilai <span class="text-primary-500 dark:text-primary-400">'YYYY-MM-DD'</span>, sedangkan period dan multiple bernilai rentang
+                <span class="text-primary-500 dark:text-primary-400">['start' => …, 'end' => …]</span>. Tanpa jam dan zona waktu, jadi dua tanggal cukup dibandingkan sebagai teks.
             </x-docs.lead>
-            <ul class="max-w-2xl space-y-2 text-body-sm text-gray-600">
+            <ul class="max-w-2xl space-y-2 text-body-sm text-gray-600 dark:text-gray-300">
                 <li>
-                    <span class="text-primary-500">null</span> — belum diisi, atau setelah <span class="text-primary-500">Hapus</span>.
+                    <span class="text-primary-500 dark:text-primary-400">null</span> — belum diisi, atau setelah <span class="text-primary-500 dark:text-primary-400">Hapus</span>.
                 </li>
                 <li>
-                    <span class="text-primary-500">['start' => '2021-06-20', 'end' => '2021-06-26']</span> — rentang. Hari ini, Minggu ini (Minggu–Sabtu, mengikuti
+                    <span class="text-primary-500 dark:text-primary-400">['start' => '2021-06-20', 'end' => '2021-06-26']</span> — rentang. Hari ini, Minggu ini (Minggu–Sabtu, mengikuti
                     urutan hari di kalender), dan Bulan ini (tanggal 1 sampai terakhir) menghasilkan bentuk ini —
-                    dipotong ke <span class="text-primary-500">min</span> dan <span class="text-primary-500">max</span> bila ada.
+                    dipotong ke <span class="text-primary-500 dark:text-primary-400">min</span> dan <span class="text-primary-500 dark:text-primary-400">max</span> bila ada.
                 </li>
                 <li>
-                    <span class="text-primary-500">['start' => '2021-06-20', 'end' => null]</span> — period atau multiple yang baru terisi tanggal mulainya.
+                    <span class="text-primary-500 dark:text-primary-400">['start' => '2021-06-20', 'end' => null]</span> — period atau multiple yang baru terisi tanggal mulainya.
                 </li>
                 <li>
-                    <span class="text-primary-500">['start' => min, 'end' => max]</span> — Semua Waktu: seluruh rentang data. Sisi yang tidak diberi
-                    batas bernilai <span class="text-primary-500">null</span>, jadi tanpa keduanya hasilnya <span class="text-primary-500">['start' => null, 'end' => null]</span> —
+                    <span class="text-primary-500 dark:text-primary-400">['start' => min, 'end' => max]</span> — Semua Waktu: seluruh rentang data. Sisi yang tidak diberi
+                    batas bernilai <span class="text-primary-500 dark:text-primary-400">null</span>, jadi tanpa keduanya hasilnya <span class="text-primary-500 dark:text-primary-400">['start' => null, 'end' => null]</span> —
                     rentang tanpa batas, berbeda dari belum diisi.
                 </li>
             </ul>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::datepicker ⟦name⟧="tanggal_lahir" />
+                <x-ceplok::datepicker ⟦name⟧="tanggal_lahir"⟨ dark-mode⟩ />
                 {{-- terkirim: tanggal_lahir=2021-06-25 --}}
 
-                <x-ceplok::datepicker type="multiple" ⟦name⟧="periode" />
+                <x-ceplok::datepicker type="multiple" ⟦name⟧="periode"⟨ dark-mode⟩ />
                 {{-- terkirim: periode[start]=2021-06-25 & periode[end]=2021-07-12 --}}
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
-                Dengan <span class="text-primary-500">name</span>, tanggalnya ikut terkirim bersama formulir dalam format <span class="text-primary-500">YYYY-MM-DD</span>. Semua
-                Waktu terkirim sebagai <span class="text-primary-500">min</span> dan <span class="text-primary-500">max</span>-nya; sisi yang tidak berbatas terkirim kosong.
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+                Dengan <span class="text-primary-500 dark:text-primary-400">name</span>, tanggalnya ikut terkirim bersama formulir dalam format <span class="text-primary-500 dark:text-primary-400">YYYY-MM-DD</span>. Semua
+                Waktu terkirim sebagai <span class="text-primary-500 dark:text-primary-400">min</span> dan <span class="text-primary-500 dark:text-primary-400">max</span>-nya; sisi yang tidak berbatas terkirim kosong.
             </p>
         </x-docs.section>
 
@@ -292,47 +304,47 @@
                 Begitu panel terbuka, fokus langsung berada di tanggal terpilih — atau hari ini — sehingga kalender
                 bisa ditelusuri tanpa tetikus.
             </x-docs.lead>
-            <ul class="max-w-2xl space-y-2 text-body-sm text-gray-600">
+            <ul class="max-w-2xl space-y-2 text-body-sm text-gray-600 dark:text-gray-300">
                 <li>
-                    <span class="text-primary-500">←</span> <span class="text-primary-500">→</span> hari sebelumnya dan berikutnya; <span class="text-primary-500">↑</span> <span class="text-primary-500">↓</span> minggu sebelumnya dan
+                    <span class="text-primary-500 dark:text-primary-400">←</span> <span class="text-primary-500 dark:text-primary-400">→</span> hari sebelumnya dan berikutnya; <span class="text-primary-500 dark:text-primary-400">↑</span> <span class="text-primary-500 dark:text-primary-400">↓</span> minggu sebelumnya dan
                     berikutnya.
                 </li>
                 <li>
-                    <span class="text-primary-500">Home</span> dan <span class="text-primary-500">End</span> ke awal dan akhir minggu.
+                    <span class="text-primary-500 dark:text-primary-400">Home</span> dan <span class="text-primary-500 dark:text-primary-400">End</span> ke awal dan akhir minggu.
                 </li>
                 <li>
-                    <span class="text-primary-500">PageUp</span> dan <span class="text-primary-500">PageDown</span> ke bulan sebelumnya dan berikutnya; bersama <span class="text-primary-500">Shift</span>, ke
+                    <span class="text-primary-500 dark:text-primary-400">PageUp</span> dan <span class="text-primary-500 dark:text-primary-400">PageDown</span> ke bulan sebelumnya dan berikutnya; bersama <span class="text-primary-500 dark:text-primary-400">Shift</span>, ke
                     tahun sebelumnya dan berikutnya.
                 </li>
                 <li>
-                    Ketik tanggalnya untuk melompat langsung ke sana: <span class="text-primary-500">17</span> ke tanggal 17 bulan itu,
-                    <span class="text-primary-500">17 agu</span> ke 17 Agustus, <span class="text-primary-500">17/8/1945</span> atau <span class="text-primary-500">17 agustus 1945</span> ke tanggal itu, dan
-                    <span class="text-primary-500">1945</span> ke tahunnya. Bagian yang tidak diketik tetap seperti tanggal yang sedang difokus.
-                    Ketikan dengan jeda di bawah satu detik digabung, dan <span class="text-primary-500">Backspace</span> menghapus huruf terakhirnya.
-                    Tanggal di luar <span class="text-primary-500">min</span>/<span class="text-primary-500">max</span> berhenti di tepinya, sama dengan panah.
+                    Ketik tanggalnya untuk melompat langsung ke sana: <span class="text-primary-500 dark:text-primary-400">17</span> ke tanggal 17 bulan itu,
+                    <span class="text-primary-500 dark:text-primary-400">17 agu</span> ke 17 Agustus, <span class="text-primary-500 dark:text-primary-400">17/8/1945</span> atau <span class="text-primary-500 dark:text-primary-400">17 agustus 1945</span> ke tanggal itu, dan
+                    <span class="text-primary-500 dark:text-primary-400">1945</span> ke tahunnya. Bagian yang tidak diketik tetap seperti tanggal yang sedang difokus.
+                    Ketikan dengan jeda di bawah satu detik digabung, dan <span class="text-primary-500 dark:text-primary-400">Backspace</span> menghapus huruf terakhirnya.
+                    Tanggal di luar <span class="text-primary-500 dark:text-primary-400">min</span>/<span class="text-primary-500 dark:text-primary-400">max</span> berhenti di tepinya, sama dengan panah.
                 </li>
                 <li>
-                    <span class="text-primary-500">Enter</span> atau <span class="text-primary-500">Spasi</span> memilih tanggal; <span class="text-primary-500">Escape</span> atau klik di luar panel menutupnya,
+                    <span class="text-primary-500 dark:text-primary-400">Enter</span> atau <span class="text-primary-500 dark:text-primary-400">Spasi</span> memilih tanggal; <span class="text-primary-500 dark:text-primary-400">Escape</span> atau klik di luar panel menutupnya,
                     dan fokus kembali ke kotak tanggalnya. Spasi di tengah ketikan tanggal ikut jadi bagian ketikan.
                 </li>
             </ul>
             <x-docs.demo label="Coba: buka, lalu ketik 17 agustus 1945 dan tekan Enter">
-                <x-ceplok::datepicker label="Tanggal lahir" placeholder="Pilih tanggal lahir" :max="$hariIni" />
+                <x-ceplok::datepicker label="Tanggal lahir" placeholder="Pilih tanggal lahir" :max="$hariIni" :dark-mode="$docsDark" />
             </x-docs.demo>
         </x-docs.section>
 
-        <livewire:playground.datepicker />
+        <livewire:playground.datepicker :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Pasang <span class="text-primary-500">wire:model</span> pada tag komponennya: nilainya diikat ke elemen terluar lewat
-                <span class="text-primary-500">x-modelable</span>, dan nilai awal propertinya sudah dirender server. Dengan
-                <span class="text-primary-500">wire:model.live</span>, setiap tanggal atau pintasan yang dipilih langsung sampai ke server — rentang
+                Pasang <span class="text-primary-500 dark:text-primary-400">wire:model</span> pada tag komponennya: nilainya diikat ke elemen terluar lewat
+                <span class="text-primary-500 dark:text-primary-400">x-modelable</span>, dan nilai awal propertinya sudah dirender server. Dengan
+                <span class="text-primary-500 dark:text-primary-400">wire:model.live</span>, setiap tanggal atau pintasan yang dipilih langsung sampai ke server — rentang
                 yang baru terisi tanggal mulainya pun tetap bisa diselesaikan dengan klik kedua. Pilih periode di bawah
                 untuk menyaring daftarnya.
             </x-docs.lead>
             <x-docs.example>
-                <livewire:playground.datepicker-filter />
+                <livewire:playground.datepicker-filter :dark="$docsDark" />
             </x-docs.example>
             <x-docs.code>
                 @verbatim
@@ -341,6 +353,7 @@
                     type="period"
                     label="Tanggal pengajuan"
                     ⟦wire:model.live⟧="periode"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>

@@ -12,6 +12,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     /** @var array{start: ?string, end: ?string}|null */
     public ?array $periode = null;
 
@@ -63,16 +66,16 @@ new class extends Component
 ?>
 
 <div class="w-full max-w-140 space-y-4">
-    <x-ceplok::datepicker type="period" label="Tanggal pengajuan" wire:model.live="periode" />
-    <p class="text-body-sm text-gray-500" role="status">{{ count($this->hasil) }} pengajuan · {{ $this->keterangan }}</p>
-    <ul class="divide-y divide-border rounded-lg border border-border bg-surface text-body-sm text-gray-700">
+    <x-ceplok::datepicker type="period" label="Tanggal pengajuan" wire:model.live="periode" :dark-mode="$dark" />
+    <p class="text-body-sm text-gray-500 dark:text-gray-400" role="status">{{ count($this->hasil) }} pengajuan · {{ $this->keterangan }}</p>
+    <ul class="divide-y divide-border rounded-lg border border-border bg-surface text-body-sm text-gray-700 dark:text-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:divide-gray-700">
         @forelse ($this->hasil as $baris)
             <li wire:key="pengajuan-{{ $baris['tanggal'] }}-{{ $loop->index }}" class="flex items-center justify-between gap-4 px-4 py-2.5">
                 <span>{{ $baris['nama'] }}</span>
-                <span class="text-gray-500">{{ Dates::write($baris['tanggal']) }}</span>
+                <span class="text-gray-500 dark:text-gray-400">{{ Dates::write($baris['tanggal']) }}</span>
             </li>
         @empty
-            <li class="px-4 py-2.5 text-gray-500">Tidak ada pengajuan pada periode ini.</li>
+            <li class="px-4 py-2.5 text-gray-500 dark:text-gray-400">Tidak ada pengajuan pada periode ini.</li>
         @endforelse
     </ul>
 </div>

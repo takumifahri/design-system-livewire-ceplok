@@ -10,6 +10,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     public string $kata = '';
 
     /** @var list<string> */
@@ -49,15 +52,16 @@ new class extends Component
         trigger="auto"
         :debounce="250"
         wire:search="cari($event.detail.value)"
+        :dark-mode="$dark"
     />
-    <p class="text-body-sm text-gray-500" role="status">
+    <p class="text-body-sm text-gray-500 dark:text-gray-400" role="status">
         {{ count($this->hasil) }} layanan{{ $kata !== '' ? ' untuk “'.$kata.'”' : '' }}
     </p>
-    <ul class="divide-y divide-border rounded-lg border border-border bg-surface text-body-sm text-gray-700">
+    <ul class="divide-y divide-border rounded-lg border border-border bg-surface text-body-sm text-gray-700 dark:text-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:divide-gray-700">
         @forelse ($this->hasil as $nama)
             <li wire:key="layanan-{{ $loop->index }}-{{ $nama }}" class="px-4 py-2.5">{{ $nama }}</li>
         @empty
-            <li class="px-4 py-2.5 text-gray-500">Tidak ada layanan yang cocok.</li>
+            <li class="px-4 py-2.5 text-gray-500 dark:text-gray-400">Tidak ada layanan yang cocok.</li>
         @endforelse
     </ul>
 </div>

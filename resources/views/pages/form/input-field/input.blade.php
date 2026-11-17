@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     $states = [
         ['value' => 'default', 'label' => 'Default', 'desc' => 'Belum disentuh — garis abu-abu netral.'],
         ['value' => 'typing', 'label' => 'Typing', 'desc' => 'Sedang diisi/difokus — garis memakai warna aplikasi.'],
@@ -33,6 +35,11 @@
         ['wire:clear', 'event', '—', 'Dipicu setelah tombol hapus mengosongkan isian; padanan onClear. Juga bisa x-on:clear.'],
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input> standar diteruskan (name, wire:model, autocomplete, …). class dan wire:key ke pembungkus terluar.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
+    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
+    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Input Field">
@@ -59,10 +66,10 @@
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Desktop · 52px">
-                    <x-ceplok::input-field label="Nama lengkap" placeholder="Masukkan nama lengkap" helper-text="Sesuai yang tertera pada KTP." :icon="$user" />
+                    <x-ceplok::input-field label="Nama lengkap" placeholder="Masukkan nama lengkap" helper-text="Sesuai yang tertera pada KTP." :icon="$user" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Mobile · 40px">
-                    <x-ceplok::input-field platform="mobile" label="Nama lengkap" placeholder="Masukkan nama lengkap" helper-text="Sesuai yang tertera pada KTP." :icon="$user" />
+                    <x-ceplok::input-field platform="mobile" label="Nama lengkap" placeholder="Masukkan nama lengkap" helper-text="Sesuai yang tertera pada KTP." :icon="$user" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
@@ -72,18 +79,19 @@
                     placeholder="Masukkan nama lengkap"
                     helper-text="Sesuai yang tertera pada KTP."
                     :icon="svg('ceplok-s-user', 'size-4')"
+                    ⟨dark-mode⟩
                 />
 
                 {{-- Mobile — field 40px --}}
-                <x-ceplok::input-field ⟦platform⟧="mobile" label="Nama lengkap" />
+                <x-ceplok::input-field ⟦platform⟧="mobile" label="Nama lengkap"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="states" title="States">
             <x-docs.lead>
-                Empat kondisi visual field. <span class="text-primary-500">inactive</span> otomatis menonaktifkan input dan <span class="text-primary-500">failed</span>
-                menandainya <span class="text-primary-500">aria-invalid</span>, jadi tampilan dan makna aksesibilitasnya selalu sejalan.
+                Empat kondisi visual field. <span class="text-primary-500 dark:text-primary-400">inactive</span> otomatis menonaktifkan input dan <span class="text-primary-500 dark:text-primary-400">failed</span>
+                menandainya <span class="text-primary-500 dark:text-primary-400">aria-invalid</span>, jadi tampilan dan makna aksesibilitasnya selalu sejalan.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 @foreach ($states as $s)
@@ -94,6 +102,7 @@
                             placeholder="Masukkan nama lengkap"
                             :helper-text="$s['value'] === 'failed' ? 'Nama lengkap wajib diisi.' : $s['desc']"
                             :icon="$user"
+                            :dark-mode="$docsDark"
                         />
                     </x-docs.demo>
                 @endforeach
@@ -105,6 +114,7 @@
                     ⟦state⟧="failed"
                     label="Nama lengkap"
                     helper-text="Nama lengkap wajib diisi."
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -125,6 +135,7 @@
                             placeholder="Masukkan nama lengkap"
                             :helper-text="'border-'.$a['token']"
                             :icon="$user"
+                            :dark-mode="$docsDark"
                         />
                     </x-docs.demo>
                 @endforeach
@@ -135,6 +146,7 @@
                     ⟦application⟧="purple"
                     state="typing"
                     label="Nama lengkap"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -142,12 +154,12 @@
 
         <x-docs.section id="password" title="Password">
             <x-docs.lead>
-                Dengan <span class="text-primary-500">type="password"</span> isiannya disamarkan, ikon gembok tampil di kiri, dan tombol mata di
-                kanan menampilkan atau menyembunyikan kata sandi. Gembok bisa diganti lewat <span class="text-primary-500">icon</span>, atau
-                dihilangkan dengan <span class="text-primary-500">:icon="false"</span>. Sesuai desainnya, di mobile label, isian, dan caption-nya
-                12px. Saat <span class="text-primary-500">failed</span>, garis, latar, gembok, dan caption-nya memerah seperti type teks, tetapi
-                tombol matanya tetap abu-abu. Isi <span class="text-primary-500">autocomplete</span> sesuai pemakaiannya —
-                <span class="text-primary-500">current-password</span> untuk masuk, <span class="text-primary-500">new-password</span> untuk mendaftar — supaya pengelola kata
+                Dengan <span class="text-primary-500 dark:text-primary-400">type="password"</span> isiannya disamarkan, ikon gembok tampil di kiri, dan tombol mata di
+                kanan menampilkan atau menyembunyikan kata sandi. Gembok bisa diganti lewat <span class="text-primary-500 dark:text-primary-400">icon</span>, atau
+                dihilangkan dengan <span class="text-primary-500 dark:text-primary-400">:icon="false"</span>. Sesuai desainnya, di mobile label, isian, dan caption-nya
+                12px. Saat <span class="text-primary-500 dark:text-primary-400">failed</span>, garis, latar, gembok, dan caption-nya memerah seperti type teks, tetapi
+                tombol matanya tetap abu-abu. Isi <span class="text-primary-500 dark:text-primary-400">autocomplete</span> sesuai pemakaiannya —
+                <span class="text-primary-500 dark:text-primary-400">current-password</span> untuk masuk, <span class="text-primary-500 dark:text-primary-400">new-password</span> untuk mendaftar — supaya pengelola kata
                 sandi browser ikut bekerja.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
@@ -161,6 +173,7 @@
                             placeholder="••••••••"
                             :helper-text="$d['state'] === 'failed' ? 'Kata sandi minimal 8 karakter.' : 'Gunakan minimal 8 karakter.'"
                             autocomplete="current-password"
+                            :dark-mode="$docsDark"
                         />
                     </x-docs.demo>
                 @endforeach
@@ -173,23 +186,24 @@
                     placeholder="••••••••"
                     helper-text="Gunakan minimal 8 karakter."
                     autocomplete="current-password"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Prop <span class="text-primary-500">dark-mode</span> mengganti field ke gray-700 dengan label putih. Garisnya menyatu dengan latar
-                dan baru terlihat saat <span class="text-primary-500">typing</span> (warna aplikasi) atau <span class="text-primary-500">failed</span> (red-500). Teks yang
+        <x-docs.mode-section name="Input Field">
+            <x-slot:lead>
+                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti field ke gray-700 dengan label putih. Garisnya menyatu dengan latar
+                dan baru terlihat saat <span class="text-primary-500 dark:text-primary-400">typing</span> (warna aplikasi) atau <span class="text-primary-500 dark:text-primary-400">failed</span> (red-500). Teks yang
                 diketik putih, sedangkan placeholder, ikon, dan caption abu-abu. Tombol hapus (×) dan tombol mata
-                gray-400. Pada type password saat <span class="text-primary-500">failed</span>, gembok, placeholder, serta caption-nya red-500.
-            </x-docs.lead>
+                gray-400. Pada type password saat <span class="text-primary-500 dark:text-primary-400">failed</span>, gembok, placeholder, serta caption-nya red-500.
+            </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 @foreach ($states as $s)
-                    <x-docs.demo :label="$s['label']" dark>
+                    <x-docs.demo :label="$s['label']" :dark="! $docsDark" :light="$docsDark">
                         <x-ceplok::input-field
-                            dark-mode
+                            :dark-mode="! $docsDark"
                             :state="$s['value']"
                             label="Nama lengkap"
                             placeholder="Masukkan nama lengkap"
@@ -201,10 +215,10 @@
                 @endforeach
                 @foreach ($passwordDemos as $d)
                     @continue($d['platform'] === 'mobile')
-                    <x-docs.demo :label="'Password · '.$d['label']" dark>
+                    <x-docs.demo :label="'Password · '.$d['label']" :dark="! $docsDark" :light="$docsDark">
                         <x-ceplok::input-field
                             type="password"
-                            dark-mode
+                            :dark-mode="! $docsDark"
                             :platform="$d['platform']"
                             :state="$d['state']"
                             label="Kata sandi"
@@ -218,25 +232,25 @@
             <x-docs.code>
                 @verbatim
                 <x-ceplok::input-field
-                    ⟦dark-mode⟧
+                    ⟨!⟦dark-mode⟧⟩
                     label="Nama lengkap"
                     placeholder="Masukkan nama lengkap"
                 />
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.input-field />
+        <livewire:playground.input-field :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Pasang <span class="text-primary-500">wire:model</span> langsung pada tag komponennya; atribut itu diteruskan ke
-                <span class="text-primary-500">&lt;input&gt;</span>, dan nilai awal propertinya sudah dirender server. Hasil validasi tinggal
-                dipetakan ke <span class="text-primary-500">state="failed"</span> dan <span class="text-primary-500">helper-text</span>. Kosongkan isian lalu tekan Simpan untuk
+                Pasang <span class="text-primary-500 dark:text-primary-400">wire:model</span> langsung pada tag komponennya; atribut itu diteruskan ke
+                <span class="text-primary-500 dark:text-primary-400">&lt;input&gt;</span>, dan nilai awal propertinya sudah dirender server. Hasil validasi tinggal
+                dipetakan ke <span class="text-primary-500 dark:text-primary-400">state="failed"</span> dan <span class="text-primary-500 dark:text-primary-400">helper-text</span>. Kosongkan isian lalu tekan Simpan untuk
                 melihatnya.
             </x-docs.lead>
             <x-docs.example>
-                <livewire:playground.input-field-validate />
+                <livewire:playground.input-field-validate :dark="$docsDark" />
             </x-docs.example>
             <x-docs.code>
                 @verbatim
@@ -247,6 +261,7 @@
                         :⟦state⟧="$errors->has('nama') ? 'failed' : 'default'"
                         :⟦helper-text⟧="$errors->first('nama') ?: 'Sesuai yang tertera pada KTP.'"
                         clearable
+                        ⟨dark-mode⟩
                     />
                     <x-ceplok::button type="submit">Simpan</x-ceplok::button>
                 </form>
@@ -256,7 +271,7 @@
 
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>
-                Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut <span class="text-primary-500">&lt;input&gt;</span>
+                Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut <span class="text-primary-500 dark:text-primary-400">&lt;input&gt;</span>
                 standar juga diteruskan apa adanya.
             </x-docs.lead>
             <div class="[&_td:first-child]:whitespace-nowrap">

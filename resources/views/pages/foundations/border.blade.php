@@ -1,7 +1,7 @@
 @php
     $radiusScale = [['rounded-sm', '2px'], ['rounded', '4px'], ['rounded-md', '6px'], ['rounded-lg', '8px'], ['rounded-xl', '12px'], ['rounded-2xl', '16px'], ['rounded-3xl', '24px'], ['rounded-full', '9999px']];
-    $borderWidths = [['border-0', '0px', 'outline outline-dashed outline-gray-300'], ['border', '1px', ''], ['border-2', '2px', ''], ['border-4', '4px', ''], ['border-8', '8px', '']];
-    $code = fn (string $c) => '<code class="text-xs font-bold text-gray-700">'.e($c).'</code>';
+    $borderWidths = [['border-0', '0px', 'outline outline-dashed outline-gray-300 dark:outline-gray-500'], ['border', '1px', ''], ['border-2', '2px', ''], ['border-4', '4px', ''], ['border-8', '8px', '']];
+    $code = fn (string $c) => '<code class="text-xs font-bold text-gray-700 dark:text-gray-300">'.e($c).'</code>';
 @endphp
 
 <x-docs.layout title="Border">
@@ -44,11 +44,12 @@
                 mayoritas kebutuhan.
             </x-docs.lead>
 
+            {{-- Di mode gelap docs petaknya gray-700, sama dengan petak Elevation; garisnya tetap primary-300. --}}
             <article class="ds-card p-5 sm:p-7">
                 <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
                     @foreach ($borderWidths as [$class, $value, $extra])
-                        <div @class([$class, $extra, 'flex aspect-6/7 flex-col items-center justify-center gap-1 rounded-lg border-primary-300 bg-white text-center'])>
-                            <code class="text-sm font-bold break-all text-primary-700">.{{ $class }}</code>
+                        <div @class([$class, $extra, 'flex aspect-6/7 flex-col items-center justify-center gap-1 rounded-lg border-primary-300 bg-white text-center dark:bg-gray-700'])>
+                            <code class="text-sm font-bold break-all text-primary-700 dark:text-primary-300">.{{ $class }}</code>
                             <code class="text-xs text-gray-400">{{ $value }}</code>
                         </div>
                     @endforeach
@@ -72,7 +73,8 @@
 
             <article class="ds-card p-5 sm:p-7">
                 <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                    <div class="flex aspect-6/7 flex-col items-center justify-center gap-1 rounded-lg border-2 border-solid border-white bg-primary-500 text-center ring-1 ring-gray-200">
+                    {{-- Cincin gray-200 hanya menampakkan garis putihnya di atas kartu putih; di kartu gelap cukup gray-700. --}}
+                    <div class="flex aspect-6/7 flex-col items-center justify-center gap-1 rounded-lg border-2 border-solid border-white bg-primary-500 text-center ring-1 ring-gray-200 dark:ring-gray-700">
                         <code class="text-sm font-bold break-all text-white">.border-solid</code>
                         <code class="text-xs text-primary-100">solid</code>
                     </div>

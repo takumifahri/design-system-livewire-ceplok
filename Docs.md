@@ -71,6 +71,9 @@ atau dari slot:
   dikendalikan Playground.
 - `⟪ekspresi|cadangan⟫` menjadi nilai hidup: ekspresi Alpine mengisi angkanya
   di browser, dan teks cadangan dirender server lebih dulu.
+- `⟨…⟩` hanya tampil di mode gelap docs dan `⟨!…⟩` hanya di mode terang.
+  Baris yang tinggal berisi penanda yang dibuang ikut dihapus. Lihat bagian
+  "Mode gelap" di bawah.
 - Di dalam ekspresi PHP, mis. kunci array pada `:items`, sorotan ditulis
   lewat prop `mark="'attributes'"`, bukan `⟦…⟧`. Ekstensi PHP di editor tetap
   mem-parse nilai atribut itu walau dibungkus `@verbatim`, dan penanda di
@@ -122,6 +125,48 @@ Playground adalah komponen Livewire satu berkas di
   memuat ulang aset.
 - Animasi di Home (reveal, parallax, tilt, dan lainnya) dimatikan bila
   pengguna memilih `prefers-reduced-motion`.
+
+## Mode gelap
+
+Mode gelap situs dokumentasi masih uji coba dan baru dipasang di sebagian
+halaman, mengikuti docs React. Daftar rutenya ada di
+[app/Docs/Theme.php](app/Docs/Theme.php). Di halaman lain situs tetap terang
+dan tombol bulan/matahari di rail serta top bar mobile diredupkan.
+
+- Pilihan pembaca disimpan di cookie `ceplok_docs_theme` yang ditulis
+  JavaScript ([resources/js/docs/theme.js](resources/js/docs/theme.js)), jadi
+  cookie ini juga dikecualikan dari enkripsi. Server membacanya dan memasang
+  `data-docs-theme="dark"` di `<html>` sejak HTML pertama.
+- Varian `dark:` situs mengikuti atribut itu (lihat
+  [resources/css/docs.css](resources/css/docs.css)), bukan
+  `prefers-color-scheme`. Sengaja bukan `data-theme`: atribut itu milik
+  komponen kit dan mengganti token untuk seluruh isinya.
+- Tombolnya memuat ulang halaman setelah cookie ditulis, karena pratinjau
+  dirender server dengan `dark-mode`. Muat ulang juga membuang snapshot
+  wire:navigate yang masih memakai mode lama.
+- Portal Dashboard ikut memakai pilihan yang sama. Tombol tema di header-nya
+  hanya mengirim event `dark-mode-change`; `<x-docs.app-frame>` yang
+  menyimpannya.
+
+Menambah halaman ke mode gelap:
+
+1. Beri elemen halamannya varian `dark:`, mis. `text-gray-500 dark:text-gray-400`.
+2. Ambil `$docsDark = Theme::dark();` di blok `@php` halaman, lalu beri
+   `:dark-mode="$docsDark"` pada komponen kit di pratinjau.
+3. Tulis `dark-mode` di cuplikannya lewat penanda: `⟨ dark-mode⟩` untuk tag
+   satu baris, atau baris `⟨dark-mode⟩` untuk prop yang ditulis satu per baris.
+4. Ganti bagian Dark mode dengan `<x-docs.mode-section name="…">`. Bagian ini
+   bertukar menjadi Light mode selama docs gelap: komponennya memakai
+   `:dark-mode="! $docsDark"` di dalam
+   `<x-docs.demo :dark="! $docsDark" :light="$docsDark">`, dan cuplikannya
+   memakai `⟨! ⟦dark-mode⟧⟩` (atau baris `⟨!⟦dark-mode⟧⟩`). Label di daftar
+   isinya ditukar `<x-docs.page>`.
+5. Pasang `:dark="$docsDark"` pada Playground dan contoh Livewire-nya, supaya
+   mode awalnya mengikuti docs.
+6. Daftarkan rutenya di `Theme::PAGES`.
+
+Button kit Livewire belum punya prop `dark-mode` seperti di kit React, jadi
+tombol di pratinjau tetap memakai warna terang.
 
 ## Tes
 

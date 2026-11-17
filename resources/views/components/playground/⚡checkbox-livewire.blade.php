@@ -9,6 +9,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     /** @var list<string> */
     public array $berkas = ['ktp'];
 
@@ -27,11 +30,11 @@ new class extends Component
 
 <div class="w-full space-y-4">
     <div class="space-y-3">
-        <x-ceplok::checkbox value="ktp" label="KTP elektronik" wire:model.live="berkas" />
-        <x-ceplok::checkbox value="kk" label="Kartu keluarga" wire:model.live="berkas" />
-        <x-ceplok::checkbox value="npwp" label="NPWP" wire:model.live="berkas" />
+        <x-ceplok::checkbox value="ktp" label="KTP elektronik" wire:model.live="berkas" :dark-mode="$dark" />
+        <x-ceplok::checkbox value="kk" label="Kartu keluarga" wire:model.live="berkas" :dark-mode="$dark" />
+        <x-ceplok::checkbox value="npwp" label="NPWP" wire:model.live="berkas" :dark-mode="$dark" />
     </div>
-    <p class="text-body-sm text-gray-500" role="status">
-        Berkas yang akan dilampirkan: <span class="text-gray-900">{{ $this->terpilih }}</span>.
+    <p class="text-body-sm text-gray-500 dark:text-gray-400" role="status">
+        Berkas yang akan dilampirkan: <span class="text-gray-900 dark:text-white">{{ $this->terpilih }}</span>.
     </p>
 </div>

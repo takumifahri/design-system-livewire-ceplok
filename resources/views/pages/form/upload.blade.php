@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     $applications = [
         ['value' => 'default', 'label' => 'Default', 'token' => 'primary-700'],
         ['value' => 'purple', 'label' => 'Purple', 'token' => 'purple-500'],
@@ -20,6 +22,11 @@
         ['dark-mode', 'bool', 'false', 'Tampilan gelap: warna latar gray-800 dan teks putih/abu-abu.'],
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input type="file"> diteruskan (accept, required, name, wire:model, …), kecuali multiple: unggahannya selalu tunggal.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
+    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
+    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Upload Form">
@@ -46,7 +53,7 @@
                 salah satu isian di antara isian lain dan tidak perlu menonjol.
             </x-docs.lead>
             <x-docs.demo label="Default">
-                <x-ceplok::upload label="Unggah dokumen" helper-text="PDF atau JPG, maksimal 2 MB." />
+                <x-ceplok::upload label="Unggah dokumen" helper-text="PDF atau JPG, maksimal 2 MB." :dark-mode="$docsDark" />
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
@@ -55,37 +62,38 @@
                     helper-text="PDF atau JPG, maksimal 2 MB."
                     name="dokumen"
                     accept="application/pdf,image/jpeg"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
-                Yang dibungkus komponen ini <span class="text-primary-500">&lt;input type="file"&gt;</span> sungguhan — ia hanya
-                disembunyikan secara visual, bukan diganti tombol tiruan. Cukup beri <span class="text-primary-500">name</span> seperti
-                isian lain lalu kirim formulirnya seperti biasa, atau pasang <span class="text-primary-500">wire:model</span> untuk unggahan
-                Livewire; event <span class="text-primary-500">files-change</span> baru diperlukan kalau Anda memang ingin membaca berkasnya
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+                Yang dibungkus komponen ini <span class="text-primary-500 dark:text-primary-400">&lt;input type="file"&gt;</span> sungguhan — ia hanya
+                disembunyikan secara visual, bukan diganti tombol tiruan. Cukup beri <span class="text-primary-500 dark:text-primary-400">name</span> seperti
+                isian lain lalu kirim formulirnya seperti biasa, atau pasang <span class="text-primary-500 dark:text-primary-400">wire:model</span> untuk unggahan
+                Livewire; event <span class="text-primary-500 dark:text-primary-400">files-change</span> baru diperlukan kalau Anda memang ingin membaca berkasnya
                 di sisi klien, misalnya untuk pratinjau.
             </p>
         </x-docs.section>
 
         <x-docs.section id="platform" title="Platform">
             <x-docs.lead>
-                Dua ukuran untuk bentuk ini. <span class="text-primary-500">default</span> setinggi 44px dengan teks 14px; <span class="text-primary-500">mobile</span>
+                Dua ukuran untuk bentuk ini. <span class="text-primary-500 dark:text-primary-400">default</span> setinggi 44px dengan teks 14px; <span class="text-primary-500 dark:text-primary-400">mobile</span>
                 setinggi 40px dengan teks 12px. Label dan captionnya tidak ikut mengecil, jadi yang berubah
                 hanya barisnya sendiri.
             </x-docs.lead>
             <div class="grid gap-5">
                 <x-docs.demo label="Default — 44px">
-                    <x-ceplok::upload label="Unggah dokumen" helper-text="PDF atau JPG, maksimal 2 MB." />
+                    <x-ceplok::upload label="Unggah dokumen" helper-text="PDF atau JPG, maksimal 2 MB." :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Mobile — 40px">
                     <div class="max-w-95.5">
-                        <x-ceplok::upload platform="mobile" label="Unggah dokumen" helper-text="PDF atau JPG, maksimal 2 MB." />
+                        <x-ceplok::upload platform="mobile" label="Unggah dokumen" helper-text="PDF atau JPG, maksimal 2 MB." :dark-mode="$docsDark" />
                     </div>
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::upload ⟦platform⟧="mobile" label="Unggah dokumen" />
+                <x-ceplok::upload ⟦platform⟧="mobile" label="Unggah dokumen"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
@@ -100,12 +108,12 @@
             <div class="grid gap-5">
                 <x-docs.demo label="Default — 538px">
                     <div class="max-w-134.5">
-                        <x-ceplok::upload type="attach" />
+                        <x-ceplok::upload type="attach" :dark-mode="$docsDark" />
                     </div>
                 </x-docs.demo>
                 <x-docs.demo label="Mobile — 382px">
                     <div class="max-w-95.5">
-                        <x-ceplok::upload type="attach" platform="mobile" />
+                        <x-ceplok::upload type="attach" platform="mobile" :dark-mode="$docsDark" />
                     </div>
                 </x-docs.demo>
             </div>
@@ -116,28 +124,29 @@
                     accept="image/png,image/jpeg"
                     attach-label="Klik untuk memilih atau seret berkas ke sini"
                     attach-hint="PNG atau JPG, maksimal 2 MB"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
                 Isi kotaknya sama persis di kedua platform — ikon 20px, ajakan 14px, keterangan format 12px.
                 Yang berbeda hanya lebarnya, dan lebar itu datang dari wadahnya: komponen ini selebar ruang
                 yang Anda beri, sama seperti isian form lain. Kedua demo di atas hanya membatasi wadahnya di
                 538px dan 382px.
             </p>
-            <p class="mt-3 text-body-sm text-gray-500">
+            <p class="mt-3 text-body-sm text-gray-500 dark:text-gray-400">
                 Berkas yang dijatuhkan dititipkan ke input aslinya, bukan sekadar disimpan di state, jadi ia
                 ikut terkirim saat formulirnya di-submit — dan ikut diunggah bila input-nya diikat
-                <span class="text-primary-500">wire:model</span>. Begitu ada berkas terpilih, namanya menggantikan baris ajakan supaya jelas
+                <span class="text-primary-500 dark:text-primary-400">wire:model</span>. Begitu ada berkas terpilih, namanya menggantikan baris ajakan supaya jelas
                 bahwa areanya sudah terpakai. Dua baris teks di dalamnya bisa diganti lewat
-                <span class="text-primary-500">attach-label</span> dan <span class="text-primary-500">attach-hint</span>.
+                <span class="text-primary-500 dark:text-primary-400">attach-label</span> dan <span class="text-primary-500 dark:text-primary-400">attach-hint</span>.
             </p>
         </x-docs.section>
 
         <x-docs.section id="application" title="Application">
             <x-docs.lead>
-                Warna tombol mengikuti aplikasi yang memakainya: <span class="text-primary-500">primary-700</span> untuk default dan
-                <span class="text-primary-500">purple-500</span> untuk purple. Pilih sekali di tingkat halaman, lalu biarkan sama untuk
+                Warna tombol mengikuti aplikasi yang memakainya: <span class="text-primary-500 dark:text-primary-400">primary-700</span> untuk default dan
+                <span class="text-primary-500 dark:text-primary-400">purple-500</span> untuk purple. Pilih sekali di tingkat halaman, lalu biarkan sama untuk
                 seluruh form di aplikasi itu.
             </x-docs.lead>
             <div class="grid gap-5">
@@ -151,19 +160,19 @@
                         --}}
                         <div class="grid gap-5 md:grid-cols-2">
                             <div class="flex flex-col justify-center">
-                                <x-ceplok::upload :application="$a['value']" label="Unggah dokumen" :helper-text="'bg-'.$a['token']" />
+                                <x-ceplok::upload :application="$a['value']" label="Unggah dokumen" :helper-text="'bg-'.$a['token']" :dark-mode="$docsDark" />
                             </div>
-                            <x-ceplok::upload type="attach" :application="$a['value']" />
+                            <x-ceplok::upload type="attach" :application="$a['value']" :dark-mode="$docsDark" />
                         </div>
                     </x-docs.demo>
                 @endforeach
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::upload ⟦application⟧="purple" label="Unggah dokumen" />
+                <x-ceplok::upload ⟦application⟧="purple" label="Unggah dokumen"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
                 Kedua kotak attach di atas memang terlihat sama persis, dan itu bukan kekeliruan: dalam
                 keadaan diam bentuk ini tidak punya satu pun elemen berwarna aksen. Warnanya baru muncul
                 saat berkas ditahan di atas areanya — garis dan latarnya menyala mengikuti aplikasi yang
@@ -171,17 +180,17 @@
             </p>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Prop <span class="text-primary-500">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual. Komponen secara otomatis menyesuaikan warna latar, batas, dan teks.
-            </x-docs.lead>
+        <x-docs.mode-section name="Upload">
+            <x-slot:lead>
+                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual. Komponen secara otomatis menyesuaikan warna latar, batas, dan teks.
+            </x-slot:lead>
             <div class="grid gap-5">
-                <x-docs.demo label="Upload" dark>
-                    <x-ceplok::upload label="Upload File" helper-text="PDF atau JPG, maksimal 2 MB." dark-mode />
+                <x-docs.demo label="Upload" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::upload label="Upload File" helper-text="PDF atau JPG, maksimal 2 MB." :dark-mode="! $docsDark" />
                 </x-docs.demo>
-                <x-docs.demo label="Attach — 538px" dark>
+                <x-docs.demo label="Attach — 538px" :dark="! $docsDark" :light="$docsDark">
                     <div class="max-w-134.5">
-                        <x-ceplok::upload type="attach" dark-mode />
+                        <x-ceplok::upload type="attach" :dark-mode="! $docsDark" />
                     </div>
                 </x-docs.demo>
             </div>
@@ -190,25 +199,25 @@
                 <x-ceplok::upload
                     ⟦label⟧="Upload File"
                     ⟦helper-text⟧="PDF atau JPG, maksimal 2 MB."
-                    ⟦dark-mode⟧
+                    ⟨!⟦dark-mode⟧⟩
                 />
 
-                <x-ceplok::upload type="attach" ⟦dark-mode⟧ />
+                <x-ceplok::upload type="attach"⟨! ⟦dark-mode⟧⟩ />
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.upload />
+        <livewire:playground.upload :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Untuk unggahan Livewire, pasang <span class="text-primary-500">wire:model</span> pada tag komponennya dan
-                <span class="text-primary-500">WithFileUploads</span> di komponen Livewire-nya. Berkas — termasuk yang dijatuhkan ke area
+                Untuk unggahan Livewire, pasang <span class="text-primary-500 dark:text-primary-400">wire:model</span> pada tag komponennya dan
+                <span class="text-primary-500 dark:text-primary-400">WithFileUploads</span> di komponen Livewire-nya. Berkas — termasuk yang dijatuhkan ke area
                 attach — langsung diunggah sementara dan bisa divalidasi saat itu juga; tombol Remove ikut
                 mengosongkan propertinya. Coba pilih berkas PDF atau JPG di bawah.
             </x-docs.lead>
             <x-docs.example>
-                <livewire:playground.upload-livewire />
+                <livewire:playground.upload-livewire :dark="$docsDark" />
             </x-docs.example>
             <x-docs.code>
                 @verbatim
@@ -217,6 +226,7 @@
                     accept="application/pdf,image/jpeg"
                     ⟦wire:model⟧="dokumen"
                     :helper-text="$errors->first('dokumen') ?: 'PDF atau JPG, maksimal 2 MB.'"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -225,7 +235,7 @@
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>
                 Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut
-                <span class="text-primary-500">&lt;input type="file"&gt;</span> standar juga diteruskan apa adanya.
+                <span class="text-primary-500 dark:text-primary-400">&lt;input type="file"&gt;</span> standar juga diteruskan apa adanya.
             </x-docs.lead>
             <div class="[&_td:first-child]:whitespace-nowrap">
                 <x-docs.props-table :rows="$props" min-width="52rem" />

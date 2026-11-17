@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     $applications = [
         ['value' => 'default', 'label' => 'Default', 'token' => 'primary-500'],
         ['value' => 'purple', 'label' => 'Purple', 'token' => 'purple-500'],
@@ -41,6 +43,11 @@
         ['dark-mode', 'bool', 'false', 'Tampilan gelap: field gray-700 dengan label terang; garisnya hanya terlihat saat inactive dan saat difokus. Panel daftar pilihannya tetap terang.'],
         ['…atribut', 'HTML', '—', 'Seluruh atribut <select> standar diteruskan (name, required, wire:model, …). class dan wire:key ke pembungkus terluar.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
+    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
+    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Regular Select Form">
@@ -64,14 +71,14 @@
         <x-docs.section id="select-input" title="Select Input">
             <x-docs.lead>
                 Label di atas field, kotak setinggi 37px berlatar abu muda dengan panah di sisi kanan, lalu
-                caption opsional di bawahnya. Ikon info di samping label muncul begitu prop <span class="text-primary-500">info</span> diisi.
+                caption opsional di bawahnya. Ikon info di samping label muncul begitu prop <span class="text-primary-500 dark:text-primary-400">info</span> diisi.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Belum dipilih">
-                    <x-ceplok::select label="Label" info="Pilih salah satu provinsi." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
+                    <x-ceplok::select label="Label" info="Pilih salah satu provinsi." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Sudah dipilih">
-                    <x-ceplok::select label="Label" info="Pilih salah satu provinsi." placeholder="Pilih Apapun Itu" :options="$provinsi" value="jabar" helper-text="Wajib diisi." />
+                    <x-ceplok::select label="Label" info="Pilih salah satu provinsi." placeholder="Pilih Apapun Itu" :options="$provinsi" value="jabar" helper-text="Wajib diisi." :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
@@ -82,10 +89,11 @@
                     ⟦placeholder⟧="Pilih Apapun Itu"
                     :⟦options⟧="[['value' => 'dki', 'label' => 'DKI Jakarta']]"
                     helper-text="Wajib diisi."
+                    ⟨dark-mode⟩
                 />
 
                 {{-- Tanpa prop options: pakai <option> sendiri --}}
-                <x-ceplok::select label="Label" placeholder="Pilih Apapun Itu">
+                <x-ceplok::select label="Label" placeholder="Pilih Apapun Itu"⟨ dark-mode⟩>
                     <option value="dki">DKI Jakarta</option>
                 </x-ceplok::select>
                 @endverbatim
@@ -94,20 +102,20 @@
 
         <x-docs.section id="state" title="State">
             <x-docs.lead>
-                State <span class="text-primary-500">inactive</span> memakai latar gray-100 dengan teks gray-300, dan sekaligus menonaktifkan
+                State <span class="text-primary-500 dark:text-primary-400">inactive</span> memakai latar gray-100 dengan teks gray-300, dan sekaligus menonaktifkan
                 kontrolnya — jadi tampilan dan perilakunya tak mungkin berbeda.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Default">
-                    <x-ceplok::select label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" />
+                    <x-ceplok::select label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Inactive">
-                    <x-ceplok::select state="inactive" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" />
+                    <x-ceplok::select state="inactive" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::select ⟦state⟧="inactive" label="Label" placeholder="Pilih Apapun Itu" :options="$provinsi" />
+                <x-ceplok::select ⟦state⟧="inactive" label="Label" placeholder="Pilih Apapun Itu" :options="$provinsi"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
@@ -127,6 +135,7 @@
                             placeholder="Pilih Apapun Itu"
                             :options="$provinsi"
                             :helper-text="'text-'.$a['token']"
+                            :dark-mode="$docsDark"
                         />
                     </x-docs.demo>
                 @endforeach
@@ -137,6 +146,7 @@
                     ⟦application⟧="purple"
                     label="Label"
                     :options="$provinsi"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -146,14 +156,14 @@
             <x-docs.lead>
                 Daftar pilihannya panel Dropdown — rupanya sama persis dengan menu Dropdown di kit ini, bukan
                 popup milik sistem operasi. Pilihan ditelusuri dengan panah, Home/End, atau dengan mengetik
-                namanya — lihat <span class="text-primary-500">Banyak pilihan</span> di bawah.
+                namanya — lihat <span class="text-primary-500 dark:text-primary-400">Banyak pilihan</span> di bawah.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Lewat options">
-                    <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi" :options="$provinsi" />
+                    <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi" :options="$provinsi" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Lewat <option> dan <optgroup>">
-                    <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi">
+                    <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi" :dark-mode="$docsDark">
                         <optgroup label="Jawa">
                             <option value="jabar">Jawa Barat</option>
                             <option value="jateng">Jawa Tengah</option>
@@ -168,7 +178,7 @@
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi">
+                <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi"⟨ dark-mode⟩>
                     ⟦<optgroup label="Jawa">⟧
                         <option value="jabar">Jawa Barat</option>
                         <option value="jateng">Jawa Tengah</option>
@@ -177,11 +187,11 @@
                 </x-ceplok::select>
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
-                Di balik panelnya tetap ada elemen <span class="text-primary-500">&lt;select&gt;</span> yang membawa nilainya, jadi
-                <span class="text-primary-500">name</span>, <span class="text-primary-500">wire:model</span>, <span class="text-primary-500">x-model</span>, <span class="text-primary-500">required</span>, dan pengiriman formulir bekerja seperti
-                pada <span class="text-primary-500">&lt;select&gt;</span> biasa. <span class="text-primary-500">&lt;option&gt;</span> yang Anda tulis sendiri dibaca komponen
-                dan tampil di panel yang sama; label <span class="text-primary-500">&lt;optgroup&gt;</span> menjadi judul kelompoknya.
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+                Di balik panelnya tetap ada elemen <span class="text-primary-500 dark:text-primary-400">&lt;select&gt;</span> yang membawa nilainya, jadi
+                <span class="text-primary-500 dark:text-primary-400">name</span>, <span class="text-primary-500 dark:text-primary-400">wire:model</span>, <span class="text-primary-500 dark:text-primary-400">x-model</span>, <span class="text-primary-500 dark:text-primary-400">required</span>, dan pengiriman formulir bekerja seperti
+                pada <span class="text-primary-500 dark:text-primary-400">&lt;select&gt;</span> biasa. <span class="text-primary-500 dark:text-primary-400">&lt;option&gt;</span> yang Anda tulis sendiri dibaca komponen
+                dan tampil di panel yang sama; label <span class="text-primary-500 dark:text-primary-400">&lt;optgroup&gt;</span> menjadi judul kelompoknya.
             </p>
         </x-docs.section>
 
@@ -193,24 +203,24 @@
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="38 provinsi">
-                    <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi" :options="$semuaProvinsi" helper-text="Buka, lalu ketik nama provinsinya." />
+                    <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi" :options="$semuaProvinsi" helper-text="Buka, lalu ketik nama provinsinya." :dark-mode="$docsDark" />
                 </x-docs.demo>
-                <div class="space-y-3 text-body-sm text-gray-600">
-                    <p class="font-bold text-gray-900">Coba ketik:</p>
+                <div class="space-y-3 text-body-sm text-gray-600 dark:text-gray-300">
+                    <p class="font-bold text-gray-900 dark:text-white">Coba ketik:</p>
                     <ul class="space-y-2">
                         <li>
-                            <span class="text-primary-500">jawa t</span> → Jawa Tengah. Ketikan dengan jeda di bawah satu detik digabung jadi satu
+                            <span class="text-primary-500 dark:text-primary-400">jawa t</span> → Jawa Tengah. Ketikan dengan jeda di bawah satu detik digabung jadi satu
                             kata kunci, spasinya ikut dihitung.
                         </li>
                         <li>
-                            <span class="text-primary-500">jakarta</span> → DKI Jakarta. Bila tidak ada pilihan yang diawali ketikan itu, yang dicari
+                            <span class="text-primary-500 dark:text-primary-400">jakarta</span> → DKI Jakarta. Bila tidak ada pilihan yang diawali ketikan itu, yang dicari
                             awal salah satu katanya.
                         </li>
                         <li>
-                            <span class="text-primary-500">bangka</span> → Kepulauan Bangka Belitung, dengan cara yang sama.
+                            <span class="text-primary-500 dark:text-primary-400">bangka</span> → Kepulauan Bangka Belitung, dengan cara yang sama.
                         </li>
                         <li>
-                            <span class="text-primary-500">s</span> berulang-ulang → berpindah dari satu provinsi berawalan S ke berikutnya.
+                            <span class="text-primary-500 dark:text-primary-400">s</span> berulang-ulang → berpindah dari satu provinsi berawalan S ke berikutnya.
                         </li>
                     </ul>
                 </div>
@@ -225,54 +235,54 @@
                     ];
                 @endphp
 
-                <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi" :⟦options⟧="$provinsi" />
+                <x-ceplok::select label="Provinsi" placeholder="Pilih provinsi" :⟦options⟧="$provinsi"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Prop <span class="text-primary-500">dark-mode</span> mengganti field ke gray-700 dengan label terang. Pada state default garisnya
-                menyatu dengan latar dan baru terlihat saat difokus (warna aplikasi); pada <span class="text-primary-500">inactive</span> garisnya
+        <x-docs.mode-section name="Select">
+            <x-slot:lead>
+                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti field ke gray-700 dengan label terang. Pada state default garisnya
+                menyatu dengan latar dan baru terlihat saat difokus (warna aplikasi); pada <span class="text-primary-500 dark:text-primary-400">inactive</span> garisnya
                 gray-300, dengan teks dan panah gray-500. Panel daftar pilihannya untuk saat ini tetap terang.
-            </x-docs.lead>
+            </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
-                <x-docs.demo label="Default" dark>
-                    <x-ceplok::select dark-mode label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
+                <x-docs.demo label="Default" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::select :dark-mode="! $docsDark" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
                 </x-docs.demo>
-                <x-docs.demo label="Inactive" dark>
-                    <x-ceplok::select dark-mode state="inactive" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
+                <x-docs.demo label="Inactive" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::select :dark-mode="! $docsDark" state="inactive" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
                 </x-docs.demo>
-                <x-docs.demo label="Sudah dipilih" dark>
-                    <x-ceplok::select dark-mode label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" value="jabar" helper-text="Wajib diisi." />
+                <x-docs.demo label="Sudah dipilih" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::select :dark-mode="! $docsDark" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" value="jabar" helper-text="Wajib diisi." />
                 </x-docs.demo>
-                <x-docs.demo label="Purple" dark>
-                    <x-ceplok::select dark-mode application="purple" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
+                <x-docs.demo label="Purple" :dark="! $docsDark" :light="$docsDark">
+                    <x-ceplok::select :dark-mode="! $docsDark" application="purple" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
                 <x-ceplok::select
-                    ⟦dark-mode⟧
+                    ⟨!⟦dark-mode⟧⟩
                     label="Label"
                     placeholder="Pilih Apapun Itu"
                     :options="$provinsi"
                 />
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.select />
+        <livewire:playground.select :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Pasang <span class="text-primary-500">wire:model</span> langsung pada tag komponennya; atribut itu diteruskan ke
-                <span class="text-primary-500">&lt;select&gt;</span> tersembunyi, dan pilihan awal propertinya sudah dirender server. Daftar pilihannya
+                Pasang <span class="text-primary-500 dark:text-primary-400">wire:model</span> langsung pada tag komponennya; atribut itu diteruskan ke
+                <span class="text-primary-500 dark:text-primary-400">&lt;select&gt;</span> tersembunyi, dan pilihan awal propertinya sudah dirender server. Daftar pilihannya
                 boleh berganti dari server — mis. kabupaten/kota yang mengikuti provinsi — dan labelnya ikut terbaca
                 dari opsi terbaru.
             </x-docs.lead>
             <x-docs.example>
-                <livewire:playground.select-region />
+                <livewire:playground.select-region :dark="$docsDark" />
             </x-docs.example>
             <x-docs.code>
                 @verbatim
@@ -281,6 +291,7 @@
                     placeholder="Pilih provinsi"
                     ⟦wire:model.live⟧="provinsi"
                     :options="$daftarProvinsi"
+                    ⟨dark-mode⟩
                 />
                 <x-ceplok::select
                     label="Kabupaten/Kota"
@@ -288,6 +299,7 @@
                     wire:model="kota"
                     :⟦options⟧="$this->daftarKota"
                     :state="$provinsi ? 'default' : 'inactive'"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -295,7 +307,7 @@
 
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>
-                Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut <span class="text-primary-500">&lt;select&gt;</span>
+                Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut <span class="text-primary-500 dark:text-primary-400">&lt;select&gt;</span>
                 standar juga diteruskan apa adanya.
             </x-docs.lead>
             <div class="[&_td:first-child]:whitespace-nowrap">

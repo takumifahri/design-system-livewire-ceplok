@@ -19,16 +19,22 @@
 ])
 
 @php
+    // Di mode gelap docs bagian Dark mode bertukar menjadi Light mode (lihat
+    // x-docs.mode-section). Id-nya tetap, jadi tautan ke bagian itu tidak putus.
+    if (isset($toc['dark-mode']) && App\Docs\Theme::dark()) {
+        $toc['dark-mode'] = 'Light mode';
+    }
+
     $ids = array_keys($toc);
     $first = $ids[0] ?? null;
 @endphp
 
 <div x-data="docsToc(@js($ids))">
-    <header class="border-b border-border bg-white px-5 py-10 sm:px-8 lg:px-12 lg:py-12 xl:px-14">
+    <header class="border-b border-border bg-white px-5 py-10 sm:px-8 lg:px-12 lg:py-12 xl:px-14 dark:border-gray-700 dark:bg-gray-800">
         <div class="mx-auto max-w-314">
             <p class="ds-eyebrow">{{ $eyebrow }}</p>
-            <h1 class="mt-2 text-heading-1 font-black tracking-tight text-gray-900">{{ $title }}</h1>
-            <p class="mt-3 max-w-2xl text-body text-gray-500">{{ $description }}</p>
+            <h1 class="mt-2 text-heading-1 font-black tracking-tight text-gray-900 dark:text-white">{{ $title }}</h1>
+            <p class="mt-3 max-w-2xl text-body text-gray-500 dark:text-gray-400">{{ $description }}</p>
             @isset($actions)
                 <div class="mt-6">{{ $actions }}</div>
             @endisset
@@ -42,7 +48,7 @@
             <aside class="hidden 2xl:block">
                 <div class="sticky top-10">
                     <p class="text-[11px] font-black tracking-[0.14em] text-gray-400 uppercase">On this page</p>
-                    <nav class="mt-3 border-l border-border" aria-label="Daftar isi halaman">
+                    <nav class="mt-3 border-l border-border dark:border-gray-700" aria-label="Daftar isi halaman">
                         @foreach ($toc as $id => $label)
                             {{-- Kelas awal dirender server (bagian pertama aktif); Alpine mengambil alih setelahnya. --}}
                             <a
@@ -52,11 +58,11 @@
                                 x-bind:aria-current="active === @js($id) ? 'true' : null"
                                 @class([
                                     '-ml-px block w-full border-l-2 py-1.5 pl-3 text-left text-[13px] transition-colors',
-                                    $id === $first ? 'border-primary-600 font-bold text-primary-700' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-800',
+                                    $id === $first ? 'border-primary-600 font-bold text-primary-700 dark:border-primary-400 dark:text-primary-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-100',
                                 ])
                                 x-bind:class="{
-                                    'border-primary-600 font-bold text-primary-700': active === @js($id),
-                                    'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-800': active !== @js($id),
+                                    'border-primary-600 font-bold text-primary-700 dark:border-primary-400 dark:text-primary-400': active === @js($id),
+                                    'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-100': active !== @js($id),
                                 }"
                             >{{ $label }}</a>
                         @endforeach

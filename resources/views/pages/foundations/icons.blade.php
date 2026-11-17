@@ -18,7 +18,7 @@
     $solid = array_values(array_filter(array_map(fn ($n) => substr($n, 2), $names($svg.'/flowbite/s-*.svg')), fn ($n) => ! $isBrand($n)));
     $outline = array_values(array_filter(array_map(fn ($n) => substr($n, 2), $names($svg.'/flowbite/o-*.svg')), fn ($n) => ! $isBrand($n)));
 
-    $code = fn (string $c) => '<code class="text-xs font-bold text-gray-700">'.e($c).'</code>';
+    $code = fn (string $c) => '<code class="text-xs font-bold text-gray-700 dark:text-gray-300">'.e($c).'</code>';
 
     // Tiga cara memanggil ikon. Teks tag komponen dan direktif ditulis di sini:
     // di luar blok PHP, Blade mengompilasinya sebagai komponen/direktif sungguhan.
@@ -76,7 +76,7 @@
                         type="search"
                         x-model="q"
                         placeholder="Cari ikon… (mis. arrow, user, chart)"
-                        class="w-full rounded-lg border border-border bg-surface py-2.5 pr-4 pl-9 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none"
+                        class="w-full rounded-lg border border-border bg-surface py-2.5 pr-4 pl-9 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:ring-primary-800"
                     >
                 </div>
             </div>
@@ -101,7 +101,7 @@
                             class="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1"
                         >
                             @foreach ($icons as $name)
-                                <div title="ceplok-{{ $style }}-{{ $name }}" data-key="{{ str_replace('-', '', $name) }}" class="flex aspect-square items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-primary-50 hover:text-primary-700">
+                                <div title="ceplok-{{ $style }}-{{ $name }}" data-key="{{ str_replace('-', '', $name) }}" class="flex aspect-square items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-primary-50 hover:text-primary-700 dark:text-gray-300 dark:hover:bg-primary-900 dark:hover:text-primary-300">
                                     {{ svg("ceplok-{$style}-{$name}", 'size-5') }}
                                 </div>
                             @endforeach
@@ -125,7 +125,7 @@
                         class="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1"
                     >
                         @foreach ($brands as $name)
-                            <div title="brand-{{ $name }}" data-key="{{ str_replace('-', '', $name) }}" class="flex aspect-square items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-primary-50 hover:text-primary-700">
+                            <div title="brand-{{ $name }}" data-key="{{ str_replace('-', '', $name) }}" class="flex aspect-square items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-primary-50 hover:text-primary-700 dark:text-gray-300 dark:hover:bg-primary-900 dark:hover:text-primary-300">
                                 {{ svg("brand-{$name}", 'size-5') }}
                             </div>
                         @endforeach
@@ -145,19 +145,19 @@
                 <article class="ds-card overflow-hidden">
                     <div class="ds-scroll-x overflow-x-auto">
                         <table class="w-full min-w-136 text-left text-sm">
-                            <thead class="border-b border-border bg-surface-subtle text-xs font-black tracking-wide text-gray-500 uppercase">
+                            <thead class="border-b border-border bg-surface-subtle text-xs font-black tracking-wide text-gray-500 uppercase dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
                                 <tr>
                                     <th class="px-5 py-3">Set</th>
                                     <th class="px-5 py-3">Nama</th>
                                     <th class="px-5 py-3">Contoh</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-border">
+                            <tbody class="divide-y divide-border dark:divide-gray-700">
                                 @foreach ([['Solid', 'ceplok-s-{nama}', 'ceplok-s-bell'], ['Outline', 'ceplok-o-{nama}', 'ceplok-o-home'], ['Logo brand', 'brand-{nama}', 'brand-github']] as [$set, $pattern, $example])
                                     <tr>
-                                        <td class="px-5 py-3 font-bold text-gray-900">{{ $set }}</td>
-                                        <td class="px-5 py-3"><code class="text-xs font-bold text-primary-700">{{ $pattern }}</code></td>
-                                        <td class="px-5 py-3"><code class="text-xs text-gray-500">{{ $example }}</code></td>
+                                        <td class="px-5 py-3 font-bold text-gray-900 dark:text-white">{{ $set }}</td>
+                                        <td class="px-5 py-3"><code class="text-xs font-bold text-primary-700 dark:text-primary-400">{{ $pattern }}</code></td>
+                                        <td class="px-5 py-3"><code class="text-xs text-gray-500 dark:text-gray-400">{{ $example }}</code></td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -175,15 +175,16 @@
                 <div class="space-y-4">
                     <x-docs.snippet :code="$snippets['component']">
                         <x-slot:description>Komponen Blade — ukuran diatur lewat class {!! $code('size-*') !!}.</x-slot:description>
+                        {{-- Cuplikannya tidak menulis warna, jadi di mode gelap docs ikonnya ikut teks terang. --}}
                         <x-slot:preview>
-                            <span title="ceplok-o-home" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">{{ svg('ceplok-o-home', 'size-6 text-gray-700') }}</span>
+                            <span title="ceplok-o-home" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">{{ svg('ceplok-o-home', 'size-6 text-gray-700 dark:text-gray-300') }}</span>
                         </x-slot:preview>
                     </x-docs.snippet>
 
                     <x-docs.snippet :code="$snippets['color']">
                         <x-slot:description>Warna mengikuti {!! $code('currentColor') !!} — atur lewat class {!! $code('text-*') !!}.</x-slot:description>
                         <x-slot:preview>
-                            <span title="ceplok-s-bell" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">{{ svg('ceplok-s-bell', 'size-6 text-primary-600') }}</span>
+                            <span title="ceplok-s-bell" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">{{ svg('ceplok-s-bell', 'size-6 text-primary-600') }}</span>
                         </x-slot:preview>
                     </x-docs.snippet>
 
@@ -195,8 +196,8 @@
                         </x-slot:description>
                         <x-slot:preview>
                             <div class="flex items-center">
-                                <span title="ceplok-o-bell" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">{{ svg('ceplok-o-bell', 'size-6 text-gray-500') }}</span>
-                                <span title="ceplok-s-bell" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">{{ svg('ceplok-s-bell', 'size-6 text-primary-600') }}</span>
+                                <span title="ceplok-o-bell" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">{{ svg('ceplok-o-bell', 'size-6 text-gray-500') }}</span>
+                                <span title="ceplok-s-bell" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">{{ svg('ceplok-s-bell', 'size-6 text-primary-600') }}</span>
                             </div>
                         </x-slot:preview>
                     </x-docs.snippet>
@@ -204,7 +205,7 @@
                     <x-docs.snippet :code="$snippets['brand']">
                         <x-slot:description>Logo brand dalam warna netral — ikut warna teks di sekitarnya, cocok untuk deretan tautan sosial yang tidak ingin mencolok.</x-slot:description>
                         <x-slot:preview>
-                            <span title="brand-github" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">{{ svg('brand-github', 'size-6 text-gray-700') }}</span>
+                            <span title="brand-github" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">{{ svg('brand-github', 'size-6 text-gray-700 dark:text-gray-300') }}</span>
                         </x-slot:preview>
                     </x-docs.snippet>
 
@@ -217,9 +218,9 @@
                         <x-slot:preview>
                             {{-- Tiga petak 36px butuh 108px; -mx-4 meminjam padding di tiap sisi supaya tetap di tengah. --}}
                             <div class="-mx-4 flex items-center">
-                                <span title="brand-youtube" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">{{ svg('brand-youtube', 'size-6 text-[#FF0000]') }}</span>
-                                <span title="brand-whatsapp" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">{{ svg('brand-whatsapp', 'size-6 text-[#25D366]') }}</span>
-                                <span title="brand-linkedin" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">{{ svg('brand-linkedin', 'size-6 text-[#0A66C2]') }}</span>
+                                <span title="brand-youtube" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">{{ svg('brand-youtube', 'size-6 text-[#FF0000]') }}</span>
+                                <span title="brand-whatsapp" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">{{ svg('brand-whatsapp', 'size-6 text-[#25D366]') }}</span>
+                                <span title="brand-linkedin" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">{{ svg('brand-linkedin', 'size-6 text-[#0A66C2]') }}</span>
                             </div>
                         </x-slot:preview>
                     </x-docs.snippet>
@@ -230,7 +231,7 @@
                             otomatis {!! $code('aria-hidden') !!}, dan bisa membungkus SVG milik Anda sendiri.
                         </x-slot:description>
                         <x-slot:preview>
-                            <span title="x-ceplok::icon" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50">
+                            <span title="x-ceplok::icon" class="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 dark:hover:bg-gray-700">
                                 <x-ceplok::icon class="text-gray-500">{{ svg('ceplok-o-search') }}</x-ceplok::icon>
                             </span>
                         </x-slot:preview>

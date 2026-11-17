@@ -185,9 +185,9 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
             Ketik pada field di atas untuk melihat state <em>typing</em> yang sesungguhnya — garisnya berubah
-            lewat <span class="text-primary-500">focus-within</span>, tanpa perlu mengubah prop. Pada state <em>failed</em>, helper text
+            lewat <span class="text-primary-500 dark:text-primary-400">focus-within</span>, tanpa perlu mengubah prop. Pada state <em>failed</em>, helper text
             otomatis berganti jadi pesan kesalahan.
         </p>
     </x-docs.section>

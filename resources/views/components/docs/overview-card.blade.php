@@ -25,11 +25,11 @@
 ])>
     {{-- grid-cols-1 (minmax(0,1fr)): kotak pratinjau selebar kartu, tidak melebar mengikuti isinya. --}}
     <div class="grid flex-1 grid-cols-1" inert>{{ $slot }}</div>
-    <h2 class="mt-4 text-heading-4 font-black text-gray-900">
+    <h2 class="mt-4 text-heading-4 font-black text-gray-900 dark:text-white">
         <a href="{{ route($route) }}" wire:navigate class="rounded-sm after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none">{{ $name }}</a>
     </h2>
-    <p class="mt-1.5 text-body-sm text-gray-500">{{ $desc }}</p>
-    <span class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-primary-700" aria-hidden="true">
+    <p class="mt-1.5 text-body-sm text-gray-500 dark:text-gray-400">{{ $desc }}</p>
+    <span class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-primary-700 dark:text-primary-400" aria-hidden="true">
         Lihat detail
         <svg class="size-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />

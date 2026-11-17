@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     $states = [
         ['value' => 'default', 'label' => 'Default', 'desc' => 'Field kosong — label duduk di dalam field sebagai placeholder.'],
         ['value' => 'active', 'label' => 'Active', 'desc' => 'Sedang difokus/berisi — label naik ke garis atas dengan warna aksen.'],
@@ -25,6 +27,11 @@
         ['wire:clear', 'event', '—', 'Dipicu setelah tombol hapus mengosongkan isian; padanan onClear. Juga bisa x-on:clear.'],
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input> standar diteruskan (type, name, wire:model, …). class dan wire:key ke pembungkus terluar.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
+    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
+    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Floating Label">
@@ -52,14 +59,14 @@
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Desktop · 58px">
                     <div class="space-y-5">
-                        <x-ceplok::floating-label label="Placeholder Text" :icon="$user" clearable />
-                        <x-ceplok::floating-label label="Placeholder Text" value="Text Input" state="active" :icon="$user" clearable />
+                        <x-ceplok::floating-label label="Placeholder Text" :icon="$user" clearable :dark-mode="$docsDark" />
+                        <x-ceplok::floating-label label="Placeholder Text" value="Text Input" state="active" :icon="$user" clearable :dark-mode="$docsDark" />
                     </div>
                 </x-docs.demo>
                 <x-docs.demo label="Mobile · 50px">
                     <div class="space-y-5">
-                        <x-ceplok::floating-label platform="mobile" label="Placeholder Text" :icon="$user" clearable />
-                        <x-ceplok::floating-label platform="mobile" label="Placeholder Text" value="Text Input" state="active" :icon="$user" clearable />
+                        <x-ceplok::floating-label platform="mobile" label="Placeholder Text" :icon="$user" clearable :dark-mode="$docsDark" />
+                        <x-ceplok::floating-label platform="mobile" label="Placeholder Text" value="Text Input" state="active" :icon="$user" clearable :dark-mode="$docsDark" />
                     </div>
                 </x-docs.demo>
             </div>
@@ -69,19 +76,20 @@
                 <x-ceplok::floating-label
                     label="Nama lengkap"
                     :icon="svg('ceplok-s-user', 'size-4')"
+                    ⟨dark-mode⟩
                 />
 
                 {{-- Mobile — field 50px --}}
-                <x-ceplok::floating-label ⟦platform⟧="mobile" label="Nama lengkap" />
+                <x-ceplok::floating-label ⟦platform⟧="mobile" label="Nama lengkap"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="states" title="States">
             <x-docs.lead>
-                Tiga kondisi visual field. Klik salah satu field untuk melihat label naik sendiri — <span class="text-primary-500">state</span>
-                hanya perlu diisi untuk mengunci tampilan atau menandai kesalahan. State <span class="text-primary-500">error</span> memasang
-                <span class="text-primary-500">aria-invalid</span> pada input.
+                Tiga kondisi visual field. Klik salah satu field untuk melihat label naik sendiri — <span class="text-primary-500 dark:text-primary-400">state</span>
+                hanya perlu diisi untuk mengunci tampilan atau menandai kesalahan. State <span class="text-primary-500 dark:text-primary-400">error</span> memasang
+                <span class="text-primary-500 dark:text-primary-400">aria-invalid</span> pada input.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 @foreach ($states as $s)
@@ -93,6 +101,7 @@
                             :helper-text="$s['value'] === 'error' ? 'Isian tidak dapat diproses.' : $s['desc']"
                             :icon="$user"
                             clearable
+                            :dark-mode="$docsDark"
                         />
                     </x-docs.demo>
                 @endforeach
@@ -104,6 +113,7 @@
                     ⟦state⟧="error"
                     label="Nama lengkap"
                     helper-text="Isian tidak dapat diproses."
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -125,6 +135,7 @@
                             :helper-text="'border-'.$a['token']"
                             :icon="$user"
                             clearable
+                            :dark-mode="$docsDark"
                         />
                     </x-docs.demo>
                 @endforeach
@@ -135,22 +146,23 @@
                     ⟦application⟧="purple"
                     state="active"
                     label="Nama lengkap"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Prop <span class="text-primary-500">dark-mode</span> mengganti kotak ke gray-700 bergaris gray-600, dengan teks, ikon, dan tombol hapus
+        <x-docs.mode-section name="Floating Label">
+            <x-slot:lead>
+                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti kotak ke gray-700 bergaris gray-600, dengan teks, ikon, dan tombol hapus
                 gray-400. Garis aksen tetap sama, tetapi label yang naik satu tingkat lebih terang — primary-500 —
-                supaya terbaca di latar gelap. Pada <span class="text-primary-500">error</span>, hanya garis dan label yang berubah merah.
-            </x-docs.lead>
+                supaya terbaca di latar gelap. Pada <span class="text-primary-500 dark:text-primary-400">error</span>, hanya garis dan label yang berubah merah.
+            </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 @foreach ($states as $s)
-                    <x-docs.demo :label="$s['label']" dark>
+                    <x-docs.demo :label="$s['label']" :dark="! $docsDark" :light="$docsDark">
                         <x-ceplok::floating-label
-                            dark-mode
+                            :dark-mode="! $docsDark"
                             :state="$s['value']"
                             label="Placeholder Text"
                             :value="$s['value'] === 'default' ? null : 'Text Input'"
@@ -163,25 +175,25 @@
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::floating-label ⟦dark-mode⟧ label="Nama lengkap" />
+                <x-ceplok::floating-label⟨! ⟦dark-mode⟧⟩ label="Nama lengkap" />
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.floating-label />
+        <livewire:playground.floating-label :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
                 Keterisian field ikut berubah saat nilainya diganti dari server, bukan hanya saat diketik: begitu
-                properti <span class="text-primary-500">wire:model</span> terisi, labelnya naik sendiri. Di render pertama pun nilai awalnya
+                properti <span class="text-primary-500 dark:text-primary-400">wire:model</span> terisi, labelnya naik sendiri. Di render pertama pun nilai awalnya
                 sudah dirender server, jadi label langsung berada di posisi yang benar.
             </x-docs.lead>
             <x-docs.example>
-                <livewire:playground.floating-label-fill />
+                <livewire:playground.floating-label-fill :dark="$docsDark" />
             </x-docs.example>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::floating-label label="Kota domisili" ⟦wire:model⟧="kota" clearable />
+                <x-ceplok::floating-label label="Kota domisili" ⟦wire:model⟧="kota" clearable⟨ dark-mode⟩ />
 
                 <x-ceplok::button wire:click="$set('kota', 'Bandung')">Isi dari profil</x-ceplok::button>
                 @endverbatim
@@ -190,7 +202,7 @@
 
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>
-                Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut <span class="text-primary-500">&lt;input&gt;</span>
+                Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut <span class="text-primary-500 dark:text-primary-400">&lt;input&gt;</span>
                 standar juga diteruskan apa adanya.
             </x-docs.lead>
             <div class="[&_td:first-child]:whitespace-nowrap">

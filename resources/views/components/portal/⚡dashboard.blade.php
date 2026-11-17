@@ -18,6 +18,11 @@ use Livewire\Component;
  * anggaran (wire:model.live pada Select), pencarian (wire:model dan event
  * search), Sidebar ringkas (event collapse), Sidebar di dalam Drawer pada layar sempit,
  * bulan kalender, dan pesan Toast.
+ *
+ * Mode gelapnya dipasang seperti di aplikasi consumer: `data-theme="dark"` di
+ * akar, `dark-mode` di setiap komponen kit yang punya prop itu, dan varian
+ * `in-data-[theme=dark]:` untuk bagian yang dirakit sendiri. Button kit
+ * Livewire belum punya `dark-mode`, jadi tombolnya tetap memakai warna terang.
  */
 new class extends Component
 {
@@ -52,6 +57,13 @@ new class extends Component
         'monsakti' => ['label' => 'Realisasi Kementerian (MONSAKTI)', 'pagu' => 'Rp. 10.214.835.286.000', 'realisasi' => 'Rp. 6.117.956.903.552', 'persentase' => '59.89%'],
         'sakti' => ['label' => 'Realisasi Satuan Kerja (SAKTI)', 'pagu' => 'Rp. 1.482.650.000.000', 'realisasi' => 'Rp. 902.715.448.120', 'persentase' => '60.89%'],
     ];
+
+    /**
+     * Tampilan gelap seluruh dasbor, diisi halamannya dari mode gelap docs.
+     * Tombol tema di header hanya mengabarkan pilihan baru lewat event
+     * `dark-mode-change`; bingkai docs yang menyimpan dan menerapkannya.
+     */
+    public bool $darkMode = false;
 
     public string $kata = '';
 
@@ -231,7 +243,7 @@ new class extends Component
 };
 ?>
 
-<div class="flex min-h-screen bg-surface">
+<div @if ($darkMode) data-theme="dark" @endif class="flex min-h-screen bg-surface">
     {{-- Di bawah lg Sidebar tetap dipakai, tetapi ditempatkan di dalam Drawer off-canvas. --}}
     <div class="hidden lg:block">
         <x-ceplok::sidebar
@@ -239,6 +251,7 @@ new class extends Component
             :user="$this->profil"
             sticky
             :collapsed="$ringkas"
+            :dark-mode="$darkMode"
             wire:collapse="$set('ringkas', $event.detail.collapsed)"
         >
             <x-slot:logo>
@@ -271,8 +284,13 @@ new class extends Component
 
             {{-- Search berkategori di kiri, selebar slot search Navbar back-office:
                  348px, menyusut sampai 180px bila ruangnya kurang. Varian kategori
-                 membawa role="search" sendiri, jadi pembungkus ini tidak. --}}
-            <div class="hidden w-87 max-w-87 min-w-45 flex-[0_1_348px] md:block">
+                 membawa role="search" sendiri, jadi pembungkus ini tidak.
+
+                 Seperti slot search Navbar, garis field-nya gray-600 di mode gelap.
+                 Tanpa itu ruas kategorinya (gray-700) lebur dengan header gray-700.
+                 Yang ditimpa variabel palet gelapnya, karena Search ber-`dark-mode`
+                 memasang `data-theme` sendiri dan akan menimpa token biasa. --}}
+            <div class="hidden w-87 max-w-87 min-w-45 flex-[0_1_348px] [--color-field-border-dark:var(--color-gray-600)] md:block">
                 <x-ceplok::search
                     :categories="$this->kategoriPilihan"
                     category-placeholder="Pilih"
@@ -281,10 +299,28 @@ new class extends Component
                     aria-label="Pencarian"
                     button-label="Cari"
                     trigger="enter"
+                    :dark-mode="$darkMode"
                     wire:model="kata"
                     wire:search="cari($event.detail.value, $event.detail.category)"
                 />
             </div>
+
+            {{-- Tombol tema, bergaya sama dengan lonceng di sebelahnya. Ikonnya
+                 menunjukkan hasil bila ditekan: bulan saat terang, matahari saat gelap. --}}
+            <button
+                type="button"
+                aria-label="Mode gelap"
+                aria-pressed="{{ $darkMode ? 'true' : 'false' }}"
+                title="{{ $darkMode ? 'Matikan mode gelap' : 'Nyalakan mode gelap' }}"
+                x-on:click="$dispatch('dark-mode-change', { darkMode: @js(! $darkMode) })"
+                class="ml-auto grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            >
+                @if ($darkMode)
+                    <x-ceplok-o-sun class="size-5" aria-hidden="true" />
+                @else
+                    <x-ceplok-o-moon class="size-5" aria-hidden="true" />
+                @endif
+            </button>
 
             {{-- Lonceng bergaya notificationTrigger Navbar front-office: ikon 20px
                  gray-500 dalam kotak 36px, tanpa angka. --}}
@@ -292,7 +328,7 @@ new class extends Component
                 type="button"
                 aria-label="Notifikasi"
                 wire:click="kabari('Ada 5 notifikasi baru.')"
-                class="ml-auto grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                class="grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
                 <x-ceplok-o-bell class="size-5" aria-hidden="true" />
             </button>
@@ -309,10 +345,11 @@ new class extends Component
             x-effect="$wire.umpanKali; clearTimeout(jeda); jeda = $wire.umpanTampil ? setTimeout(() => $wire.umpanTampil = false, 4000) : null"
             class="fixed top-22 right-4 z-30 w-80 max-w-[calc(100vw-2rem)] sm:right-6"
         >
-            <x-ceplok::toast wire:model="umpanTampil">{{ $umpan }}</x-ceplok::toast>
+            <x-ceplok::toast wire:model="umpanTampil" :dark-mode="$darkMode">{{ $umpan }}</x-ceplok::toast>
         </div>
 
-        <main class="flex-1 bg-blue-50">
+        {{-- Latar halaman gray-800 di mode gelap, setingkat di bawah kartu gray-700. --}}
+        <main class="flex-1 bg-blue-50 in-data-[theme=dark]:bg-gray-800">
             {{--
                 Padding isi mengikuti rasio desain: kolom konten 1350px berisi isi
                 1080px dengan padding 135px kiri-kanan, yaitu 10% : 80% : 10%. Dalam
@@ -348,12 +385,14 @@ new class extends Component
                             </p>
                         </section>
 
-                        <x-portal.kalender class="xl:col-span-4" :kalender="$this->kalender" />
+                        <x-portal.kalender class="xl:col-span-4" :kalender="$this->kalender" :dark-mode="$darkMode" />
 
-                        <x-ceplok::card class="xl:col-span-5">
+                        <x-ceplok::card class="xl:col-span-5" :dark-mode="$darkMode">
                             <x-portal.judul-kartu judul="Space & Page Wiki Terbaru">
+                                {{-- Ikon judul kartu naik ke tangga 400 di mode gelap: tangga
+                                     600–700 terlalu redup di atas kartu gray-700. --}}
                                 <x-slot:ikon>
-                                    <x-ceplok::icon class="mt-0.5 text-orange-600"><x-ceplok-o-book-open /></x-ceplok::icon>
+                                    <x-ceplok::icon class="mt-0.5 text-orange-600 in-data-[theme=dark]:text-orange-400"><x-ceplok-o-book-open /></x-ceplok::icon>
                                 </x-slot:ikon>
                                 <a
                                     href="{{ route('portal.app') }}"
@@ -361,18 +400,19 @@ new class extends Component
                                     class="text-body-sm font-medium text-brand underline underline-offset-2 hover:text-brand-hover"
                                 >Lihat semua</a>
                             </x-portal.judul-kartu>
-                            <x-ceplok::list-view size="sm" decoration gap="md" :items="$this->wiki" />
+                            <x-ceplok::list-view size="sm" decoration gap="md" :items="$this->wiki" :dark-mode="$darkMode" />
                         </x-ceplok::card>
 
-                        <x-ceplok::card class="relative xl:col-span-7">
+                        <x-ceplok::card class="relative xl:col-span-7" :dark-mode="$darkMode">
                             <x-portal.judul-kartu judul="Anggaran">
                                 <x-slot:ikon>
-                                    <x-ceplok::icon class="mt-0.5 text-green-700"><x-ceplok-o-cash /></x-ceplok::icon>
+                                    <x-ceplok::icon class="mt-0.5 text-green-700 in-data-[theme=dark]:text-green-400"><x-ceplok-o-cash /></x-ceplok::icon>
                                 </x-slot:ikon>
                                 <x-ceplok::select
                                     aria-label="Sumber data anggaran"
                                     :options="$this->sumberAnggaran"
                                     class="w-full sm:w-72"
+                                    :dark-mode="$darkMode"
                                     wire:model.live="sumber"
                                 />
                             </x-portal.judul-kartu>
@@ -387,17 +427,20 @@ new class extends Component
                             <p class="text-body-sm text-content-subtle">Data Anggaran Per Tanggal 13 Oct 2026</p>
                             {{-- Pola titik hiasan di pojok kanan bawah, seperti desainnya. Hanya di
                                  xl: di sana kartu ini memanjang setinggi kartu wiki dan punya ruang
-                                 kosong; di layout satu kolom titiknya menimpa angka dan catatan. --}}
+                                 kosong; di layout satu kolom titiknya menimpa angka dan catatan.
+                                 Titik gray-200 terlalu terang di mode gelap, jadi diganti gray-600. --}}
                             <div
                                 aria-hidden="true"
-                                class="pointer-events-none absolute right-5 bottom-5 hidden h-12 w-44 bg-[radial-gradient(var(--color-gray-200)_2px,transparent_2px)] bg-size-[16px_16px] xl:block"
+                                class="pointer-events-none absolute right-5 bottom-5 hidden h-12 w-44 bg-[radial-gradient(var(--color-gray-200)_2px,transparent_2px)] bg-size-[16px_16px] xl:block in-data-[theme=dark]:bg-[radial-gradient(var(--color-gray-600)_2px,transparent_2px)]"
                             ></div>
                         </x-ceplok::card>
 
-                        <x-ceplok::card class="xl:col-span-5 xl:mt-1.5">
-                            <div class="flex items-center justify-between gap-3 border-b border-border pb-3">
+                        <x-ceplok::card class="xl:col-span-5 xl:mt-1.5" :dark-mode="$darkMode">
+                            {{-- Di mode gelap token `border` sewarna kartu (gray-700), jadi
+                                 garisnya memakai gray-600 supaya tetap terlihat. --}}
+                            <div class="flex items-center justify-between gap-3 border-b border-border pb-3 in-data-[theme=dark]:border-gray-600">
                                 <h2 class="text-body font-bold text-content">Presensi Harian</h2>
-                                <x-ceplok::badge variant="brand" size="sm">Kantor (WFO)</x-ceplok::badge>
+                                <x-ceplok::badge variant="brand" size="sm" :dark-mode="$darkMode">Kantor (WFO)</x-ceplok::badge>
                             </div>
                             <p class="flex items-center gap-2 text-body-sm text-content-subtle">
                                 <x-ceplok-o-calendar-month class="size-4" aria-hidden="true" />
@@ -405,16 +448,16 @@ new class extends Component
                             </p>
                             <p class="flex items-center gap-2">
                                 <span class="text-heading-2 font-bold text-content">14:03:52</span>
-                                <x-ceplok::badge variant="gray" size="sm">WIB</x-ceplok::badge>
+                                <x-ceplok::badge variant="gray" size="sm" :dark-mode="$darkMode">WIB</x-ceplok::badge>
                             </p>
-                            <x-ceplok::alert variant="info" :dismissible="false">
+                            <x-ceplok::alert variant="info" :dismissible="false" :dark-mode="$darkMode">
                                 <x-slot:icon><x-ceplok-o-question-circle /></x-slot:icon>
                                 Rekomendasi waktu Check-In Anda adalah pukul 05.00 - Batas waktu Check-Out Anda adalah
                                 pukul 22.00
                             </x-ceplok::alert>
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div class="flex items-center gap-3">
-                                    <span class="grid size-10 place-items-center rounded-lg bg-green-100 text-green-700">
+                                    <span class="grid size-10 place-items-center rounded-lg bg-green-100 text-green-700 in-data-[theme=dark]:bg-green-900 in-data-[theme=dark]:text-green-400">
                                         <x-ceplok-o-clock class="size-5" aria-hidden="true" />
                                     </span>
                                     <div>
@@ -426,13 +469,13 @@ new class extends Component
                             </div>
                         </x-ceplok::card>
 
-                        <x-ceplok::card class="md:col-span-2 xl:col-span-7 xl:mt-1.5">
+                        <x-ceplok::card class="md:col-span-2 xl:col-span-7 xl:mt-1.5" :dark-mode="$darkMode">
                             <x-portal.judul-kartu judul="Rencana dan Realisasi Kegiatan Harian" keterangan="Selasa, 13 Oktober 2026">
                                 <x-slot:ikon>
-                                    <x-ceplok::icon class="mt-0.5 text-orange-600"><x-ceplok-o-clipboard-list /></x-ceplok::icon>
+                                    <x-ceplok::icon class="mt-0.5 text-orange-600 in-data-[theme=dark]:text-orange-400"><x-ceplok-o-clipboard-list /></x-ceplok::icon>
                                 </x-slot:ikon>
                             </x-portal.judul-kartu>
-                            <x-ceplok::alert variant="danger" :dismissible="false">
+                            <x-ceplok::alert variant="danger" :dismissible="false" :dark-mode="$darkMode">
                                 <x-slot:icon><x-ceplok-o-exclamation-circle /></x-slot:icon>
                                 Pengisian Rencana dan Realisasi Kegiatan tidak diaktifkan untuk hari ini.
                             </x-ceplok::alert>
@@ -450,11 +493,13 @@ new class extends Component
         size="s"
         aria-label="Menu Portal Dashboard"
         style="width: 280px"
+        :dark-mode="$darkMode"
     >
         <x-ceplok::sidebar
             :items="$this->menuSidebar"
             :user="$this->profil"
             :collapsed="false"
+            :dark-mode="$darkMode"
             wire:collapse="$set('menuSeluler', false)"
             class="h-full min-h-full border-r-0"
         >

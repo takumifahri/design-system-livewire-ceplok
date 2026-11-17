@@ -151,10 +151,10 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
             Tombol kirim hanya dirender pada type <em>editor</em>, jadi kontrolnya ikut mati saat type
             <em>default</em>. Hint dan helper text berlaku di kedua type; platform hanya mengubah tinggi kotak
-            pada type <em>default</em>. Isi <span class="text-primary-500">hint</span> bebas — penghitung karakter perlu diikat ke nilai
+            pada type <em>default</em>. Isi <span class="text-primary-500 dark:text-primary-400">hint</span> bebas — penghitung karakter perlu diikat ke nilai
             isian, sedangkan penanda seperti <em>Opsional</em> cukup teks tetap.
         </p>
     </x-docs.section>
