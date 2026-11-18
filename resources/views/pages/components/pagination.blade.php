@@ -1,8 +1,11 @@
 @php
+    use App\Docs\Theme;
+
     // Demo mode tautan: halaman aktifnya dibaca dari alamat (?hal=), jadi
     // setiap klik benar-benar memuat halaman dengan nomor yang baru.
     $linkPage = max(1, min(10, (int) request()->query('hal', 3)));
     $linkUrl = route('components.pagination').'?hal={page}#tautan';
+    $docsDark = Theme::dark();
 
     $props = [
         ['current-page', 'int', '1', 'Menentukan halaman yang sedang aktif.'],
@@ -21,6 +24,7 @@
         eyebrow="Components · Pagination"
         title="Pagination"
         description="Navigasi untuk berpindah antar halaman pada data atau konten yang terbagi ke dalam beberapa halaman."
+        stay-dark-mode
         :toc="[
             'states' => 'States',
             'themes' => 'Themes',
@@ -33,17 +37,17 @@
         ]"
     >
         <x-docs.section id="states" title="States">
-            <p class="mb-4 text-body-sm text-gray-500">
+            <p class="mb-4 text-body-sm text-gray-500 dark:text-gray-400">
                 Pagination memiliki state aktif untuk menunjukkan halaman yang sedang dipilih. Tombol
                 halaman lainnya dapat digunakan untuk berpindah ke halaman yang berbeda.
             </p>
 
             <div class="mb-4 grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="First Page">
-                    <x-ceplok::pagination :current-page="1" :total-pages="100" theme="primary" />
+                    <x-ceplok::pagination :current-page="1" :total-pages="100" theme="primary" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Active Page">
-                    <x-ceplok::pagination :current-page="2" :total-pages="100" theme="primary" />
+                    <x-ceplok::pagination :current-page="2" :total-pages="100" theme="primary" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
 
@@ -60,7 +64,7 @@
         </x-docs.section>
 
         <x-docs.section id="themes" title="Themes">
-            <p class="mb-6 text-body-sm text-gray-500">
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
                 Theme digunakan untuk menyesuaikan warna halaman aktif pada Pagination sesuai dengan
                 konteks visual aplikasi.
             </p>
@@ -68,20 +72,20 @@
             <div class="mb-4 flex flex-col gap-6">
                 <x-docs.demo>
                     <div>
-                        <x-ceplok::pagination :current-page="1" :total-pages="100" theme="default" />
-                        <p class="mt-2 mb-5 text-sm text-gray-600">
+                        <x-ceplok::pagination :current-page="1" :total-pages="100" theme="default" :dark-mode="$docsDark" />
+                        <p class="mt-2 mb-5 text-sm text-gray-600 dark:text-gray-300">
                             <span class="text-primary-500">Default</span> menggunakan gray sebagai warna utama pagination.
                         </p>
                     </div>
                     <div>
-                        <x-ceplok::pagination :current-page="1" :total-pages="100" theme="primary" />
-                        <p class="mt-2 mb-5 text-sm text-gray-600">
+                        <x-ceplok::pagination :current-page="1" :total-pages="100" theme="primary" :dark-mode="$docsDark" />
+                        <p class="mt-2 mb-5 text-sm text-gray-600 dark:text-gray-300">
                             <span class="text-primary-500">Primary</span> digunakan sebagai warna utama lain pagination.
                         </p>
                     </div>
                     <div>
-                        <x-ceplok::pagination :current-page="1" :total-pages="100" theme="purple" />
-                        <p class="mt-2 mb-5 text-sm text-gray-600">
+                        <x-ceplok::pagination :current-page="1" :total-pages="100" theme="purple" :dark-mode="$docsDark" />
+                        <p class="mt-2 mb-5 text-sm text-gray-600 dark:text-gray-300">
                             <span class="text-primary-500">Purple</span> digunakan ketika pagination membutuhkan aksen ungu.
                         </p>
                     </div>
@@ -100,10 +104,10 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <p class="mb-6 text-body-sm text-gray-500">
+        <x-docs.mode-section name="Pagination" stay-dark>
+            <x-slot:lead>
                 Prop <span class="text-primary-300">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Pagination. Komponen secara otomatis menyesuaikan warna latar, teks, batas, dan tema yang aktif.
-            </p>
+            </x-slot:lead>
 
             <div class="mb-4 grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Default" dark>
@@ -128,9 +132,9 @@
                 />
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.pagination />
+        <livewire:playground.pagination :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
@@ -140,7 +144,7 @@
                 event-nya: <span class="text-primary-500">wire:page-change="gotoPage($event.detail.page)"</span>.
             </x-docs.lead>
             <x-docs.demo>
-                <livewire:playground.pagination-list />
+                <livewire:playground.pagination-list :dark="$docsDark" />
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
@@ -167,7 +171,7 @@
                 Pagination di bawah membaca halamannya dari alamat halaman ini.
             </x-docs.lead>
             <x-docs.demo>
-                <x-ceplok::pagination :current-page="$linkPage" :total-pages="10" :url="$linkUrl" />
+                <x-ceplok::pagination :current-page="$linkPage" :total-pages="10" :url="$linkUrl" :dark-mode="$docsDark" />
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
@@ -185,7 +189,7 @@
         </x-docs.section>
 
         <x-docs.section id="properties" title="Properties">
-            <p class="mb-6 text-body-sm text-gray-500">
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
                 Referensi semua prop yang tersedia pada komponen Pagination.
             </p>
             <x-docs.props-table :rows="$props" min-width="46rem" />

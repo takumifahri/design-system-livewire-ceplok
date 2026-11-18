@@ -17,15 +17,18 @@
 @props([
     // Nama komponen di kalimat Light mode, mis. "Input Field".
     'name',
+    // Beberapa komponen perlu selalu memperagakan dark mode karena light mode
+    // tidak menunjukkan seluruh variasi paletnya (mis. Button).
+    'stayDark' => false,
 ])
 
 @php
     $docsDark = Theme::dark();
 @endphp
 
-<x-docs.section id="dark-mode" :title="$docsDark ? 'Light mode' : 'Dark mode'">
+<x-docs.section id="dark-mode" :title="$stayDark ? 'Dark mode' : ($docsDark ? 'Light mode' : 'Dark mode')">
     <x-docs.lead>
-        @if ($docsDark)
+        @if ($docsDark && ! $stayDark)
             Dokumentasi sedang dalam mode gelap, jadi contoh lain di halaman ini memakai
             <span class="text-primary-500 dark:text-primary-400">dark-mode</span>, begitu pula cuplikan kodenya.
             Tanpa prop itu {{ $name }} tampil terang, seperti di bawah ini.

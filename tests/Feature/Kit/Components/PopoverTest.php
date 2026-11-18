@@ -75,6 +75,29 @@ class PopoverTest extends TestCase
         $this->assertSame('dark', $this->find($dom, '[popover]')->getAttribute('data-theme'));
     }
 
+    public function test_listener_open_change_dipasang_di_root_bukan_panel(): void
+    {
+        $dom = $this->dom(<<<'BLADE'
+            <x-ceplok::popover
+                title="P"
+                wire:model.live="open"
+                wire:open-change="changed($event.detail.open)"
+                x-on:open-change="audit($event.detail.open)"
+            >
+                <x-slot:trigger>Buka</x-slot:trigger>
+                Isi
+            </x-ceplok::popover>
+            BLADE);
+        $root = $this->find($dom, 'div[x-data="ceplokPopover"]');
+        $panel = $this->find($root, '[popover]');
+
+        $this->assertSame('open', $root->getAttribute('wire:model.live'));
+        $this->assertSame('changed($event.detail.open)', $root->getAttribute('wire:open-change'));
+        $this->assertSame('audit($event.detail.open)', $root->getAttribute('x-on:open-change'));
+        $this->assertFalse($panel->hasAttribute('wire:open-change'));
+        $this->assertFalse($panel->hasAttribute('x-on:open-change'));
+    }
+
     public function test_popover_merangkai_handler_trigger_consumer_dengan_toggle_internal(): void
     {
         $dom = $this->dom(<<<'BLADE'

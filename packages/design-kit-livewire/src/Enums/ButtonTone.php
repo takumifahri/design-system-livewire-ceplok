@@ -2,7 +2,7 @@
 
 namespace CeplokUi\DesignKit\Enums;
 
-/** Tingkat warna Button: dark satu tingkat lebih gelap dari light. */
+/** @deprecated Gunakan prop `dark-mode`; enum ini dipertahankan untuk kompatibilitas. */
 enum ButtonTone: string
 {
     case Light = 'light';

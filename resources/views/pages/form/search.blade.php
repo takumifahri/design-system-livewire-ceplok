@@ -45,6 +45,7 @@
         eyebrow="Form"
         title="Search Form"
         description="Kolom pencarian dengan tombol cari. Tersedia sebagai satu kotak polos atau tiga ruas menyatu dengan dropdown kategori di kiri, memakai warna, radius, dan jarak dari Foundations."
+        stay-dark-mode
         :toc="[
             'search-form' => 'Search Form',
             'platform' => 'Platform',
@@ -161,23 +162,23 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Search Form">
+        <x-docs.mode-section name="Search Form" stay-dark>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Search Form. Komponen secara otomatis menyesuaikan warna latar, teks, placeholder, dan batas.
             </x-slot:lead>
             <div class="grid gap-5">
-                <x-docs.demo label="Default" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::search :placeholder="$placeholder" :dark-mode="! $docsDark" />
+                <x-docs.demo label="Default" dark>
+                    <x-ceplok::search :placeholder="$placeholder" dark-mode />
                 </x-docs.demo>
-                <x-docs.demo label="Dengan Kategori" :dark="! $docsDark" :light="$docsDark">
+                <x-docs.demo label="Dengan Kategori" dark>
                     <div class="max-w-220.5">
-                        <x-ceplok::search :categories="$kategori" :placeholder="$placeholder" :dark-mode="! $docsDark" />
+                        <x-ceplok::search :categories="$kategori" :placeholder="$placeholder" dark-mode />
                     </div>
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::search⟨! ⟦dark-mode⟧⟩ placeholder="Search Civitas, Organisasi…" />
+                <x-ceplok::search ⟦dark-mode⟧ placeholder="Search Civitas, Organisasi…" />
                 @endverbatim
             </x-docs.code>
         </x-docs.mode-section>

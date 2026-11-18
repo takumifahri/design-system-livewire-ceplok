@@ -165,7 +165,7 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 
 | Komponen | Props utama |
 | --- | --- |
-| `button` | `variant`: `filled \| outline`, `theme`: `primary \| green \| gray \| purple \| orange \| yellow`, `tone`: `light \| dark`, `size`: `xs \| s \| base \| l \| xl`, `type`, `icon-only`, `as`: `button \| anchor`, slot/prop `left-icon`, `right-icon` |
+| `button` | `variant`: `filled \| outline`, `theme`: `primary \| green \| gray \| purple \| orange \| yellow`, `dark-mode`, `size`: `xs \| s \| base \| l \| xl`, `type`, `icon-only`, `as`: `button \| anchor`, `wire-click`, slot/prop `left-icon`, `right-icon`. `tone`: `light \| dark` deprecated; gunakan `dark-mode` |
 | `badge` | `variant`: `gray \| brand \| danger \| warning \| success`, `size`: `sm \| lg`, `icon`, `dismissible`, `open`, `dark-mode` |
 | `avatar` | `src`, `name`, `alt`, `initials` (atau slot), `fallback`: `initials \| female \| male`, `size`: `small \| default \| large`, `dark-mode` (deprecated) |
 | `spinner` | `size`: `default \| large`, `aria-label`, `aria-hidden` |
@@ -177,9 +177,9 @@ adanya dan menolak nilai lain, tetapi bentuk yang dianjurkan tetap
 | `icon` | slot berisi `<svg>` yang memakai `currentColor` |
 | `breadcrumb` | `items` (`label`, `href`, `icon`, `attributes`), slot `separator`, `size`: `sm \| base`, `background`: `bg \| none`, `dark-mode` |
 | `pagination` | `current-page`, `total-pages`, `theme`: `default \| primary \| purple`, `size`: `base \| s \| responsive`, `url`, `dark-mode` |
-| `drawer` | `open`, `position`: `right \| left \| top \| bottom`, `size`: `s \| m \| l \| xl \| full`, `close-on-overlay-click`, `close-on-esc`, `eyebrow`, `header`, `items`, `theme`, `footer`, `dark-mode`; gunakan `items` untuk menu dan submenu (`children`), atau slot bebas untuk konten seperti Sidebar responsif |
+| `drawer` | `open`, `position`: `right \| left \| top \| bottom`, `size`: `s \| m \| l \| xl \| full`, `close-on-overlay-click`, `close-on-esc`, `eyebrow`, `header`, `items`, `theme`, `footer`, `dark-mode`; gunakan `items` untuk menu dan submenu (`children`). Parent dengan `children` selalu menjadi disclosure button dan otomatis aktif bila salah satu anak aktif. Gunakan slot bebas untuk konten seperti Sidebar responsif |
 | `sidebar` | `items`, `groups`, `logo`, `collapsed-logo`, `user`, `sticky`, `collapsed`, `show-collapse-button`, `footer`, `dark-mode` |
-| `list-view` | `items` atau satu item langsung lewat props; `gap`: `none \| sm \| md \| lg`, `size`, `platform`: `desktop \| mobile`, `decoration`, `dark-mode`, `as`, `variant`: `simple \| article`, `title`, `description`, `metadata`, `icon`, `badge`, `action-label`, `action-href`, `action-disabled`, `action-wire-click`, `action-click`, `action-attributes`, `href` |
+| `list-view` | `items` atau satu item langsung lewat props; `gap`: `none \| sm \| md \| lg`, `size`, `platform`: `desktop \| mobile`, `decoration`, `dark-mode`, `interactive-feedback`, `as`, `variant`: `simple \| article`, `title`, `description`, `metadata`, `icon`, `badge`, `action-label`, `action-href`, `action-disabled`, `action-wire-click`, `action-click`, `action-attributes`, `href` |
 | `popover` | slot `trigger` (atribut slot menjadi props Button kit, atau `<button>` polos dengan `raw`), `title` (prop atau slot), slot isi, `side`: `top \| right \| bottom \| left`, `dark-mode`, `open` |
 | `modal` | slot `trigger` (seperti Popover; opsional bila diikat `wire:model`/`x-model`), `variant`: `default \| popup`, `size`: `s \| m`, `title` (prop atau slot), slot `footer`, `close-on-backdrop`, `close-on-escape`, `show-close-button`, `close-label`, `open` |
 | `table` | Belum stabil. `columns` (array kolom: `key`, `header`, `cell`, `actions`, `image`, `file`, `children`, `sortable`, `sort-value`, `sort-fn`, `sort-directions`, `sort-resettable`, `sort-icon`, `align`, `header-align`, `emphasis`, `width`, `min-width`, `hideable`, `wrap`), `data` (array, Collection, atau `LengthAwarePaginator`), `row-key`, `size`: `normal \| compact`, `sticky`, `search`, `filter`, slot `actions`, `selectable`, `selected-keys`, `sort`, `sort-icon`, `header-align`, `pagination`, `manual`, `striped`, `loading`, `empty-text` |
@@ -239,7 +239,7 @@ Tanpa `aria-hidden`, Spinner memiliki `role="status"` dan label default
 | `clipboard` | Event `copy-success` membawa `detail.value`, sedangkan `copy-error` menandai kegagalan Clipboard API: `wire:copy-success="tersalin($event.detail.value)"`. |
 | `drawer` | `wire:model` (atau `wire:model.live`) mengikat buka/tutup Drawer. Saat tombol tutup, backdrop, atau Esc menutup panel, event `close` dapat ditangkap: `wire:close="tutupDrawer"`. |
 | `sidebar` | Tombol collapse mengirim event `collapse` dengan `detail.collapsed`; tangkap dengan `wire:collapse="$set('collapsed', $event.detail.collapsed)"`. Seperti `onCollapse` di React, pendengar itu sudah menampilkan tombolnya dalam keadaan aktif; `show-collapse-button` saja menampilkannya nonaktif. Klik menu dan area profil mengikuti `href` atau atribut `wire:*` di `attributes` item dan `user`, mis. `'attributes' => ['wire:click' => 'bukaProfil']`; profil tanpa `href` tidak melompat ke `#`. |
-| `list-view` | Tambahkan `action-wire-click` pada item langsung atau data `items` untuk menjadikan tombol aksi bawaannya target Livewire, mis. `action-wire-click="openBrief"`. Pada varian simple desktop, `action-disabled` menyembunyikan tombol dan memindahkan `action-href`, `action-wire-click`, `action-click`, serta `action-attributes` ke seluruh kartu. Pada platform mobile, kontrol aksinya tetap dirender dalam keadaan nonaktif. Tanpa `action-disabled`, kartu tidak otomatis menjadi target klik. |
+| `list-view` | Tambahkan `action-wire-click` pada item langsung atau data `items` untuk menjadikan tombol aksi bawaannya target Livewire, mis. `action-wire-click="openBrief"`. Pada varian simple desktop maupun mobile, `action-disabled` menyembunyikan tombol dan memindahkan `action-href`, `action-wire-click`, `action-click`, serta `action-attributes` ke seluruh kartu. Tanpa `action-disabled`, kartu tidak otomatis menjadi target klik. `interactive-feedback="false"` mematikan feedback hover/active tanpa menghilangkan aksi kartu. |
 | `table-of-contents` | `wire:model` mengikat id entri yang disorot. Event `active-change` (`detail.id`) saat scroll-spy atau klik memindahkan sorotan, dan `item-click` (`detail.id`) sebelum tautan berjalan; `wire:item-click.prevent` membatalkan tautannya. Dengan `active-id` dari properti Livewire, nilai barunya diikuti setelah render ulang. |
 | `timeline` | `'attributes' => ['wire:dismiss' => 'tutupStatus(2)']` pada `status` diteruskan ke Badge-nya; tombol tutup Badge yang `dismissible` memicu event `dismiss`. |
 | `breadcrumb` | `'attributes' => ['wire:navigate' => true]` pada item diteruskan ke tautannya. |
@@ -331,7 +331,7 @@ nilai token lewat atribut `data-theme="dark"`:
 - Komponen tersebut ikut gelap bila salah satu pembungkusnya memakai
   `data-theme="dark"`. Bagian di dalamnya bisa dikembalikan terang dengan
   `data-theme="light"`.
-- `badge`, `pagination`, `popover`, `dropdown`, `datepicker`, dan
+- `button`, `badge`, `pagination`, `popover`, `dropdown`, `datepicker`, dan
   `upload` belum berbasis token: `dark-mode` mengganti class warnanya
   langsung, sama seperti di kit React.
 - `modal` tidak punya `dark-mode`: dialognya mengikuti `data-theme`

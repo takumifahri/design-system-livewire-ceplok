@@ -62,7 +62,7 @@ class DocsThemeTest extends TestCase
 
     public function test_halaman_tanpa_tampilan_gelap_tetap_terang_dan_tombolnya_diredupkan(): void
     {
-        $dom = $this->page(route('components.button'), dark: true);
+        $dom = $this->page(route('components.card'), dark: true);
 
         $this->assertFalse($this->find($dom, 'html')->hasAttribute('data-docs-theme'));
 
@@ -90,8 +90,10 @@ class DocsThemeTest extends TestCase
 
     public function test_bagian_dark_mode_bertukar_menjadi_light_mode_di_mode_gelap(): void
     {
-        $terang = $this->page(route('form.search'));
-        $gelap = $this->page(route('form.search'), dark: true);
+        // Alert berada di luar scope komponen yang section-nya dipaksa tetap
+        // gelap, sehingga tetap menguji perilaku inverse bawaan ModeSection.
+        $terang = $this->page(route('components.alert'));
+        $gelap = $this->page(route('components.alert'), dark: true);
 
         $this->assertStringStartsWith('Dark mode', trim($this->find($terang, '#dark-mode h2')->textContent));
         $this->assertStringStartsWith('Light mode', trim($this->find($gelap, '#dark-mode h2')->textContent));
@@ -99,8 +101,8 @@ class DocsThemeTest extends TestCase
         $this->assertSame('Light mode', trim($this->find($gelap, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
 
         // Di mode terang bagian ini memperagakan dark-mode; di mode gelap kebalikannya.
-        $this->assertStringContainsString('<x-ceplok::search dark-mode placeholder=', $this->find($terang, '#dark-mode pre code')->textContent);
-        $this->assertStringContainsString('<x-ceplok::search placeholder=', $this->find($gelap, '#dark-mode pre code')->textContent);
+        $this->assertStringContainsString('<x-ceplok::alert dark-mode variant=', $this->find($terang, '#dark-mode pre code')->textContent);
+        $this->assertStringContainsString('<x-ceplok::alert variant=', $this->find($gelap, '#dark-mode pre code')->textContent);
         $this->assertNotNull($this->find($terang, '#dark-mode')->querySelector('[data-theme="dark"]'));
         $this->assertNull($this->find($gelap, '#dark-mode')->querySelector('[data-theme="dark"]'));
         // Kotak contohnya pulau terang di tengah halaman gelap.
@@ -117,6 +119,45 @@ class DocsThemeTest extends TestCase
         // Kode Penggunaannya ikut menuliskan dark-mode.
         $this->assertStringNotContainsString('dark-mode', $this->find($terang, '#penggunaan pre code')->textContent);
         $this->assertStringContainsString('dark-mode', $this->find($gelap, '#penggunaan pre code')->textContent);
+    }
+
+    public function test_button_docs_selalu_memperagakan_bagian_dark_mode(): void
+    {
+        $terang = $this->page(route('components.button'));
+        $gelap = $this->page(route('components.button'), dark: true);
+
+        foreach ([$terang, $gelap] as $dom) {
+            $section = $this->find($dom, '#dark-mode');
+
+            $this->assertStringStartsWith('Dark mode', trim($this->find($section, 'h2')->textContent));
+            $buttons = $section->querySelectorAll('div.grid > div > div > button[class~="inline-flex"]');
+            $this->assertCount(4, $buttons);
+            $this->assertHasClasses($buttons->item(0), 'bg-primary-800 text-white');
+            $this->assertHasClasses($buttons->item(1), 'bg-gray-50 text-gray-700');
+            $this->assertHasClasses($buttons->item(3), 'border-gray-50 text-gray-50');
+            $this->assertStringContainsString('dark-mode', $this->find($section, 'pre code')->textContent);
+        }
+
+        $this->assertSame('Dark mode', trim($this->find($gelap, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
+        $this->assertSame('Dark', trim($this->find($gelap, '#playground [aria-label="Pilih tampilan"] [aria-pressed="true"]')->textContent));
+    }
+
+    public function test_breadcrumb_dan_sidebar_mengikuti_mode_docs(): void
+    {
+        $breadcrumb = $this->page(route('components.breadcrumb'), dark: true);
+        $sidebar = $this->page(route('components.sidebar'), dark: true);
+
+        $this->assertNotNull($this->find($breadcrumb, '#sizes')->querySelector('nav[data-theme="dark"]'));
+        $this->assertStringStartsWith('Dark mode', trim($this->find($breadcrumb, '#dark-mode h2')->textContent));
+        $this->assertSame('Dark mode', trim($this->find($breadcrumb, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
+        $this->assertNotNull($this->find($breadcrumb, '#dark-mode')->querySelector('[data-theme="dark"]'));
+        $this->assertSame('Dark', trim($this->find($breadcrumb, '#playground [aria-label="Pilih tampilan"] [aria-pressed="true"]')->textContent));
+
+        $this->assertNotNull($this->find($sidebar, '#variants')->querySelector('aside[data-theme="dark"]'));
+        $this->assertStringStartsWith('Dark mode', trim($this->find($sidebar, '#dark-mode h2')->textContent));
+        $this->assertSame('Dark mode', trim($this->find($sidebar, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
+        $this->assertNotNull($this->find($sidebar, '#dark-mode')->querySelector('[data-theme="dark"]'));
+        $this->assertSame('Dark', trim($this->find($sidebar, '#playground [aria-label="Pilih tampilan"] [aria-pressed="true"]')->textContent));
     }
 
     public function test_portal_dashboard_mengikuti_mode_docs_dan_mengabarkan_tombol_temanya(): void

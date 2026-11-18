@@ -257,9 +257,9 @@ new class extends Component
                 />
             </x-docs.control>
 
-            <x-docs.control label="Mode">
+            <x-docs.control label="Tampilan">
                 <x-docs.segmented
-                    label="Pilih mode"
+                    label="Pilih tampilan"
                     model="theme"
                     :value="$theme"
                     :options="[

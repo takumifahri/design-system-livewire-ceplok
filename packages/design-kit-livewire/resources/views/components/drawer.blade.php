@@ -4,6 +4,7 @@
     use CeplokUi\DesignKit\Enums\DrawerSize;
     use CeplokUi\DesignKit\Support\Bound;
     use CeplokUi\DesignKit\Support\Content;
+    use CeplokUi\DesignKit\Support\FieldId;
     use CeplokUi\DesignKit\Support\Prop;
 @endphp
 
@@ -42,6 +43,7 @@
     $closeOnEsc = Prop::bool($closeOnEsc, true, 'drawer', 'close-on-esc');
     $darkMode = Prop::bool($darkMode, false, 'drawer', 'dark-mode');
     $preview = Prop::bool($preview, false, 'drawer', 'preview');
+    $drawerId = FieldId::for($attributes, 'drawer');
 
     $bound = Bound::has($attributes);
     $open = $open === null
@@ -120,10 +122,13 @@
                         $children = $item['children'] ?? [];
                         $hasChildren = !empty($children);
                         $expanded = $item['expanded'] ?? $hasChildren;
-                        $active = !empty($item['active']);
-                        $href = $item['href'] ?? null;
+                        $active = $item['active'] ?? collect($children)->contains(fn ($child) => !empty($child['active']));
+                        // Item induk dengan submenu adalah disclosure button seperti
+                        // di React. Tujuan navigasi ditempatkan pada subitem.
+                        $href = $hasChildren ? null : ($item['href'] ?? null);
                         $disabled = !empty($item['disabled']);
                         $itemTag = filled($href) ? 'a' : 'button';
+                        $submenuId = $hasChildren ? $drawerId.'-submenu-'.$loop->iteration : null;
                         $activeClass = $darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : match ($itemTheme) { 'purple' => 'bg-purple-100/70 text-purple-700 hover:bg-purple-100/70 hover:text-purple-700', 'gray' => 'bg-gray-100 text-gray-900 hover:bg-gray-100 hover:text-gray-900', default => 'bg-blue-50 text-blue-600 hover:bg-blue-50 hover:text-blue-600' };
                         $inactiveClass = $darkMode ? 'text-gray-50 hover:bg-gray-700 hover:text-white' : match ($itemTheme) { 'purple' => 'text-gray-900 hover:bg-purple-100/70 hover:text-purple-700', 'gray' => 'text-gray-900 hover:bg-gray-100 hover:text-gray-900', default => 'text-gray-900 hover:bg-blue-50 hover:text-blue-600' };
                         $inactiveIconClass = $darkMode ? 'text-gray-400 group-hover:text-white' : match ($itemTheme) { 'purple' => 'text-gray-500 group-hover:text-purple-700', 'gray' => 'text-gray-500 group-hover:text-gray-900', default => 'text-gray-500 group-hover:text-blue-600' };
@@ -141,13 +146,15 @@
                             @if ($href && !$disabled) href="{{ $href }}" @elseif (!$href) type="button" @endif
                             @if ($disabled && !$href) disabled @endif
                             @if ($disabled) aria-disabled="true" tabindex="-1" @endif
+                            @if ($href && !$disabled && $active) aria-current="page" @endif
+                            @if ($hasChildren) x-bind:aria-expanded="expanded ? 'true' : 'false'" aria-controls="{{ $submenuId }}" @endif
                             {{ $itemAttributes->class(['group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-base transition-all text-left font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50', $active ? $activeClass : $inactiveClass]) }}
                         >
                             <span class="flex min-w-0 flex-1 items-center gap-3">@if (!empty($item['icon']))<span @class(['flex size-[18px] shrink-0 items-center justify-center transition-colors', $active ? $activeIconClass : $inactiveIconClass])>{!! Content::icon($item['icon']) !!}</span>@endif<span class="truncate">{{ $item['label'] ?? '' }}</span></span>
                             <span @class(['flex shrink-0 items-center gap-2', $active ? $activeIconClass : $inactiveIconClass])>@if (!empty($item['badge'])){{ $item['badge'] }}@endif @if ($hasChildren)<x-ceplok-o-chevron-down x-bind:class="expanded ? 'rotate-180' : ''" class="size-[18px] transition-transform" />@endif</span>
                         </{{ $itemTag }}>
                         @if ($hasChildren)
-                            <div x-show="expanded" class="mt-1 space-y-1 pl-8" @if (!$expanded) style="display:none" @endif>
+                            <div id="{{ $submenuId }}" x-show="expanded" x-bind:hidden="! expanded" class="mt-1 space-y-1 pl-8" @if (!$expanded) hidden style="display:none" @endif>
                                 @foreach ($children as $sub)
                                     @php
                                         $subHref = $sub['href'] ?? null;
@@ -166,6 +173,7 @@
                                         @if ($subHref && !$subDisabled) href="{{ $subHref }}" @elseif (!$subHref) type="button" @endif
                                         @if ($subDisabled && !$subHref) disabled @endif
                                         @if ($subDisabled) aria-disabled="true" tabindex="-1" @endif
+                                        @if ($subHref && !$subDisabled && !empty($sub['active'])) aria-current="page" @endif
                                         {{ $subAttributes->class(['flex w-full items-center gap-2 rounded-lg px-3 py-2 text-base text-left transition-colors font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50', !empty($sub['active']) ? ($darkMode ? 'bg-gray-700/50 text-white' : $subActiveClass) : ($darkMode ? 'text-gray-50 hover:bg-gray-700 hover:text-white' : 'text-gray-900 '.$subHoverClass)]) }}
                                     ><span class="min-w-0 truncate">{{ $sub['label'] ?? '' }}</span></{{ $subTag }}>
                                 @endforeach

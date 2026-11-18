@@ -99,6 +99,31 @@ class DrawerTest extends TestCase
         $this->assertLacksClasses($item, 'aria-disabled:pointer-events-none');
     }
 
+    public function test_item_dengan_submenu_adalah_disclosure_dan_mewarisi_status_aktif_anak(): void
+    {
+        $items = [[
+            'label' => 'Dokumen',
+            'href' => '/dokumen',
+            'expanded' => false,
+            'children' => [
+                ['label' => 'Arsip', 'href' => '/arsip', 'active' => true],
+            ],
+        ]];
+
+        $dom = $this->dom('<x-ceplok::drawer :items="$items" />', compact('items'));
+        $parent = $this->find($dom, 'button.group');
+        $submenuId = $parent->getAttribute('aria-controls');
+        $submenu = $this->find($dom, '#'.$submenuId);
+        $child = $this->find($submenu, 'a');
+
+        $this->assertNull($dom->querySelector('a[href="/dokumen"]'));
+        $this->assertHasClasses($parent, 'bg-blue-50 text-blue-600');
+        $this->assertSame("expanded ? 'true' : 'false'", $parent->getAttribute('x-bind:aria-expanded'));
+        $this->assertSame('! expanded', $submenu->getAttribute('x-bind:hidden'));
+        $this->assertTrue($submenu->hasAttribute('hidden'));
+        $this->assertSame('page', $child->getAttribute('aria-current'));
+    }
+
     public function test_prop_yang_tidak_sah_ditolak(): void
     {
         $this->assertPropError(

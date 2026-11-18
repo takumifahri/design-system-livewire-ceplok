@@ -92,7 +92,7 @@ new class extends Component
 
         <x-docs.controls :fonts="false">
             <x-docs.control label="Font"><x-docs.segmented label="Pilih font" model="font" :value="$font" :options="[['value' => 'lato', 'label' => 'Lato'], ['value' => 'inter', 'label' => 'Inter'], ['value' => 'arial', 'label' => 'Arial']]" /></x-docs.control>
-            <x-docs.control label="Mode"><x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[['value' => false, 'label' => 'Light'], ['value' => true, 'label' => 'Dark']]" /></x-docs.control>
+            <x-docs.control label="Tampilan"><x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[['value' => false, 'label' => 'Light'], ['value' => true, 'label' => 'Dark']]" /></x-docs.control>
             <x-docs.control label="Theme"><x-docs.segmented label="Pilih theme" model="theme" :value="$theme" :options="[['value' => 'primary', 'label' => 'Primary'], ['value' => 'purple', 'label' => 'Purple']]" /></x-docs.control>
             <x-docs.control label="Icons"><x-docs.segmented label="Pilih ikon" model="icons" :value="$icons" :options="[['value' => true, 'label' => 'Ada'], ['value' => false, 'label' => 'Tidak Ada']]" /></x-docs.control>
         </x-docs.controls>

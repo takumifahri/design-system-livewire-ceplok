@@ -81,6 +81,23 @@ class PlaygroundTest extends TestCase
         $this->assertStringNotContainsString('left-icon', $this->code($dom));
     }
 
+    public function test_button_playground_mengikuti_dark_mode_terbaru(): void
+    {
+        $component = Livewire::test('playground.button')
+            ->set('dark', true)
+            ->set('variant', 'outline')
+            ->set('theme', 'purple');
+
+        $dom = $this->domOf($component);
+        $button = $this->find($dom, 'div.min-h-45 > button');
+
+        $this->assertHasClasses($button, 'border-gray-50 text-gray-50 hover:bg-white hover:text-gray-700');
+        $this->assertLacksClasses($button, 'border-purple-800 text-purple-800');
+        $this->assertSame('Dark', trim($this->find($dom, '[aria-label="Pilih tampilan"] [aria-pressed="true"]')->textContent));
+        $this->assertStringContainsString('dark-mode', $this->code($dom));
+        $this->assertStringNotContainsString('tone=', $this->code($dom));
+    }
+
     public function test_clipboard_playground_mengikuti_kontrol(): void
     {
         $component = Livewire::test('playground.clipboard')
@@ -411,7 +428,7 @@ class PlaygroundTest extends TestCase
 
         $dom = $this->domOf($component);
 
-        $this->assertSame('Dark', trim($this->find($dom, '[aria-label="Pilih mode"] [aria-pressed="true"]')->textContent));
+        $this->assertSame('Dark', trim($this->find($dom, '[aria-label="Pilih tampilan"] [aria-pressed="true"]')->textContent));
         $this->assertSame('Tidak Ada', trim($this->find($dom, '[aria-label="Pilih ikon"] [aria-pressed="true"]')->textContent));
         $this->assertNotNull($this->find($dom, '[data-preview]'));
         $this->assertNotNull($this->find($dom, '.bg-gray-950'));

@@ -19,15 +19,37 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - `avatar`: prop `name` untuk accessible name dan inisial otomatis, serta
   `fallback` `initials`, `female`, atau `male` dengan ilustrasi profil terang
   dan gelap, setara kit React.
-- `list-view`: prop `action-disabled` pada varian simple desktop menyembunyikan
-  tombol aksi dan memindahkan `action-href`, `action-wire-click`,
-  `action-click`, serta `action-attributes` ke seluruh kartu.
+- `list-view`: prop `action-disabled` pada varian simple menyembunyikan tombol
+  aksi dan memindahkan `action-href`, `action-wire-click`, `action-click`,
+  serta `action-attributes` ke seluruh kartu pada desktop maupun mobile.
+- `list-view`: prop `interactive-feedback` mengatur feedback border, shadow,
+  dan scale tanpa mengubah kemampuan kartu untuk diklik.
 - `sidebar`: kunci `attributes` pada `user` meneruskan atribut ke area
   profil, mis. `['wire:click' => 'bukaProfil']`, padanan `user.onClick` di
   kit React.
 
 ### Diubah
 
+- `pagination`: palet dark mode mengikuti React staging: surface dan border
+  gray-700/gray-600, active default gray-600, primary-900, dan purple-900.
+- `drawer`: item dengan submenu kini selalu menjadi disclosure button,
+  mewarisi state aktif anak, dan memiliki `aria-expanded`, `aria-controls`,
+  `hidden`, serta `aria-current` yang sesuai.
+- Docs `drawer`, `list-view`, dan `pagination` kini mendukung mode gelap pada
+  preview, Playground, contoh Livewire, dan tabel Properties.
+- Docs `breadcrumb` dan `sidebar` kini mengikuti switch mode gelap global;
+  preview biasa, Playground, cuplikan kode, serta contoh Livewire memulai dari
+  mode docs yang aktif.
+- Section `Dark mode` pada docs Button, Drawer, List View, Pagination,
+  Breadcrumb, Sidebar, Search, dan Upload sekarang selalu memperagakan palet
+  gelap, meskipun situs dokumentasi sedang memakai mode gelap.
+- Label pengaturan mode pada Playground Button, Drawer, List View, Pagination,
+  Breadcrumb, Sidebar, Search, dan Upload diseragamkan menjadi `Tampilan` dan
+  `Pilih tampilan`.
+- `button`: `dark-mode` kini mengikuti refactor React staging. Filled dengan
+  theme memakai palet gelap theme tersebut, filled tanpa theme memakai
+  fallback putih, dan seluruh outline dark memakai warna putih. Prop `tone`
+  tetap diterima sebagai alias transisi untuk kompatibilitas.
 - `search`: dark mode dan ukuran varian berkategori diselaraskan dengan kit
   React staging. Field polos kini gray-700; kategori reguler dikunci 113px
   dengan tombol 42x37px, sedangkan kategori compact 128px dengan tombol
@@ -59,6 +81,12 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Diperbaiki
 
+- Docs `drawer`: warna teks, ikon, state aktif, submenu, dan hover pada preview
+  statis sekarang mengikuti palet dark mode komponen di Playground; hover
+  tidak lagi memakai surface biru terang.
+- `popover`: listener `wire:open-change`, `x-on:open-change`, dan
+  `@open-change` kini dipasang pada elemen root tempat event `open-change`
+  dikirim, sehingga binding Livewire menerima perubahan state.
 - `popover` kini memakai token surface, border, dan content yang sama dengan
   React sehingga mengikuti boundary ambient `data-theme`. Cleanup listener,
   observer, dan frame fokus dilengkapi; perubahan `side` saat panel terbuka

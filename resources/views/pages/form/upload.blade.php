@@ -34,6 +34,7 @@
         eyebrow="Form"
         title="Upload Form"
         description="Pemilih berkas dalam dua bentuk: satu baris tombol dengan nama berkas di sampingnya, atau area seret-lepas yang mengambil ruang lebih besar. Keduanya membungkus input berkas bawaan, jadi dialog, penyaringan accept, dan pengiriman formulir bekerja apa adanya."
+        stay-dark-mode
         :toc="[
             'upload-form' => 'Upload Form',
             'platform' => 'Platform',
@@ -180,17 +181,17 @@
             </p>
         </x-docs.section>
 
-        <x-docs.mode-section name="Upload">
+        <x-docs.mode-section name="Upload" stay-dark>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual. Komponen secara otomatis menyesuaikan warna latar, batas, dan teks.
             </x-slot:lead>
             <div class="grid gap-5">
-                <x-docs.demo label="Upload" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::upload label="Upload File" helper-text="PDF atau JPG, maksimal 2 MB." :dark-mode="! $docsDark" />
+                <x-docs.demo label="Upload" dark>
+                    <x-ceplok::upload label="Upload File" helper-text="PDF atau JPG, maksimal 2 MB." dark-mode />
                 </x-docs.demo>
-                <x-docs.demo label="Attach — 538px" :dark="! $docsDark" :light="$docsDark">
+                <x-docs.demo label="Attach — 538px" dark>
                     <div class="max-w-134.5">
-                        <x-ceplok::upload type="attach" :dark-mode="! $docsDark" />
+                        <x-ceplok::upload type="attach" dark-mode />
                     </div>
                 </x-docs.demo>
             </div>
@@ -199,10 +200,10 @@
                 <x-ceplok::upload
                     ⟦label⟧="Upload File"
                     ⟦helper-text⟧="PDF atau JPG, maksimal 2 MB."
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                 />
 
-                <x-ceplok::upload type="attach"⟨! ⟦dark-mode⟧⟩ />
+                <x-ceplok::upload type="attach" ⟦dark-mode⟧ />
                 @endverbatim
             </x-docs.code>
         </x-docs.mode-section>

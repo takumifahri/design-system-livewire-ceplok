@@ -16,12 +16,13 @@
     'title',
     'description',
     'toc' => [],
+    'stayDarkMode' => false,
 ])
 
 @php
     // Di mode gelap docs bagian Dark mode bertukar menjadi Light mode (lihat
     // x-docs.mode-section). Id-nya tetap, jadi tautan ke bagian itu tidak putus.
-    if (isset($toc['dark-mode']) && App\Docs\Theme::dark()) {
+    if (isset($toc['dark-mode']) && App\Docs\Theme::dark() && ! $stayDarkMode) {
         $toc['dark-mode'] = 'Light mode';
     }
 

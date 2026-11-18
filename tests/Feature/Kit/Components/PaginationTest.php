@@ -104,9 +104,9 @@ class PaginationTest extends TestCase
             'default' => ['default', false, 'bg-gray-50 text-gray-500'],
             'primary' => ['primary', false, 'bg-primary-50 text-primary-500'],
             'purple' => ['purple', false, 'bg-purple-50 text-purple-500'],
-            'default gelap' => ['default', true, 'bg-gray-700 text-gray-300'],
-            'primary gelap' => ['primary', true, 'bg-gray-700 text-primary-500'],
-            'purple gelap' => ['purple', true, 'bg-gray-700 text-purple-400'],
+            'default gelap' => ['default', true, 'bg-gray-600 text-gray-300'],
+            'primary gelap' => ['primary', true, 'bg-primary-900 text-primary-500'],
+            'purple gelap' => ['purple', true, 'bg-purple-900 text-purple-400'],
         ];
     }
 
@@ -116,7 +116,7 @@ class PaginationTest extends TestCase
         $dom = $this->dom('<x-ceplok::pagination :current-page="2" :total-pages="3" :theme="$theme" :dark-mode="$dark" />', compact('theme', 'dark'));
 
         $this->assertHasClasses($this->find($dom, '[aria-current="page"]'), $classes);
-        $this->assertHasClasses($this->find($dom, 'nav'), $dark ? 'border-gray-700 bg-gray-800' : 'border-gray-300 bg-white');
+        $this->assertHasClasses($this->find($dom, 'nav'), $dark ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-white');
     }
 
     public function test_size_s_dan_responsive(): void

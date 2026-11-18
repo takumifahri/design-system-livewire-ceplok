@@ -93,16 +93,25 @@ class ListViewTest extends TestCase
         $this->assertNull($linkedCard->querySelector('button'));
         $this->assertHasClasses($linkedCard, 'cursor-pointer hover:border-primary-400/80');
 
-        $livewireCard = $this->find($this->dom('<x-ceplok::list-view title="Project brief" action-label="Open" action-wire-click="openDocument(1)" action-disabled />'), 'article');
+        $livewireCard = $this->find($this->dom('<x-ceplok::list-view title="Project brief" action-label="Open" action-wire-click="openDocument(1)" action-disabled />'), 'button[type="button"]');
         $this->assertSame('openDocument(1)', $livewireCard->getAttribute('wire:click'));
         $this->assertNull($livewireCard->querySelector('button'));
         $this->assertHasClasses($livewireCard, 'cursor-pointer hover:border-primary-400/80');
     }
 
-    public function test_action_disabled_tetap_menonaktifkan_tombol_pada_platform_mobile(): void
+    public function test_action_disabled_mobile_juga_mendelegasikan_aksi_ke_kartu(): void
     {
-        $button = $this->find($this->dom('<x-ceplok::list-view platform="mobile" title="Project brief" action-label="Open" action-disabled />'), 'button');
+        $card = $this->find($this->dom('<x-ceplok::list-view platform="mobile" title="Project brief" action-label="Open" action-href="/brief" action-disabled />'), 'a[href="/brief"]');
 
-        $this->assertTrue($button->hasAttribute('disabled'));
+        $this->assertNull($card->querySelector('button'));
+        $this->assertHasClasses($card, 'w-full text-left cursor-pointer');
+    }
+
+    public function test_interactive_feedback_dapat_dimatikan_tanpa_menonaktifkan_aksi(): void
+    {
+        $card = $this->find($this->dom('<x-ceplok::list-view title="Project brief" href="/brief" :interactive-feedback="false" />'), 'a[href="/brief"]');
+
+        $this->assertHasClasses($card, 'cursor-pointer');
+        $this->assertLacksClasses($card, 'hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]');
     }
 }

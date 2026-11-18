@@ -3,7 +3,6 @@
 use CeplokUi\DesignKit\Enums\ButtonAs;
 use CeplokUi\DesignKit\Enums\ButtonSize;
 use CeplokUi\DesignKit\Enums\ButtonTheme;
-use CeplokUi\DesignKit\Enums\ButtonTone;
 use CeplokUi\DesignKit\Enums\ButtonVariant;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -23,7 +22,7 @@ new class extends Component
 
     public ButtonVariant $variant = ButtonVariant::Filled;
 
-    public ButtonTone $tone = ButtonTone::Light;
+    public bool $dark = false;
 
     /** Posisi ikon: none, left, right, atau both. */
     public string $icons = 'both';
@@ -56,7 +55,7 @@ new class extends Component
             $this->iconOnly ? '    aria-label="Kirim pesan"' : null,
             '    ⟦variant⟧="'.$this->variant->value.'"',
             '    ⟦theme⟧="'.$this->theme->value.'"',
-            '    ⟦tone⟧="'.$this->tone->value.'"',
+            $this->dark ? '    ⟦dark-mode⟧' : null,
             '    ⟦size⟧="'.$this->size->value.'"',
             $this->hasIcon('left') ? '    :⟦left-icon⟧="'.$icon.'"' : null,
             $this->hasIcon('right') ? '    :⟦right-icon⟧="'.$icon.'"' : null,
@@ -70,12 +69,12 @@ new class extends Component
 
 <div class="space-y-16">
     <x-docs.section id="playground" title="Playground">
-        <p class="mb-6 text-body-sm text-gray-500">
+        <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
             Memungkinkan Anda mencoba kombinasi prop secara langsung untuk membantu menyesuaikan
             tombol dengan kebutuhan aplikasi Anda sebelum diimplementasikan.
         </p>
 
-        <x-docs.stage max-width="max-w-[380px]">
+        <x-docs.stage max-width="max-w-[380px]" :dark="$dark">
             <div class="mx-auto flex min-h-45 items-center justify-center">
                 <x-ceplok::button
                     :as="$as"
@@ -85,7 +84,7 @@ new class extends Component
                     :size="$size"
                     :variant="$variant"
                     :theme="$theme"
-                    :tone="$tone"
+                    :dark-mode="$dark"
                     :left-icon="$this->hasIcon('left') ? svg('ceplok-s-messages', 'size-4') : null"
                     :right-icon="$this->hasIcon('right') ? svg('ceplok-s-messages', 'size-4') : null"
                 >
@@ -130,10 +129,10 @@ new class extends Component
                 ]" />
             </x-docs.control>
 
-            <x-docs.control label="Tone">
-                <x-docs.segmented label="Pilih tone" model="tone" :value="$tone" :options="[
-                    ['value' => 'light', 'label' => 'Light'],
-                    ['value' => 'dark', 'label' => 'Dark'],
+            <x-docs.control label="Tampilan">
+                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
+                    ['value' => false, 'label' => 'Light'],
+                    ['value' => true, 'label' => 'Dark'],
                 ]" />
             </x-docs.control>
 
@@ -166,7 +165,7 @@ new class extends Component
     </x-docs.section>
 
     <x-docs.section id="penggunaan" title="Penggunaan">
-        <p class="mb-6 text-body-sm text-gray-500">
+        <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
             Bagian ini menampilkan kode setelah Anda menggunakan Playground untuk kombinasi prop. Kode
             yang tampil di sini adalah kode yang siap diimplementasikan ke aplikasi.
         </p>

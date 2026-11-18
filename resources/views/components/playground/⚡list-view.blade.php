@@ -110,7 +110,7 @@ new class extends Component
         <x-docs.control label="Size"><x-docs.segmented label="Pilih ukuran" model="size" :value="$size" :options="$variant === 'article' ? [['value' => 's', 'label' => 'S'], ['value' => 'm', 'label' => 'M'], ['value' => 'l', 'label' => 'L'], ['value' => 'xl', 'label' => 'XL']] : [['value' => 's', 'label' => 'S'], ['value' => 'm', 'label' => 'M'], ['value' => 'l', 'label' => 'L']]" /></x-docs.control>
         <x-docs.control label="Decoration"><x-docs.segmented label="Pilih dekorasi" model="decoration" :value="$decoration" :disabled="$variant === 'article'" :options="[['value' => false, 'label' => 'Tidak Ada'], ['value' => true, 'label' => 'Ada']]" /></x-docs.control>
         <x-docs.control label="Badge"><x-docs.segmented label="Pilih badge" model="hasBadge" :value="$hasBadge" :disabled="$variant === 'article'" :options="[['value' => false, 'label' => 'Tidak Ada'], ['value' => true, 'label' => 'Ada']]" /></x-docs.control>
-        <x-docs.control label="Mode"><x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[['value' => false, 'label' => 'Light'], ['value' => true, 'label' => 'Dark']]" /></x-docs.control>
+        <x-docs.control label="Tampilan"><x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[['value' => false, 'label' => 'Light'], ['value' => true, 'label' => 'Dark']]" /></x-docs.control>
     </x-docs.controls>
 </x-docs.section>
 
