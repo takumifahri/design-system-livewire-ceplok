@@ -99,6 +99,46 @@ class SelectSearchTest extends TestCase
         $this->assertLacksClasses($this->find($dom, 'body > div'), 'w-full');
     }
 
+    public function test_search_berkategori_memakai_dimensi_dan_token_terbaru(): void
+    {
+        $dom = $this->dom('<x-ceplok::search dark-mode category="izin" :categories="[[\'value\' => \'izin\', \'label\' => \'Perizinan\']]" aria-label="Cari" />');
+        $search = $this->find($dom, '[role="search"]');
+        [$category, $field, $button] = $this->childrenOf($search);
+        $trigger = $this->find($category, 'button[popovertarget]');
+
+        $this->assertHasClasses($search, 'h-[39px] rounded-[10px] bg-search-category-surface');
+        $this->assertHasClasses($category, 'w-[113px] border-search-category-border bg-search-category-surface');
+        $this->assertHasClasses($field, 'border-field-border bg-search-category-field-surface');
+        $this->assertHasClasses($button, 'my-px h-[37px] w-[42px]');
+        $this->assertHasClasses($this->find($button, 'svg'), 'size-4');
+        $this->assertSame('Kategori: Perizinan', $trigger->getAttribute('aria-label'));
+        $this->assertSame('Perizinan', $trigger->getAttribute('title'));
+    }
+
+    public function test_search_kategori_compact_tetap_punya_tombol_dan_memotong_label(): void
+    {
+        $dom = $this->dom('<x-ceplok::search platform="compact" category="adm" :categories="[[\'value\' => \'adm\', \'label\' => \'Administrasi Kependudukan\']]" aria-label="Cari" />');
+        $search = $this->find($dom, '[role="search"]');
+        [$category, , $button] = $this->childrenOf($search);
+        $trigger = $this->find($category, 'button[popovertarget]');
+
+        $this->assertHasClasses($search, 'h-[37px] rounded-lg');
+        $this->assertHasClasses($category, 'w-[128px] border-field-border');
+        $this->assertHasClasses($button, 'w-[37px]');
+        $this->assertLacksClasses($button, 'my-px h-[37px] w-[42px]');
+        $this->assertHasClasses($this->find($button, 'svg'), 'size-3.5');
+        $this->assertSame('Administrasi…', trim($this->find($trigger, 'span.max-w-\[12ch\]')->textContent));
+    }
+
+    public function test_token_dark_search_memisahkan_field_polos_dan_field_kategori(): void
+    {
+        $css = file_get_contents(base_path('packages/design-kit-livewire/resources/css/tokens.css'));
+
+        $this->assertStringContainsString('--color-search-category-border: var(--color-gray-700);', $css);
+        $this->assertStringContainsString('--color-search-category-field-surface: var(--color-gray-600);', $css);
+        $this->assertStringContainsString('--color-search-field-surface: var(--color-gray-700);', $css);
+    }
+
     public function test_pilihan_awal_wire_model_dibaca_dari_properti(): void
     {
         $component = Livewire::test(new class extends Component

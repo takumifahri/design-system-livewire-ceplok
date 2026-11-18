@@ -28,6 +28,13 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Diubah
 
+- `search`: dark mode dan ukuran varian berkategori diselaraskan dengan kit
+  React staging. Field polos kini gray-700; kategori reguler dikunci 113px
+  dengan tombol 42x37px, sedangkan kategori compact 128px dengan tombol
+  37x37px. Search berkategori compact kini tetap menampilkan tombol bawaan.
+- `upload`: state dark mode varian default mengikuti desain terbaru: field
+  kosong memakai `#1F2A37`, field terisi gray-700, garis tombol mengikuti
+  warna aplikasi, dan teks tombol Remove gray-400. Seluruh ukurannya tetap.
 - `clipboard` kini mewajibkan `value` dan nama aksesibel melalui `label`,
   `aria-label`, atau `aria-labelledby`; docs, Playground, dan contoh Livewire
   diselaraskan dengan kontrak terbaru kit React.

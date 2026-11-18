@@ -51,6 +51,24 @@ class UploadDatepickerTest extends TestCase
         $this->assertHasClasses($this->find($dom, 'label[for]'), 'cursor-not-allowed');
     }
 
+    public function test_upload_default_dark_mengikuti_state_dan_aksen_terbaru(): void
+    {
+        $dom = $this->dom('<x-ceplok::upload dark-mode application="purple" platform="mobile" aria-label="Lampiran" />');
+        $row = $this->find($dom, 'body > div > div.flex');
+        [$field, $remove] = $this->childrenOf($row);
+        $choose = $this->find($field, 'button[x-on\:click="ceplokBrowse()"]');
+        $name = $this->find($field, 'p');
+
+        $this->assertHasClasses($field, 'h-10 border-[#1F2A37]');
+        $this->assertStringContainsString('border-gray-700', html_entity_decode($field->getAttribute('x-bind:class')));
+        $this->assertHasClasses($choose, 'px-[21px] text-xs border-purple-500 bg-purple-500');
+        $this->assertHasClasses($name, 'bg-[#1F2A37] text-gray-400');
+        $nameBinding = html_entity_decode($name->getAttribute('x-bind:class'));
+        $this->assertStringContainsString('bg-gray-700', $nameBinding);
+        $this->assertStringContainsString('text-white', $nameBinding);
+        $this->assertHasClasses($remove, 'border-gray-700 text-gray-400');
+    }
+
     public function test_datepicker_single(): void
     {
         $dom = $this->dom('<x-ceplok::datepicker label="Tanggal lahir" name="lahir" value="1945-08-17" min="1900-01-01" class="mt-2" data-uji="1" />');

@@ -56,7 +56,6 @@
     $platform = Prop::oneOf(SearchPlatform::class, $platform, SearchPlatform::Default, 'search', 'platform');
     $application = Prop::oneOf(SearchApplication::class, $application, SearchApplication::Default, 'search', 'application');
     $darkMode = Prop::bool($darkMode, false, 'search', 'dark-mode');
-    $hasButton = $showButton === null ? $platform !== 'compact' : Prop::bool($showButton, true, 'search', 'show-button');
 
     $id = FieldId::for($attributes, 'search');
     $helperId = $id.'-helper';
@@ -85,10 +84,19 @@
     // Kategori: placeholder ikut jadi baris pilihan biasa, seperti <option value=""> pertama.
     $categoryList = $categories === null ? [] : collect(Options::fromArray($categories))->flatMap(fn (array $group) => $group['options'])->values()->all();
     $withCategory = $categoryList !== [];
+    $compactCategory = $withCategory && $platform === 'compact';
+    // Search berkategori selalu punya tombol bawaan, juga pada platform compact.
+    // Search polos compact tetap tanpa tombol seperti sebelumnya.
+    $hasButton = $showButton === null
+        ? ($withCategory || $platform !== 'compact')
+        : Prop::bool($showButton, true, 'search', 'show-button');
     $categoryBag = new ComponentAttributeBag(collect($categoryAttributes)->all());
     $categoryValue = (string) ($category ?? Bound::text($categoryBag) ?? '');
     $categoryOptions = [['value' => '', 'label' => (string) $categoryPlaceholder, 'disabled' => false], ...$categoryList];
     $categoryLabel = collect($categoryOptions)->firstWhere('value', $categoryValue)['label'] ?? $categoryPlaceholder;
+    $categoryLabelCompact = mb_strlen($categoryLabel) > 12
+        ? mb_substr($categoryLabel, 0, 12).'…'
+        : $categoryLabel;
     $categoryItems = array_map(fn (array $option) => [
         'label' => $option['label'],
         'disabled' => $option['disabled'],
@@ -116,23 +124,30 @@
     @endif
 
     @if ($withCategory)
-        {{-- Tinggi 39px persis: pada tiga ruas yang bersebelahan selisih 1px langsung terbaca sebagai garis yang tidak sejajar. --}}
-        <div role="search" class="group flex h-[39px] items-stretch">
+        {{--
+            Bentuk reguler 39px: tombol kanan 37px dengan sisa 1px di atas dan
+            bawah. Bentuk compact Navbar tetap 37px untuk seluruh ruas.
+        --}}
+        <div
+            role="search"
+            @class([
+                'group flex items-stretch bg-search-category-surface',
+                $compactCategory ? 'h-[37px] rounded-lg' : 'h-[39px] rounded-[10px]',
+            ])
+        >
             <div
                 @class([
                     'relative flex shrink-0 items-center rounded-l-lg border transition-colors',
-                    'border-field-border bg-search-category-surface',
+                    $compactCategory ? 'w-[128px] border-field-border' : 'w-[113px] border-search-category-border',
+                    'bg-search-category-surface',
                     $accent['groupFocus'] => ! $disabled,
                 ])
                 x-data="ceplokSelect(@js(Bound::has($categoryBag) ? null : $categoryValue), @js((string) $categoryPlaceholder))"
             >
-                {{--
-                    Pembawa nilai saja, tapi tetap di alur: lebar ruas kategori
-                    ditentukan pilihan terpanjangnya, bukan yang sedang aktif.
-                --}}
+                {{-- Pembawa nilai saja; lebar ruas kategori dikunci oleh desain. --}}
                 <select
                     @disabled($disabled)
-                    {{ $categoryBag->merge(['aria-hidden' => 'true', 'tabindex' => '-1'])->class('pointer-events-none h-full appearance-none pr-10 pl-5 text-sm opacity-0') }}
+                    {{ $categoryBag->merge(['aria-hidden' => 'true', 'tabindex' => '-1'])->class('pointer-events-none absolute inset-0 h-full w-full appearance-none opacity-0') }}
                 >
                     @foreach ($categoryOptions as $option)
                         {{-- wire:key: lihat Select — opsi yang diganti server dipasang sebagai elemen baru. --}}
@@ -144,24 +159,41 @@
                     <x-slot:trigger
                         raw
                         :disabled="$disabled"
-                        :aria-label="$categoryPlaceholder"
-                        class="absolute inset-0 flex items-center pr-10 pl-5 text-left text-sm outline-none disabled:cursor-not-allowed text-content disabled:text-content-disabled"
+                        :aria-label="$categoryPlaceholder.': '.$categoryLabel"
+                        :title="$categoryLabel"
+                        @class([
+                            'absolute inset-0 flex items-center justify-center text-sm outline-none disabled:cursor-not-allowed text-content disabled:text-content-disabled',
+                            'px-[5px] py-[2px]' => $compactCategory,
+                        ])
                     >
-                        <span class="truncate" x-text="ceplokLabel">{{ $categoryLabel }}</span>
+                        @if ($compactCategory)
+                            <span
+                                class="block max-w-[12ch] truncate text-center"
+                                x-text="ceplokLabel.length > 12 ? ceplokLabel.slice(0, 12) + '…' : ceplokLabel"
+                            >{{ $categoryLabelCompact }}</span>
+                            <span aria-hidden="true" @class(['absolute right-[5px] flex shrink-0 items-center', $disabled ? 'text-content-disabled' : 'text-content'])>
+                                <svg class="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2 4.5 6 8.5l4-4" />
+                                </svg>
+                            </span>
+                        @else
+                            <span class="flex min-w-0 max-w-[106px] items-center gap-[10px]">
+                                <span class="min-w-0 truncate" x-text="ceplokLabel">{{ $categoryLabel }}</span>
+                                <span aria-hidden="true" @class(['flex shrink-0 items-center', $disabled ? 'text-content-disabled' : 'text-content'])>
+                                    <svg class="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2 4.5 6 8.5l4-4" />
+                                    </svg>
+                                </span>
+                            </span>
+                        @endif
                     </x-slot:trigger>
                 </x-ceplok::dropdown>
-
-                <span aria-hidden="true" @class(['pointer-events-none absolute right-5 flex items-center', $disabled ? 'text-content-disabled' : 'text-content'])>
-                    <svg class="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2 4.5 6 8.5l4-4" />
-                    </svg>
-                </span>
             </div>
 
             <div
                 @class([
                     'flex min-w-0 flex-1 items-center border-y px-2.5 text-sm transition-colors',
-                    'border-field-border bg-search-field-surface',
+                    'border-field-border bg-search-category-field-surface',
                     $accent['groupFocus'] => ! $disabled,
                     'rounded-r-lg border-r' => ! $hasButton,
                 ])
@@ -176,13 +208,14 @@
                     @disabled($disabled)
                     aria-label="{{ $buttonLabel }}"
                     @class([
-                        'flex w-11 shrink-0 items-center justify-center rounded-r-lg text-white transition-colors',
+                        'flex shrink-0 items-center justify-center rounded-r-lg text-white transition-colors',
+                        $compactCategory ? 'w-[37px]' : 'my-px h-[37px] w-[42px]',
                         'focus-visible:outline-2 focus-visible:outline-offset-2',
                         'disabled:cursor-not-allowed disabled:opacity-50',
                         $accent['solid'],
                     ])
                 >
-                    {{ svg('ceplok-o-search', 'size-4') }}
+                    {{ svg('ceplok-o-search', $compactCategory ? 'size-3.5' : 'size-4') }}
                 </button>
             @endif
         </div>

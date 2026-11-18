@@ -65,8 +65,8 @@
     // `solid` untuk tombol pilih berkas, `drag` untuk sorotan area attach
     // selama berkas ditahan di atasnya.
     $accents = [
-        'default' => ['solid' => 'bg-primary-700 hover:bg-primary-800 focus-visible:outline-primary-700', 'drag' => 'border-primary-500 bg-primary-50', 'dragDark' => 'border-primary-500 bg-gray-600'],
-        'purple' => ['solid' => 'bg-purple-500 hover:bg-purple-600 focus-visible:outline-purple-500', 'drag' => 'border-purple-500 bg-purple-50', 'dragDark' => 'border-purple-500 bg-gray-600'],
+        'default' => ['solid' => 'bg-primary-700 hover:bg-primary-800 focus-visible:outline-primary-700', 'solidBorderDark' => 'border-primary-700', 'drag' => 'border-primary-500 bg-primary-50', 'dragDark' => 'border-primary-500 bg-gray-600'],
+        'purple' => ['solid' => 'bg-purple-500 hover:bg-purple-600 focus-visible:outline-purple-500', 'solidBorderDark' => 'border-purple-500', 'drag' => 'border-purple-500 bg-purple-50', 'dragDark' => 'border-purple-500 bg-gray-600'],
     ];
     $size = $platforms[$platform];
     $accent = $accents[$application];
@@ -81,13 +81,22 @@
             ->when('ceplokDrag', false, $darkMode ? $accent['dragDark'] : $accent['drag']);
     }
 
-    // Nama berkas: putih saat terisi di tampilan gelap.
-    $name = (new ClassToggle)->always('flex min-w-0 flex-1 items-center px-4 transition-colors '.($darkMode ? 'bg-gray-800' : 'bg-gray-50').' '.$size['text']);
-    match (true) {
-        $disabled => $name->always($darkMode ? 'text-gray-500' : 'text-gray-400'),
-        $darkMode => $name->when('ceplokFile', false, 'text-white', 'text-gray-400'),
-        default => $name->always('text-gray-900'),
-    };
+    // Bingkai dan nama berkas ikut berubah ketika file dipilih. Warna kosong
+    // #1F2A37 berasal langsung dari desain (sedikit berbeda dari gray-800).
+    $field = (new ClassToggle)->always('flex flex-1 items-stretch overflow-hidden rounded-lg border transition-colors '.$size['field']);
+    $name = (new ClassToggle)->always('flex min-w-0 flex-1 items-center px-4 transition-colors '.$size['text']);
+    if ($darkMode) {
+        $field->when('ceplokFile', false, 'border-gray-700', 'border-[#1F2A37]');
+        $name->when('ceplokFile', false, 'bg-gray-700', 'bg-[#1F2A37]');
+        if ($disabled) {
+            $name->always('text-gray-500');
+        } else {
+            $name->when('ceplokFile', false, 'text-white', 'text-gray-400');
+        }
+    } else {
+        $field->always('border-gray-300');
+        $name->always('bg-gray-50 '.($disabled ? 'text-gray-400' : 'text-gray-900'));
+    }
 
     $input = $attributes
         ->except(['class', 'wire:key', 'id', 'type', 'multiple'])
@@ -126,7 +135,7 @@
         </label>
     @else
         <div class="flex items-stretch gap-2">
-            <div @class(['flex flex-1 items-stretch overflow-hidden rounded-lg border transition-colors', $darkMode ? 'border-gray-700' : 'border-gray-300', $size['field']])>
+            <div class="{{ $field->classes() }}" @if ($field->binding()) x-bind:class="{{ $field->binding() }}" @endif>
                 <input id="{{ $id }}" type="file" {{ $input }} />
 
                 <button
@@ -135,7 +144,7 @@
                     @disabled($disabled)
                     @class([
                         'shrink-0 border-r font-medium text-white transition-colors',
-                        $darkMode ? 'border-gray-700' : 'border-gray-300',
+                        $darkMode ? $accent['solidBorderDark'] : 'border-gray-300',
                         'focus-visible:outline-2 focus-visible:-outline-offset-2',
                         'disabled:cursor-not-allowed disabled:opacity-50',
                         $size['button'],
@@ -157,7 +166,7 @@
                 @disabled($disabled)
                 @class([
                     'shrink-0 rounded-lg border px-4 font-medium transition-colors',
-                    $darkMode ? 'border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white' : 'border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+                    $darkMode ? 'border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white' : 'border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900',
                     $size['text'],
                 ])
             >{{ $removeLabel }}</button>
