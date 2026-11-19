@@ -34,9 +34,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input> standar diteruskan (name, wire:model, placeholder, …). class dan wire:key ke pembungkus terluar.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -45,7 +45,6 @@
         eyebrow="Form"
         title="Search Form"
         description="Kolom pencarian dengan tombol cari. Tersedia sebagai satu kotak polos atau tiga ruas menyatu dengan dropdown kategori di kiri, memakai warna, radius, dan jarak dari Foundations."
-        stay-dark-mode
         :toc="[
             'search-form' => 'Search Form',
             'platform' => 'Platform',
@@ -162,7 +161,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Search Form" stay-dark>
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Search Form. Komponen secara otomatis menyesuaikan warna latar, teks, placeholder, dan batas.
             </x-slot:lead>

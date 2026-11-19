@@ -30,7 +30,6 @@
         eyebrow="Components · Breadcrumb"
         title="Breadcrumb"
         description="Menampilkan posisi halaman saat ini dalam struktur navigasi dan membantu pengguna berpindah ke halaman sebelumnya. Tersedia juga dalam tampilan gelap."
-        stay-dark-mode
         :toc="[
             'sizes' => 'Sizes',
             'variants' => 'Variants',
@@ -112,7 +111,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Breadcrumb" stay-dark>
+        <x-docs.mode-section>
             <x-slot:lead>
                 Breadcrumb mengadopsi sistem token warna semantik dan token komponen (<span class="text-primary-300">--color-breadcrumb-surface</span>,
                 <span class="text-primary-300">--color-breadcrumb-active</span>, dan <span class="text-primary-300">--color-breadcrumb-link-hover</span>). Mode gelap dapat

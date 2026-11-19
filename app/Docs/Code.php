@@ -20,9 +20,8 @@ use Illuminate\Support\HtmlString;
  *
  * Bagian yang hanya berlaku di satu mode docs (lihat App\Docs\Theme) ditandai
  * `⟨…⟩` (hanya di mode gelap docs, mis. ` dark-mode` yang ikut ditulis
- * pratinjaunya) atau `⟨!…⟩` (hanya di mode terang docs, untuk bagian Dark
- * mode yang bertukar menjadi Light mode). Padanan `dm.inline` dan `dm.line`
- * di docs React.
+ * pratinjaunya) atau `⟨!…⟩` (hanya di mode terang docs). Padanan `dm.inline`
+ * dan `dm.line` di docs React.
  */
 final class Code
 {

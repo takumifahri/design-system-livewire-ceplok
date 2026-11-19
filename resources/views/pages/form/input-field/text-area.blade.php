@@ -21,9 +21,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <textarea> standar diteruskan (rows, maxlength, name, wire:model, …); value menjadi isi awalnya. class dan wire:key ke pembungkus terluar.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -129,7 +129,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Text Area">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti kotak, toolbar, dan area isian ke gray-700, dengan label dan teks
                 yang diketik putih. Kotak polos tidak lagi bergaris, sedangkan bingkai editor dan garis pemisah
@@ -137,17 +137,17 @@
                 tampilan terang.
             </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
-                <x-docs.demo label="Default" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::text-area :dark-mode="! $docsDark" label="Keterangan" placeholder="Tulis keterangan tambahan…" helper-text="Maksimal 500 karakter." />
+                <x-docs.demo label="Default" dark>
+                    <x-ceplok::text-area dark-mode label="Keterangan" placeholder="Tulis keterangan tambahan…" helper-text="Maksimal 500 karakter." />
                 </x-docs.demo>
-                <x-docs.demo label="Editor" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::text-area :dark-mode="! $docsDark" type="editor" label="Isi pesan" hint="Opsional" placeholder="Tulis pesan Anda…" submit-label="Submit Text" />
+                <x-docs.demo label="Editor" dark>
+                    <x-ceplok::text-area dark-mode type="editor" label="Isi pesan" hint="Opsional" placeholder="Tulis pesan Anda…" submit-label="Submit Text" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
                 <x-ceplok::text-area
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                     type="editor"
                     label="Isi pesan"
                     submit-label="Submit Text"

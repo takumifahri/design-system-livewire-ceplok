@@ -140,7 +140,6 @@
         eyebrow="Components · Sidebar"
         title="Sidebar"
         description="Navigasi vertikal yang digunakan untuk menampilkan struktur menu utama aplikasi, profile pengguna, submenu, dan informasi tambahan."
-        stay-dark-mode
         :toc="[
             'variants' => 'Variants',
             'menu' => 'Menu',
@@ -433,7 +432,7 @@
         </x-docs.section>
 
         {{-- SECTION 5: DARK MODE --}}
-        <x-docs.mode-section name="Sidebar" stay-dark>
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Sidebar.
                 Komponen secara otomatis menyesuaikan warna ikon, teks aktif/inaktif, badge, profil, dan border untuk menjaga rasio kontras.

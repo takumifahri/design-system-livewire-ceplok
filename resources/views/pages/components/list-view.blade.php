@@ -53,7 +53,7 @@ $containerProps = [
             'penggunaan' => 'Penggunaan',
             'livewire' => 'Livewire',
             'properties' => 'Properties',
-        ]" :stay-dark-mode="true">
+        ]">
         <x-docs.section id="variant" title="Variant">
             <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
                 Varian <span class="text-primary-500">desktop</span> tersedia dalam ukuran S, M, dan L dengan aksi di
@@ -261,7 +261,7 @@ $containerProps = [
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="List View" stay-dark>
+        <x-docs.mode-section>
             <x-slot:lead>Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> menyesuaikan
                 surface, teks, ikon, badge, dan border untuk latar gelap.
             </x-slot:lead>

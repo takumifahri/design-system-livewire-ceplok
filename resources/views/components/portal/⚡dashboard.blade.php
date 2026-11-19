@@ -12,17 +12,18 @@ use Livewire\Component;
  * token warnanya; tirai transisi dan tombol pulangnya diurus
  * <x-docs.app-frame>. Bagian yang belum punya komponen di kit dirakit dari
  * token: kalender bulanan (Datepicker hanya punya bentuk field + panel),
- * kartu sapaan, dan hiasannya.
+ * kartu sapaan dan hiasannya, ubin Aplikasi Intranet, serta kartu unduhan
+ * KOSMO.
  *
  * Bedanya dengan React, keadaannya hidup di komponen Livewire ini: sumber
  * anggaran (wire:model.live pada Select), pencarian (wire:model dan event
  * search), Sidebar ringkas (event collapse), Sidebar di dalam Drawer pada layar sempit,
- * bulan kalender, dan pesan Toast.
+ * bulan kalender, daftar Aplikasi Intranet yang terbuka, dan pesan Toast.
  *
  * Mode gelapnya dipasang seperti di aplikasi consumer: `data-theme="dark"` di
  * akar, `dark-mode` di setiap komponen kit yang punya prop itu, dan varian
- * `in-data-[theme=dark]:` untuk bagian yang dirakit sendiri. Button kit
- * Livewire belum punya `dark-mode`, jadi tombolnya tetap memakai warna terang.
+ * `in-data-[theme=dark]:` untuk bagian yang dirakit sendiri. Setiap Button kit
+ * menerima state yang sama agar memakai palet gelap sesuai theme dan variant.
  */
 new class extends Component
 {
@@ -59,6 +60,64 @@ new class extends Component
     ];
 
     /**
+     * Ubin Aplikasi Intranet. Logo aplikasinya di desain berupa gambar yang
+     * belum ada di repo; sementara ini diganti ikon kit berwarna token, naik ke
+     * tangga 400 di mode gelap. Ganti dengan <img> begitu berkas logonya tersedia.
+     *
+     * Mula-mula hanya APLIKASI_RINGKAS ubin pertama yang tampil, dua baris di xl
+     * seperti desainnya. Tombol panah membuka sisanya ($semuaAplikasi); enam
+     * ubin terakhir rekaan, untuk memperagakan daftar yang terbuka.
+     */
+    public const APLIKASI = [
+        ['nama' => 'Kinerja Harian', 'ikon' => 'ceplok-o-chart-mixed', 'warna' => 'text-primary-700 in-data-[theme=dark]:text-primary-400'],
+        ['nama' => 'e-Mail', 'ikon' => 'ceplok-o-envelope', 'warna' => 'text-orange-600 in-data-[theme=dark]:text-orange-400'],
+        ['nama' => 'Satu Data Komdigi', 'ikon' => 'ceplok-o-chart-pie', 'warna' => 'text-primary-700 in-data-[theme=dark]:text-primary-400'],
+        ['nama' => 'E-Presensi', 'ikon' => 'ceplok-o-fingerprint', 'warna' => 'text-gray-700 in-data-[theme=dark]:text-gray-300'],
+        ['nama' => 'sidara', 'ikon' => 'ceplok-o-paper-plane', 'warna' => 'text-primary-700 in-data-[theme=dark]:text-primary-400'],
+        ['nama' => 'LPSE', 'ikon' => 'ceplok-o-store', 'warna' => 'text-gray-700 in-data-[theme=dark]:text-gray-300'],
+        ['nama' => 'Simaya+', 'ikon' => 'ceplok-o-inbox-full', 'warna' => 'text-purple-700 in-data-[theme=dark]:text-purple-400'],
+        ['nama' => 'KCloud', 'ikon' => 'ceplok-o-cloud-arrow-up', 'warna' => 'text-gray-700 in-data-[theme=dark]:text-gray-300'],
+        ['nama' => 'E-Arsip', 'ikon' => 'ceplok-o-archive', 'warna' => 'text-primary-700 in-data-[theme=dark]:text-primary-400'],
+        ['nama' => 'Pinjam Ruangan', 'ikon' => 'ceplok-o-calendar-plus', 'warna' => 'text-red-600 in-data-[theme=dark]:text-red-400'],
+        ['nama' => 'Simpatik', 'ikon' => 'ceplok-o-users-group', 'warna' => 'text-primary-700 in-data-[theme=dark]:text-primary-400'],
+        ['nama' => 'JDIH', 'ikon' => 'ceplok-o-scale-balanced', 'warna' => 'text-green-700 in-data-[theme=dark]:text-green-400'],
+        ['nama' => 'Helpdesk TI', 'ikon' => 'ceplok-o-user-headset', 'warna' => 'text-primary-700 in-data-[theme=dark]:text-primary-400'],
+        ['nama' => 'Perpustakaan Digital', 'ikon' => 'ceplok-o-book-open-reader', 'warna' => 'text-orange-600 in-data-[theme=dark]:text-orange-400'],
+        ['nama' => 'Kendaraan Dinas', 'ikon' => 'ceplok-o-truck', 'warna' => 'text-gray-700 in-data-[theme=dark]:text-gray-300'],
+        ['nama' => 'Peta Kantor', 'ikon' => 'ceplok-o-map-pin', 'warna' => 'text-red-600 in-data-[theme=dark]:text-red-400'],
+        ['nama' => 'Penghargaan', 'ikon' => 'ceplok-o-award', 'warna' => 'text-yellow-700 in-data-[theme=dark]:text-yellow-400'],
+        ['nama' => 'Tiket Layanan', 'ikon' => 'ceplok-o-ticket', 'warna' => 'text-purple-700 in-data-[theme=dark]:text-purple-400'],
+    ];
+
+    /** Jumlah ubin sebelum daftarnya dibuka: dua baris di xl. */
+    public const APLIKASI_RINGKAS = 12;
+
+    /**
+     * Isi Forum Terbaru dan Sticky Post. Nama dan judulnya contoh rekaan,
+     * dengan tanggal sebelum "hari ini".
+     */
+    public const FORUM = [
+        ['penulis' => 'Ayu Lestari', 'kategori' => 'Diskusi Bebas', 'waktu' => '12 Okt 2026 13:08 WIB', 'judul' => 'Sorotan Kegiatan Pegawai | September 2026', 'dilihat' => 353, 'komentar' => 0, 'suka' => 10],
+        ['penulis' => 'Bima Pratama', 'kategori' => 'Kearsipan', 'waktu' => '09 Okt 2026 08:04 WIB', 'judul' => 'Tata cara penyerahan arsip inaktif ke unit kearsipan', 'dilihat' => 1689, 'komentar' => 1, 'suka' => 2],
+        ['penulis' => 'Citra Maharani', 'kategori' => 'Bantuan Teknis', 'waktu' => '07 Okt 2026 13:04 WIB', 'judul' => 'Jadwal pemeliharaan jaringan kantor akhir pekan ini', 'dilihat' => 838, 'komentar' => 2, 'suka' => 3],
+        ['penulis' => 'Dimas Saputra', 'kategori' => 'Bantuan Teknis', 'waktu' => '06 Okt 2026 10:55 WIB', 'judul' => 'Pendingin ruangan di Lantai 6 Gedung B kurang dingin', 'dilihat' => 430, 'komentar' => 1, 'suka' => 5],
+        ['penulis' => 'Eka Wulandari', 'kategori' => 'Kepegawaian', 'waktu' => '02 Okt 2026 09:59 WIB', 'judul' => 'Tindak lanjut webinar penguatan budaya organisasi', 'dilihat' => 774, 'komentar' => 3, 'suka' => 15],
+    ];
+
+    public const STICKY = [
+        ['judul' => 'Panduan Akses Wi-Fi Kantor', 'tanggal' => '01 Sep 2026 10:45 WIB', 'penulis' => 'Fajar Nugroho'],
+        ['judul' => 'Panduan Akses Jaringan Internal', 'tanggal' => '05 Mar 2026 10:19 WIB', 'penulis' => 'Ayu Lestari'],
+        ['judul' => 'Pedoman Desain Flyer Portal', 'tanggal' => '15 Jan 2026 17:45 WIB', 'penulis' => 'Gita Permata'],
+        ['judul' => 'Langkah Mengubah Kata Sandi Portal Intranet', 'tanggal' => '02 Jul 2025 22:45 WIB', 'penulis' => 'Gita Permata'],
+    ];
+
+    /** Toko aplikasi untuk kartu unduhan KOSMO. */
+    public const TOKO = [
+        'android' => ['sistem' => 'Android', 'toko' => 'Google Play', 'ajakan' => 'Tersedia di', 'tautan' => 's.komdigi.go.id/kosmo-android', 'ikon' => 'ceplok-o-play'],
+        'ios' => ['sistem' => 'iOS', 'toko' => 'App Store', 'ajakan' => 'Unduh di', 'tautan' => 's.komdigi.go.id/kosmo-ios', 'ikon' => 'ceplok-s-apple'],
+    ];
+
+    /**
      * Tampilan gelap seluruh dasbor, diisi halamannya dari mode gelap docs.
      * Tombol tema di header hanya mengabarkan pilihan baru lewat event
      * `dark-mode-change`; bingkai docs yang menyimpan dan menerapkannya.
@@ -74,6 +133,9 @@ new class extends Component
     public bool $ringkas = false;
 
     public bool $menuSeluler = false;
+
+    /** Seluruh ubin Aplikasi Intranet tampil, dibuka tombol panah di bawah kartunya. */
+    public bool $semuaAplikasi = false;
 
     /** Bulan kalender, digeser dari bulan "hari ini". */
     public int $geserBulan = 0;
@@ -102,6 +164,31 @@ new class extends Component
     {
         $this->menuSeluler = false;
         $this->kabari('Halaman '.(self::MENU[$id]['label'] ?? $id).' belum ada di contoh ini.');
+    }
+
+    /*
+     * Ubin aplikasi, forum, Sticky Post, dan kartu KOSMO belum punya halaman,
+     * jadi klik-nya memberi tahu lewat Toast. Pesannya dirakit di sini dari
+     * nomor atau id-nya, seperti menuDemo().
+     */
+    public function bukaAplikasi(int $nomor): void
+    {
+        $this->kabari('Aplikasi '.(self::APLIKASI[$nomor]['nama'] ?? 'itu').' belum ada di contoh ini.');
+    }
+
+    public function bukaForum(int $nomor): void
+    {
+        $this->kabari('Detail forum "'.(self::FORUM[$nomor]['judul'] ?? $nomor).'" belum ada di contoh ini.');
+    }
+
+    public function bukaSticky(int $nomor): void
+    {
+        $this->kabari('Detail "'.(self::STICKY[$nomor]['judul'] ?? $nomor).'" belum ada di contoh ini.');
+    }
+
+    public function unduhKosmo(string $id): void
+    {
+        $this->kabari('Tautan KOSMO di '.(self::TOKO[$id]['toko'] ?? $id).' belum ada di contoh ini.');
     }
 
     /** Pendengar event `search` Search: `detail.value` dan `detail.category`. */
@@ -195,6 +282,40 @@ new class extends Component
         ], self::WIKI);
     }
 
+    /** Item ListView Forum Terbaru, varian article. Tiap kartunya tautan yang memberi tahu lewat Toast. */
+    #[Computed]
+    public function forum(): array
+    {
+        return array_map(fn (int $nomor) => [
+            'variant' => 'article',
+            'subject' => self::FORUM[$nomor]['penulis'],
+            'category' => self::FORUM[$nomor]['kategori'],
+            'timestamp' => self::FORUM[$nomor]['waktu'],
+            'title' => self::FORUM[$nomor]['judul'],
+            'views' => self::FORUM[$nomor]['dilihat'],
+            'comments' => self::FORUM[$nomor]['komentar'],
+            'likes' => self::FORUM[$nomor]['suka'],
+            'href' => route('portal.app'),
+            'attributes' => ['wire:click.prevent' => "bukaForum({$nomor})"],
+        ], array_keys(self::FORUM));
+    }
+
+    /** Item ListView Sticky Post: tanpa ikon, dan aksinya pindah ke seluruh kartu seperti daftar wiki. */
+    #[Computed]
+    public function sticky(): array
+    {
+        return array_map(fn (int $nomor) => [
+            'variant' => 'simple',
+            'platform' => 'desktop',
+            'title' => self::STICKY[$nomor]['judul'],
+            'description' => self::STICKY[$nomor]['tanggal'],
+            'metadata' => [self::STICKY[$nomor]['penulis']],
+            'icon' => false,
+            'actionDisabled' => true,
+            'actionWireClick' => "bukaSticky({$nomor})",
+        ], array_keys(self::STICKY));
+    }
+
     /** Profil di Sidebar; halaman profilnya belum ada, jadi klik-nya memberi tahu lewat Toast. */
     #[Computed]
     public function profil(): array
@@ -253,6 +374,7 @@ new class extends Component
             :collapsed="$ringkas"
             :dark-mode="$darkMode"
             wire:collapse="$set('ringkas', $event.detail.collapsed)"
+            x-on:collapse="document.cookie = 'ceplok_portal_sidebar_collapsed=' + ($event.detail.collapsed ? 1 : 0) + '; path=/; max-age=31536000; samesite=lax'"
         >
             <x-slot:logo>
                 <img src="/images/ceplok.svg" alt="CEPLOK" class="h-8 w-auto">
@@ -260,6 +382,9 @@ new class extends Component
             <x-slot:collapsed-logo>
                 <img src="/images/ceplok.svg" alt="CEPLOK" class="size-8">
             </x-slot:collapsed-logo>
+            <x-slot:footer>
+                <x-portal.theme-toggle id="portal-theme-desktop" :dark-mode="$darkMode" :collapsed="$ringkas" />
+            </x-slot:footer>
         </x-ceplok::sidebar>
     </div>
 
@@ -270,6 +395,7 @@ new class extends Component
                 icon-only
                 variant="outline"
                 theme="gray"
+                :dark-mode="$darkMode"
                 size="s"
                 class="lg:hidden"
                 aria-label="Buka menu"
@@ -305,30 +431,13 @@ new class extends Component
                 />
             </div>
 
-            {{-- Tombol tema, bergaya sama dengan lonceng di sebelahnya. Ikonnya
-                 menunjukkan hasil bila ditekan: bulan saat terang, matahari saat gelap. --}}
-            <button
-                type="button"
-                aria-label="Mode gelap"
-                aria-pressed="{{ $darkMode ? 'true' : 'false' }}"
-                title="{{ $darkMode ? 'Matikan mode gelap' : 'Nyalakan mode gelap' }}"
-                x-on:click="$dispatch('dark-mode-change', { darkMode: @js(! $darkMode) })"
-                class="ml-auto grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-            >
-                @if ($darkMode)
-                    <x-ceplok-o-sun class="size-5" aria-hidden="true" />
-                @else
-                    <x-ceplok-o-moon class="size-5" aria-hidden="true" />
-                @endif
-            </button>
-
             {{-- Lonceng bergaya notificationTrigger Navbar front-office: ikon 20px
                  gray-500 dalam kotak 36px, tanpa angka. --}}
             <button
                 type="button"
                 aria-label="Notifikasi"
                 wire:click="kabari('Ada 5 notifikasi baru.')"
-                class="grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                class="ml-auto grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
                 <x-ceplok-o-bell class="size-5" aria-hidden="true" />
             </button>
@@ -363,15 +472,15 @@ new class extends Component
                 <div class="space-y-5 py-8">
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <h1 class="text-heading-3 font-bold text-content">Dashboard</h1>
-                        <x-ceplok::button variant="outline" size="s" wire:click="kabari('Pengaturan layout belum ada di contoh ini.')">
+                        <x-ceplok::button theme="primary" size="s" :dark-mode="$darkMode" wire:click="kabari('Pengaturan layout belum ada di contoh ini.')">
                             Pengaturan Layout
                         </x-ceplok::button>
                     </div>
 
                     {{-- Satu kolom di layar sempit, dua kolom di md, lalu grid 12 kolom di xl
-                         dengan pembagian seperti desainnya: 8/4, 5/7, 5/7. Jarak antarkartu
-                         14px; di desain, baris ketiga berjarak 20px, jadi kartunya diberi
-                         tambahan 6px di xl. --}}
+                         dengan pembagian seperti desainnya: 8/4, 5/7, 5/7, 12, lalu 7/5.
+                         Jarak antarkartu 14px; di desain, baris ketiga dan sesudahnya
+                         berjarak 20px, jadi kartunya diberi tambahan 6px di xl. --}}
                     <div class="grid gap-3.5 md:grid-cols-2 xl:grid-cols-12">
                         <section
                             aria-labelledby="portal-sapaan"
@@ -455,17 +564,41 @@ new class extends Component
                                 Rekomendasi waktu Check-In Anda adalah pukul 05.00 - Batas waktu Check-Out Anda adalah
                                 pukul 22.00
                             </x-ceplok::alert>
-                            <div class="flex flex-wrap items-center justify-between gap-3">
+                            {{-- Jam presensi seperti desainnya: check-in hijau, check-out biru,
+                                 naik ke tangga 400 di mode gelap. Kolom tombol `auto` mengikuti
+                                 tombol disabled yang lebih lebar, lalu Check Out mengisi lebar itu. --}}
+                            <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                                 <div class="flex items-center gap-3">
                                     <span class="grid size-10 place-items-center rounded-lg bg-green-100 text-green-700 in-data-[theme=dark]:bg-green-900 in-data-[theme=dark]:text-green-400">
-                                        <x-ceplok-o-clock class="size-5" aria-hidden="true" />
+                                        <x-ceplok-o-arrow-left-to-bracket class="size-5" aria-hidden="true" />
                                     </span>
                                     <div>
                                         <p class="text-caption text-content-muted">Jam Check-In Anda</p>
-                                        <p class="text-body-sm font-bold text-content">07:12:45 WIB</p>
+                                        <p class="text-body-sm font-bold text-green-700 in-data-[theme=dark]:text-green-400">07:12:45 WIB</p>
                                     </div>
                                 </div>
-                                <x-ceplok::button theme="gray" size="s" disabled>SUDAH CHECK IN</x-ceplok::button>
+                                {{-- Tombol disabled tetap memakai palet light; opacity bawaan Button
+                                     mempertahankan status nonaktif tanpa melebur dengan kartu dark. --}}
+                                <x-ceplok::button theme="gray" size="s" disabled class="justify-self-start sm:justify-self-stretch">SUDAH CHECK IN</x-ceplok::button>
+                                <div class="flex items-center gap-3">
+                                    <span class="grid size-10 place-items-center rounded-lg bg-primary-100 text-primary-700 in-data-[theme=dark]:bg-primary-900 in-data-[theme=dark]:text-primary-400">
+                                        <x-ceplok-o-arrow-right-to-bracket class="size-5" aria-hidden="true" />
+                                    </span>
+                                    <div>
+                                        <p class="text-caption text-content-muted">Jam Check-Out Anda</p>
+                                        <p class="text-body-sm font-bold text-primary-700 in-data-[theme=dark]:text-primary-400">15:30:00 WIB</p>
+                                    </div>
+                                </div>
+                                <x-ceplok::button theme="primary" size="s" :dark-mode="$darkMode" class="justify-self-start sm:justify-self-stretch" wire:click="kabari('Check-out belum ada di contoh ini.')">CHECK OUT</x-ceplok::button>
+                            </div>
+                            <div class="flex items-center gap-3 border-t border-border pt-3 in-data-[theme=dark]:border-gray-600">
+                                <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-gray-800 text-white in-data-[theme=dark]:bg-gray-900">
+                                    <x-ceplok-o-fingerprint class="size-6" aria-hidden="true" />
+                                </span>
+                                <div>
+                                    <p class="text-body-sm font-bold text-content">Detail Kehadiran</p>
+                                    <p class="text-caption text-content-muted">Untuk detail data kehadiran, silakan cek di aplikasi Apik.</p>
+                                </div>
                             </div>
                         </x-ceplok::card>
 
@@ -480,6 +613,96 @@ new class extends Component
                                 Pengisian Rencana dan Realisasi Kegiatan tidak diaktifkan untuk hari ini.
                             </x-ceplok::alert>
                         </x-ceplok::card>
+
+                        {{-- Tombol panah di tepi bawah kartu menonjol separuh ke luar, jadi
+                             ia dipasang di pembungkus: Card memotong isinya dengan
+                             overflow-hidden. Jarak bawah 20px di pembungkus memberi ruang
+                             di bawah tombol itu, supaya tidak menempel ke kartu sesudahnya. --}}
+                        <div class="relative mb-5 md:col-span-2 xl:col-span-12 xl:mt-1.5">
+                            <x-ceplok::card class="h-full" :dark-mode="$darkMode">
+                                <x-portal.judul-kartu judul="Aplikasi Intranet">
+                                    <x-slot:ikon>
+                                        <x-ceplok::icon class="mt-0.5 text-purple-700 in-data-[theme=dark]:text-purple-400"><x-ceplok-o-grid /></x-ceplok::icon>
+                                    </x-slot:ikon>
+                                    {{-- Oranye seperti desainnya, bukan brand seperti tautan kartu lain. --}}
+                                    <a
+                                        href="{{ route('portal.app') }}"
+                                        wire:click.prevent="kabari('Pengaturan urutan aplikasi belum ada di contoh ini.')"
+                                        class="text-body-sm font-medium text-orange-600 underline underline-offset-2 hover:text-orange-700 in-data-[theme=dark]:text-orange-400 in-data-[theme=dark]:hover:text-orange-300"
+                                    >Atur Urutan</a>
+                                </x-portal.judul-kartu>
+                                {{-- Hover dan garis gelapnya mengikuti kartu ListView yang bisa diklik. --}}
+                                <ul id="portal-aplikasi" class="grid grid-cols-3 gap-3 pb-2 sm:grid-cols-4 lg:grid-cols-6">
+                                    @foreach (array_slice($this::APLIKASI, 0, $semuaAplikasi ? null : $this::APLIKASI_RINGKAS) as $nomor => $aplikasi)
+                                        <li>
+                                            <button
+                                                type="button"
+                                                wire:click="bukaAplikasi({{ $nomor }})"
+                                                class="flex size-full min-h-24 flex-col items-center justify-center gap-2 rounded-lg border border-border bg-surface px-2 py-3 text-center text-caption text-content transition-all hover:border-primary-400/80 hover:shadow-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand in-data-[theme=dark]:border-gray-600"
+                                            >
+                                                {{ svg($aplikasi['ikon'], 'size-8 shrink-0 '.$aplikasi['warna'], ['aria-hidden' => 'true']) }}
+                                                {{ $aplikasi['nama'] }}
+                                            </button>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </x-ceplok::card>
+                            {{-- Membuka dan menutup sisa ubin. Panahnya berbalik saat terbuka. --}}
+                            <x-ceplok::button
+                                icon-only
+                                size="xs"
+                                theme="primary"
+                                :dark-mode="$darkMode"
+                                aria-label="Tampilkan semua aplikasi"
+                                aria-controls="portal-aplikasi"
+                                :aria-expanded="$semuaAplikasi ? 'true' : 'false'"
+                                class="absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 shadow-soft"
+                                wire:click="$toggle('semuaAplikasi')"
+                            >
+                                <x-ceplok-o-chevron-down :class="'size-4 transition-transform'.($semuaAplikasi ? ' rotate-180' : '')" />
+                            </x-ceplok::button>
+                        </div>
+
+                        <x-ceplok::card class="md:col-span-2 xl:col-span-7" :dark-mode="$darkMode">
+                            <x-portal.judul-kartu judul="Forum Terbaru">
+                                <x-slot:ikon>
+                                    <x-ceplok::icon class="mt-0.5 text-orange-600 in-data-[theme=dark]:text-orange-400"><x-ceplok-o-messages /></x-ceplok::icon>
+                                </x-slot:ikon>
+                                <x-ceplok::button
+                                    variant="outline"
+                                    theme="primary"
+                                    size="s"
+                                    :dark-mode="$darkMode"
+                                    :left-icon="svg('ceplok-o-circle-plus', 'size-[18px]')"
+                                    class="[&>span:first-child]:size-[18px]"
+                                    wire:click="kabari('Halaman buat forum belum ada di contoh ini.')"
+                                >
+                                    Buat Forum
+                                </x-ceplok::button>
+                            </x-portal.judul-kartu>
+                            {{-- Ukuran lg (paling lebar 728px) supaya kartunya memenuhi kolom. --}}
+                            <x-ceplok::list-view size="lg" gap="md" :items="$this->forum" :dark-mode="$darkMode" />
+                        </x-ceplok::card>
+
+                        {{-- Sticky Post lalu kartu unduhan KOSMO: bertumpuk di samping forum
+                             di xl, bersebelahan di md. `content-start` menjaga barisnya
+                             tidak ikut memanjang setinggi forum. --}}
+                        <div class="grid content-start gap-3.5 md:col-span-2 md:grid-cols-2 xl:col-span-5 xl:grid-cols-1">
+                            <x-ceplok::card :dark-mode="$darkMode">
+                                <x-portal.judul-kartu judul="Sticky Post">
+                                    <x-slot:ikon>
+                                        <x-ceplok::icon class="mt-0.5 text-red-600 in-data-[theme=dark]:text-red-400"><x-ceplok-o-thumbtack /></x-ceplok::icon>
+                                    </x-slot:ikon>
+                                </x-portal.judul-kartu>
+                                <x-ceplok::list-view size="sm" decoration gap="md" :items="$this->sticky" :dark-mode="$darkMode" />
+                            </x-ceplok::card>
+
+                            <section aria-label="Unduh aplikasi KOSMO" class="grid grid-cols-2 gap-3.5">
+                                @foreach ($this::TOKO as $id => $toko)
+                                    <x-portal.kartu-kosmo :id="$id" :toko="$toko" />
+                                @endforeach
+                            </section>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -509,6 +732,9 @@ new class extends Component
             <x-slot:collapsed-logo>
                 <img src="/images/ceplok.svg" alt="CEPLOK" class="size-8">
             </x-slot:collapsed-logo>
+            <x-slot:footer>
+                <x-portal.theme-toggle id="portal-theme-mobile" :dark-mode="$darkMode" :collapsed="false" />
+            </x-slot:footer>
         </x-ceplok::sidebar>
     </x-ceplok::drawer>
 </div>

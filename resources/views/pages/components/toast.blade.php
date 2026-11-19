@@ -22,9 +22,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <div> diteruskan (class, id, …).'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -94,7 +94,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Toast">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti kartunya ke gray-700, heading dan pesan singkat ke gray-300, dan teks
                 pendukung di bawah heading ke gray-400. Badge ikon ikut memakai versi gelapnya — latar gelap dengan ikon
@@ -102,15 +102,15 @@
                 tampilan.
             </x-slot:lead>
             <div class="grid gap-5 lg:grid-cols-2">
-                <x-docs.demo label="Pesan singkat" :dark="! $docsDark" :light="$docsDark">
+                <x-docs.demo label="Pesan singkat" dark>
                     <div class="space-y-3">
                         @foreach ($messages as $variant => $message)
-                            <x-ceplok::toast :dark-mode="! $docsDark" :variant="$variant" :dismissible="false">{{ $message }}</x-ceplok::toast>
+                            <x-ceplok::toast dark-mode :variant="$variant" :dismissible="false">{{ $message }}</x-ceplok::toast>
                         @endforeach
                     </div>
                 </x-docs.demo>
-                <x-docs.demo label="Dengan heading & aksi" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::toast :dark-mode="! $docsDark" variant="info" :icon="svg('ceplok-o-refresh')" heading="Update 2FA sudah tersedia!">
+                <x-docs.demo label="Dengan heading & aksi" dark>
+                    <x-ceplok::toast dark-mode variant="info" :icon="svg('ceplok-o-refresh')" heading="Update 2FA sudah tersedia!">
                         Update Metode Password anda sekarang
                         <x-slot:actions>
                             <x-ceplok::button size="xs" class="w-full">Update 2FA</x-ceplok::button>
@@ -120,7 +120,7 @@
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::toast⟨! ⟦dark-mode⟧⟩ variant="success">Sukses Membuat Data!</x-ceplok::toast>
+                <x-ceplok::toast ⟦dark-mode⟧ variant="success">Sukses Membuat Data!</x-ceplok::toast>
                 @endverbatim
             </x-docs.code>
             <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">

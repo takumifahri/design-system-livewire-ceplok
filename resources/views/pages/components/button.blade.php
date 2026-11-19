@@ -32,7 +32,6 @@
         eyebrow="Components · Button"
         title="Button"
         description="Tombol untuk memicu aksi utama pada sebuah halaman atau form. Mendukung berbagai ukuran, warna, varian, dan penggunaan icon."
-        stay-dark-mode
         :toc="[
             'button' => 'Button & Sizes',
             'icon-only' => 'Icon Only & Sizes',
@@ -167,7 +166,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Button" stay-dark>
+        <x-docs.mode-section>
             <x-slot:lead>
                 Gunakan <span class="text-primary-500 dark:text-primary-400">dark-mode</span> untuk menjaga kontras Button di atas permukaan gelap.
             </x-slot:lead>

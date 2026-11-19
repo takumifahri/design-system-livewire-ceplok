@@ -30,9 +30,9 @@
         ['…atribut', 'HTML', '—', 'Diteruskan ke pembungkus terluar (class, style, data-*, …). Lebarnya dibatasi selebar panel; max-w-none melepasnya.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -233,30 +233,30 @@
             </p>
         </x-docs.section>
 
-        <x-docs.mode-section name="Datepicker">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti seluruh warnanya ke tampilan gelap: kotak dan panel gray-700,
                 tanggal terpilih primary-600, dan tombol pintasan berisi. Tata letak mobile memakai warna yang sama.
             </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
-                <x-docs.demo label="Single" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::datepicker :dark-mode="! $docsDark" label="Nama Tanggal" :value="$tanggal" />
+                <x-docs.demo label="Single" dark>
+                    <x-ceplok::datepicker dark-mode label="Nama Tanggal" :value="$tanggal" />
                 </x-docs.demo>
-                <x-docs.demo label="Period" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::datepicker :dark-mode="! $docsDark" type="period" label="Nama Tanggal" />
+                <x-docs.demo label="Period" dark>
+                    <x-ceplok::datepicker dark-mode type="period" label="Nama Tanggal" />
                 </x-docs.demo>
                 <div class="sm:col-span-2">
-                    <x-docs.demo label="Multiple" :dark="! $docsDark" :light="$docsDark">
-                        <x-ceplok::datepicker :dark-mode="! $docsDark" type="multiple" label="Nama Tanggal" :value="$rentang" />
+                    <x-docs.demo label="Multiple" dark>
+                        <x-ceplok::datepicker dark-mode type="multiple" label="Nama Tanggal" :value="$rentang" />
                     </x-docs.demo>
                 </div>
-                <x-docs.demo label="Multiple · Mobile dengan shortcuts" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::datepicker :dark-mode="! $docsDark" type="multiple" platform="mobile" shortcuts label="Nama Tanggal" :value="$rentang" />
+                <x-docs.demo label="Multiple · Mobile dengan shortcuts" dark>
+                    <x-ceplok::datepicker dark-mode type="multiple" platform="mobile" shortcuts label="Nama Tanggal" :value="$rentang" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::datepicker⟨! ⟦dark-mode⟧⟩ label="Nama Tanggal" />
+                <x-ceplok::datepicker ⟦dark-mode⟧ label="Nama Tanggal" />
                 @endverbatim
             </x-docs.code>
         </x-docs.mode-section>

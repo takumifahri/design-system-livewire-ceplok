@@ -24,7 +24,6 @@
         eyebrow="Components · Pagination"
         title="Pagination"
         description="Navigasi untuk berpindah antar halaman pada data atau konten yang terbagi ke dalam beberapa halaman."
-        stay-dark-mode
         :toc="[
             'states' => 'States',
             'themes' => 'Themes',
@@ -104,7 +103,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Pagination" stay-dark>
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-300">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Pagination. Komponen secara otomatis menyesuaikan warna latar, teks, batas, dan tema yang aktif.
             </x-slot:lead>

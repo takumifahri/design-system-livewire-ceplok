@@ -23,9 +23,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input type="file"> diteruskan (accept, required, name, wire:model, …), kecuali multiple: unggahannya selalu tunggal.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -34,7 +34,6 @@
         eyebrow="Form"
         title="Upload Form"
         description="Pemilih berkas dalam dua bentuk: satu baris tombol dengan nama berkas di sampingnya, atau area seret-lepas yang mengambil ruang lebih besar. Keduanya membungkus input berkas bawaan, jadi dialog, penyaringan accept, dan pengiriman formulir bekerja apa adanya."
-        stay-dark-mode
         :toc="[
             'upload-form' => 'Upload Form',
             'platform' => 'Platform',
@@ -181,7 +180,7 @@
             </p>
         </x-docs.section>
 
-        <x-docs.mode-section name="Upload" stay-dark>
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual. Komponen secara otomatis menyesuaikan warna latar, batas, dan teks.
             </x-slot:lead>

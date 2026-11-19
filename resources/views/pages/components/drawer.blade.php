@@ -24,7 +24,7 @@
 @endphp
 
 <x-docs.layout title="Drawer">
-    <x-docs.page title="Drawer" description="Drawer adalah panel navigasi off-canvas di tepi layar untuk menampilkan menu dan konten sekunder tanpa meninggalkan konteks utama." :stay-dark-mode="true" :toc="['variants' => 'Variants', 'dark-mode' => 'Dark mode', 'menu' => 'Menu', 'playground' => 'Playground', 'penggunaan' => 'Penggunaan', 'livewire' => 'Livewire', 'properties' => 'Properties']">
+    <x-docs.page title="Drawer" description="Drawer adalah panel navigasi off-canvas di tepi layar untuk menampilkan menu dan konten sekunder tanpa meninggalkan konteks utama." :toc="['variants' => 'Variants', 'dark-mode' => 'Dark mode', 'menu' => 'Menu', 'playground' => 'Playground', 'penggunaan' => 'Penggunaan', 'livewire' => 'Livewire', 'properties' => 'Properties']">
         <x-docs.section id="variants" title="Variants">
             <style>
                 #variants .ds-scroll-x { height: 600px; }
@@ -93,7 +93,7 @@
             @endif
         </x-docs.section>
 
-        <x-docs.mode-section name="Drawer" stay-dark>
+        <x-docs.mode-section>
             <style>
                 #dark-mode .ds-scroll-x { height: 600px; }
                 #dark-mode .ds-scroll-x > div { height: 100%; width: 420px; max-width: 100%; }
