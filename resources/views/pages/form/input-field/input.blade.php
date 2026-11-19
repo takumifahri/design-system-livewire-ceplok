@@ -36,9 +36,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input> standar diteruskan (name, wire:model, autocomplete, …). class dan wire:key ke pembungkus terluar.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -192,7 +192,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Input Field">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti field ke gray-700 dengan label putih. Garisnya menyatu dengan latar
                 dan baru terlihat saat <span class="text-primary-500 dark:text-primary-400">typing</span> (warna aplikasi) atau <span class="text-primary-500 dark:text-primary-400">failed</span> (red-500). Teks yang
@@ -201,9 +201,9 @@
             </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 @foreach ($states as $s)
-                    <x-docs.demo :label="$s['label']" :dark="! $docsDark" :light="$docsDark">
+                    <x-docs.demo :label="$s['label']" dark>
                         <x-ceplok::input-field
-                            :dark-mode="! $docsDark"
+                            dark-mode
                             :state="$s['value']"
                             label="Nama lengkap"
                             placeholder="Masukkan nama lengkap"
@@ -215,10 +215,10 @@
                 @endforeach
                 @foreach ($passwordDemos as $d)
                     @continue($d['platform'] === 'mobile')
-                    <x-docs.demo :label="'Password · '.$d['label']" :dark="! $docsDark" :light="$docsDark">
+                    <x-docs.demo :label="'Password · '.$d['label']" dark>
                         <x-ceplok::input-field
                             type="password"
-                            :dark-mode="! $docsDark"
+                            dark-mode
                             :platform="$d['platform']"
                             :state="$d['state']"
                             label="Kata sandi"
@@ -232,7 +232,7 @@
             <x-docs.code>
                 @verbatim
                 <x-ceplok::input-field
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                     label="Nama lengkap"
                     placeholder="Masukkan nama lengkap"
                 />

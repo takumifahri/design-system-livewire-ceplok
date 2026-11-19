@@ -23,8 +23,8 @@
 
     Bagian yang bergantung pada mode docs ditandai ⟨…⟩ (hanya di mode gelap,
     mis. ` dark-mode` yang ikut ditulis pratinjaunya) atau ⟨!…⟩ (hanya di mode
-    terang, untuk bagian Dark mode yang bertukar menjadi Light mode). `dark`
-    menentukan modenya; bawaannya mode halaman yang sedang dirender.
+    terang). `dark` menentukan modenya; bawaannya mode halaman yang sedang
+    dirender.
 --}}
 @props([
     'code' => null,

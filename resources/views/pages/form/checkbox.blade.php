@@ -25,9 +25,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input type="checkbox"> diteruskan (name, value, checked, wire:model, …). class dan wire:key ke pembungkus terluar.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -165,29 +165,29 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Checkbox">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti kotak ke gray-700 bergaris gray-600, dengan label putih dan caption
                 gray-400. Kotak yang tercentang tetap memakai warna aplikasi. State <span class="text-primary-500 dark:text-primary-400">inactive</span> meredupkan
                 label dan caption ke gray-500; kotaknya tetap, kecuali saat tercentang yang terisi gray-500.
             </x-slot:lead>
-            <x-docs.demo :dark="! $docsDark" :light="$docsDark">
+            <x-docs.demo dark>
                 <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                    <x-ceplok::checkbox :dark-mode="! $docsDark" label="Belum dicentang" helper-text="Keterangan singkat." />
-                    <x-ceplok::checkbox :dark-mode="! $docsDark" label="Sudah dicentang" helper-text="Keterangan singkat." checked />
-                    <x-ceplok::checkbox :dark-mode="! $docsDark" state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
-                    <x-ceplok::checkbox :dark-mode="! $docsDark" state="inactive" label="Tidak aktif, tercentang" helper-text="Keterangan singkat." checked />
+                    <x-ceplok::checkbox dark-mode label="Belum dicentang" helper-text="Keterangan singkat." />
+                    <x-ceplok::checkbox dark-mode label="Sudah dicentang" helper-text="Keterangan singkat." checked />
+                    <x-ceplok::checkbox dark-mode state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
+                    <x-ceplok::checkbox dark-mode state="inactive" label="Tidak aktif, tercentang" helper-text="Keterangan singkat." checked />
                 </div>
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::checkbox⟨! ⟦dark-mode⟧⟩ label="Belum dicentang" helper-text="Keterangan singkat." />
-                <x-ceplok::checkbox⟨! ⟦dark-mode⟧⟩ label="Sudah dicentang" helper-text="Keterangan singkat." checked />
+                <x-ceplok::checkbox ⟦dark-mode⟧ label="Belum dicentang" helper-text="Keterangan singkat." />
+                <x-ceplok::checkbox ⟦dark-mode⟧ label="Sudah dicentang" helper-text="Keterangan singkat." checked />
 
                 {{-- Inactive --}}
-                <x-ceplok::checkbox⟨! ⟦dark-mode⟧⟩ state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
+                <x-ceplok::checkbox ⟦dark-mode⟧ state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
                 <x-ceplok::checkbox
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                     state="inactive"
                     label="Tidak aktif, tercentang"
                     helper-text="Keterangan singkat."

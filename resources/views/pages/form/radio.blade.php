@@ -24,9 +24,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input type="radio"> diteruskan (name, value, checked, wire:model, …). class dan wire:key ke pembungkus terluar.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -172,25 +172,25 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Radio">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti lingkaran ke gray-300 bergaris gray-400, dengan label terang dan
                 caption gray-400. Cincin pilihan aktif tetap memakai warna aplikasi. State <span class="text-primary-500 dark:text-primary-400">inactive</span> memakai
                 lingkaran gray-700 bergaris gray-800 dengan teks gray-600.
             </x-slot:lead>
-            <x-docs.demo :dark="! $docsDark" :light="$docsDark">
+            <x-docs.demo dark>
                 <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                    <x-ceplok::radio :dark-mode="! $docsDark" name="ds-radio-gelap" label="Belum dipilih" helper-text="Keterangan singkat." />
-                    <x-ceplok::radio :dark-mode="! $docsDark" name="ds-radio-gelap" label="Sedang dipilih" helper-text="Keterangan singkat." checked />
-                    <x-ceplok::radio :dark-mode="! $docsDark" name="ds-radio-gelap-nonaktif" state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
-                    <x-ceplok::radio :dark-mode="! $docsDark" name="ds-radio-gelap-nonaktif-terpilih" state="inactive" label="Tidak aktif, terpilih" helper-text="Keterangan singkat." checked />
+                    <x-ceplok::radio dark-mode name="ds-radio-gelap" label="Belum dipilih" helper-text="Keterangan singkat." />
+                    <x-ceplok::radio dark-mode name="ds-radio-gelap" label="Sedang dipilih" helper-text="Keterangan singkat." checked />
+                    <x-ceplok::radio dark-mode name="ds-radio-gelap-nonaktif" state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
+                    <x-ceplok::radio dark-mode name="ds-radio-gelap-nonaktif-terpilih" state="inactive" label="Tidak aktif, terpilih" helper-text="Keterangan singkat." checked />
                 </div>
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::radio⟨! ⟦dark-mode⟧⟩ name="pilihan-gelap" label="Belum dipilih" helper-text="Keterangan singkat." />
+                <x-ceplok::radio ⟦dark-mode⟧ name="pilihan-gelap" label="Belum dipilih" helper-text="Keterangan singkat." />
                 <x-ceplok::radio
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                     name="pilihan-gelap"
                     label="Sedang dipilih"
                     helper-text="Keterangan singkat."
@@ -199,14 +199,14 @@
 
                 {{-- Inactive --}}
                 <x-ceplok::radio
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                     name="pilihan-gelap-nonaktif"
                     state="inactive"
                     label="Tidak aktif"
                     helper-text="Keterangan singkat."
                 />
                 <x-ceplok::radio
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                     name="pilihan-gelap-nonaktif"
                     state="inactive"
                     label="Tidak aktif, terpilih"

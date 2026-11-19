@@ -23,9 +23,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input type="file"> diteruskan (accept, required, name, wire:model, …), kecuali multiple: unggahannya selalu tunggal.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -180,17 +180,17 @@
             </p>
         </x-docs.section>
 
-        <x-docs.mode-section name="Upload">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual. Komponen secara otomatis menyesuaikan warna latar, batas, dan teks.
             </x-slot:lead>
             <div class="grid gap-5">
-                <x-docs.demo label="Upload" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::upload label="Upload File" helper-text="PDF atau JPG, maksimal 2 MB." :dark-mode="! $docsDark" />
+                <x-docs.demo label="Upload" dark>
+                    <x-ceplok::upload label="Upload File" helper-text="PDF atau JPG, maksimal 2 MB." dark-mode />
                 </x-docs.demo>
-                <x-docs.demo label="Attach — 538px" :dark="! $docsDark" :light="$docsDark">
+                <x-docs.demo label="Attach — 538px" dark>
                     <div class="max-w-134.5">
-                        <x-ceplok::upload type="attach" :dark-mode="! $docsDark" />
+                        <x-ceplok::upload type="attach" dark-mode />
                     </div>
                 </x-docs.demo>
             </div>
@@ -199,10 +199,10 @@
                 <x-ceplok::upload
                     ⟦label⟧="Upload File"
                     ⟦helper-text⟧="PDF atau JPG, maksimal 2 MB."
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                 />
 
-                <x-ceplok::upload type="attach"⟨! ⟦dark-mode⟧⟩ />
+                <x-ceplok::upload type="attach" ⟦dark-mode⟧ />
                 @endverbatim
             </x-docs.code>
         </x-docs.mode-section>

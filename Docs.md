@@ -155,12 +155,11 @@ Menambah halaman ke mode gelap:
    `:dark-mode="$docsDark"` pada komponen kit di pratinjau.
 3. Tulis `dark-mode` di cuplikannya lewat penanda: `⟨ dark-mode⟩` untuk tag
    satu baris, atau baris `⟨dark-mode⟩` untuk prop yang ditulis satu per baris.
-4. Ganti bagian Dark mode dengan `<x-docs.mode-section name="…">`. Bagian ini
-   bertukar menjadi Light mode selama docs gelap: komponennya memakai
-   `:dark-mode="! $docsDark"` di dalam
-   `<x-docs.demo :dark="! $docsDark" :light="$docsDark">`, dan cuplikannya
-   memakai `⟨! ⟦dark-mode⟧⟩` (atau baris `⟨!⟦dark-mode⟧⟩`). Label di daftar
-   isinya ditukar `<x-docs.page>`.
+4. Ganti bagian Dark mode dengan `<x-docs.mode-section>`. Bagian ini tetap
+   memperagakan `dark-mode` di kedua mode docs dan tidak bertukar menjadi
+   Light mode, sama seperti `stayDark` di docs React: komponennya memakai
+   `dark-mode` di dalam `<x-docs.demo dark>`, dan cuplikannya selalu menulis
+   `⟦dark-mode⟧`.
 5. Pasang `:dark="$docsDark"` pada Playground dan contoh Livewire-nya, supaya
    mode awalnya mengikuti docs.
 6. Daftarkan rutenya di `Theme::PAGES`.

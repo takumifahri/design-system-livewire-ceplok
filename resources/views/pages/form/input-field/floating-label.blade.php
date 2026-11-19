@@ -28,9 +28,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input> standar diteruskan (type, name, wire:model, …). class dan wire:key ke pembungkus terluar.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -152,7 +152,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Floating Label">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti kotak ke gray-700 bergaris gray-600, dengan teks, ikon, dan tombol hapus
                 gray-400. Garis aksen tetap sama, tetapi label yang naik satu tingkat lebih terang — primary-500 —
@@ -160,9 +160,9 @@
             </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 @foreach ($states as $s)
-                    <x-docs.demo :label="$s['label']" :dark="! $docsDark" :light="$docsDark">
+                    <x-docs.demo :label="$s['label']" dark>
                         <x-ceplok::floating-label
-                            :dark-mode="! $docsDark"
+                            dark-mode
                             :state="$s['value']"
                             label="Placeholder Text"
                             :value="$s['value'] === 'default' ? null : 'Text Input'"
@@ -175,7 +175,7 @@
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::floating-label⟨! ⟦dark-mode⟧⟩ label="Nama lengkap" />
+                <x-ceplok::floating-label ⟦dark-mode⟧ label="Nama lengkap" />
                 @endverbatim
             </x-docs.code>
         </x-docs.mode-section>
