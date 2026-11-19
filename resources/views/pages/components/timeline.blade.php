@@ -123,9 +123,9 @@
         ['download', 'bool | string', 'null', 'Mengunduh berkas alih-alih membukanya; teks menjadi nama berkas hasil unduhan. Browser hanya menurutinya untuk alamat di domain yang sama, blob:, dan data:.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -363,7 +363,7 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Timeline">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Garis, tepi kartu, dan latar avatar memakai token semantik <span class="text-primary-500 dark:text-primary-400">border</span>, serta nama dan
                 jabatan memakai <span class="text-primary-500 dark:text-primary-400">brand</span>. Warna lainnya dari token komponen
@@ -377,13 +377,13 @@
                 status.
             </x-slot:lead>
 
-            <x-docs.demo :label="$docsDark ? 'tanpa dark-mode' : 'dark-mode'" :dark="! $docsDark" :light="$docsDark" :min-width="$desktopMinWidth">
-                <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" :dark-mode="! $docsDark" />
+            <x-docs.demo label="dark-mode" dark :min-width="$desktopMinWidth">
+                <x-ceplok::timeline :items="array_slice($designItems, 0, 2)" dark-mode />
             </x-docs.demo>
 
             <x-docs.code>
                 @verbatim
-                <x-ceplok::timeline⟨! ⟦dark-mode⟧⟩ :items="$items" />
+                <x-ceplok::timeline ⟦dark-mode⟧ :items="$items" />
                 @endverbatim
             </x-docs.code>
         </x-docs.mode-section>

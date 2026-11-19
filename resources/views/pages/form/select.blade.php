@@ -44,9 +44,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <select> standar diteruskan (name, required, wire:model, …). class dan wire:key ke pembungkus terluar.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -240,30 +240,30 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Select">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti field ke gray-700 dengan label terang. Pada state default garisnya
                 menyatu dengan latar dan baru terlihat saat difokus (warna aplikasi); pada <span class="text-primary-500 dark:text-primary-400">inactive</span> garisnya
                 gray-300, dengan teks dan panah gray-500. Panel daftar pilihannya untuk saat ini tetap terang.
             </x-slot:lead>
             <div class="grid gap-5 sm:grid-cols-2">
-                <x-docs.demo label="Default" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::select :dark-mode="! $docsDark" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
+                <x-docs.demo label="Default" dark>
+                    <x-ceplok::select dark-mode label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
                 </x-docs.demo>
-                <x-docs.demo label="Inactive" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::select :dark-mode="! $docsDark" state="inactive" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
+                <x-docs.demo label="Inactive" dark>
+                    <x-ceplok::select dark-mode state="inactive" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
                 </x-docs.demo>
-                <x-docs.demo label="Sudah dipilih" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::select :dark-mode="! $docsDark" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" value="jabar" helper-text="Wajib diisi." />
+                <x-docs.demo label="Sudah dipilih" dark>
+                    <x-ceplok::select dark-mode label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" value="jabar" helper-text="Wajib diisi." />
                 </x-docs.demo>
-                <x-docs.demo label="Purple" :dark="! $docsDark" :light="$docsDark">
-                    <x-ceplok::select :dark-mode="! $docsDark" application="purple" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
+                <x-docs.demo label="Purple" dark>
+                    <x-ceplok::select dark-mode application="purple" label="Label" info="Keterangan singkat." placeholder="Pilih Apapun Itu" :options="$provinsi" helper-text="Wajib diisi." />
                 </x-docs.demo>
             </div>
             <x-docs.code>
                 @verbatim
                 <x-ceplok::select
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                     label="Label"
                     placeholder="Pilih Apapun Itu"
                     :options="$provinsi"

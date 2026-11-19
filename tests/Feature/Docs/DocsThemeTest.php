@@ -88,23 +88,18 @@ class DocsThemeTest extends TestCase
         $this->assertStringContainsString("    dark-mode\n/>", $this->find($gelap, 'pre code')->textContent);
     }
 
-    public function test_bagian_dark_mode_bertukar_menjadi_light_mode_di_mode_gelap(): void
+    public function test_bagian_dark_mode_tetap_gelap_di_kedua_mode_docs(): void
     {
-        $terang = $this->page(route('form.search'));
-        $gelap = $this->page(route('form.search'), dark: true);
+        foreach ([false, true] as $dark) {
+            $dom = $this->page(route('form.search'), dark: $dark);
+            $bagian = $this->find($dom, '#dark-mode');
 
-        $this->assertStringStartsWith('Dark mode', trim($this->find($terang, '#dark-mode h2')->textContent));
-        $this->assertStringStartsWith('Light mode', trim($this->find($gelap, '#dark-mode h2')->textContent));
-        $this->assertSame('Dark mode', trim($this->find($terang, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
-        $this->assertSame('Light mode', trim($this->find($gelap, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
-
-        // Di mode terang bagian ini memperagakan dark-mode; di mode gelap kebalikannya.
-        $this->assertStringContainsString('<x-ceplok::search dark-mode placeholder=', $this->find($terang, '#dark-mode pre code')->textContent);
-        $this->assertStringContainsString('<x-ceplok::search placeholder=', $this->find($gelap, '#dark-mode pre code')->textContent);
-        $this->assertNotNull($this->find($terang, '#dark-mode')->querySelector('[data-theme="dark"]'));
-        $this->assertNull($this->find($gelap, '#dark-mode')->querySelector('[data-theme="dark"]'));
-        // Kotak contohnya pulau terang di tengah halaman gelap.
-        $this->assertNotNull($this->find($gelap, '#dark-mode')->querySelector('[data-theme="light"]'));
+            $this->assertStringStartsWith('Dark mode', trim($this->find($bagian, 'h2')->textContent));
+            $this->assertSame('Dark mode', trim($this->find($dom, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
+            $this->assertStringContainsString('<x-ceplok::search dark-mode placeholder=', $this->find($bagian, 'pre code')->textContent);
+            $this->assertNotNull($bagian->querySelector('[data-theme="dark"]'));
+            $this->assertNull($bagian->querySelector('[data-theme="light"]'));
+        }
     }
 
     public function test_playground_mulai_dari_mode_docs(): void

@@ -19,9 +19,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input type="checkbox"> diteruskan (name, value, checked, wire:model, …). class dan wire:key ke pembungkus terluar.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -156,30 +156,30 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Toggle">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti jalur yang mati ke gray-600 dengan bulatan gray-400, label putih, dan
                 caption gray-400. Saat menyala, jalurnya tetap memakai warna aplikasi dan bulatannya berubah
                 putih. State <span class="text-primary-500 dark:text-primary-400">inactive</span> hanya meredupkan label ke gray-500 — jalur dan bulatannya tetap
                 seperti saat mati, meski sakelarnya menyala.
             </x-slot:lead>
-            <x-docs.demo :dark="! $docsDark" :light="$docsDark">
+            <x-docs.demo dark>
                 <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                    <x-ceplok::toggle :dark-mode="! $docsDark" label="Mati" helper-text="Keterangan singkat." />
-                    <x-ceplok::toggle :dark-mode="! $docsDark" label="Menyala" helper-text="Keterangan singkat." checked />
-                    <x-ceplok::toggle :dark-mode="! $docsDark" state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
-                    <x-ceplok::toggle :dark-mode="! $docsDark" state="inactive" label="Tidak aktif, menyala" helper-text="Keterangan singkat." checked />
+                    <x-ceplok::toggle dark-mode label="Mati" helper-text="Keterangan singkat." />
+                    <x-ceplok::toggle dark-mode label="Menyala" helper-text="Keterangan singkat." checked />
+                    <x-ceplok::toggle dark-mode state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
+                    <x-ceplok::toggle dark-mode state="inactive" label="Tidak aktif, menyala" helper-text="Keterangan singkat." checked />
                 </div>
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::toggle⟨! ⟦dark-mode⟧⟩ label="Mati" helper-text="Keterangan singkat." />
-                <x-ceplok::toggle⟨! ⟦dark-mode⟧⟩ label="Menyala" helper-text="Keterangan singkat." checked />
+                <x-ceplok::toggle ⟦dark-mode⟧ label="Mati" helper-text="Keterangan singkat." />
+                <x-ceplok::toggle ⟦dark-mode⟧ label="Menyala" helper-text="Keterangan singkat." checked />
 
                 {{-- Inactive --}}
-                <x-ceplok::toggle⟨! ⟦dark-mode⟧⟩ state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
+                <x-ceplok::toggle ⟦dark-mode⟧ state="inactive" label="Tidak aktif" helper-text="Keterangan singkat." />
                 <x-ceplok::toggle
-                    ⟨!⟦dark-mode⟧⟩
+                    ⟦dark-mode⟧
                     state="inactive"
                     label="Tidak aktif, menyala"
                     helper-text="Keterangan singkat."

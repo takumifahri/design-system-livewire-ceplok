@@ -17,9 +17,9 @@
         ['…atribut', 'HTML', '—', 'Seluruh atribut <div> diteruskan (class, id, …).'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`,
-    // cuplikannya menuliskannya lewat penanda ⟨…⟩, dan bagian Dark mode
-    // bertukar menjadi Light mode (lihat App\Docs\Theme).
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
@@ -103,18 +103,18 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.mode-section name="Alert">
+        <x-docs.mode-section>
             <x-slot:lead>
                 Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengganti latarnya ke warna -900 dari variant itu sendiri. Ikonnya -500,
                 sedangkan heading dan isi pesan sama-sama -50 sehingga tetap terang di atas latar gelap.
             </x-slot:lead>
-            <x-docs.demo :dark="! $docsDark" :light="$docsDark">
+            <x-docs.demo dark>
                 <div class="space-y-4">
                     @foreach ($variants as $variant)
-                        <x-ceplok::alert :dark-mode="! $docsDark" :variant="$variant" heading="Ini adalah Alert">
+                        <x-ceplok::alert dark-mode :variant="$variant" heading="Ini adalah Alert">
                             {{ $body }}
                             <x-slot:actions>
-                                <x-docs.alert-action :variant="$variant" :dark="! $docsDark" />
+                                <x-docs.alert-action :variant="$variant" dark />
                             </x-slot:actions>
                         </x-ceplok::alert>
                     @endforeach
@@ -122,18 +122,12 @@
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::alert⟨! ⟦dark-mode⟧⟩ variant="success" heading="Ini adalah Alert">…</x-ceplok::alert>
+                <x-ceplok::alert ⟦dark-mode⟧ variant="success" heading="Ini adalah Alert">…</x-ceplok::alert>
                 @endverbatim
             </x-docs.code>
             <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
-                @if ($docsDark)
-                    Isi <span class="text-primary-500 dark:text-primary-400">actions</span> tetap milik Anda, jadi warnanya tidak ikut diganti. Tombol contoh di atas
-                    memakai desain terangnya, sedangkan contoh lain di halaman ini mengikuti desain gelapnya: -600,
-                    kecuali success dan warning yang -500.
-                @else
-                    Isi <span class="text-primary-500 dark:text-primary-400">actions</span> tetap milik Anda, jadi warnanya tidak ikut diganti. Tombol contoh di atas mengikuti
-                    desain gelapnya: -600, kecuali success dan warning yang -500.
-                @endif
+                Isi <span class="text-primary-500 dark:text-primary-400">actions</span> tetap milik Anda, jadi warnanya tidak ikut diganti. Tombol contoh di atas mengikuti
+                desain gelapnya: -600, kecuali success dan warning yang -500.
             </p>
         </x-docs.mode-section>
 
