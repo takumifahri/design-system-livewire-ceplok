@@ -144,9 +144,12 @@ dan tombol bulan/matahari di rail serta top bar mobile diredupkan.
 - Tombolnya memuat ulang halaman setelah cookie ditulis, karena pratinjau
   dirender server dengan `dark-mode`. Muat ulang juga membuang snapshot
   wire:navigate yang masih memakai mode lama.
-- Portal Dashboard ikut memakai pilihan yang sama. Tombol tema di header-nya
-  hanya mengirim event `dark-mode-change`; `<x-docs.app-frame>` yang
-  menyimpannya.
+- Portal Dashboard ikut memakai pilihan yang sama, seperti di docs React:
+  toggle Terang/Gelap di kaki Sidebar mulai lg, dan tombol tema di header di
+  bawahnya. Keduanya hanya mengirim event `dark-mode-change` setelah
+  transisinya selesai
+  ([resources/js/docs/portal-tema.js](resources/js/docs/portal-tema.js));
+  `<x-docs.app-frame>` yang menyimpannya.
 
 Menambah halaman ke mode gelap:
 

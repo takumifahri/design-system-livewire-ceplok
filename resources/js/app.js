@@ -13,6 +13,7 @@ import docsSearch from './docs/search';
 import docsToc from './docs/toc';
 import setDocsTheme from './docs/theme';
 import docsTirai from './docs/transition';
+import portalTema from './docs/portal-tema';
 import spotlight from './docs/spotlight';
 import { codeWindow, countUp, magnetic, parallax, reveal, scrollProgress, splitWords, tilt } from './docs/motion';
 
@@ -25,6 +26,7 @@ Alpine.data('docsDropdownPlayground', docsDropdownPlayground);
 Alpine.data('docsSearch', docsSearch);
 Alpine.data('docsToc', docsToc);
 Alpine.data('docsTirai', docsTirai);
+Alpine.data('portalTema', portalTema);
 Alpine.directive('spotlight', spotlight);
 Alpine.data('docsCodeWindow', codeWindow);
 Alpine.directive('reveal', reveal);

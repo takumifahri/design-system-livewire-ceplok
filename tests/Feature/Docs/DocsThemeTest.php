@@ -122,10 +122,45 @@ class DocsThemeTest extends TestCase
         $this->assertSame('$docsTheme($event.detail.darkMode)', $this->find($dom, 'body')->getAttribute('x-on:dark-mode-change'));
         $this->assertSame('dark', $this->find($dom, 'main')->closest('[data-theme]')->getAttribute('data-theme'));
 
+        // Tombol tema header hanya untuk layar sempit; mulai lg toggle-nya di kaki Sidebar.
         $toggle = $this->find($dom, 'header button[aria-label="Mode gelap"]');
 
         $this->assertSame('true', $toggle->getAttribute('aria-pressed'));
-        $this->assertSame("\$dispatch('dark-mode-change', { darkMode: false })", $toggle->getAttribute('x-on:click'));
+        $this->assertSame('portalTema(true)', $toggle->getAttribute('x-data'));
+        $this->assertSame('pilih(! gelap)', $toggle->getAttribute('x-on:click'));
+        $this->assertHasClasses($toggle, 'lg:hidden');
+
+        // Pilihan baru digeser dulu di browser, lalu dikabarkan ke bingkai docs.
+        $this->assertStringContainsString(
+            "this.\$dispatch('dark-mode-change', { darkMode: gelap })",
+            file_get_contents(resource_path('js/docs/portal-tema.js')),
+        );
+    }
+
+    public function test_toggle_tema_portal_dashboard_di_kaki_sidebar(): void
+    {
+        $dom = $this->page(route('portal.app'), dark: true);
+        [$sidebar, $sidebarSeluler] = iterator_to_array($dom->querySelectorAll('aside[x-data="ceplokSidebar"]'));
+
+        $grup = $this->find($sidebar, '[role="group"][aria-label="Pilih tema"]');
+        $this->assertSame('portalTema(true)', $grup->getAttribute('x-data'));
+
+        // Sorotan bergeser ke Gelap; Terang dan Gelap masing-masing mengabarkan pilihannya.
+        $this->assertHasClasses($this->find($grup, 'span[aria-hidden="true"]'), 'translate-x-full');
+        $pilihan = [];
+        foreach ($grup->querySelectorAll('button') as $tombol) {
+            $pilihan[trim($tombol->textContent)] = [$tombol->getAttribute('aria-pressed'), $tombol->getAttribute('x-on:click')];
+        }
+        $this->assertSame(['Terang' => ['false', 'pilih(false)'], 'Gelap' => ['true', 'pilih(true)']], $pilihan);
+
+        // Sidebar ringkas memakai tombol berikon; keduanya bertukar mengikuti `collapsed` Sidebar.
+        $this->assertSame('! collapsed', $grup->parentElement->getAttribute('x-show'));
+        $ringkas = $this->find($sidebar, 'button[aria-label="Mode gelap"]');
+        $this->assertSame('collapsed', $ringkas->parentElement->getAttribute('x-show'));
+        $this->assertSame('display: none;', $ringkas->parentElement->getAttribute('style'));
+
+        // Sidebar di Drawer layar sempit tidak membawa toggle: di sana tombolnya ada di header.
+        $this->assertNull($sidebarSeluler->querySelector('[aria-label="Pilih tema"], button[aria-label="Mode gelap"]'));
     }
 
     private function page(string $url, bool $dark = false): HTMLDocument
