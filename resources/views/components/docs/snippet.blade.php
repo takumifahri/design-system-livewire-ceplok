@@ -5,14 +5,16 @@
 {{--
     Baris cuplikan: kartu kode gelap + tombol salin, contoh render di sampingnya
     (slot `preview`), dan penjelasan singkat di bawah (slot `description`).
-    Port DocSnippet di docs React.
+    Port DocSnippet di docs React. Penanda mode docs ⟨…⟩ dan ⟨!…⟩ sama
+    dengan x-docs.code.
 --}}
 @props([
     'code',
+    'dark' => null,
 ])
 
 @php
-    $source = Code::dedent($code);
+    $source = Code::dedent(Code::theme($code, $dark));
     $id = 'snippet-'.substr(md5($source), 0, 8);
 @endphp
 
@@ -41,15 +43,15 @@
 
         {{-- Contoh hasil render, di samping kode --}}
         @isset($preview)
-            <div class="grid shrink-0 place-items-center border-t border-border bg-surface-subtle px-6 py-5 sm:w-32 sm:border-t-0 sm:border-l">
+            <div class="grid shrink-0 place-items-center border-t border-border bg-surface-subtle px-6 py-5 sm:w-32 sm:border-t-0 sm:border-l dark:border-gray-700 dark:bg-gray-900">
                 {{ $preview }}
             </div>
         @endisset
     </div>
 
     @isset($description)
-        <div class="border-t border-border px-4 py-3">
-            <p class="text-xs leading-5 text-gray-500">{{ $description }}</p>
+        <div class="border-t border-border px-4 py-3 dark:border-gray-700">
+            <p class="text-xs leading-5 text-gray-500 dark:text-gray-400">{{ $description }}</p>
         </div>
     @endisset
 </article>

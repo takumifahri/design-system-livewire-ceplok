@@ -74,6 +74,7 @@ final class Navigation
                     ['label' => 'Badge', 'route' => 'components.badge', 'keywords' => 'lencana label'],
                     ['label' => 'Avatar', 'route' => 'components.avatar', 'keywords' => 'foto profil inisial'],
                     ['label' => 'Spinner', 'route' => 'components.spinner', 'keywords' => 'memuat loading'],
+                    ['label' => 'Clipboard', 'route' => 'components.clipboard', 'keywords' => 'salin papan klip copy nilai'],
                     ['label' => 'Popover', 'route' => 'components.popover', 'keywords' => 'tooltip informasi keterangan'],
                     ['label' => 'Dropdown', 'route' => 'components.dropdown', 'keywords' => 'menu'],
                     ['label' => 'Drawer', 'route' => 'components.drawer', 'keywords' => 'panel samping laci'],

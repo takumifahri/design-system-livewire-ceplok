@@ -9,7 +9,20 @@
  */
 export default function avatar() {
     return {
-        failed: false,
+        failedSrc: null,
+        srcObserver: null,
+
+        get failed() {
+            return this.failedSrc === this.$refs.img?.getAttribute('src');
+        },
+
+        fail(src) {
+            this.failedSrc = src;
+        },
+
+        loaded(src) {
+            if (this.failedSrc === src) this.failedSrc = null;
+        },
 
         init() {
             // Gambar bisa saja sudah gagal sebelum Alpine sempat memasang
@@ -17,8 +30,19 @@ export default function avatar() {
             const img = this.$refs.img;
 
             if (img && img.complete && img.naturalWidth === 0) {
-                this.failed = true;
+                this.failedSrc = img.getAttribute('src');
             }
+
+            // Setiap perubahan src memberi URL tujuan kesempatan baru untuk
+            // dimuat, termasuk ketika kembali ke URL yang pernah gagal.
+            this.srcObserver = new MutationObserver(() => {
+                this.failedSrc = null;
+            });
+            if (img) this.srcObserver.observe(img, { attributes: true, attributeFilter: ['src'] });
+        },
+
+        destroy() {
+            this.srcObserver?.disconnect();
         },
     };
 }

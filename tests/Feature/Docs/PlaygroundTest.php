@@ -19,8 +19,8 @@ class PlaygroundTest extends TestCase
     public static function playground(): array
     {
         $names = [
-            'alert', 'alert-notice', 'avatar', 'badge', 'badge-filters', 'breadcrumb', 'button', 'card', 'container',
-            'footer', 'hero', 'pagination', 'pagination-list', 'table', 'table-demo', 'popover', 'modal', 'modal-livewire', 'spinner', 'spinner-loading', 'toast', 'toast-saved',
+            'alert', 'alert-notice', 'avatar', 'avatar-livewire', 'badge', 'badge-filters', 'breadcrumb', 'button', 'card', 'container',
+            'footer', 'hero', 'pagination', 'pagination-list', 'table', 'table-demo', 'popover', 'popover-livewire', 'modal', 'modal-livewire', 'spinner', 'spinner-loading', 'clipboard', 'clipboard-livewire', 'toast', 'toast-saved',
             'dropdown', 'dropdown-actions', 'dropdown-sort', 'drawer', 'drawer-livewire', 'sidebar', 'sidebar-livewire', 'list-view', 'list-view-livewire',
             'input-field', 'input-field-validate', 'floating-label', 'floating-label-fill', 'text-area', 'text-area-send',
             'select', 'select-region', 'search', 'search-live', 'datepicker', 'datepicker-filter', 'upload', 'upload-livewire',
@@ -79,6 +79,94 @@ class PlaygroundTest extends TestCase
         $this->assertHasClasses($button, 'rounded-full');
         $this->assertStringContainsString('icon-only', $this->code($dom));
         $this->assertStringNotContainsString('left-icon', $this->code($dom));
+    }
+
+    public function test_clipboard_playground_mengikuti_kontrol(): void
+    {
+        $component = Livewire::test('playground.clipboard')
+            ->set('variant', 'segmented')
+            ->set('platform', 'mobile')
+            ->set('withPrefix', true);
+
+        $code = $component->get('usage');
+        $this->assertStringContainsString('variant⟧="segmented"', $code);
+        $this->assertStringContainsString('platform⟧="mobile"', $code);
+        $this->assertStringContainsString('prefix⟧="ID"', $code);
+    }
+
+    public function test_clipboard_livewire_mencatat_event_hasil_salin(): void
+    {
+        $component = Livewire::test('playground.clipboard-livewire');
+
+        $component->assertSeeText('Belum ada aktivitas salin.');
+        $component->call('copied', 'INV-2026-001')->assertSeeText('Berhasil disalin: INV-2026-001');
+        $component->call('failed')->assertSeeText('Penyalinan gagal.');
+
+        $root = $this->find($this->domOf($component), 'div[x-data="ceplokClipboard"]');
+        $this->assertSame('copied($event.detail.value)', $root->getAttribute('wire:copy-success'));
+        $this->assertSame('failed', $root->getAttribute('wire:copy-error'));
+    }
+
+    public function test_popover_livewire_mengikat_state_dan_event_perubahan(): void
+    {
+        $component = Livewire::test('playground.popover-livewire');
+
+        $component->assertSeeText('$open = false · berubah 0×');
+        $component->call('changed', true)
+            ->assertSet('open', true)
+            ->assertSet('changes', 1)
+            ->assertSeeText('$open = true · berubah 1×');
+
+        $root = $this->find($this->domOf($component), 'div[x-data="ceplokPopover"]');
+        $this->assertSame('open', $root->getAttribute('wire:model.live'));
+        $this->assertSame('changed($event.detail.open)', $root->getAttribute('wire:open-change'));
+    }
+
+    public function test_avatar_playground_nama_kosong_tetap_valid_dan_kode_mewakili_preview(): void
+    {
+        $component = Livewire::test('playground.avatar')
+            ->set('content', 'auto')
+            ->set('name', '   ');
+
+        $component->assertSeeText('Nama kosong memakai initials UI agar fallback tetap valid.');
+        $code = $component->get('usage');
+        $this->assertStringContainsString('initials⟧="UI"', $code);
+        $this->assertStringContainsString('alt⟧=""', $code);
+        $this->assertStringContainsString('<span>Tanpa nama</span>', $code);
+        $this->assertStringNotContainsString('name⟧=', $code);
+
+        $dom = $this->domOf($component);
+        $avatar = $this->find($dom, 'div.min-h-30 > div.grid');
+        $this->assertFalse($avatar->hasAttribute('role'));
+        $this->assertSame('UI', trim($this->find($avatar, 'span')->textContent));
+    }
+
+    public function test_avatar_profile_fallback_hanya_aktif_pada_mode_profile(): void
+    {
+        $component = Livewire::test('playground.avatar');
+        $buttons = fn () => $this->domOf($component)->querySelectorAll('[aria-label="Pilih ilustrasi profile"] button');
+
+        $this->assertTrue($buttons()->item(0)->hasAttribute('disabled'));
+        $this->assertTrue($buttons()->item(1)->hasAttribute('disabled'));
+
+        $component->set('content', 'profile');
+
+        $this->assertFalse($buttons()->item(0)->hasAttribute('disabled'));
+        $this->assertFalse($buttons()->item(1)->hasAttribute('disabled'));
+    }
+
+    public function test_avatar_livewire_mengikuti_pengguna_aktif(): void
+    {
+        $component = Livewire::test('playground.avatar-livewire');
+
+        $component->assertSeeText('Putri Handayani');
+        $this->assertNotNull($this->domOf($component)->querySelector('img[src="/images/avatar-sample.svg"]'));
+
+        $component->call('select', 1)->assertSet('selected', 1)->assertSeeText('Rafli Arandhana');
+        $avatar = $this->find($this->domOf($component), 'div.grid');
+
+        $this->assertNull($avatar->querySelector('img[x-ref="img"]'));
+        $this->assertSame('RA', trim($this->find($avatar, 'span[aria-hidden="true"]')->textContent));
     }
 
     public function test_button_as_anchor_merender_tautan(): void

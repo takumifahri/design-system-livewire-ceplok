@@ -1,149 +1,211 @@
 @php
     $photo = '/images/avatar-sample.svg';
-
     $sizes = [
-        ['small', 'Small', '24px'],
-        ['default', 'Default', '32px'],
-        ['large', 'Large', '80px'],
+        ['small', 'S', '24px', '12px'],
+        ['default', 'M', '32px', '16px'],
+        ['large', 'L', '80px', '30px'],
     ];
-
     $props = [
-        ['src', 'string', 'null', 'Alamat gambar. Bila kosong atau gagal dimuat, inisial yang tampil.'],
-        ['alt', 'string', "''", 'Nama pemiliknya. Jadi alt gambar, atau nama aksesibilitas saat yang tampil hanya inisial.'],
-        ['initials', 'string | slot', 'null', 'Isi lingkaran saat tidak ada gambar — umumnya satu atau dua huruf.'],
-        ['size', '"small" | "default" | "large"', 'default', 'Diameter lingkaran: 24px, 32px, atau 80px.'],
-        ['dark-mode', 'bool', 'false', 'Menggunakan warna fallback Avatar untuk permukaan gelap.'],
-        ['…atribut', 'HTML', '—', 'Atribut <div> standar diteruskan (class, title, wire:click, …).'],
+        ['src', 'string', 'null', 'Alamat foto. Bila kosong atau gagal dimuat, Avatar menampilkan fallback.'],
+        ['name', 'string', 'null', 'Nama untuk accessible name dan inisial otomatis.'],
+        ['alt', 'string', 'name atau ""', 'Override accessible name. String kosong menjadikan Avatar dekoratif.'],
+        ['initials', 'string | slot', 'null', 'Override isi inisial ketika foto tidak tersedia.'],
+        ['fallback', '"initials" | "female" | "male"', 'initials', 'Memilih fallback secara eksplisit; initials memerlukan name atau initials.'],
+        ['size', '"small" | "default" | "large"', 'default (M)', 'Diameter lingkaran: 24px, 32px, atau 80px.'],
+        ['dark-mode', 'bool', 'false', 'Deprecated. Gunakan scope ambient data-theme="dark".'],
+        ['…atribut', 'HTML', '—', 'Atribut root diteruskan; role, aria-label, dan data-theme dapat meng-override nilai terhitung. Class digabungkan.'],
     ];
 @endphp
 
 <x-docs.layout title="Avatar">
     <x-docs.page
         title="Avatar"
-        description="Lingkaran identitas berisi foto profil, atau inisial namanya bila fotonya tidak ada. Tersedia dalam tiga ukuran, dari yang menempel di daftar sampai yang jadi kepala halaman profil."
+        description="Lingkaran identitas berisi foto, inisial otomatis, atau ilustrasi profil."
         :toc="[
             'avatar' => 'Avatar',
             'inisial' => 'Inisial',
+            'profile' => 'Profile fallback',
             'sizes' => 'Sizes',
             'dark-mode' => 'Dark mode',
             'playground' => 'Playground',
             'penggunaan' => 'Penggunaan',
+            'livewire' => 'Livewire',
             'properties' => 'Properties',
         ]"
     >
         <x-docs.section id="avatar" title="Avatar">
             <x-docs.lead>
-                Isinya yang menentukan bentuknya, bukan prop terpisah: begitu <span class="text-primary-500">src</span> diisi, avatarnya
-                menampilkan foto; tanpa itu ia jatuh ke inisial. Fotonya selalu dipotong ke lingkaran dan
-                diratakan di tengah, jadi gambar apa pun bisa masuk tanpa disiapkan lebih dulu.
+                Foto dari <span class="text-primary-500">src</span> selalu menjadi pilihan pertama. Jika kosong atau gagal dimuat,
+                Avatar berpindah ke fallback tanpa mengubah ukuran dan bentuk lingkarannya. Foto memakai crop tengah
+                <span class="text-primary-500">object-cover</span>, sehingga rasio tetap terjaga.
             </x-docs.lead>
-            <x-docs.demo label="Dengan foto">
+            <x-docs.demo label="Default Avatar / foto">
                 <div class="flex items-center gap-4">
-                    <x-ceplok::avatar :src="$photo" alt="Putri Handayani" size="large" />
-                    <x-ceplok::avatar :src="$photo" alt="Putri Handayani" />
-                    <x-ceplok::avatar :src="$photo" alt="Putri Handayani" size="small" />
+                    <x-ceplok::avatar :src="$photo" name="Putri Handayani" size="large" />
+                    <x-ceplok::avatar :src="$photo" name="Putri Handayani" />
+                    <x-ceplok::avatar :src="$photo" name="Putri Handayani" size="small" />
                 </div>
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::avatar ⟦src⟧="/foto/putri.jpg" ⟦alt⟧="Putri Handayani" />
+                <x-ceplok::avatar ⟦:src⟧="$user->avatar_url" ⟦:name⟧="$user->name" />
                 @endverbatim
             </x-docs.code>
             <p class="mt-4 text-body-sm text-gray-500">
-                Beri <span class="text-primary-500">alt</span> berisi nama pemiliknya. Kalau namanya sudah tertulis persis di sebelah
-                avatar — seperti pada daftar anggota atau menu profil — kosongkan saja: avatarnya akan
-                terbaca sebagai hiasan dan pembaca layar tidak menyebut nama yang sama dua kali.
+                Bila nama sudah ditampilkan sebagai teks di dekat Avatar, gunakan <span class="text-primary-500">alt=""</span>
+                agar tidak dibacakan dua kali.
             </p>
+            <x-docs.demo>
+                <div class="flex items-center gap-3">
+                    <x-ceplok::avatar name="Putri Handayani" alt="" />
+                    <span class="text-sm text-content">Putri Handayani</span>
+                </div>
+            </x-docs.demo>
+            <x-docs.code>
+                @verbatim
+                <div class="flex items-center gap-3">
+                    <x-ceplok::avatar ⟦name⟧="Putri Handayani" ⟦alt⟧="" />
+                    <span>Putri Handayani</span>
+                </div>
+                @endverbatim
+            </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="inisial" title="Inisial">
             <x-docs.lead>
-                Tanpa <span class="text-primary-500">src</span>, lingkarannya diisi teks yang Anda beri lewat <span class="text-primary-500">initials</span> di atas latar
-                abu-abu. Satu atau dua huruf adalah takaran yang aman; lebih dari itu mulai berdesakan di
-                ukuran kecil.
+                Tanpa foto, <span class="text-primary-500">name</span> menghasilkan inisial otomatis. Nama satu kata memakai dua
+                karakter awal; nama beberapa kata memakai karakter awal kata pertama dan terakhir.
             </x-docs.lead>
-            <x-docs.demo label="Tanpa foto">
+            <x-docs.demo label="Otomatis dari name">
                 <div class="flex items-center gap-4">
-                    <x-ceplok::avatar initials="PH" alt="Putri Handayani" size="large" />
-                    <x-ceplok::avatar initials="PH" alt="Putri Handayani" />
-                    <x-ceplok::avatar initials="PH" alt="Putri Handayani" size="small" />
+                    <x-ceplok::avatar name="Putri Handayani" size="large" />
+                    <x-ceplok::avatar name="Putri Handayani" />
+                    <x-ceplok::avatar name="Putri Handayani" size="small" />
                 </div>
             </x-docs.demo>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::avatar ⟦initials⟧="PH" ⟦alt⟧="Putri Handayani" />
+                <x-ceplok::avatar ⟦name⟧="Putri Handayani" />
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
-                Inisial juga jadi jaring pengaman: bila <span class="text-primary-500">src</span> diisi tapi gambarnya gagal dimuat,
-                avatarnya berpindah sendiri ke inisial. Alamat foto profil biasanya datang dari sistem lain
-                dan bisa mati kapan saja — tanpa ini yang tersisa di halaman hanya ikon gambar rusak.
-            </p>
-            <x-docs.demo label="Foto rusak → jatuh ke inisial">
-                <div class="flex items-center gap-4">
-                    <x-ceplok::avatar src="/foto/tidak-ada.jpg" initials="PH" alt="Putri Handayani" size="large" />
-                    <x-ceplok::avatar src="/foto/tidak-ada.jpg" initials="PH" alt="Putri Handayani" />
-                    <x-ceplok::avatar src="/foto/tidak-ada.jpg" initials="PH" alt="Putri Handayani" size="small" />
-                </div>
-            </x-docs.demo>
+            <div class="mt-5">
+                <x-docs.demo label="Override initials">
+                    <div class="flex items-center gap-4">
+                        <x-ceplok::avatar name="Putri Handayani" initials="UI" size="large" />
+                        <x-ceplok::avatar name="Putri Handayani" initials="UI" />
+                        <x-ceplok::avatar name="Putri Handayani" initials="UI" size="small" />
+                    </div>
+                </x-docs.demo>
+            </div>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::avatar ⟦name⟧="Putri Handayani" ⟦initials⟧="UI" />
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
+        <x-docs.section id="profile" title="Profile fallback">
+            <x-docs.lead>
+                <span class="text-primary-500">fallback="female"</span> atau <span class="text-primary-500">fallback="male"</span>
+                menampilkan ilustrasi profil walaupun <span class="text-primary-500">name</span> tersedia. Varian tidak pernah ditebak dari nama.
+                <span class="text-primary-500">fallback="initials"</span> adalah bawaan dan memerlukan name atau initials.
+            </x-docs.lead>
+            <div class="grid gap-5 sm:grid-cols-3">
+                <x-docs.demo label="Female">
+                    <x-ceplok::avatar name="Putri Handayani" fallback="female" size="large" />
+                </x-docs.demo>
+                <x-docs.demo label="Male">
+                    <x-ceplok::avatar name="Rafli Arandhana" fallback="male" size="large" />
+                </x-docs.demo>
+                <x-docs.demo label="Default → initials">
+                    <x-ceplok::avatar name="Pengguna" size="large" />
+                </x-docs.demo>
+            </div>
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::avatar ⟦name⟧="Putri Handayani" ⟦fallback⟧="female" />
+                @endverbatim
+            </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="sizes" title="Sizes">
             <x-docs.lead>
-                Tiga ukuran, dan teks inisialnya ikut naik bersamanya supaya porsi isian di dalam lingkaran
-                tetap terasa sama. <span class="text-primary-500">small</span> untuk baris daftar yang padat, <span class="text-primary-500">default</span> untuk navbar
-                dan menu profil, <span class="text-primary-500">large</span> untuk kepala halaman profil.
+                S berdiameter 24px, M 32px, dan L 80px. M adalah ukuran default, sehingga prop
+                <span class="text-primary-500">size</span> tidak perlu ditulis untuk ukuran tersebut.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-3">
                 @foreach ($sizes as [$size, $label, $diameter])
                     <x-docs.demo :label="$label.' — '.$diameter">
                         <div class="flex items-center gap-3">
-                            <x-ceplok::avatar :src="$photo" alt="Putri Handayani" :size="$size" />
-                            <x-ceplok::avatar initials="PH" alt="Putri Handayani" :size="$size" />
+                            <x-ceplok::avatar name="Putri Handayani" :size="$size" />
+                            <x-ceplok::avatar name="Putri Handayani" fallback="female" :size="$size" />
                         </div>
                     </x-docs.demo>
                 @endforeach
             </div>
+            <p class="mt-4 text-body-sm text-gray-500">
+                Ukuran teks inisial S, M, dan L berturut-turut {{ collect($sizes)->pluck(3)->join(', ') }}.
+            </p>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::avatar ⟦size⟧="large" ⟦src⟧="/foto/putri.jpg" ⟦alt⟧="Putri Handayani" />
+                <x-ceplok::avatar ⟦size⟧="small" name="Putri Handayani" />
                 @endverbatim
             </x-docs.code>
-            <p class="mt-4 text-body-sm text-gray-500">
-                Ukuran teks inisialnya berturut-turut <span class="text-primary-500">12px</span>, <span class="text-primary-500">16px</span>,
-                <span class="text-primary-500">30px</span>. Avatar tidak pernah ikut menyusut oleh flexbox, jadi aman diletakkan di samping teks
-                panjang tanpa takut gepeng.
-            </p>
         </x-docs.section>
 
         <x-docs.section id="dark-mode" title="Dark mode">
             <x-docs.lead>
-                Prop <span class="text-primary-300">dark-mode</span> mengubah fallback menjadi gray-800 dengan inisial gray-100. Foto
-                profil tetap tampil apa adanya; bila foto gagal dimuat, fallback gelap ini yang mengambil
-                alih.
+                Avatar mengikuti scope ambient <span class="text-primary-500">data-theme</span>. Inisial dan ilustrasi profil
+                berpindah otomatis, termasuk dalam nested theme scope; foto pengguna tidak diberi tint.
             </x-docs.lead>
-            <x-docs.demo label="Fallback di permukaan gelap" dark>
-                <div class="flex items-center gap-4">
-                    <x-ceplok::avatar dark-mode initials="PH" alt="Putri Handayani" size="large" />
-                    <x-ceplok::avatar dark-mode initials="PH" alt="Putri Handayani" />
-                    <x-ceplok::avatar dark-mode initials="PH" alt="Putri Handayani" size="small" />
+            <x-docs.stage max-width="max-w-full" dark>
+                <div data-theme="dark" class="flex flex-wrap items-center gap-4">
+                    <x-ceplok::avatar name="Putri Handayani" size="large" />
+                    <x-ceplok::avatar name="Putri Handayani" fallback="female" size="large" />
+                    <x-ceplok::avatar name="Rafli Arandhana" fallback="male" size="large" />
                 </div>
-            </x-docs.demo>
+            </x-docs.stage>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::avatar ⟦dark-mode⟧ ⟦initials⟧="PH" ⟦alt⟧="Putri Handayani" />
+                <section ⟦data-theme⟧="dark">
+                    <x-ceplok::avatar name="Putri Handayani" />
+                </section>
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <livewire:playground.avatar />
 
+        <x-docs.section id="livewire" title="Livewire">
+            <x-docs.lead>
+                Nilai <span class="text-primary-500">src</span>, <span class="text-primary-500">name</span>, dan prop Avatar lainnya
+                dapat berasal langsung dari properti Livewire. Saat pengguna aktif berubah, Avatar ikut dirender ulang; foto baru
+                dicoba kembali dan tetap berpindah ke inisial bila gagal dimuat.
+            </x-docs.lead>
+            <x-docs.demo>
+                <livewire:playground.avatar-livewire />
+            </x-docs.demo>
+            <x-docs.code>
+                @verbatim
+                <div class="flex items-center gap-3">
+                    <x-ceplok::avatar
+                        ⟦:src⟧="$user['avatar']"
+                        ⟦:name⟧="$user['name']"
+                        alt=""
+                    />
+                    <span>{{ $user['name'] }}</span>
+                </div>
+                @endverbatim
+            </x-docs.code>
+        </x-docs.section>
+
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>
-                Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Atribut
-                <span class="text-primary-500">&lt;div&gt;</span> standar juga diteruskan apa adanya.
+                Seluruh prop yang diterima Avatar, beserta tipe dan nilai bawaannya. Atribut HTML
+                <span class="text-primary-500">&lt;div&gt;</span> diteruskan ke root; role, aria-label, dan data-theme dapat
+                meng-override nilai terhitung, sedangkan class digabungkan.
             </x-docs.lead>
-            <x-docs.props-table :rows="$props" min-width="48rem" />
+            <x-docs.props-table :rows="$props" min-width="52rem" />
         </x-docs.section>
     </x-docs.page>
 </x-docs.layout>

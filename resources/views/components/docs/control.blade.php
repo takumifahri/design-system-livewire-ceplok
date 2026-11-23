@@ -4,6 +4,6 @@
 ])
 
 <div {{ $attributes }}>
-    <span class="text-xs font-black tracking-wide text-gray-500 uppercase">{{ $label }}</span>
+    <span class="text-xs font-black tracking-wide text-gray-500 uppercase dark:text-gray-400">{{ $label }}</span>
     <div class="mt-2">{{ $slot }}</div>
 </div>

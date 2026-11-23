@@ -108,7 +108,7 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
             Pada bentuk Attach, <em>Platform</em> hanya menyempitkan wadah pratinjaunya dan
             <em>Application</em> baru terlihat saat berkas diseret ke atas kotak — isi kotaknya sendiri
             tidak berubah.

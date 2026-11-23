@@ -14,9 +14,9 @@
     x-on:click="clickBackdrop($event)"
     closedby="any"
     aria-label="Cari halaman"
-    class="m-auto mt-[12vh] w-[min(36rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-white p-0 shadow-xl backdrop:bg-gray-900/40"
+    class="m-auto mt-[12vh] w-[min(36rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-white p-0 shadow-xl backdrop:bg-gray-900/40 dark:border-gray-700 dark:bg-gray-800 dark:backdrop:bg-gray-900/70"
 >
-    <div class="flex items-center gap-3 border-b border-border px-4">
+    <div class="flex items-center gap-3 border-b border-border px-4 dark:border-gray-700">
         <svg class="size-4.5 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path stroke-linecap="round" d="m20 20-4.5-4.5M17 10.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
         </svg>
@@ -34,9 +34,9 @@
             autocomplete="off"
             spellcheck="false"
             placeholder="Cari halaman… (mis. tombol, tanggal, dropdown)"
-            class="h-12 min-w-0 flex-1 bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
+            class="h-12 min-w-0 flex-1 bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none dark:text-white"
         >
-        <kbd class="shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] font-bold text-gray-500 max-sm:hidden">Esc</kbd>
+        <kbd class="shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] font-bold text-gray-500 max-sm:hidden dark:border-gray-600 dark:text-gray-400">Esc</kbd>
     </div>
 
     <ul x-show="results.length" id="docs-search-list" role="listbox" aria-label="Halaman" class="ds-scroll-y max-h-[min(60vh,26rem)] overflow-y-auto p-2">
@@ -46,17 +46,17 @@
                     x-bind:href="page.url"
                     x-on:mousemove="active = i"
                     x-on:click="click($event, page.url)"
-                    x-bind:class="{ 'bg-primary-50': i === active }"
+                    x-bind:class="{ 'bg-primary-50 dark:bg-primary-900': i === active }"
                     tabindex="-1"
                     class="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5"
                 >
                     <span class="min-w-0">
                         <span
                             x-text="page.label"
-                            x-bind:class="i === active ? 'text-primary-700' : 'text-gray-900'"
+                            x-bind:class="i === active ? 'text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-white'"
                             class="block truncate text-sm font-bold"
                         ></span>
-                        <span x-text="page.letak" class="block truncate text-xs text-gray-500"></span>
+                        <span x-text="page.letak" class="block truncate text-xs text-gray-500 dark:text-gray-400"></span>
                     </span>
                     <span x-show="i === active" aria-hidden="true" class="shrink-0 text-xs text-gray-400">↵</span>
                 </a>
@@ -64,12 +64,12 @@
         </template>
     </ul>
 
-    <p x-show="! results.length" x-cloak class="px-4 py-10 text-center text-sm text-gray-500">
+    <p x-show="! results.length" x-cloak class="px-4 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
         Tidak ada halaman yang cocok dengan “<span x-text="query.trim()"></span>”.
     </p>
 
     {{-- Petunjuk papan ketik — tidak berarti di layar sentuh, jadi disembunyikan di mobile. --}}
-    <div class="flex gap-4 border-t border-border bg-gray-50 px-4 py-2.5 text-[11px] text-gray-500 max-sm:hidden">
+    <div class="flex gap-4 border-t border-border bg-gray-50 px-4 py-2.5 text-[11px] text-gray-500 max-sm:hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
         <span>↑↓ pindah</span>
         <span>↵ buka</span>
         <span>Esc tutup</span>

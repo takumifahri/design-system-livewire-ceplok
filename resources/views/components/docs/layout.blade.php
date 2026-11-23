@@ -1,5 +1,6 @@
 @php
     use App\Docs\Navigation;
+    use App\Docs\Theme;
 @endphp
 
 {{--
@@ -20,6 +21,9 @@
     $section = Navigation::sectionOf($route);
     $sidebar = Navigation::sidebars()[$section] ?? null;
     $panel = request()->cookie('ceplok_docs_panel') !== '0';
+    // Pilihan pembaca hanya berlaku di halaman yang sudah punya tampilan gelap.
+    $darkAvailable = Theme::available($route);
+    $docsDark = Theme::dark();
     $searchIcon = 'm20 20-4.5-4.5M17 10.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z';
 
     // Satu menu di rail: seluruh kolom (ikon + label) bisa diklik, tetapi latar
@@ -29,32 +33,38 @@
     $railItem = fn (bool $active) => [
         'group flex w-full flex-col items-center gap-1 rounded-lg py-0.5 text-center text-[11px] font-bold transition-colors',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600',
-        $active ? 'text-primary-700' : 'text-gray-500 hover:text-gray-800',
+        $active ? 'text-primary-700 dark:text-primary-300' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100',
     ];
     $railIcon = fn (bool $active) => [
         'grid h-8 w-14 place-items-center rounded-lg transition-colors',
-        $active ? 'bg-primary-50' : 'group-hover:bg-gray-100',
+        $active ? 'bg-primary-50 dark:bg-primary-900' : 'group-hover:bg-gray-100 dark:group-hover:bg-gray-700',
     ];
 @endphp
 
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" @if ($docsDark) data-docs-theme="dark" @endif>
     <x-docs.head :title="$title" />
     <body x-data="designSystem">
-        <div x-data="docsLayout(@js($panel))" class="flex min-h-screen flex-col bg-gray-50">
+        <div x-data="docsLayout(@js($panel))" class="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
             {{-- ══ Top bar — mobile ══ --}}
-            <div class="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-white px-4 py-3 lg:hidden">
+            <div class="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-white px-4 py-3 lg:hidden dark:border-gray-700 dark:bg-gray-800">
                 <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2.5" aria-label="Beranda">
                     <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-8 shrink-0 object-contain">
-                    <span class="text-sm font-black tracking-tight text-gray-900">Design System</span>
+                    <span class="text-sm font-black tracking-tight text-gray-900 dark:text-white">Design System</span>
                 </a>
                 <div class="flex items-center gap-1">
-                    <button type="button" x-on:click="$dispatch('docs-search')" class="rounded-lg p-2 text-gray-600 hover:bg-gray-100" aria-label="Cari halaman">
+                    <button type="button" x-on:click="$dispatch('docs-search')" class="rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700" aria-label="Cari halaman">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" d="{{ $searchIcon }}" />
                         </svg>
                     </button>
-                    <button type="button" x-on:click="drawer = true" class="rounded-lg p-2 text-gray-600 hover:bg-gray-100" aria-label="Buka navigasi">
+                    <x-docs.theme-toggle
+                        :dark="$docsDark"
+                        :available="$darkAvailable"
+                        class="rounded-lg p-2 text-gray-600 dark:text-gray-300"
+                        hover="hover:bg-gray-100 dark:hover:bg-gray-700"
+                    />
+                    <button type="button" x-on:click="drawer = true" class="rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700" aria-label="Buka navigasi">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
                         </svg>
@@ -89,11 +99,11 @@
                     x-transition:enter-start="-translate-x-full"
                     x-transition:leave="transition-transform duration-[450ms] ease-[cubic-bezier(0.55,0.055,0.675,0.19)]"
                     x-transition:leave-end="-translate-x-full"
-                    class="ds-scroll-y absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-2xl"
+                    class="ds-scroll-y absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-2xl dark:bg-gray-800"
                 >
-                    <div class="ds-drawer-item flex items-center justify-between border-b border-border px-5 py-4" style="--i: 0">
-                        <span class="text-sm font-black tracking-tight text-gray-900">Navigasi</span>
-                        <button type="button" x-on:click="drawer = false" class="rounded-lg p-2 text-gray-500 hover:bg-gray-100" aria-label="Tutup navigasi">
+                    <div class="ds-drawer-item flex items-center justify-between border-b border-border px-5 py-4 dark:border-gray-700" style="--i: 0">
+                        <span class="text-sm font-black tracking-tight text-gray-900 dark:text-white">Navigasi</span>
+                        <button type="button" x-on:click="drawer = false" class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700" aria-label="Tutup navigasi">
                             <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path stroke-linecap="round" d="M6 6l12 12M18 6 6 18" />
                             </svg>
@@ -133,7 +143,7 @@
             --}}
             <div class="flex flex-1">
                 {{-- ══ Rail ikon — desktop ══ --}}
-                <aside class="sticky top-0 z-30 hidden h-screen w-22 shrink-0 flex-col items-center border-r border-border bg-white px-2 py-5 lg:flex">
+                <aside class="sticky top-0 z-30 hidden h-screen w-22 shrink-0 flex-col items-center border-r border-border bg-white px-2 py-5 lg:flex dark:border-gray-700 dark:bg-gray-800">
                     <a href="{{ route('home') }}" wire:navigate aria-label="Beranda">
                         <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-9 shrink-0 object-contain">
                     </a>
@@ -172,7 +182,7 @@
                         type="button"
                         x-on:click="togglePanel()"
                         @class([
-                            'mt-auto grid size-10 place-items-center rounded-xl text-gray-400 transition-[opacity,transform,color,background-color] duration-300 hover:bg-gray-100 hover:text-gray-700',
+                            'mt-auto grid size-10 place-items-center rounded-xl text-gray-400 transition-[opacity,transform,color,background-color] duration-300 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-200',
                             $sidebar ? 'opacity-100' : 'pointer-events-none scale-75 opacity-0',
                         ])
                         aria-expanded="{{ $panel ? 'true' : 'false' }}"
@@ -194,6 +204,13 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 9.5 13.5 12l2.5 2.5" />
                         </svg>
                     </button>
+                    {{-- Paling bawah, jadi letaknya sama di semua halaman meski tombol panel di atasnya sedang pudar. --}}
+                    <x-docs.theme-toggle
+                        :dark="$docsDark"
+                        :available="$darkAvailable"
+                        class="mt-1 grid size-10 place-items-center rounded-xl text-gray-400 transition-colors duration-300"
+                        hover="hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+                    />
                 </aside>
 
                 {{-- ══ Panel samping — desktop ══ --}}
@@ -201,21 +218,22 @@
                 @if ($sidebar)
                     <aside
                         @class([
-                            'sticky top-0 z-20 hidden h-screen shrink-0 overflow-hidden bg-white transition-[width] duration-300 ease-out lg:block',
-                            $panel ? 'w-62 border-r border-border' : 'w-0',
+                            'sticky top-0 z-20 hidden h-screen shrink-0 overflow-hidden bg-white transition-[width] duration-300 ease-out lg:block dark:bg-gray-800',
+                            $panel ? 'w-62 border-r border-border dark:border-gray-700' : 'w-0',
                         ])
-                        x-bind:class="{ 'w-62 border-r border-border': panel, 'w-0': ! panel }"
+                        x-bind:class="{ 'w-62 border-r border-border dark:border-gray-700': panel, 'w-0': ! panel }"
                         @if (! $panel) inert @endif
                         x-bind:inert="! panel"
                     >
                         <div class="ds-scroll-y flex h-full w-62 flex-col overflow-y-auto px-5 py-7">
                             <p class="px-3 text-[11px] font-black tracking-[0.14em] text-gray-400 uppercase">{{ $sidebar['title'] }}</p>
-                            <nav class="mt-2" aria-label="{{ $sidebar['title'] }}">
+                            {{-- mb-6 menjaga jarak ke kartu versi saat daftar menu memenuhi panel: mt-auto milik kartu hanya memberi jarak selama masih ada ruang sisa. --}}
+                            <nav class="mt-2 mb-6" aria-label="{{ $sidebar['title'] }}">
                                 <x-docs.nav-links :items="$sidebar['items']" :route="$route" />
                             </nav>
-                            <div class="mt-auto rounded-xl bg-gray-50 p-4">
-                                <p class="text-xs font-bold text-gray-900">Foundation v1.0</p>
-                                <p class="mt-1 text-xs leading-5 text-gray-500">
+                            <div class="mt-auto rounded-xl bg-gray-50 p-4 dark:bg-gray-900">
+                                <p class="text-xs font-bold text-gray-900 dark:text-white">Foundation v1.0</p>
+                                <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
                                     Laravel · Livewire 4
                                     <br>
                                     Tailwind CSS v4

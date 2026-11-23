@@ -60,7 +60,7 @@ new class extends Component
         <x-docs.lead>
             Satu Alert yang bisa Anda utak-atik lewat kontrol di bawahnya. Setiap perubahan langsung terlihat
             di sini, dan bagian Penggunaan menuliskan kodenya. Setelah Alert ditutup, klik
-            <span class="text-primary-500">Tampilkan Alert</span> untuk memasangnya kembali.
+            <span class="text-primary-500 dark:text-primary-400">Tampilkan Alert</span> untuk memasangnya kembali.
         </x-docs.lead>
 
         <x-docs.stage :max-width="$width === 'mobile' ? 'max-w-75' : 'max-w-full'" :dark="$dark">
@@ -136,9 +136,9 @@ new class extends Component
             Tampilkan Alert
         </button>
 
-        <p class="mt-4 text-body-sm text-gray-500">
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
             Tombol tutup mengurus visibilitasnya sendiri, jadi tidak ada state yang perlu Anda siapkan. Pasang
-            <span class="text-primary-500">wire:dismiss</span> bila penutupan perlu dicatat, atau <span class="text-primary-500">wire:model</span> bila Alert dikendalikan penuh dari
+            <span class="text-primary-500 dark:text-primary-400">wire:dismiss</span> bila penutupan perlu dicatat, atau <span class="text-primary-500 dark:text-primary-400">wire:model</span> bila Alert dikendalikan penuh dari
             komponen Livewire.
         </p>
     </x-docs.section>

@@ -117,10 +117,10 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
             Kontrol <em>Lebar wadah</em> tidak mengubah prop apa pun — varian Mobile hanya menyempitkan
             wadahnya (340px, dari 348px), sedangkan tinggi, jarak, dan ukuran teksnya sama persis. Karena itu
-            Select tidak punya prop <span class="text-primary-500">platform</span>.
+            Select tidak punya prop <span class="text-primary-500 dark:text-primary-400">platform</span>.
         </p>
     </x-docs.section>
 

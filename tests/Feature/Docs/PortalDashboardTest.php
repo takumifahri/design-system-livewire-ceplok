@@ -106,6 +106,105 @@ class PortalDashboardTest extends TestCase
         }
     }
 
+    public function test_pengaturan_layout_primary_dan_buat_forum_sekunder(): void
+    {
+        $dom = $this->parse(Livewire::test('portal.dashboard')->html());
+        $tombol = fn (string $teks) => $this->find($dom, 'button[wire\:click="kabari(\''.$teks.' belum ada di contoh ini.\')"]');
+
+        $this->assertHasClasses($tombol('Pengaturan layout'), 'bg-primary-700 text-white');
+        $this->assertHasClasses($tombol('Halaman buat forum'), 'border border-primary-700 text-primary-700');
+        $this->assertLacksClasses($tombol('Halaman buat forum'), 'bg-primary-700');
+        $this->assertStringContainsString('Buat Forum', $tombol('Halaman buat forum')->textContent);
+        $this->assertNotNull($tombol('Halaman buat forum')->querySelector('svg'));
+    }
+
+    public function test_presensi_menampilkan_check_out_dan_detail_kehadiran(): void
+    {
+        $dom = $this->parse(Livewire::test('portal.dashboard')->html());
+        $checkOut = $this->find($dom, 'button[wire\:click="kabari(\'Check-out belum ada di contoh ini.\')"]');
+        $kartu = $checkOut->closest('[class*="@container"]');
+
+        $this->assertSame('CHECK OUT', trim($checkOut->textContent));
+        $this->assertHasClasses($checkOut, 'bg-primary-700 min-w-36');
+        $this->assertHasClasses($this->find($kartu, 'button[disabled]'), 'min-w-36');
+        $this->assertStringContainsString('Jam Check-Out Anda', $kartu->textContent);
+        $this->assertStringContainsString('15:30:00 WIB', $kartu->textContent);
+        $this->assertStringContainsString('Untuk detail data kehadiran, silakan cek di aplikasi Apik.', $kartu->textContent);
+    }
+
+    public function test_aplikasi_intranet_memberi_tahu_lewat_toast(): void
+    {
+        $komponen = Livewire::test('portal.dashboard');
+        $dom = $this->parse($komponen->html());
+        $ubin = $dom->querySelectorAll('ul button[wire\:click^="bukaAplikasi("]');
+
+        $this->assertCount(12, $ubin);
+        $this->assertSame('bukaAplikasi(8)', $ubin->item(8)->getAttribute('wire:click'));
+        $this->assertSame('E-Arsip', trim($ubin->item(8)->textContent));
+        // Panah "tampilkan semua" berada di pembungkus kartu, bukan di dalam Card yang ber-overflow-hidden,
+        // dan pembungkusnya berjarak bawah supaya panah itu tidak menempel ke kartu sesudahnya.
+        $panah = $this->find($dom, 'button[aria-label="Tampilkan semua aplikasi"]');
+        $this->assertNull($panah->closest('[class*="@container"]'));
+        $this->assertHasClasses($panah->parentElement, 'relative mb-5');
+
+        $komponen->call('bukaAplikasi', 8)->assertSet('umpan', 'Aplikasi E-Arsip belum ada di contoh ini.');
+    }
+
+    public function test_tombol_panah_membuka_dan_menutup_sisa_aplikasi(): void
+    {
+        $komponen = Livewire::test('portal.dashboard');
+        $ubin = fn () => $this->parse($komponen->html())->querySelectorAll('#portal-aplikasi button');
+        $panah = fn () => $this->find($this->parse($komponen->html()), 'button[aria-label="Tampilkan semua aplikasi"]');
+
+        $this->assertSame('false', $panah()->getAttribute('aria-expanded'));
+        $this->assertSame('portal-aplikasi', $panah()->getAttribute('aria-controls'));
+        $this->assertSame("\$toggle('semuaAplikasi')", $panah()->getAttribute('wire:click'));
+
+        $komponen->toggle('semuaAplikasi');
+
+        $this->assertCount(18, $ubin());
+        $this->assertSame('true', $panah()->getAttribute('aria-expanded'));
+        $this->assertHasClasses($this->find($panah(), 'svg'), 'rotate-180');
+        $this->assertSame('Tiket Layanan', trim($ubin()->item(17)->textContent));
+
+        $komponen->call('bukaAplikasi', 12)->assertSet('umpan', 'Aplikasi Helpdesk TI belum ada di contoh ini.');
+        $komponen->toggle('semuaAplikasi');
+
+        $this->assertCount(12, $ubin());
+    }
+
+    public function test_forum_sticky_post_dan_kosmo_memberi_tahu_lewat_toast(): void
+    {
+        $komponen = Livewire::test('portal.dashboard');
+        $dom = $this->parse($komponen->html());
+
+        // Forum: ListView varian article, tiap kartunya tautan.
+        $forum = $dom->querySelectorAll('a[wire\:click\.prevent^="bukaForum("]');
+        $this->assertCount(5, $forum);
+        $this->assertSame(route('portal.app'), $forum->item(1)->getAttribute('href'));
+        $this->assertStringContainsString('Bima Pratama', $forum->item(1)->textContent);
+        $this->assertStringContainsString('1689', $forum->item(1)->textContent);
+
+        // Sticky Post: ListView simple tanpa ikon, aksinya di seluruh kartu.
+        $sticky = $dom->querySelectorAll('article[wire\:click^="bukaSticky("]');
+        $this->assertCount(4, $sticky);
+        $this->assertSame('Panduan Akses Wi-Fi Kantor', trim($this->find($sticky->item(0), 'h4')->textContent));
+        $this->assertNull($sticky->item(0)->querySelector('svg'));
+
+        // KOSMO: dua kartu, masing-masing dengan kotak QR dan tombol tokonya.
+        $kosmo = $this->find($dom, 'section[aria-label="Unduh aplikasi KOSMO"]');
+        $this->assertCount(2, $kosmo->querySelectorAll('[role="img"][aria-label^="Kode QR unduhan KOSMO"]'));
+        $this->assertSame("unduhKosmo('ios')", $kosmo->querySelectorAll('button')->item(1)->getAttribute('wire:click'));
+
+        $komponen
+            ->call('bukaForum', 1)
+            ->assertSet('umpan', 'Detail forum "Tata cara penyerahan arsip inaktif ke unit kearsipan" belum ada di contoh ini.')
+            ->call('bukaSticky', 0)
+            ->assertSet('umpan', 'Detail "Panduan Akses Wi-Fi Kantor" belum ada di contoh ini.')
+            ->call('unduhKosmo', 'ios')
+            ->assertSet('umpan', 'Tautan KOSMO di App Store belum ada di contoh ini.');
+    }
+
     public function test_sumber_anggaran_mengganti_angkanya(): void
     {
         Livewire::test('portal.dashboard')

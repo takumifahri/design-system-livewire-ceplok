@@ -9,6 +9,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     public string $pesan = '';
 
     /** @var list<string> */
@@ -41,11 +44,12 @@ new class extends Component
         submit-label="Kirim"
         wire:submit="kirim"
         wire:toolbar-action="pakaiAlat($event.detail.action)"
+        :dark-mode="$dark"
     />
     @if ($terkirim)
-        <ul class="space-y-2 text-body-sm text-gray-700">
+        <ul class="space-y-2 text-body-sm text-gray-700 dark:text-gray-300">
             @foreach ($terkirim as $i => $isi)
-                <li wire:key="pesan-{{ $i }}" class="rounded-lg border border-border bg-surface px-4 py-2">{{ $isi }}</li>
+                <li wire:key="pesan-{{ $i }}" class="rounded-lg border border-border bg-surface px-4 py-2 dark:border-gray-700 dark:bg-gray-800">{{ $isi }}</li>
             @endforeach
         </ul>
     @endif

@@ -59,6 +59,36 @@ class CodeTest extends TestCase
         $this->assertSame('[[&#039;label&#039; =&gt; &#039;Home&#039;]]', Code::highlight("[['label' => 'Home']]")->toHtml());
     }
 
+    public function test_theme_menyisakan_penanda_gelap_hanya_di_mode_gelap(): void
+    {
+        $code = '<x-ceplok::alert variant="success"⟨ dark-mode⟩ />';
+
+        $this->assertSame('<x-ceplok::alert variant="success" dark-mode />', Code::theme($code, dark: true));
+        $this->assertSame('<x-ceplok::alert variant="success" />', Code::theme($code, dark: false));
+    }
+
+    public function test_theme_menyisakan_penanda_terang_hanya_di_mode_terang(): void
+    {
+        $code = '<x-ceplok::alert⟨! ⟦dark-mode⟧⟩ variant="success" />';
+
+        $this->assertSame('<x-ceplok::alert ⟦dark-mode⟧ variant="success" />', Code::theme($code, dark: false));
+        $this->assertSame('<x-ceplok::alert variant="success" />', Code::theme($code, dark: true));
+    }
+
+    public function test_theme_menghapus_baris_yang_hanya_berisi_penanda_yang_dibuang(): void
+    {
+        $code = "<x-ceplok::alert\n    variant=\"success\"\n    ⟨dark-mode⟩\n\n/>";
+
+        $this->assertSame("<x-ceplok::alert\n    variant=\"success\"\n    dark-mode\n\n/>", Code::theme($code, dark: true));
+        $this->assertSame("<x-ceplok::alert\n    variant=\"success\"\n\n/>", Code::theme($code, dark: false));
+    }
+
+    public function test_theme_tidak_membaca_mode_halaman_untuk_kode_tanpa_penanda(): void
+    {
+        // Tes unit ini tidak punya request; kode tanpa penanda dikembalikan apa adanya.
+        $this->assertSame("a\n\n  b", Code::theme("a\n\n  b"));
+    }
+
     public function test_highlight_tidak_menjalankan_markup_di_dalam_kode(): void
     {
         $html = Code::highlight('⟦<script>alert(1)</script>⟧')->toHtml();

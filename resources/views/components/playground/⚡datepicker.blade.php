@@ -105,8 +105,8 @@ new class extends Component
             />
         </x-docs.stage>
 
-        <p class="mt-4 text-body-sm text-gray-500">
-            Nilai properti <span class="text-primary-500">wire:model</span>: <span class="text-primary-500">{{ $this->nilai }}</span>
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+            Nilai properti <span class="text-primary-500 dark:text-primary-400">wire:model</span>: <span class="text-primary-500 dark:text-primary-400">{{ $this->nilai }}</span>
         </p>
 
         <x-docs.controls>

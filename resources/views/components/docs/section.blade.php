@@ -8,14 +8,14 @@
 ])
 
 <section id="{{ $id }}" {{ $attributes->class('scroll-mt-24') }}>
-    <h2 class="group flex items-baseline gap-2 text-heading-3 font-black text-gray-900">
+    <h2 class="group flex items-baseline gap-2 text-heading-3 font-black text-gray-900 dark:text-white">
         {{ $title }}
         <a
             href="#{{ $id }}"
             x-on:click="go($event, @js($id))"
             title="Tautan ke bagian ini"
             aria-label="Tautan ke bagian {{ $title }}"
-            class="rounded text-primary-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-primary-600 focus-visible:opacity-100"
+            class="rounded text-primary-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-primary-600 focus-visible:opacity-100 dark:text-primary-800 dark:hover:text-primary-400"
         >#</a>
     </h2>
     <div class="mt-3">{{ $slot }}</div>

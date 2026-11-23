@@ -7,7 +7,7 @@
         ['shadow-orange-500/50', 'bg-orange-500 shadow-lg shadow-orange-500/50'],
         ['shadow-purple-500/50', 'bg-purple-500 shadow-lg shadow-purple-500/50'],
     ];
-    $code = fn (string $c) => '<code class="text-xs font-bold text-gray-700">'.e($c).'</code>';
+    $code = fn (string $c) => '<code class="text-xs font-bold text-gray-700 dark:text-gray-300">'.e($c).'</code>';
 @endphp
 
 <x-docs.layout title="Elevation">
@@ -23,11 +23,12 @@
                 untuk elemen melayang standar.
             </x-docs.lead>
 
+            {{-- Di mode gelap docs petaknya gray-700: bayangannya tetap, hanya permukaannya yang ikut gelap. --}}
             <article class="ds-card p-5 sm:p-7">
                 <div class="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
                     @foreach ($shadowScale as $class)
-                        <div class="{{ $class }} flex aspect-6/7 items-center justify-center rounded-lg bg-white text-center">
-                            <code class="text-sm font-bold text-primary-700">.{{ $class }}</code>
+                        <div class="{{ $class }} flex aspect-6/7 items-center justify-center rounded-lg bg-white text-center dark:bg-gray-700">
+                            <code class="text-sm font-bold text-primary-700 dark:text-primary-300">.{{ $class }}</code>
                         </div>
                     @endforeach
                 </div>
@@ -78,7 +79,7 @@
         <x-docs.section id="prinsip" title="Prinsip penggunaan">
             <x-docs.principles>
                 <x-docs.principle>Kartu memakai {!! $code('shadow-sm') !!}/{!! $code('shadow') !!}, dropdown/popover {!! $code('shadow-lg') !!}, modal {!! $code('shadow-xl') !!} ke atas.</x-docs.principle>
-                <x-docs.principle>Batasi maksimal <strong class="text-gray-900">dua tingkat elevation</strong> dalam satu tampilan agar hierarki jelas.</x-docs.principle>
+                <x-docs.principle>Batasi maksimal <strong class="text-gray-900 dark:text-white">dua tingkat elevation</strong> dalam satu tampilan agar hierarki jelas.</x-docs.principle>
                 <x-docs.principle>Bayangan berwarna hanya untuk penekanan khusus (CTA, kartu promosi) — bukan konten reguler.</x-docs.principle>
                 <x-docs.principle>Bayangan bukan pengganti kontras — elemen interaktif tetap butuh batas/warna yang aksesibel.</x-docs.principle>
             </x-docs.principles>

@@ -85,18 +85,23 @@ new class extends Component
         <x-docs.lead>
             Bingkai di bawah ini mensimulasikan viewport halaman supaya keempat sudut bisa dicoba. Setiap
             perubahan langsung terlihat, dan bagian Penggunaan menuliskan kodenya. Setelah Toast ditutup,
-            klik <span class="text-primary-500">Tampilkan Toast</span> untuk memasangnya kembali.
+            klik <span class="text-primary-500 dark:text-primary-400">Tampilkan Toast</span> untuk memasangnya kembali.
         </x-docs.lead>
 
         {{--
             Bukan <x-docs.stage>: panggung Playground biasa hanya kartu berlatar
             netral, sedangkan di sini perlu tinggi tetap dan `relative` supaya
-            Toast bisa benar-benar ditempel ke sudut bingkainya.
+            Toast bisa benar-benar ditempel ke sudut bingkainya. Warnanya
+            mengikuti kontrol Tampilan seperti <x-docs.stage>, termasuk tetap
+            terang bila Light dipilih di mode gelap docs.
         --}}
-        <div @class([
-            'relative h-72 overflow-hidden rounded-2xl border p-4 transition-colors sm:h-80 sm:p-6',
-            $dark ? 'border-gray-800 bg-gray-900' : 'border-border bg-surface-subtle',
-        ])>
+        <div
+            @unless ($dark) data-theme="light" @endunless
+            @class([
+                'relative h-72 overflow-hidden rounded-2xl border p-4 transition-colors sm:h-80 sm:p-6',
+                $dark ? 'border-gray-800 bg-gray-900 dark:border-gray-700' : 'border-border bg-surface-subtle dark:text-content',
+            ])
+        >
             <div @class([
                 'relative mx-auto h-full transition-[max-width] duration-300 ease-out',
                 $width === 'mobile' ? 'max-w-75' : 'max-w-full',
@@ -176,14 +181,14 @@ new class extends Component
 
 
             <x-docs.control label="Posisi">
-                <div class="inline-grid grid-cols-2 gap-1 rounded-lg border border-border bg-surface p-1" role="group" aria-label="Pilih posisi toast">
+                <div class="inline-grid grid-cols-2 gap-1 rounded-lg border border-border bg-surface p-1 dark:border-gray-700 dark:bg-gray-800" role="group" aria-label="Pilih posisi toast">
                     @foreach ($this::CORNERS as $value => $corner)
                         <button
                             type="button"
                             wire:click="$set('position', @js($value))"
                             @class([
                                 'grid size-9 place-items-center rounded-md transition-colors',
-                                $position === $value ? 'bg-primary-50 text-primary-700' : 'text-gray-400 hover:text-gray-700',
+                                $position === $value ? 'bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-primary-300' : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200',
                             ])
                             aria-pressed="{{ $position === $value ? 'true' : 'false' }}"
                             aria-label="{{ $corner['label'] }}"
@@ -204,8 +209,8 @@ new class extends Component
             Tampilkan Toast
         </button>
 
-        <p class="mt-4 text-body-sm text-gray-500">
-            Lebar mobile memakai <span class="text-primary-500">inset-x-3</span> agar Toast merentang mengikuti layar; di desktop lebarnya
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
+            Lebar mobile memakai <span class="text-primary-500 dark:text-primary-400">inset-x-3</span> agar Toast merentang mengikuti layar; di desktop lebarnya
             dibatasi lalu ditempel ke satu sisi.
         </p>
     </x-docs.section>
@@ -213,7 +218,7 @@ new class extends Component
     <x-docs.section id="penggunaan" title="Penggunaan">
         <x-docs.lead>
             Blok ini mengikuti kontrol di Playground — ubah kontrolnya, kodenya ikut berubah. Wadah
-            <span class="text-primary-500">fixed</span> ikut ditulis karena posisinya memang ditentukan di sana, bukan di dalam Toast.
+            <span class="text-primary-500 dark:text-primary-400">fixed</span> ikut ditulis karena posisinya memang ditentukan di sana, bukan di dalam Toast.
         </x-docs.lead>
         <x-docs.code :code="$this->usage" flush />
     </x-docs.section>

@@ -17,12 +17,52 @@ use Illuminate\Support\HtmlString;
  * Container — ditandai `⟪ekspresi|cadangan⟫`: ekspresi Alpine yang mengisi
  * angkanya, dan teks cadangan yang dirender server sebelum Alpine berjalan.
  * Tombol salin menyalin teks yang sedang tampil, jadi nilai itu ikut tersalin.
+ *
+ * Bagian yang hanya berlaku di satu mode docs (lihat App\Docs\Theme) ditandai
+ * `⟨…⟩` (hanya di mode gelap docs, mis. ` dark-mode` yang ikut ditulis
+ * pratinjaunya) atau `⟨!…⟩` (hanya di mode terang docs). Padanan `dm.inline`
+ * dan `dm.line` di docs React.
  */
 final class Code
 {
     private const MARK = '/⟦(\*?)(.*?)⟧/su';
 
     private const LIVE = '/⟪(.*?)(?:\|(.*?))?⟫/su';
+
+    private const THEME = '/⟨(!?)(.*?)⟩/u';
+
+    /**
+     * Menyisakan bagian `⟨…⟩` di mode gelap docs dan `⟨!…⟩` di mode terang,
+     * lalu membuang yang lain. Baris yang hanya berisi penanda yang dibuang
+     * ikut dihapus, jadi prop yang ditulis satu per baris tidak menyisakan
+     * baris kosong. `$dark` kosong berarti mode halaman yang sedang dirender;
+     * kode tanpa penanda tidak membacanya sama sekali.
+     */
+    public static function theme(string $code, ?bool $dark = null): string
+    {
+        if (! str_contains($code, '⟨')) {
+            return $code;
+        }
+
+        $dark ??= Theme::dark();
+        $lines = [];
+
+        foreach (preg_split('/\R/', $code) ?: [] as $line) {
+            $kept = (string) preg_replace_callback(
+                self::THEME,
+                fn (array $m) => ($m[1] === '!') !== $dark ? $m[2] : '',
+                $line,
+            );
+
+            if ($kept !== $line && trim($kept) === '') {
+                continue;
+            }
+
+            $lines[] = $kept;
+        }
+
+        return implode("\n", $lines);
+    }
 
     /**
      * Membuang baris kosong di ujung dan indentasi yang sama di semua baris,

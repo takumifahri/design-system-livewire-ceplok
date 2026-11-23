@@ -17,7 +17,7 @@
             @if ($route === $item['route']) aria-current="page" @endif
         >{{ $item['label'] }}</a>
         @if (! empty($item['children']))
-            <div class="mt-1 ml-5 border-l border-border pl-2">
+            <div class="mt-1 ml-5 border-l border-border pl-2 dark:border-gray-700">
                 @foreach ($item['children'] as $child)
                     <a
                         href="{{ route($child['route']) }}"

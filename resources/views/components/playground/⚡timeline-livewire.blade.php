@@ -10,6 +10,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya (`:dark="$docsDark"`). */
+    public bool $dark = false;
+
     /** @var list<int> Indeks langkah yang statusnya sudah ditutup. */
     public array $tertutup = [];
 
@@ -52,10 +55,10 @@ new class extends Component
 
 <div class="w-full space-y-4">
     <div class="max-w-102">
-        <x-ceplok::timeline platform="mobile" :items="$this->langkah" :labels="['months' => ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']]" />
+        <x-ceplok::timeline platform="mobile" :items="$this->langkah" :labels="['months' => ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']]" :dark-mode="$dark" />
     </div>
     <div class="flex flex-wrap items-center gap-3">
-        <span class="text-body-sm text-gray-500">{{ count($tertutup) }} dari 3 status ditutup.</span>
+        <span class="text-body-sm text-gray-500 dark:text-gray-400">{{ count($tertutup) }} dari 3 status ditutup.</span>
         <x-ceplok::button size="s" variant="outline" wire:click="pulihkan" :disabled="$tertutup === []">Tampilkan lagi</x-ceplok::button>
     </div>
 </div>

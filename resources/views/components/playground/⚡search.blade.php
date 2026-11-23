@@ -64,7 +64,7 @@ new class extends Component
     <x-docs.section id="playground" title="Playground">
         <x-docs.lead>
             Satu komponen yang bisa Anda utak-atik lewat kontrol di bawahnya. Tekan tombolnya atau Enter di
-            dalam field untuk melihat nilai yang dikirim event <span class="text-primary-500">search</span>.
+            dalam field untuk melihat nilai yang dikirim event <span class="text-primary-500 dark:text-primary-400">search</span>.
         </x-docs.lead>
 
         <x-docs.stage
@@ -137,12 +137,12 @@ new class extends Component
 
         </x-docs.controls>
 
-        <p class="mt-4 text-body-sm text-gray-500">
+        <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
             Pencarian terakhir:
             @if ($terakhir === null)
                 <em>belum ada</em>.
             @else
-                <span class="text-primary-500">{{ $terakhir }}</span>.
+                <span class="text-primary-500 dark:text-primary-400">{{ $terakhir }}</span>.
             @endif
             Saat kategori dinyalakan, <em>Platform</em> hanya mengganti lebar wadah pratinjaunya — 882px
             atau 382px — sedangkan tinggi dan isi ruasnya tetap sama.

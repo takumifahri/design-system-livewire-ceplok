@@ -17,8 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // X-Forwarded-* dipercaya supaya URL aset ikut memakai https.
         $middleware->trustProxies(at: '*');
 
-        // Keadaan panel samping docs, ditulis JavaScript (resources/js/docs/layout.js).
-        $middleware->encryptCookies(except: ['ceplok_docs_panel']);
+        // Keadaan panel samping dan mode gelap docs, keduanya ditulis
+        // JavaScript (resources/js/docs/layout.js dan theme.js).
+        $middleware->encryptCookies(except: ['ceplok_docs_panel', 'ceplok_docs_theme']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
