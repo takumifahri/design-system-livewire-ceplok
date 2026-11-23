@@ -8,6 +8,8 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    public bool $dark = false;
+
     public ?string $terakhir = null;
 
     public function duplikat(): void
@@ -28,12 +30,12 @@ new class extends Component
 ?>
 
 <div class="flex min-h-56 w-full flex-col items-center gap-4 pt-3">
-    <x-ceplok::dropdown :items="[
+    <x-ceplok::dropdown :dark-mode="$dark" :items="[
         ['label' => 'Duplikat', 'attributes' => ['wire:click' => 'duplikat']],
         ['label' => 'Arsipkan', 'attributes' => ['wire:click' => 'arsipkan']],
         ['label' => 'Hapus', 'tone' => 'danger', 'attributes' => ['wire:click' => 'hapus']],
     ]">
-        <x-slot:trigger variant="outline">Aksi dokumen</x-slot:trigger>
+        <x-slot:trigger variant="outline" :tone="$dark ? 'dark' : 'light'">Aksi dokumen</x-slot:trigger>
     </x-ceplok::dropdown>
-    <p class="text-body-sm text-gray-500" role="status">{{ $terakhir ?? 'Belum ada aksi.' }}</p>
+    <p @class(['text-body-sm', 'text-gray-400' => $dark, 'text-gray-500' => ! $dark]) role="status">{{ $terakhir ?? 'Belum ada aksi.' }}</p>
 </div>

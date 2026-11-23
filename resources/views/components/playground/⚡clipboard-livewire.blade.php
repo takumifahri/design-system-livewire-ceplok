@@ -8,6 +8,9 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya. */
+    public bool $dark = false;
+
     public string $message = 'Belum ada aktivitas salin.';
 
     public function copied(string $value): void
@@ -31,6 +34,7 @@ new class extends Component
             prefix="ID"
             wire:copy-success="copied($event.detail.value)"
             wire:copy-error="failed"
+            :dark-mode="$dark"
         />
     </div>
     <p class="text-body-sm text-content-subtle" role="status">{{ $message }}</p>

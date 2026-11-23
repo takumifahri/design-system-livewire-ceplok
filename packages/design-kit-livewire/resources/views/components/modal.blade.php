@@ -14,9 +14,11 @@
     jebakan fokus.
 
     `variant="default"`: `title` (prop atau slot) mengisi header sekaligus
-    menjadi nama aksesibel, slot bawaan mengisi badan, dan slot `footer`
-    mengisi kakinya. `variant="popup"` untuk konfirmasi ringkas: tanpa judul
-    dan tanpa divider footer; beri `aria-label` sebagai nama aksesibelnya.
+    menjadi nama aksesibel dan slot bawaan mengisi badan. `actions` menyediakan
+    tombol secondary, primary, dan danger; slot `footer` menjadi override penuh.
+    `variant="popup"` untuk konfirmasi ringkas: ikon peringatan bawaan dapat
+    diganti lewat `icon` atau disembunyikan dengan `:icon="false"`; beri
+    `aria-label` sebagai nama aksesibelnya.
     `size` (`s` | `m`) hanya untuk default.
 
     Pembukanya slot `trigger`, dirender sebagai Button kit dengan atribut slot
@@ -47,6 +49,9 @@
     'closeOnBackdrop' => true,
     'closeOnEscape' => true,
     'showCloseButton' => true,
+    'darkMode' => false,
+    'icon' => '__ceplok_default_popup_icon__',
+    'actions' => null,
     'open' => false,
     'trigger' => null,
     'footer' => null,
@@ -58,10 +63,26 @@
     $closeOnBackdrop = Prop::bool($closeOnBackdrop, true, 'modal', 'close-on-backdrop');
     $closeOnEscape = Prop::bool($closeOnEscape, true, 'modal', 'close-on-escape');
     $showCloseButton = Prop::bool($showCloseButton, true, 'modal', 'show-close-button');
+    $darkMode = Prop::bool($darkMode, false, 'modal', 'dark-mode');
 
     if ($isPopup && ($size !== null || Content::filled($title))) {
         Prop::violation('<x-ceplok::modal variant="popup"> tidak memakai `size` dan `title`. Beri nama aksesibelnya lewat `aria-label`, lalu susun ikon dan pesannya di slot bawaan.');
     }
+
+    if (! $isPopup && $icon !== '__ceplok_default_popup_icon__') {
+        Prop::violation('<x-ceplok::modal> hanya memakai prop `icon` pada variant="popup".');
+    }
+    if ($actions !== null && Content::filled($footer)) {
+        Prop::violation('<x-ceplok::modal> memakai salah satu `actions` atau slot `footer`, bukan keduanya.');
+    }
+
+    $actions = $actions === null ? [] : (array) $actions;
+    if (array_diff(array_keys($actions), ['secondary', 'primary', 'danger']) !== []) {
+        Prop::violation('<x-ceplok::modal> hanya menerima role action `secondary`, `primary`, dan `danger`.');
+    }
+    $popupIcon = $isPopup
+        ? ($icon === '__ceplok_default_popup_icon__' ? svg('ceplok-s-exclamation-circle', '', ['viewBox' => '2 2 20 20']) : $icon)
+        : null;
 
     $size = $isPopup ? null : Prop::oneOf(ModalSize::class, $size ?? 's', ModalSize::S, 'modal', 'size');
     $bound = Bound::has($attributes);
@@ -76,6 +97,8 @@
     $hasTitle = ! $isPopup && Content::filled($title);
     $ariaLabel = filled(trim((string) $attributes->get('aria-label'))) ? $attributes->get('aria-label') : null;
     $ariaLabelledBy = filled(trim((string) $attributes->get('aria-labelledby'))) ? $attributes->get('aria-labelledby') : null;
+    $explicitTheme = $attributes->get('data-theme');
+    $modalDark = in_array($explicitTheme, ['light', 'dark'], true) ? $explicitTheme === 'dark' : $darkMode;
     $divider = 'border-[light-dark(var(--color-border),var(--color-border-strong))]';
 
     $wrapperKeys = array_keys($attributes->whereStartsWith(['wire:model', 'x-model', 'wire:key'])->getAttributes());
@@ -83,6 +106,7 @@
     $dialog = $attributes
         ->except([...$wrapperKeys, 'aria-label', 'aria-labelledby', 'open'])
         ->merge([
+            'data-theme' => $darkMode ? 'dark' : null,
             'aria-label' => $ariaLabel,
             'aria-labelledby' => $ariaLabelledBy ?? ($hasTitle && $ariaLabel === null ? $titleId : null),
             'data-close-on-escape' => $closeOnEscape ? 'true' : 'false',
@@ -97,6 +121,46 @@
             $size === 'm' ? 'max-w-[640px] bg-surface' : null,
         ]);
 
+    $actionDefaults = [
+        'secondary' => ['size' => 'xs', 'variant' => 'outline', 'theme' => 'gray', 'tone' => $modalDark ? 'dark' : 'light'],
+        'primary' => ['size' => 'xs', 'variant' => 'filled', 'theme' => 'primary', 'tone' => $modalDark ? 'dark' : 'light'],
+        'danger' => ['size' => 'xs', 'variant' => 'filled', 'theme' => 'orange', 'tone' => $modalDark ? 'dark' : 'light'],
+    ];
+    $secondaryDarkAction = 'border-gray-50! text-gray-50! hover:border-gray-50! hover:bg-white! hover:text-gray-700!';
+    $dangerAction = 'bg-[light-dark(var(--color-orange-600),var(--color-red-700))]! text-white! font-sans font-semibold! leading-[1.5] enabled:hover:bg-[light-dark(var(--color-orange-700),var(--color-red-800))]! focus:ring-[light-dark(var(--color-red-700),var(--color-red-300))]! focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
+    $renderedActions = collect(['secondary', 'primary', 'danger'])
+        ->filter(fn (string $role) => isset($actions[$role]))
+        ->map(function (string $role) use ($actions, $actionDefaults, $secondaryDarkAction, $dangerAction, $modalDark) {
+            $action = (array) $actions[$role];
+            if (! array_key_exists('label', $action)) {
+                Prop::violation("<x-ceplok::modal> action `{$role}` memerlukan `label`.");
+            }
+            $customButtonProps = (array) ($action['buttonProps'] ?? []);
+            $buttonProps = array_merge($actionDefaults[$role], $customButtonProps);
+            $buttonAttributes = new ComponentAttributeBag((array) ($action['attributes'] ?? []));
+            if (isset($buttonProps['className']) || isset($buttonProps['class'])) {
+                $buttonAttributes = $buttonAttributes->class($buttonProps['className'] ?? $buttonProps['class']);
+            }
+            if (isset($buttonProps['disabled'])) {
+                $buttonAttributes = $buttonAttributes->merge(['disabled' => $buttonProps['disabled']]);
+            }
+            if (isset($buttonProps['type'])) {
+                $buttonAttributes = $buttonAttributes->merge(['type' => $buttonProps['type']]);
+            }
+            if ($role === 'secondary' && $modalDark && ! array_key_exists('theme', $customButtonProps)) {
+                $buttonAttributes = $buttonAttributes->class($secondaryDarkAction);
+            }
+            if ($role === 'danger' && ! array_key_exists('theme', $customButtonProps)) {
+                $buttonAttributes = $buttonAttributes->class($dangerAction);
+            }
+
+            return [
+                'label' => $action['label'],
+                'buttonProps' => $buttonProps,
+                'attributes' => $buttonAttributes,
+            ];
+        });
+
     if ($hasTrigger) {
         $triggerAttributes = ($trigger->attributes ?? new ComponentAttributeBag)->merge([
             'aria-haspopup' => 'dialog',
@@ -105,6 +169,9 @@
             'x-on:click' => 'show()',
         ]);
         $raw = $triggerAttributes->has('raw');
+        if (! $raw && $modalDark && ! $triggerAttributes->has('theme')) {
+            $triggerAttributes = $triggerAttributes->class('bg-gray-50! text-gray-700! hover:bg-white! hover:text-gray-700!');
+        }
     }
 @endphp
 
@@ -154,13 +221,42 @@
         <div @class([
             'min-h-0 flex-1 overflow-y-auto overscroll-y-contain font-sans text-body font-medium text-content-muted',
             $isPopup ? 'px-5 pb-4 pt-5' : 'px-5 py-6',
-        ])>{{ $slot }}</div>
+        ])>
+            @if (Content::filled($popupIcon))
+                <div class="mb-4 flex shrink-0 justify-center">
+                    <x-ceplok::icon class="size-12! shrink-0 text-feedback-error">
+                        @if (is_string($popupIcon) && str_starts_with($popupIcon, 'ceplok-'))
+                            {{ svg($popupIcon) }}
+                        @else
+                            {{ $popupIcon }}
+                        @endif
+                    </x-ceplok::icon>
+                </div>
+            @endif
+            {{ $slot }}
+        </div>
 
-        @if (Content::filled($footer))
+        @if (Content::filled($footer) || $renderedActions->isNotEmpty())
             <div @class([
                 'flex shrink-0 flex-wrap items-center gap-3',
                 $isPopup ? 'px-5 pb-5' : 'border-t '.$divider.' px-6 py-4',
-            ])>{{ $footer }}</div>
+                'justify-center gap-4' => $isPopup && $renderedActions->isNotEmpty(),
+                'justify-end' => ! $isPopup && $renderedActions->isNotEmpty(),
+            ])>
+                @if ($renderedActions->isNotEmpty())
+                    @foreach ($renderedActions as $action)
+                        <x-ceplok::button
+                            :size="$action['buttonProps']['size']"
+                            :variant="$action['buttonProps']['variant']"
+                            :theme="$action['buttonProps']['theme']"
+                            :tone="$action['buttonProps']['tone']"
+                            :attributes="$action['attributes']"
+                        >{{ $action['label'] }}</x-ceplok::button>
+                    @endforeach
+                @else
+                    {{ $footer }}
+                @endif
+            </div>
         @endif
     </dialog>
 </div>

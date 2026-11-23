@@ -7,7 +7,7 @@ use Livewire\Component;
  * Playground halaman Dropdown. Panelnya dibuka sejak halaman dimuat dan
  * dibuka lagi setelah kontrol diganti (lihat resources/js/docs/dropdown-playground.js).
  *
- * `wire:key` Dropdown-nya memuat mode, contoh, dan `attached`: ketiganya
+ * `wire:key` Dropdown-nya memuat mode, contoh, dan `align`: ketiganya
  * mengubah x-data atau bentuk panelnya (menu atau daftar pilihan), yang
  * dibaca kit sekali saat Dropdown diinisialisasi.
  */
@@ -25,7 +25,9 @@ new class extends Component
 
     public bool $disabled = false;
 
-    public bool $attached = false;
+    public string $align = 'start';
+
+    public bool $closeOnSelect = true;
 
     public bool $dark = false;
 
@@ -45,6 +47,7 @@ new class extends Component
     {
         $lines = match (true) {
             $this->mode === 'selection' => $this->selectionUsage(),
+            $this->mode === 'navigation' => $this->navigationUsage(),
             in_array($this->example, ['actions', 'icons'], true) => $this->actionUsage(),
             default => $this->contentUsage(),
         };
@@ -105,7 +108,8 @@ new class extends Component
         return [
             '<x-ceplok::dropdown',
             $this->dark ? '    ⟦dark-mode⟧' : null,
-            $this->attached ? '    ⟦attached⟧' : null,
+            "    ⟦align⟧=\"{$this->align}\"",
+            '    :⟦close-on-select⟧="'.($this->closeOnSelect ? 'true' : 'false').'"',
             ...$list,
             '>',
             '    <x-slot:trigger raw class="…">Dropdown button</x-slot:trigger>',
@@ -120,6 +124,11 @@ new class extends Component
             ? '        <hr ⟦class⟧="'.($this->dark ? 'my-1 border-0 border-t border-gray-700' : 'my-1 border-0 border-t border-border').'">'
             : null;
         $disabled = $this->disabled ? ' ⟦disabled⟧' : '';
+        $contentLabel = match ($this->example) {
+            'radio' => 'Pilih akses',
+            'scroll' => 'Pilih notifikasi dengan scroll',
+            default => 'Pilih notifikasi',
+        };
 
         $body = match ($this->example) {
             'radio' => [
@@ -156,7 +165,12 @@ new class extends Component
         return [
             '@php($dark = '.($this->dark ? 'true' : 'false').')',
             '',
-            '<x-ceplok::dropdown :⟦dark-mode⟧="$dark"'.($this->attached ? ' ⟦attached⟧' : '').' ⟦content-class⟧="p-4">',
+            '<x-ceplok::dropdown',
+            '    :⟦dark-mode⟧="$dark"',
+            "    ⟦align⟧=\"{$this->align}\"",
+            "    ⟦content-label⟧=\"{$contentLabel}\"",
+            '    ⟦content-class⟧="p-4"',
+            '>',
             '    <x-slot:trigger raw class="…">Dropdown button</x-slot:trigger>',
             ...$body,
             '</x-ceplok::dropdown>',
@@ -197,11 +211,31 @@ new class extends Component
             '',
             '<x-ceplok::dropdown',
             $this->dark ? '    ⟦dark-mode⟧' : null,
-            $this->attached ? '    ⟦attached⟧' : null,
+            "    ⟦align⟧=\"{$this->align}\"",
+            '    :⟦close-on-select⟧="'.($this->closeOnSelect ? 'true' : 'false').'"',
             '    ⟦content-label⟧="Urutan hasil"',
             ...$list,
             '>',
             '    <x-slot:⟦trigger⟧ raw class="…">Urutkan: {{ $urut }}</x-slot:trigger>',
+            '</x-ceplok::dropdown>',
+        ];
+    }
+
+    /** @return list<?string> */
+    private function navigationUsage(): array
+    {
+        return [
+            '<x-ceplok::dropdown',
+            $this->dark ? '    dark-mode' : null,
+            "    ⟦align⟧=\"{$this->align}\"",
+            '    :⟦close-on-select⟧="'.($this->closeOnSelect ? 'true' : 'false').'"',
+            '    :items="[',
+            "        ['label' => 'Ringkasan', 'href' => '/ringkasan', 'current' => true],",
+            "        ['label' => 'Dokumentasi', 'href' => 'https://example.com', 'target' => '_blank', 'rel' => 'noopener noreferrer'],",
+            "        ['label' => 'Tujuan terkunci', 'href' => '/terkunci', 'disabled' => true],",
+            '    ]"',
+            '>',
+            '    <x-slot:trigger raw class="…">Buka navigasi</x-slot:trigger>',
             '</x-ceplok::dropdown>',
         ];
     }
@@ -211,7 +245,7 @@ new class extends Component
 <div class="space-y-16" x-data="docsDropdownPlayground">
     <x-docs.section id="playground" title="Playground">
         <x-docs.lead>
-            Mode Action memakai button atau link native untuk menjalankan aksi dan navigasi. Mode
+            Mode Action menjalankan perintah, Navigation memakai link native melalui item generated, dan Mode
             Selection memakai <span class="text-primary-500">selected</span> untuk membentuk listbox berisi option yang dapat
             dinavigasi lewat keyboard. Pratinjaunya dibuka sejak halaman dimuat supaya tiap variasi
             mudah dibandingkan.
@@ -221,25 +255,41 @@ new class extends Component
             <div x-ref="stage" class="flex min-h-80 items-start justify-center pt-10">
                 @if ($mode === 'selection')
                     <x-docs.dropdown-example
-                        wire:key="dropdown-selection-{{ (int) $attached }}"
+                        wire:key="dropdown-selection-{{ $align }}-{{ (int) $closeOnSelect }}"
                         example="selection"
                         model="selected"
                         :selected="$selected"
                         :separator="$separator"
                         :description="$description"
                         :disabled="$disabled"
-                        :attached="$attached"
+                        :align="$align"
+                        :close-on-select="$closeOnSelect"
                         :dark="$dark"
                     />
+                @elseif ($mode === 'navigation')
+                    <x-ceplok::dropdown
+                        wire:key="dropdown-navigation-{{ $align }}-{{ (int) $closeOnSelect }}"
+                        :dark-mode="$dark"
+                        :align="$align"
+                        :close-on-select="$closeOnSelect"
+                        :items="[
+                            ['label' => 'Ringkasan', 'href' => '/ringkasan', 'current' => true],
+                            ['label' => 'Dokumentasi', 'href' => 'https://example.com', 'target' => '_blank', 'rel' => 'noopener noreferrer'],
+                            ['label' => 'Tujuan terkunci', 'href' => '/terkunci', 'disabled' => $disabled],
+                        ]"
+                    >
+                        <x-slot:trigger raw class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-700 px-4 text-base font-medium text-white transition-colors duration-200 hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-400">Buka navigasi</x-slot:trigger>
+                    </x-ceplok::dropdown>
                 @else
                     <x-docs.dropdown-example
-                        wire:key="dropdown-{{ $example }}-{{ (int) $attached }}"
+                        wire:key="dropdown-{{ $example }}-{{ $align }}-{{ (int) $closeOnSelect }}"
                         :example="$example"
                         group-name="playground-dropdown"
                         :separator="$separator"
                         :description="$description"
                         :disabled="$disabled"
-                        :attached="$attached"
+                        :align="$align"
+                        :close-on-select="$closeOnSelect"
                         :dark="$dark"
                     />
                 @endif
@@ -256,22 +306,49 @@ new class extends Component
             <x-docs.control label="Mode">
                 <x-docs.segmented label="Pilih mode Dropdown" model="mode" :value="$mode" :options="[
                     ['value' => 'action', 'label' => 'Action'],
+                    ['value' => 'navigation', 'label' => 'Navigation'],
                     ['value' => 'selection', 'label' => 'Selection'],
                 ]" />
             </x-docs.control>
 
+            <x-docs.control label="Align">
+                <x-docs.segmented label="Pilih perataan panel" model="align" :value="$align" :options="[
+                    ['value' => 'start', 'label' => 'Start'],
+                    ['value' => 'center', 'label' => 'Center'],
+                    ['value' => 'end', 'label' => 'End'],
+                ]" />
+            </x-docs.control>
+
+            <x-docs.control label="Close on select">
+                <x-docs.segmented
+                    label="Tutup panel setelah item dijalankan"
+                    model="closeOnSelect"
+                    :value="$closeOnSelect"
+                    :disabled="$mode === 'action' && ! in_array($example, ['actions', 'icons'], true)"
+                    :options="[
+                        ['value' => true, 'label' => 'true'],
+                        ['value' => false, 'label' => 'false'],
+                    ]"
+                />
+                @if ($mode === 'action' && ! in_array($example, ['actions', 'icons'], true))
+                    <p class="mt-2 text-xs text-gray-500">
+                        Hanya berlaku pada item generated; konten kustom menutup panel secara eksplisit.
+                    </p>
+                @endif
+            </x-docs.control>
+
             <x-docs.control label="Kelompok">
-                <x-docs.segmented label="Tampilkan kelompok" model="separator" :value="$separator" :options="[
+                <x-docs.segmented label="Tampilkan kelompok" model="separator" :value="$separator" :disabled="$mode === 'navigation'" :options="[
                     ['value' => true, 'label' => 'Ada'],
                     ['value' => false, 'label' => 'Tidak Ada'],
                 ]" />
                 <p class="mt-2 text-xs text-gray-500">
-                    {{ $this->separatorFromData ? 'Kelompok dibuat melalui groups dengan separator: true.' : 'Kelompok dibuat dengan garis pemisah (border) di antara isi slot.' }}
+                    {{ $mode === 'navigation' ? 'Navigation memakai satu daftar items agar contoh link tetap ringkas.' : ($this->separatorFromData ? 'Kelompok dibuat melalui groups dengan separator: true.' : 'Kelompok dibuat dengan garis pemisah (border) di antara isi slot.') }}
                 </p>
             </x-docs.control>
 
             <x-docs.control label="Keterangan">
-                <x-docs.segmented label="Tampilkan keterangan" model="description" :value="$description" :options="[
+                <x-docs.segmented label="Tampilkan keterangan" model="description" :value="$description" :disabled="$mode === 'navigation'" :options="[
                     ['value' => true, 'label' => 'Ada'],
                     ['value' => false, 'label' => 'Tidak Ada'],
                 ]" />
@@ -284,21 +361,13 @@ new class extends Component
                 ]" />
             </x-docs.control>
 
-            <x-docs.control label="Attached">
-                <x-docs.segmented label="Tempelkan panel pada trigger" model="attached" :value="$attached" :options="[
-                    ['value' => true, 'label' => 'Ada'],
-                    ['value' => false, 'label' => 'Tidak Ada'],
-                ]" />
-            </x-docs.control>
-
-
             <x-docs.control label="Contoh">
                 <x-docs.segmented
                     label="Pilih contoh Dropdown"
                     model="example"
                     :value="$example"
                     item-class="basis-1/2 justify-center px-2.5 sm:basis-1/3"
-                    :disabled="$mode === 'selection'"
+                    :disabled="$mode !== 'action'"
                     wrap
                     :options="[
                         ['value' => 'actions', 'label' => 'Tanpa ikon'],
@@ -308,9 +377,9 @@ new class extends Component
                         ['value' => 'scroll', 'label' => 'Dengan scroll'],
                     ]"
                 />
-                @if ($mode === 'selection')
+                @if ($mode !== 'action')
                     <p class="mt-2 text-xs text-gray-500">
-                        Tidak tersedia pada mode Selection. Item dirender sebagai option dalam listbox.
+                        Contoh custom content hanya tersedia pada Action. Navigation dan Selection memakai item generated.
                     </p>
                 @endif
             </x-docs.control>
@@ -319,15 +388,23 @@ new class extends Component
 
     <x-docs.section id="penggunaan" title="Penggunaan">
         <x-docs.lead>
-            Action cukup diisi lewat <span class="text-primary-500">items</span> atau <span class="text-primary-500">groups</span>. Selection memakai struktur yang
-            sama dengan menambahkan <span class="text-primary-500">selected</span> dan pembaruan state pada setiap option. Panel
+            Action cukup diisi lewat <span class="text-primary-500">items</span> atau <span class="text-primary-500">groups</span>.
+            Navigation memakai struktur item yang sama dengan <span class="text-primary-500">href</span>,
+            <span class="text-primary-500">target</span>, <span class="text-primary-500">rel</span>, dan
+            <span class="text-primary-500">current</span>, tanpa mode production tambahan. Selection
+            menambahkan <span class="text-primary-500">selected</span> dan pembaruan state pada setiap option. Panel
             yang berisi kontrol bebas diisi lewat slot dan diberi jarak sendiri lewat
             <span class="text-primary-500">content-class</span>. Kode berikut mengikuti Mode dan kontrol Playground.
         </x-docs.lead>
         <p class="mt-2 mb-4 max-w-2xl text-body-sm text-gray-500">
             Slot <span class="text-primary-500">trigger</span> dirender Dropdown sendiri: sebagai Button kit dengan atribut slot sebagai
-            props-nya, atau sebagai <span class="text-primary-500">&lt;button&gt;</span> polos dengan <span class="text-primary-500">raw</span>. Karena itu atribut Popover dan
-            ARIA-nya selalu terpasang dan bertahan saat Livewire merender ulang. Trigger icon-only wajib memiliki
+            props-nya, atau sebagai <span class="text-primary-500">&lt;button&gt;</span> polos dengan <span class="text-primary-500">raw</span>.
+            Dropdown mengelola <span class="text-primary-500">popovertarget</span>,
+            <span class="text-primary-500">popovertargetaction</span>, dan
+            <span class="text-primary-500">aria-expanded</span>; Selection juga menerima
+            <span class="text-primary-500">aria-haspopup=&quot;listbox&quot;</span> dan
+            <span class="text-primary-500">aria-controls</span>. Atribut ini tetap terpasang ketika
+            Livewire merender ulang. Trigger icon-only wajib memiliki
             nama aksesibel, misalnya lewat <span class="text-primary-500">aria-label</span> pada slotnya. Isi slot trigger tidak boleh berisi
             tombol atau tautan lain.
         </p>

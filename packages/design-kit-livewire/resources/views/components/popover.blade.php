@@ -20,12 +20,15 @@
 
     `side` adalah preferensi posisi; panel berbalik ke sisi berlawanan bila
     ruangnya kurang, dan dijepit di dalam layar. `dark-mode` memakai panel
-    gelap. `open` membuka sejak awal (padanan `defaultOpen`); `wire:model` atau
+    gelap; `data-theme` consumer dapat menjadi boundary eksplisit. `open`
+    membuka sejak awal (padanan `defaultOpen`); `wire:model` atau
     `x-model` di tag Popover mengendalikannya (padanan `open` + `onOpenChange`),
     dan setiap perubahan mengirim event `open-change` (`detail.open`).
 
-    `wire:model`, `x-model`, dan `wire:key` dipasang di pembungkus (`contents`);
-    atribut lain diteruskan ke panel, seperti di React.
+    `wire:model`, `x-model`, `wire:key`, dan listener `open-change` dipasang di
+    pembungkus (`contents`); atribut lain diteruskan ke panel, seperti di React.
+    Listener native `beforetoggle` disaring karena lifecycle itu dikelola
+    Popover; amati perubahan melalui event `open-change`.
 --}}
 @props([
     'title',
@@ -68,18 +71,29 @@
         $triggerAttributes = $triggerAttributes->except(['href', 'as']);
     }
 
-    $wrapperKeys = array_keys($attributes->whereStartsWith(['wire:model', 'x-model', 'wire:key'])->getAttributes());
+    $wrapperKeys = array_keys($attributes->whereStartsWith([
+        'wire:model',
+        'x-model',
+        'wire:key',
+        'wire:open-change',
+        'x-on:open-change',
+    ])->getAttributes());
     $wrapper = $attributes->only($wrapperKeys);
+    $blockedPanelKeys = array_keys($attributes->whereStartsWith([
+        'x-on:beforetoggle',
+        'wire:beforetoggle',
+        'onbeforetoggle',
+    ])->getAttributes());
 
     // Sebelum posisinya terukur panel disembunyikan, supaya tidak terlihat melompat.
     $panelClass = (new ClassToggle)
         ->always('fixed inset-auto m-0 w-[255px] shrink-0 overflow-visible border-0 bg-transparent p-0 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.08))]')
         ->when('ready', false, 'visible', 'invisible');
     $panel = $attributes
-        ->except([...$wrapperKeys, 'id', 'popover', 'data-theme'])
+        ->except([...$wrapperKeys, ...$blockedPanelKeys, 'id', 'popover', 'data-theme'])
         ->merge([
             'id' => $panelId,
-            'data-theme' => $darkMode ? 'dark' : $attributes->get('data-theme'),
+            'data-theme' => $attributes->get('data-theme', $darkMode ? 'dark' : null),
             'data-side' => $side,
             'x-ref' => 'panel',
             'x-bind:style' => 'panelStyle()',

@@ -9,30 +9,22 @@
 --}}
 @props([
     'triggerLabel' => 'Buka Popup',
+    'darkMode' => false,
 ])
 
-@php
-    $cancel = 'border-gray-400! text-gray-400! bg-transparent hover:bg-[light-dark(var(--color-gray-100),var(--color-surface-subtle))]! hover:text-[light-dark(var(--color-gray-700),var(--color-content))]!';
-    $danger = 'bg-red-700! text-white! font-sans font-semibold! leading-[1.5] enabled:hover:bg-red-800! enabled:active:bg-red-900! focus:ring-[light-dark(var(--color-red-700),var(--color-red-300))]! focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
-@endphp
+<x-ceplok::modal
+    variant="popup"
+    aria-label="Konfirmasi hapus konten"
+    :dark-mode="$darkMode"
+    :actions="[
+        'secondary' => ['label' => 'Tidak, Batalkan', 'attributes' => ['x-on:click' => 'close()']],
+        'danger' => ['label' => 'Ya, hapus konten ini', 'attributes' => ['x-on:click' => 'close()']],
+    ]"
+    {{ $attributes }}
+>
+    <x-slot:trigger :tone="$darkMode ? 'dark' : 'light'">{{ $triggerLabel }}</x-slot:trigger>
 
-<x-ceplok::modal variant="popup" aria-label="Konfirmasi hapus konten" {{ $attributes }}>
-    <x-slot:trigger>{{ $triggerLabel }}</x-slot:trigger>
-
-    <div class="text-center">
-        <div class="flex justify-center">
-            {{-- Ikon dekoratif 48px; viewBox tanpa padding internal, sama seperti docs React. --}}
-            <x-ceplok::icon class="size-12! shrink-0 text-red-600">{{ svg('ceplok-s-exclamation-circle', '', ['viewBox' => '2 2 20 20']) }}</x-ceplok::icon>
-        </div>
-        <p class="mx-auto mt-4 max-w-xs text-body font-medium text-content-muted">
-            Apakah anda yakin ingin menghapus konten ini?
-        </p>
-    </div>
-
-    <x-slot:footer>
-        <div class="flex w-full flex-wrap justify-center gap-4">
-            <x-ceplok::button variant="outline" theme="gray" size="xs" :class="$cancel" x-on:click="close()">Tidak, Batalkan</x-ceplok::button>
-            <x-ceplok::button size="xs" :class="$danger" x-on:click="close()">Ya, hapus konten ini</x-ceplok::button>
-        </div>
-    </x-slot:footer>
+    <p class="mx-auto max-w-xs text-center text-body font-medium text-content-muted">
+        Apakah anda yakin ingin menghapus konten ini?
+    </p>
 </x-ceplok::modal>

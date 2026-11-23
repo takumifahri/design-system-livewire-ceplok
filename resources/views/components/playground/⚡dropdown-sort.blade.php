@@ -17,5 +17,5 @@ new class extends Component
 ?>
 
 <div class="contents">
-    <x-docs.dropdown-example example="selection" model="urut" :selected="$urut" attached :dark="$dark" />
+    <x-docs.dropdown-example example="selection" model="urut" :selected="$urut" :dark="$dark" />
 </div>

@@ -25,6 +25,7 @@ class PagesTest extends TestCase
             'dropdown' => ['components.dropdown', 'Dropdown', 'Dropdown'],
             'drawer' => ['components.drawer', 'Drawer', 'Drawer'],
             'modal' => ['components.modal', 'Modal', 'Modal'],
+            'navbar' => ['components.navbar', 'Navbar', 'Navbar'],
             'alert' => ['components.alert', 'Alert', 'Alert'],
             'toast' => ['components.toast', 'Toast', 'Toast'],
             'card' => ['components.card', 'Card', 'Card'],

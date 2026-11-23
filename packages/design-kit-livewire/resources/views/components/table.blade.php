@@ -687,7 +687,7 @@
                             dengan Dropdown lain; <select> bawaan tidak bisa diberi gaya. Tinggi,
                             sudut, dan garis tombolnya disamakan dengan Pagination.
                         --}}
-                        <x-ceplok::dropdown attached content-label="Baris per halaman" :items="$pageSizeItems">
+                        <x-ceplok::dropdown content-label="Baris per halaman" :items="$pageSizeItems">
                             <x-slot:trigger
                                 raw
                                 :disabled="$loading"

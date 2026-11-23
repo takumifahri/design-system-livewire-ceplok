@@ -21,7 +21,7 @@ new class extends Component
 
     public ModalSize $size = ModalSize::S;
 
-    /** `basic`, `image`, atau `long`. */
+    /** `basic`, `image`, `long`, atau `nested`. */
     public string $example = 'basic';
 
     public bool $closeOnBackdrop = true;
@@ -29,6 +29,13 @@ new class extends Component
     public bool $closeOnEscape = true;
 
     public bool $showCloseButton = true;
+
+    public function updatedExample(string $example): void
+    {
+        if ($example === 'nested') {
+            $this->variant = ModalVariant::Default;
+        }
+    }
 
     /** @return list<string> */
     public static function ceplokCopy(): array
@@ -82,42 +89,57 @@ new class extends Component
     #[Computed]
     public function usage(): string
     {
-        $theme = $this->dark ? 'dark' : 'light';
+        $themeProp = $this->dark ? '    dark-mode' : null;
         $dismissal = array_values(array_filter([
             $this->closeOnBackdrop ? null : '    :⟦close-on-backdrop⟧="false"',
             $this->closeOnEscape ? null : '    :⟦close-on-escape⟧="false"',
             $this->showCloseButton ? null : '    :⟦show-close-button⟧="false"',
         ]));
 
+        if ($this->example === 'nested') {
+            return implode("\n", array_filter([
+                '<div x-data="{ defaultOpen: false, popupOpen: false }">',
+                '    <x-ceplok::button x-on:click="defaultOpen = true">Buka Modal Bertingkat</x-ceplok::button>',
+                '',
+                '    <x-ceplok::modal',
+                $themeProp ? '    dark-mode' : null,
+                '        x-model="defaultOpen"',
+                ...($this->size === ModalSize::M ? ['        size="m"'] : []),
+                '        title="Kelola konten"',
+                '    >',
+                '        <x-ceplok::button size="xs" x-on:click="popupOpen = true">Hapus konten</x-ceplok::button>',
+                '    </x-ceplok::modal>',
+                '',
+                '    <x-ceplok::modal',
+                $themeProp ? '    dark-mode' : null,
+                '        x-model="popupOpen"',
+                '        variant="popup"',
+                '        aria-label="Konfirmasi hapus konten"',
+                '    >',
+                '        <p>Apakah anda yakin ingin menghapus konten ini?</p>',
+                '    </x-ceplok::modal>',
+                '</div>',
+            ], fn (?string $line) => $line !== null));
+        }
+
         if ($this->variant === ModalVariant::Popup) {
             return implode("\n", [
-                '<div data-theme="'.$theme.'">',
                 '<x-ceplok::modal',
+                $themeProp,
                 '    ⟦variant⟧="popup"',
                 '    ⟦aria-label⟧="Konfirmasi hapus konten"',
                 ...$dismissal,
+                '    :actions="[',
+                "        'secondary' => ['label' => 'Tidak, Batalkan', 'attributes' => ['x-on:click' => 'close()']],",
+                "        'danger' => ['label' => 'Ya, hapus konten ini', 'attributes' => ['x-on:click' => 'close()']],",
+                '    ]"',
                 '>',
                 '    <x-slot:trigger>Buka Modal</x-slot:trigger>',
                 '',
-                '    <div class="text-center">',
-                '        <div class="flex justify-center">',
-                '            <x-ceplok::icon class="size-12! shrink-0 text-red-600">',
-                "                {{ svg('ceplok-s-exclamation-circle', '', ['viewBox' => '2 2 20 20']) }}",
-                '            </x-ceplok::icon>',
-                '        </div>',
-                '        <p class="mx-auto mt-4 max-w-xs text-body font-medium text-content-muted">',
-                '            Apakah anda yakin ingin menghapus konten ini?',
-                '        </p>',
-                '    </div>',
-                '',
-                '    <x-slot:footer>',
-                '        <div class="flex w-full flex-wrap justify-center gap-4">',
-                '            <x-ceplok::button variant="outline" theme="gray" size="xs" x-on:click="close()">Tidak, Batalkan</x-ceplok::button>',
-                '            <x-ceplok::button size="xs" class="bg-red-700! …" x-on:click="close()">Ya, hapus konten ini</x-ceplok::button>',
-                '        </div>',
-                '    </x-slot:footer>',
+                '    <p class="mx-auto max-w-xs text-center text-body font-medium text-content-muted">',
+                '        Apakah anda yakin ingin menghapus konten ini?',
+                '    </p>',
                 '</x-ceplok::modal>',
-                '</div>',
             ]);
         }
 
@@ -139,21 +161,17 @@ new class extends Component
         };
 
         return implode("\n", [
-            '<div data-theme="'.$theme.'">',
             '<x-ceplok::modal',
+            $themeProp,
             ...$dismissal,
             ...($this->size === ModalSize::M ? ['    ⟦size⟧="m"'] : []),
             '    title="'.($long ? 'Ketentuan Layanan' : 'Terms of Service').'"',
+            "    :actions=\"['primary' => ['label' => '".($long ? 'Saya mengerti' : 'Ya, saya setuju')."', 'attributes' => ['x-on:click' => 'close()']]]\"",
             '>',
             '    <x-slot:trigger>Buka Modal</x-slot:trigger>',
             '',
             ...$body,
-            '',
-            '    <x-slot:footer>',
-            '        <x-ceplok::button size="xs" class="ml-auto" x-on:click="close()">'.($long ? 'Saya mengerti' : 'Ya, saya setuju').'</x-ceplok::button>',
-            '    </x-slot:footer>',
             '</x-ceplok::modal>',
-            '</div>',
         ]);
     }
 };
@@ -161,6 +179,7 @@ new class extends Component
 
 @php
     $isPopup = $variant === \CeplokUi\DesignKit\Enums\ModalVariant::Popup;
+    $isNested = $example === 'nested';
     $long = $example === 'long';
 @endphp
 
@@ -171,18 +190,47 @@ new class extends Component
             diperlukan. Popup menggunakan struktur dan ukuran bawaannya sendiri.
         </x-docs.lead>
 
-        <x-docs.stage max-width="max-w-[420px]">
+        <x-docs.stage max-width="max-w-[420px]" :dark="$dark">
             <div data-theme="{{ $dark ? 'dark' : 'light' }}" class="flex min-h-40 items-center justify-center rounded-lg bg-surface">
-                @if ($isPopup)
+                @if ($isNested)
+                    <div x-data="{ defaultOpen: false, popupOpen: false }">
+                        <x-ceplok::button :tone="$dark ? 'dark' : 'light'" x-on:click="defaultOpen = true">Buka Modal Bertingkat</x-ceplok::button>
+                        <x-ceplok::modal
+                            x-model="defaultOpen"
+                            :dark-mode="$dark"
+                            :size="$size"
+                            title="Kelola konten"
+                            :actions="['primary' => ['label' => 'Selesai', 'attributes' => ['x-on:click' => 'close()']]]"
+                        >
+                            <p class="mb-4">Buka konfirmasi tanpa menutup Modal ini.</p>
+                            <x-ceplok::button size="xs" x-on:click="popupOpen = true">Hapus konten</x-ceplok::button>
+                        </x-ceplok::modal>
+                        <x-ceplok::modal
+                            x-model="popupOpen"
+                            :dark-mode="$dark"
+                            variant="popup"
+                            aria-label="Konfirmasi hapus konten"
+                            :actions="[
+                                'secondary' => ['label' => 'Tidak, Batalkan', 'attributes' => ['x-on:click' => 'close()']],
+                                'danger' => ['label' => 'Ya, hapus konten ini', 'attributes' => ['x-on:click' => 'close()']],
+                            ]"
+                        >
+                            <p class="text-center">Apakah anda yakin ingin menghapus konten ini?</p>
+                        </x-ceplok::modal>
+                    </div>
+                @elseif ($isPopup)
                     <x-docs.modal-popup
                         trigger-label="Buka Modal"
+                        :dark-mode="$dark"
                         :wire:key="$this->modalKey"
                         :close-on-backdrop="$closeOnBackdrop"
                         :close-on-escape="$closeOnEscape"
                         :show-close-button="$showCloseButton"
+                        :actions="['primary' => ['label' => $long ? 'Saya mengerti' : 'Ya, saya setuju', 'attributes' => ['x-on:click' => 'close()']]]"
                     />
                 @else
                     <x-ceplok::modal
+                        :dark-mode="$dark"
                         :wire:key="$this->modalKey"
                         :size="$size"
                         :title="$long ? 'Ketentuan Layanan' : 'Terms of Service'"
@@ -190,7 +238,7 @@ new class extends Component
                         :close-on-escape="$closeOnEscape"
                         :show-close-button="$showCloseButton"
                     >
-                        <x-slot:trigger>Buka Modal</x-slot:trigger>
+                        <x-slot:trigger :tone="$dark ? 'dark' : 'light'">Buka Modal</x-slot:trigger>
 
                         @if ($example === 'image')
                             <img src="/images/ceplok.svg" alt="Ilustrasi motif Ceplok" class="aspect-[600/437] w-full rounded-lg object-cover">
@@ -213,9 +261,6 @@ new class extends Component
                             </div>
                         @endif
 
-                        <x-slot:footer>
-                            <x-ceplok::button size="xs" class="ml-auto" x-on:click="close()">{{ $long ? 'Saya mengerti' : 'Ya, saya setuju' }}</x-ceplok::button>
-                        </x-slot:footer>
                     </x-ceplok::modal>
                 @endif
             </div>
@@ -229,7 +274,7 @@ new class extends Component
                 ]" />
             </x-docs.control>
             <x-docs.control label="Variant">
-                <x-docs.segmented label="Pilih variant Modal" model="variant" :value="$variant" :options="[
+                <x-docs.segmented label="Pilih variant Modal" model="variant" :value="$variant" :disabled="$isNested" :options="[
                     ['value' => 'default', 'label' => 'Default'],
                     ['value' => 'popup', 'label' => 'Popup'],
                 ]" />
@@ -245,6 +290,7 @@ new class extends Component
                     ['value' => 'basic', 'label' => 'Dasar'],
                     ['value' => 'image', 'label' => 'Dengan Gambar'],
                     ['value' => 'long', 'label' => 'Konten Panjang'],
+                    ['value' => 'nested', 'label' => 'Nested Modal'],
                 ]" />
             </x-docs.control>
             <x-docs.control label="Cara Menutup">
@@ -268,6 +314,11 @@ new class extends Component
                 Popup digunakan untuk konfirmasi ringkas. Gunakan <span class="text-primary-500">aria-label</span> atau
                 <span class="text-primary-500">aria-labelledby</span> sebagai nama aksesibel, susun icon dan pesan di slot bawaan,
                 lalu tempatkan tombol di slot footer. Contoh dan Size hanya tersedia untuk Default Modal.
+            </p>
+        @elseif ($isNested)
+            <p class="mt-2 max-w-2xl text-body-sm text-gray-500 dark:text-gray-400">
+                Nested Modal memakai state terpisah untuk dialog Default dan Popup. Dialog yang dibuka
+                terakhir berada di top layer dan penutupannya tidak menutup dialog pertama.
             </p>
         @elseif ($example === 'image')
             <p class="mt-2 max-w-2xl text-body-sm text-gray-500">

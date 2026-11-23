@@ -23,7 +23,8 @@
     'separator' => false,
     'description' => false,
     'disabled' => false,
-    'attached' => false,
+    'align' => 'start',
+    'closeOnSelect' => true,
     'dark' => false,
     'model' => null,
     'selected' => 'Terbaru',
@@ -31,10 +32,11 @@
 
 @php
     $triggerClass = implode(' ', [
-        'inline-flex h-10 items-center justify-center gap-2',
-        'rounded-lg bg-primary-700 px-4',
-        'text-base font-medium text-white',
-        'transition-colors duration-200 hover:bg-primary-800',
+        'inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4',
+        'text-base font-medium transition-colors duration-200',
+        $dark
+            ? 'bg-gray-50 text-gray-700 hover:bg-white'
+            : 'bg-primary-700 text-white hover:bg-primary-800',
         'focus:outline-none focus:ring-2 focus:ring-primary-400',
         'disabled:pointer-events-none disabled:opacity-50',
     ]);
@@ -76,7 +78,8 @@
     <div @unless ($model) x-data="{ urut: @js($selected) }" @endunless {{ $attributes->class('contents') }}>
         <x-ceplok::dropdown
             :dark-mode="$dark"
-            :attached="$attached"
+            :align="$align"
+            :close-on-select="$closeOnSelect"
             content-label="Urutan hasil"
             :items="$separator ? null : $sortItems"
             :groups="$separator ? [['id' => 'waktu', 'label' => 'Waktu', 'items' => array_slice($sortItems, 0, 2)], ['id' => 'nama', 'separator' => true, 'items' => array_slice($sortItems, 2)]] : null"
@@ -95,7 +98,8 @@
     <x-ceplok::dropdown
         :attributes="$attributes"
         :dark-mode="$dark"
-        :attached="$attached"
+        :align="$align"
+        :close-on-select="$closeOnSelect"
         :items="$separator ? null : $actions"
         :groups="$separator ? [['id' => 'utama', 'items' => array_slice($actions, 0, 3)], ['id' => 'keluar', 'separator' => true, 'items' => array_slice($actions, 3)]] : null"
         aria-label="Daftar aksi"
@@ -103,7 +107,7 @@
         <x-slot:trigger raw :class="$triggerClass">Dropdown button {{ $chevron }}</x-slot:trigger>
     </x-ceplok::dropdown>
 @elseif ($example === 'scroll')
-    <x-ceplok::dropdown :attributes="$attributes" :dark-mode="$dark" :attached="$attached" content-class="p-4" aria-label="Pilih notifikasi dengan scroll">
+    <x-ceplok::dropdown :attributes="$attributes" :dark-mode="$dark" :align="$align" :close-on-select="$closeOnSelect" content-class="p-4" content-label="Pilih notifikasi dengan scroll">
         <x-slot:trigger raw :class="$triggerClass">Dropdown button {{ $chevron }}</x-slot:trigger>
         <div @class(['flex max-h-48 flex-col gap-4 overflow-y-auto overscroll-y-contain', $scroll])>
             <x-ceplok::checkbox :dark-mode="$dark" :class="$row" label="Email" :helper-text="$description ? 'Notifikasi melalui email.' : null" checked />
@@ -124,7 +128,7 @@
         </div>
     </x-ceplok::dropdown>
 @elseif ($example === 'radio')
-    <x-ceplok::dropdown :attributes="$attributes" :dark-mode="$dark" :attached="$attached" content-class="p-4" aria-label="Pilih akses">
+    <x-ceplok::dropdown :attributes="$attributes" :dark-mode="$dark" :align="$align" :close-on-select="$closeOnSelect" content-class="p-4" content-label="Pilih akses">
         <x-slot:trigger raw :class="$triggerClass">Dropdown button {{ $chevron }}</x-slot:trigger>
         <div class="flex flex-col gap-4">
             <x-ceplok::radio :dark-mode="$dark" :class="$row" :name="$groupName" value="viewer" label="Viewer" />
@@ -136,7 +140,7 @@
         </div>
     </x-ceplok::dropdown>
 @else
-    <x-ceplok::dropdown :attributes="$attributes" :dark-mode="$dark" :attached="$attached" content-class="p-4" aria-label="Pilih notifikasi">
+    <x-ceplok::dropdown :attributes="$attributes" :dark-mode="$dark" :align="$align" :close-on-select="$closeOnSelect" content-class="p-4" content-label="Pilih notifikasi">
         <x-slot:trigger raw :class="$triggerClass">Dropdown button {{ $chevron }}</x-slot:trigger>
         <div class="flex flex-col gap-4">
             <x-ceplok::checkbox :dark-mode="$dark" :class="$row" label="Email" :helper-text="$description ? 'Kirim pembaruan melalui email.' : null" />
