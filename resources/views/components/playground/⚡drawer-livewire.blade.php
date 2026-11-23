@@ -13,6 +13,9 @@ new class extends Component
 
     public string $menuTerpilih = 'Belum ada menu yang dipilih';
 
+    /** Mengikuti mode docs halaman, diisi saat mount (lihat App\Docs\Theme). */
+    public bool $dark = false;
+
     public function pilihMenu(string $menu): void
     {
         $this->menuTerpilih = $menu;
@@ -22,7 +25,7 @@ new class extends Component
 ?>
 
 <div class="space-y-4">
-    <x-docs.stage max-width="max-w-[520px]" min-width="520px">
+    <x-docs.stage max-width="max-w-[520px]" min-width="520px" :dark="$dark">
         <div class="flex h-[520px] w-full items-center justify-center py-4">
             <div class="relative flex h-full w-[380px] max-w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3.5 dark:border-gray-700 dark:bg-gray-800">

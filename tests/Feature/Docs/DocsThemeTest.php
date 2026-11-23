@@ -132,6 +132,8 @@ class DocsThemeTest extends TestCase
 
         $this->assertSame([], $diLuar($terang, $penanda), "{$route}: pratinjau gelap di docs terang.");
         $this->assertNotEmpty($diLuar($gelap, $penanda), "{$route}: pratinjau tidak ikut docs gelap.");
+        // Panggung ikut gelap: pratinjau gelap di panggung terang membuat trigger putih atau teks putih hilang.
+        $this->assertSame([], $diLuar($gelap, '[data-theme="light"].bg-surface-subtle'), "{$route}: panggung tetap terang di docs gelap.");
 
         $teks = fn (HTMLDocument $dom) => implode("\n", array_map(fn ($el) => $el->textContent, $diLuar($dom, 'pre code')));
         if ($cuplikan) {

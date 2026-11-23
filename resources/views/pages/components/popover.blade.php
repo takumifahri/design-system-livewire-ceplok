@@ -44,7 +44,7 @@
                 Gunakan Popover untuk informasi kontekstual yang perlu dibuka dari native <span class="{{ $hl }}">&lt;button&gt;</span>.
                 Ikon informasi di bawah hanya contoh; trigger dapat berupa tombol native lain yang sesuai konteks.
             </x-docs.lead>
-            <x-docs.stage max-width="max-w-[640px]">
+            <x-docs.stage max-width="max-w-[640px]" :dark="$docsDark">
                 <div class="flex min-h-32 items-center justify-center gap-0 p-6">
                     <span class="text-sm font-medium text-gray-900 dark:text-white">Nomor referensi</span>
                     <x-docs.popover-example label="Informasi nomor referensi" title="Nomor referensi" trigger-class="-ml-1" :dark="$docsDark">
@@ -139,7 +139,7 @@
                 Ikat visibilitas dengan <span class="{{ $hl }}">wire:model</span> dan tangkap perubahan melalui
                 <span class="{{ $hl }}">wire:open-change</span> ketika state tersebut perlu diproses di server.
             </x-docs.lead>
-            <x-docs.stage max-width="max-w-[640px]">
+            <x-docs.stage max-width="max-w-[640px]" :dark="$docsDark">
                 <livewire:playground.popover-livewire :dark="$docsDark" />
             </x-docs.stage>
             <x-docs.code>

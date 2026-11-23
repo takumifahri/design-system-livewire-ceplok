@@ -176,7 +176,7 @@
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>Gunakan <code>wire:model.live</code> untuk mengikat status buka/tutup. <code>wire:close</code> menangkap penutupan dari tombol, backdrop, atau Esc.</x-docs.lead>
-            <livewire:playground.drawer-livewire />
+            <livewire:playground.drawer-livewire :dark="$docsDark" />
         </x-docs.section>
 
         <x-docs.section id="properties" title="Properties">

@@ -66,7 +66,7 @@
                 terbuka, ketik nama aksinya untuk melompat ke sana — mis. <span class="text-primary-500 dark:text-primary-400">k</span> ke Keluar — lalu tekan
                 Enter.
             </x-docs.lead>
-            <x-docs.stage max-width="max-w-xl">
+            <x-docs.stage max-width="max-w-xl" :dark="$docsDark">
                 <div class="flex min-h-72 items-start justify-center pt-10">
                     <x-docs.dropdown-example example="actions" group-name="overview-dropdown" :dark="$docsDark" />
                 </div>
@@ -197,7 +197,7 @@
                 dapat dicampur dalam satu koleksi: koleksi yang memakai <span class="text-primary-500 dark:text-primary-400">selected</span> seluruhnya
                 diperlakukan sebagai Selection, sedangkan <span class="text-primary-500 dark:text-primary-400">href</span> hanya untuk item Action.
             </x-docs.lead>
-            <x-docs.stage max-width="max-w-xl">
+            <x-docs.stage max-width="max-w-xl" :dark="$docsDark">
                 <div class="flex min-h-56 items-start justify-center pt-10">
                     <livewire:playground.dropdown-sort :dark="$docsDark" />
                 </div>
