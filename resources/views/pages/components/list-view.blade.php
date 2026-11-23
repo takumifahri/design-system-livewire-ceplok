@@ -33,6 +33,11 @@ $containerProps = [
 ['dark-mode', 'bool', 'false', 'Menyetel tema gelap untuk kontainer dan item data-driven.'],
 ['as', 'string', 'div', 'Elemen HTML pembungkus List View.'],
 ];
+
+// Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+// dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+// gelap di kedua mode (lihat App\Docs\Theme).
+$docsDark = \App\Docs\Theme::dark();
 @endphp
 
 <x-docs.layout title="List View">
@@ -43,53 +48,53 @@ $containerProps = [
             'article' => 'List View Article',
             'decoration' => 'Decoration',
             'badge' => 'Badge',
-            'darkmode' => 'Darkmode',
+            'dark-mode' => 'Dark mode',
             'playground' => 'Playground',
             'penggunaan' => 'Penggunaan',
             'livewire' => 'Livewire',
             'properties' => 'Properties',
         ]">
         <x-docs.section id="variant" title="Variant">
-            <p class="mb-6 text-body-sm text-gray-500">
-                Varian <span class="text-primary-500">desktop</span> tersedia dalam ukuran S, M, dan L dengan aksi di
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
+                Varian <span class="text-primary-500 dark:text-primary-400">desktop</span> tersedia dalam ukuran S, M, dan L dengan aksi di
                 sisi kanan. Varian
-                <span class="text-primary-500">mobile</span> menggunakan satu layout ringkas untuk perangkat genggam.
+                <span class="text-primary-500 dark:text-primary-400">mobile</span> menggunakan satu layout ringkas untuk perangkat genggam.
             </p>
 
             <div class="space-y-8">
                 <div>
-                    <h3 class="mb-4 text-base font-bold text-gray-900">1. Desktop</h3>
+                    <h3 class="mb-4 text-base font-bold text-gray-900 dark:text-white">1. Desktop</h3>
                     <div class="space-y-6">
                         <div>
-                            <h4 class="mb-1 text-sm font-bold text-gray-900">Small (S)</h4>
-                            <p class="mb-3 text-body-sm text-gray-500">Ukuran ringkas dengan wadah ikon 32 × 32 px dan
+                            <h4 class="mb-1 text-sm font-bold text-gray-900 dark:text-white">Small (S)</h4>
+                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran ringkas dengan wadah ikon 32 × 32 px dan
                                 tombol aksi XS.</p>
                             <x-docs.demo min-width="410px">
                                 <div class="w-full max-w-[410px]">
                                     <x-ceplok::list-view size="s" title="Project brief"
-                                        :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
+                                        :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" :dark-mode="$docsDark" />
                                 </div>
                             </x-docs.demo>
                         </div>
                         <div>
-                            <h4 class="mb-1 text-sm font-bold text-gray-900">Medium (M) · Default</h4>
-                            <p class="mb-3 text-body-sm text-gray-500">Ukuran standar dengan wadah ikon 40 × 40 px dan
+                            <h4 class="mb-1 text-sm font-bold text-gray-900 dark:text-white">Medium (M) · Default</h4>
+                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran standar dengan wadah ikon 40 × 40 px dan
                                 tombol aksi S.</p>
                             <x-docs.demo min-width="514px">
                                 <div class="w-full max-w-[514px]">
                                     <x-ceplok::list-view title="Project brief"
-                                        :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
+                                        :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" :dark-mode="$docsDark" />
                                 </div>
                             </x-docs.demo>
                         </div>
                         <div>
-                            <h4 class="mb-1 text-sm font-bold text-gray-900">Large (L)</h4>
-                            <p class="mb-3 text-body-sm text-gray-500">Ukuran lapang dengan wadah ikon 48 × 48 px dan
+                            <h4 class="mb-1 text-sm font-bold text-gray-900 dark:text-white">Large (L)</h4>
+                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran lapang dengan wadah ikon 48 × 48 px dan
                                 tombol aksi Base.</p>
                             <x-docs.demo min-width="600px">
                                 <div class="w-full max-w-[600px]">
                                     <x-ceplok::list-view size="l" title="Project brief"
-                                        :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
+                                        :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" :dark-mode="$docsDark" />
                                 </div>
                             </x-docs.demo>
                         </div>
@@ -97,13 +102,13 @@ $containerProps = [
                 </div>
 
                 <div>
-                    <h3 class="mb-2 text-base font-bold text-gray-900">2. Mobile</h3>
-                    <p class="mb-3 text-body-sm text-gray-500">Mobile menggunakan satu ukuran standar dengan layout satu
+                    <h3 class="mb-2 text-base font-bold text-gray-900 dark:text-white">2. Mobile</h3>
+                    <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Mobile menggunakan satu ukuran standar dengan layout satu
                         baris yang ringkas.</p>
                     <x-docs.demo min-width="348px">
                         <div class="w-full max-w-[348px]">
                             <x-ceplok::list-view platform="mobile" title="Project brief"
-                                :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" />
+                                :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" :dark-mode="$docsDark" />
                         </div>
                     </x-docs.demo>
                 </div>
@@ -112,25 +117,25 @@ $containerProps = [
             <x-docs.code>@verbatim
                 {{-- Desktop S (410 px) --}}
                 <x-ceplok::list-view ⟦size⟧="s" title="Project brief" :metadata="['PDF', '2.4 MB']"
-                    action-label="Open" />
+                    action-label="Open"⟨ dark-mode⟩ />
 
                 {{-- Desktop M · default (514 px) --}}
-                <x-ceplok::list-view title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
+                <x-ceplok::list-view title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open"⟨ dark-mode⟩ />
 
                 {{-- Desktop L (600 px) --}}
                 <x-ceplok::list-view ⟦size⟧="l" title="Project brief" :metadata="['PDF', '2.4 MB']"
-                    action-label="Open" />
+                    action-label="Open"⟨ dark-mode⟩ />
 
                 {{-- Mobile · ukuran standar (348 px) --}}
-                <x-ceplok::list-view ⟦platform⟧="mobile" title="Project brief" :metadata="['PDF', '2.4 MB']" />
+                <x-ceplok::list-view ⟦platform⟧="mobile" title="Project brief" :metadata="['PDF', '2.4 MB']"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="article" title="List View Article">
-            <p class="mb-6 max-w-2xl text-body-sm text-gray-500">
-                Varian <span class="text-primary-500">variant="article"</span> untuk artikel, diskusi, atau utas topik.
-                Garis aksen selalu aktif; header memuat <span class="text-primary-500">subject</span>, metadata, dan pin,
+            <p class="mb-6 max-w-2xl text-body-sm text-gray-500 dark:text-gray-400">
+                Varian <span class="text-primary-500 dark:text-primary-400">variant="article"</span> untuk artikel, diskusi, atau utas topik.
+                Garis aksen selalu aktif; header memuat <span class="text-primary-500 dark:text-primary-400">subject</span>, metadata, dan pin,
                 sementara judul semibold serta metrik berada di bawah.
             </p>
             <div class="space-y-6">
@@ -142,14 +147,14 @@ $containerProps = [
                 ] as $articleVariant)
                     @php($size = $articleVariant['size'])
                 <div>
-                    <h4 class="mb-2 text-sm font-bold text-gray-900">{{ $articleVariant['label'] }}</h4>
-                    <p class="mb-3 text-body-sm text-gray-500">{{ $articleVariant['description'] }}</p>
+                    <h4 class="mb-2 text-sm font-bold text-gray-900 dark:text-white">{{ $articleVariant['label'] }}</h4>
+                    <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">{{ $articleVariant['description'] }}</p>
                     <x-docs.demo :min-width="match ($size) { 's' => '410px', 'm' => '514px', 'l' => '728px', 'xl' => '1028px' }">
                         <div class="w-full {{ $articleVariant['width'] }}">
                             <x-ceplok::list-view variant="article" :size="$size" subject="Subject Name" category="Category"
                                 timestamp="12 Okt 2026 09:59 WIB"
                                 :title="$size === 'xl' ? 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi. Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi.' : 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi'"
-                                :views="609" :comments="3" :likes="16" />
+                                :views="609" :comments="3" :likes="16" :dark-mode="$docsDark" />
                         </div>
                     </x-docs.demo>
                 </div>
@@ -159,62 +164,62 @@ $containerProps = [
                 {{-- Article S (410 px) --}}
                 <x-ceplok::list-view variant="article" ⟦size⟧="s" subject="Subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
-                    :comments="3" :likes="16" />
+                    :comments="3" :likes="16"⟨ dark-mode⟩ />
 
                 {{-- Article M · default (514 px) --}}
                 <x-ceplok::list-view variant="article" subject="Subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
-                    :comments="3" :likes="16" />
+                    :comments="3" :likes="16"⟨ dark-mode⟩ />
 
                 {{-- Article L (728 px) --}}
                 <x-ceplok::list-view variant="article" ⟦size⟧="l" subject="Subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
-                    :comments="3" :likes="16" />
+                    :comments="3" :likes="16"⟨ dark-mode⟩ />
 
                 {{-- Article XL (1028 px) --}}
                 <x-ceplok::list-view variant="article" ⟦size⟧="xl" subject="Subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
-                    :comments="3" :likes="16" />
+                    :comments="3" :likes="16"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="decoration" title="Decoration">
-            <p class="mb-6 text-body-sm text-gray-500">Prop <span class="text-primary-500">decoration</span> menambahkan
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Prop <span class="text-primary-500 dark:text-primary-400">decoration</span> menambahkan
                 garis aksen vertikal pada sisi kiri kartu sebagai penanda visual.</p>
             <div class="space-y-5">
                 <x-docs.demo label="Desktop" min-width="514px">
                     <div class="w-full max-w-[514px]">
                         <x-ceplok::list-view decoration title="Project brief"
-                            :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" />
+                            :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" :dark-mode="$docsDark" />
                     </div>
                 </x-docs.demo>
                 <x-docs.demo label="Mobile" min-width="348px">
                     <div class="w-full max-w-[348px]">
                         <x-ceplok::list-view platform="mobile" decoration title="Project brief"
-                            :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" />
+                            :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" :dark-mode="$docsDark" />
                     </div>
                 </x-docs.demo>
             </div>
             <x-docs.code>@verbatim
                 {{-- Tanpa decoration · default --}}
-                <x-ceplok::list-view title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open" />
+                <x-ceplok::list-view title="Project brief" :metadata="['PDF', '2.4 MB']" action-label="Open"⟨ dark-mode⟩ />
 
                 {{-- Dengan decoration --}}
                 <x-ceplok::list-view ⟦decoration⟧ title="Project brief" :metadata="['PDF', '2.4 MB']"
-                    action-label="Open" />
+                    action-label="Open"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="badge" title="Badge">
-            <p class="mb-6 text-body-sm text-gray-500">Slot <span class="text-primary-500">badge</span> menempatkan
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Slot <span class="text-primary-500 dark:text-primary-400">badge</span> menempatkan
                 label status di bawah metadata dan menyesuaikan tinggi kartu secara otomatis.</p>
             <div class="space-y-5">
                 <x-docs.demo label="Desktop" min-width="514px">
                     <div class="w-full max-w-[514px]">
                         <x-ceplok::list-view title="Project brief"
-                            :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open">
+                            :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" :dark-mode="$docsDark">
                             <x-slot:badge>
                                 <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                                 </x-ceplok::badge>
@@ -225,7 +230,7 @@ $containerProps = [
                 <x-docs.demo label="Mobile" min-width="348px">
                     <div class="w-full max-w-[348px]">
                         <x-ceplok::list-view platform="mobile" title="Project brief"
-                            :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']">
+                            :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" :dark-mode="$docsDark">
                             <x-slot:badge>
                                 <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                                 </x-ceplok::badge>
@@ -237,7 +242,7 @@ $containerProps = [
             <x-docs.code>@verbatim
                 {{-- Desktop · Dengan badge --}}
                 <x-ceplok::list-view title="Project brief" :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']"
-                    action-label="Open">
+                    action-label="Open"⟨ dark-mode⟩>
                     <x-slot:⟦badge⟧>
                         <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                         </x-ceplok::badge>
@@ -246,7 +251,7 @@ $containerProps = [
 
                 {{-- Mobile · Dengan badge --}}
                 <x-ceplok::list-view ⟦platform⟧="mobile" title="Project brief"
-                    :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']">
+                    :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']"⟨ dark-mode⟩>
                     <x-slot:⟦badge⟧>
                         <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
                         </x-ceplok::badge>
@@ -256,9 +261,9 @@ $containerProps = [
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="darkmode" title="Darkmode">
-            <p class="mb-6 text-body-sm text-gray-500">Prop <span class="text-primary-500">dark-mode</span> menyesuaikan
-                surface, teks, ikon, badge, dan border untuk latar gelap.</p>
+        <x-docs.mode-section>
+            <x-slot:lead>Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> menyesuaikan
+                surface, teks, ikon, badge, dan border untuk latar gelap.</x-slot:lead>
             <div class="space-y-5">
                 <x-docs.demo dark label="Desktop" min-width="514px">
                     <div class="w-full max-w-[514px]">
@@ -303,20 +308,20 @@ $containerProps = [
                 </x-ceplok::list-view>
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.list-view />
-        <livewire:playground.list-view-livewire />
+        <livewire:playground.list-view :dark="$docsDark" />
+        <livewire:playground.list-view-livewire :dark="$docsDark" />
 
         <x-docs.section id="properties" title="Properties">
-            <p class="mb-6 text-body-sm text-gray-500">Referensi prop untuk item dan kontainer List View.</p>
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Referensi prop untuk item dan kontainer List View.</p>
             <div class="space-y-8">
                 <div>
-                    <h3 class="mb-3 text-sm font-bold text-gray-900">List View Item</h3>
+                    <h3 class="mb-3 text-sm font-bold text-gray-900 dark:text-white">List View Item</h3>
                     <x-docs.props-table :rows="$itemProps" min-width="46rem" />
                 </div>
                 <div>
-                    <h3 class="mb-3 text-sm font-bold text-gray-900">List View Container</h3>
+                    <h3 class="mb-3 text-sm font-bold text-gray-900 dark:text-white">List View Container</h3>
                     <x-docs.props-table :rows="$containerProps" min-width="46rem" />
                 </div>
             </div>

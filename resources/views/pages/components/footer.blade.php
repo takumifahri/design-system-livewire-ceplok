@@ -44,7 +44,7 @@
     >
         <x-docs.section id="dasar" title="Tampilan dasar">
             <x-docs.lead>
-                Satu blok utuh berlatar <span class="text-primary-500">gray-800</span>: baris atas berisi logo dan menu, lalu garis tipis,
+                Satu blok utuh berlatar <span class="text-primary-500 dark:text-primary-400">gray-800</span>: baris atas berisi logo dan menu, lalu garis tipis,
                 lalu baris bawah berisi hak cipta dan ikon sosial. Semua bagiannya opsional — yang tidak
                 diisi tidak dirender, bukan disembunyikan lewat CSS.
             </x-docs.lead>
@@ -68,15 +68,15 @@
 
         <x-docs.section id="logo" title="logo · logo-alt · logo-content">
             <x-docs.lead>
-                <span class="text-primary-500">logo</span> menerima URL berkas gambar dan dirender sebagai <span class="text-primary-500">&lt;img&gt;</span> setinggi 48px —
-                60px saat footer selebar ≥ 768px — dengan lebar mengikuti rasio aslinya. <span class="text-primary-500">logo-alt</span> jadi
+                <span class="text-primary-500 dark:text-primary-400">logo</span> menerima URL berkas gambar dan dirender sebagai <span class="text-primary-500 dark:text-primary-400">&lt;img&gt;</span> setinggi 48px —
+                60px saat footer selebar ≥ 768px — dengan lebar mengikuti rasio aslinya. <span class="text-primary-500 dark:text-primary-400">logo-alt</span> jadi
                 teks alternatifnya; isi dengan nama instansi, bukan kata "logo", supaya wajar dibacakan
                 pembaca layar.
             </x-docs.lead>
             <x-docs.lead>
-                Bila logonya bukan berkas gambar — logo teks, <span class="text-primary-500">&lt;svg&gt;</span> inline, atau gabungan keduanya
-                — pakai slot <span class="text-primary-500">logo-content</span>. Slot itu hanya berlaku saat <span class="text-primary-500">logo</span> kosong: kalau dua-duanya
-                diisi, <span class="text-primary-500">logo</span> yang menang. Karena latarnya gelap, warnanya harus ditentukan sendiri.
+                Bila logonya bukan berkas gambar — logo teks, <span class="text-primary-500 dark:text-primary-400">&lt;svg&gt;</span> inline, atau gabungan keduanya
+                — pakai slot <span class="text-primary-500 dark:text-primary-400">logo-content</span>. Slot itu hanya berlaku saat <span class="text-primary-500 dark:text-primary-400">logo</span> kosong: kalau dua-duanya
+                diisi, <span class="text-primary-500 dark:text-primary-400">logo</span> yang menang. Karena latarnya gelap, warnanya harus ditentukan sendiri.
             </x-docs.lead>
 
             <div class="space-y-6">
@@ -112,9 +112,9 @@
 
         <x-docs.section id="menus" title="menus">
             <x-docs.lead>
-                Daftar tautan navigasi. <span class="text-primary-500">url</span> boleh dikosongkan dan otomatis jadi <span class="text-primary-500">"#"</span>. Satu baris
+                Daftar tautan navigasi. <span class="text-primary-500 dark:text-primary-400">url</span> boleh dikosongkan dan otomatis jadi <span class="text-primary-500 dark:text-primary-400">"#"</span>. Satu baris
                 memuat paling banyak lima menu; menu keenam dan seterusnya turun ke
-                baris berikutnya dan tetap sejajar kolom di atasnya. Bila <span class="text-primary-500">menus</span> kosong, blok navigasinya
+                baris berikutnya dan tetap sejajar kolom di atasnya. Bila <span class="text-primary-500 dark:text-primary-400">menus</span> kosong, blok navigasinya
                 tidak dirender sama sekali.
             </x-docs.lead>
 
@@ -149,17 +149,17 @@
 
         <x-docs.section id="baris-bawah" title="copyright · socials">
             <x-docs.lead>
-                Keduanya mengisi baris bawah — <span class="text-primary-500">copyright</span> di kiri, <span class="text-primary-500">socials</span> di ujung kanan.
-                <span class="text-primary-500">copyright</span> juga bisa diisi lewat slot, jadi tidak harus teks: boleh disisipi tautan
+                Keduanya mengisi baris bawah — <span class="text-primary-500 dark:text-primary-400">copyright</span> di kiri, <span class="text-primary-500 dark:text-primary-400">socials</span> di ujung kanan.
+                <span class="text-primary-500 dark:text-primary-400">copyright</span> juga bisa diisi lewat slot, jadi tidak harus teks: boleh disisipi tautan
                 kebijakan privasi atau nomor versi. Bila kosong, barisnya tidak dirender dan ikon sosial
                 bergeser ke kiri.
             </x-docs.lead>
             <x-docs.lead>
-                Pada <span class="text-primary-500">socials</span>, <span class="text-primary-500">icon</span> berupa nama ikon — mis. ikon brand bawaan kit
-                <span class="text-primary-500">brand-instagram</span> — atau markup <span class="text-primary-500">&lt;svg&gt;</span> sendiri. Warnanya mengikuti
-                <span class="text-primary-500">currentColor</span> sehingga ikut berubah saat hover. <span class="text-primary-500">label</span> menjadi
-                <span class="text-primary-500">aria-label</span> tautannya, dan url selain <span class="text-primary-500">"#"</span> dibuka di tab baru dengan
-                <span class="text-primary-500">rel="noopener noreferrer"</span>.
+                Pada <span class="text-primary-500 dark:text-primary-400">socials</span>, <span class="text-primary-500 dark:text-primary-400">icon</span> berupa nama ikon — mis. ikon brand bawaan kit
+                <span class="text-primary-500 dark:text-primary-400">brand-instagram</span> — atau markup <span class="text-primary-500 dark:text-primary-400">&lt;svg&gt;</span> sendiri. Warnanya mengikuti
+                <span class="text-primary-500 dark:text-primary-400">currentColor</span> sehingga ikut berubah saat hover. <span class="text-primary-500 dark:text-primary-400">label</span> menjadi
+                <span class="text-primary-500 dark:text-primary-400">aria-label</span> tautannya, dan url selain <span class="text-primary-500 dark:text-primary-400">"#"</span> dibuka di tab baru dengan
+                <span class="text-primary-500 dark:text-primary-400">rel="noopener noreferrer"</span>.
             </x-docs.lead>
 
             <x-docs.preview>
@@ -189,8 +189,8 @@
 
         <x-docs.section id="fluid" title="fluid">
             <x-docs.lead>
-                Bawaannya isi footer dibatasi <span class="text-primary-500">max-w-7xl</span> (1280px) lalu dipusatkan, jadi di layar lebar
-                logo dan menu berhenti sebelum tepi. <span class="text-primary-500">fluid</span> melepas batas itu: isinya melebar penuh
+                Bawaannya isi footer dibatasi <span class="text-primary-500 dark:text-primary-400">max-w-7xl</span> (1280px) lalu dipusatkan, jadi di layar lebar
+                logo dan menu berhenti sebelum tepi. <span class="text-primary-500 dark:text-primary-400">fluid</span> melepas batas itu: isinya melebar penuh
                 mengikuti lebar footer, menyisakan padding kiri-kanan saja. Latar dan tinggi footernya sendiri
                 tidak berubah — yang bergeser hanya letak isinya.
             </x-docs.lead>
@@ -209,8 +209,8 @@
         <x-docs.section id="responsif" title="Perilaku responsif">
             <x-docs.lead>
                 Ambang di bawah ini diukur dari
-                <strong class="text-gray-900">lebar footer itu sendiri</strong>, bukan lebar layar —
-                elemen <span class="text-primary-500">&lt;footer&gt;</span> dipasangi <span class="text-primary-500">@container</span>. Jadi footer yang ditaruh di kolom
+                <strong class="text-gray-900 dark:text-white">lebar footer itu sendiri</strong>, bukan lebar layar —
+                elemen <span class="text-primary-500 dark:text-primary-400">&lt;footer&gt;</span> dipasangi <span class="text-primary-500 dark:text-primary-400">@container</span>. Jadi footer yang ditaruh di kolom
                 sempit pada layar desktop tetap tampil bertumpuk seperti di ponsel, dan sebaliknya. Cara
                 mengeceknya: ganti kontrol <em>Tampilan</em> di Playground, atau perkecil jendela.
             </x-docs.lead>
@@ -218,15 +218,15 @@
             <div class="grid gap-4 sm:grid-cols-3">
                 @foreach ($responsive as [$title, $text])
                     <article class="ds-card p-5">
-                        <h3 class="text-sm font-black text-gray-900">{{ $title }}</h3>
-                        <p class="mt-1.5 text-body-sm leading-6 text-gray-500">{{ $text }}</p>
+                        <h3 class="text-sm font-black text-gray-900 dark:text-white">{{ $title }}</h3>
+                        <p class="mt-1.5 text-body-sm leading-6 text-gray-500 dark:text-gray-400">{{ $text }}</p>
                     </article>
                 @endforeach
             </div>
 
-            <p class="mt-4 max-w-2xl text-body-sm leading-6 text-gray-500">
-                Yang tidak berubah di ukuran mana pun: latar <span class="text-primary-500">bg-gray-800</span>, jarak atas-bawah 64px, lebar
-                isi dibatasi <span class="text-primary-500">max-w-7xl</span> lalu dipusatkan — kecuali bila <span class="text-primary-500">fluid</span> diisi — dan garis
+            <p class="mt-4 max-w-2xl text-body-sm leading-6 text-gray-500 dark:text-gray-400">
+                Yang tidak berubah di ukuran mana pun: latar <span class="text-primary-500 dark:text-primary-400">bg-gray-800</span>, jarak atas-bawah 64px, lebar
+                isi dibatasi <span class="text-primary-500 dark:text-primary-400">max-w-7xl</span> lalu dipusatkan — kecuali bila <span class="text-primary-500 dark:text-primary-400">fluid</span> diisi — dan garis
                 pemisah tipis di atas baris hak cipta.
             </p>
         </x-docs.section>
@@ -236,8 +236,8 @@
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>
                 Rangkuman seluruh prop, termasuk yang tidak diberi bagian sendiri di atas. Semuanya opsional —
-                <span class="text-primary-500">&lt;x-ceplok::footer /&gt;</span> tanpa prop tetap merender kerangkanya. Atribut HTML lain
-                diteruskan ke elemen <span class="text-primary-500">&lt;footer&gt;</span>.
+                <span class="text-primary-500 dark:text-primary-400">&lt;x-ceplok::footer /&gt;</span> tanpa prop tetap merender kerangkanya. Atribut HTML lain
+                diteruskan ke elemen <span class="text-primary-500 dark:text-primary-400">&lt;footer&gt;</span>.
             </x-docs.lead>
             <x-docs.props-table :rows="$props" min-width="48rem" />
         </x-docs.section>

@@ -88,6 +88,93 @@ class DocsThemeTest extends TestCase
         $this->assertStringContainsString("    dark-mode\n/>", $this->find($gelap, 'pre code')->textContent);
     }
 
+    /**
+     * Halaman komponen yang pratinjaunya komponen kit ber-`dark-mode` (bukan
+     * tiruan statis seperti Drawer) — padanan halaman ber-docsDark di docs React.
+     * Tiap baris: rute, penanda pratinjau gelap, dan apakah cuplikannya ikut
+     * menulis dark-mode. Dropdown dan Pagination belum berbasis token, jadi
+     * penandanya kelas gelapnya, bukan data-theme. Cuplikan Dropdown dan
+     * Popover tidak ditandai, sama seperti docs React.
+     *
+     * @return array<string, array{string, string, bool}>
+     */
+    public static function halamanKomponenGelap(): array
+    {
+        $data = [
+            ['components.avatar', '[data-theme="dark"]', true],
+            ['components.breadcrumb', '[data-theme="dark"]', true],
+            ['components.card', '[data-theme="dark"]', true],
+            ['components.clipboard', '[data-theme="dark"]', true],
+            ['components.container', '[data-theme="dark"]', true],
+            ['components.dropdown', '[popover].bg-gray-800', false],
+            ['components.list-view', '[data-theme="dark"]', true],
+            ['components.pagination', '.border-gray-700.bg-gray-800', true],
+            ['components.popover', '[data-theme="dark"]', false],
+            ['components.sidebar', '[data-theme="dark"]', true],
+            ['components.table-of-contents', '[data-theme="dark"]', true],
+        ];
+
+        return array_combine(array_column($data, 0), $data);
+    }
+
+    #[DataProvider('halamanKomponenGelap')]
+    public function test_pratinjau_halaman_komponen_mengikuti_mode_docs(string $route, string $penanda, bool $cuplikan): void
+    {
+        // Di luar bagian Dark mode, pratinjau baru gelap bila docs gelap, dan cuplikannya ikut menulis dark-mode.
+        // Kode Penggunaan mengikuti mode Playground, yang memang dimulai dari mode docs, jadi ikut dilewati.
+        $diLuar = fn (HTMLDocument $dom, string $selector) => array_values(array_filter(
+            iterator_to_array($dom->querySelectorAll($selector)),
+            fn ($el) => $el->closest('#dark-mode, #penggunaan') === null,
+        ));
+
+        $terang = $this->page(route($route));
+        $gelap = $this->page(route($route), dark: true);
+
+        $this->assertSame([], $diLuar($terang, $penanda), "{$route}: pratinjau gelap di docs terang.");
+        $this->assertNotEmpty($diLuar($gelap, $penanda), "{$route}: pratinjau tidak ikut docs gelap.");
+
+        $teks = fn (HTMLDocument $dom) => implode("\n", array_map(fn ($el) => $el->textContent, $diLuar($dom, 'pre code')));
+        if ($cuplikan) {
+            $this->assertStringContainsString('dark-mode', $teks($gelap), "{$route}: cuplikan tidak menulis dark-mode di docs gelap.");
+        } else {
+            $this->assertSame($teks($terang), $teks($gelap), "{$route}: cuplikan berubah mengikuti mode docs.");
+        }
+    }
+
+    /**
+     * Halaman gelap yang punya bagian Dark mode (<x-docs.mode-section>).
+     *
+     * @return array<string, array{string}>
+     */
+    public static function halamanBagianDarkMode(): array
+    {
+        $routes = [
+            'components.alert', 'components.avatar', 'components.breadcrumb', 'components.card',
+            'components.clipboard', 'components.container', 'components.drawer', 'components.dropdown',
+            'components.list-view', 'components.pagination', 'components.popover', 'components.sidebar',
+            'components.table-of-contents', 'components.timeline', 'components.toast',
+            'form.input-field.input', 'form.input-field.floating-label', 'form.input-field.text-area',
+            'form.select', 'form.search', 'form.datepicker', 'form.upload', 'form.radio', 'form.toggle', 'form.checkbox',
+        ];
+
+        return array_combine($routes, array_map(fn (string $route) => [$route], $routes));
+    }
+
+    #[DataProvider('halamanBagianDarkMode')]
+    public function test_bagian_dark_mode_setiap_halaman_tetap_gelap(string $route): void
+    {
+        $this->assertContains($route, Theme::pages());
+
+        foreach ([false, true] as $dark) {
+            $dom = $this->page(route($route), dark: $dark);
+            $bagian = $this->find($dom, '#dark-mode');
+
+            $this->assertStringStartsWith('Dark mode', trim($this->find($bagian, 'h2')->textContent), "{$route}: judul bagian Dark mode.");
+            $this->assertSame('Dark mode', trim($this->find($dom, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent), "{$route}: daftar isi.");
+            $this->assertNotNull($bagian->querySelector('.bg-gray-900, .bg-gray-950, [data-theme="dark"]'), "{$route}: bagian Dark mode tidak memperagakan tampilan gelap.");
+        }
+    }
+
     public function test_bagian_dark_mode_tetap_gelap_di_kedua_mode_docs(): void
     {
         foreach ([false, true] as $dark) {

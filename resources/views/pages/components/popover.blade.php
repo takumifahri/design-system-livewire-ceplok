@@ -1,17 +1,19 @@
 @php
+    use App\Docs\Theme;
+
     $props = [
         ['trigger', 'slot', 'wajib', 'Satu elemen native <button>. Elemen non-interaktif, wrapper, dan trigger yang dirender sebagai anchor tidak didukung.'],
         ['title', 'string | slot', 'wajib', 'Konten judul pada header Popover.'],
         ['slot', 'slot', 'wajib', 'Konten body Popover.'],
         ['side', '"top" | "right" | "bottom" | "left"', 'right', 'Preferensi posisi panel terhadap trigger; posisi dapat berbalik agar aman di viewport.'],
         ['data-theme', '"light" | "dark"', 'inherit', 'Boundary tema eksplisit. Tanpa atribut ini Popover mengikuti data-theme ancestor; dark-mode tetap memaksa dark.'],
-        ['dark-mode', 'bool', 'false', 'Menggunakan tampilan gelap pada panel Popover sebagai override kompatibilitas.'],
+        ['dark-mode', 'bool', 'false', 'Memaksa panel Popover bertema gelap. Tanpa prop ini, Popover mengikuti tema pembungkusnya.'],
         ['open', 'bool', 'false', 'Membuka Popover sejak awal, padanan defaultOpen.'],
         ['wire:model', 'atribut', '—', 'Mengikat visibilitas ke properti boolean Livewire (atau x-model untuk Alpine), padanan open dan onOpenChange.'],
         ['wire:open-change', 'event', '—', 'Dipicu ketika interaksi meminta atau menghasilkan perubahan visibilitas, dengan $event.detail.open.'],
         ['…atribut', 'atribut HTML', '—', 'Atribut <div> yang relevan diteruskan ke panel. Native title dan popover dikelola oleh Popover; wire:model, x-model, dan wire:key dipasang di pembungkus.'],
     ];
-    $hl = 'text-primary-500';
+    $hl = 'text-primary-500 dark:text-primary-400';
     $positionSides = ['top' => 'Top', 'right' => 'Right', 'bottom' => 'Bottom', 'left' => 'Left'];
     $panelClasses = [
         'top' => 'bottom-[calc(50%+26px)] left-1/2 -translate-x-1/2',
@@ -25,6 +27,12 @@
         'bottom' => 'top-[-8px] left-1/2 -translate-x-1/2',
         'left' => 'top-1/2 right-[-8px] -translate-y-1/2 rotate-90',
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: Popover di pratinjau memakai
+    // `dark-mode`, panggung Positions memakai permukaan gelap yang sama dengan
+    // bagian Dark mode, dan Playground mulai dari mode docs. Bagian Dark mode
+    // tetap gelap di kedua mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Popover">
@@ -38,8 +46,8 @@
             </x-docs.lead>
             <x-docs.stage max-width="max-w-[640px]">
                 <div class="flex min-h-32 items-center justify-center gap-0 p-6">
-                    <span class="text-sm font-medium text-gray-900">Nomor referensi</span>
-                    <x-docs.popover-example label="Informasi nomor referensi" title="Nomor referensi" trigger-class="-ml-1">
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">Nomor referensi</span>
+                    <x-docs.popover-example label="Informasi nomor referensi" title="Nomor referensi" trigger-class="-ml-1" :dark="$docsDark">
                         Nomor referensi digunakan untuk melacak status pengajuan.
                     </x-docs.popover-example>
                 </div>
@@ -53,10 +61,16 @@
             <div class="grid gap-8">
                 @foreach ($positionSides as $value => $label)
                     <article>
-                        <h3 class="mb-3 text-sm font-black text-gray-900">{{ $label }}</h3>
-                        <div class="overflow-x-auto rounded-xl border border-border bg-surface-subtle">
+                        <h3 class="mb-3 text-sm font-black text-gray-900 dark:text-white">{{ $label }}</h3>
+                        <div
+                            @if ($docsDark) data-theme="dark" @endif
+                            @class([
+                                'overflow-x-auto rounded-xl border',
+                                $docsDark ? 'border-gray-800 bg-gray-900 dark:border-gray-700' : 'border-border bg-surface-subtle',
+                            ])
+                        >
                             <div class="relative h-80 min-w-[600px]">
-                                <span aria-hidden="true" class="absolute top-1/2 left-1/2 inline-flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-md text-gray-500">
+                                <span aria-hidden="true" class="absolute top-1/2 left-1/2 inline-flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-md text-gray-500 dark:text-gray-400">
                                     <x-ceplok::icon>{{ svg('ceplok-o-info-circle') }}</x-ceplok::icon>
                                 </span>
                                 <div aria-hidden="true" class="absolute w-[255px] shrink-0 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.08))] {{ $panelClasses[$value] }}">
@@ -90,37 +104,35 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Popover mewarisi <span class="{{ $hl }}">data-theme</span> dari consumer boundary. Pada Dark, header memakai gray-700,
-                body gray-800, judul gray-50, dan teks body gray-400. Prop <span class="{{ $hl }}">dark-mode</span> tetap tersedia sebagai
-                override kompatibilitas. Arrow mengikuti surface yang bersentuhan dengannya.
-            </x-docs.lead>
+        <x-docs.mode-section>
+            <x-slot:lead>
+                Prop <span class="{{ $hl }}">dark-mode</span> mengubah tema panel Popover. Tanpa prop tersebut, panel mengikuti
+                <span class="{{ $hl }}">data-theme</span> dari elemen pembungkus. Header memakai gray-700, body gray-800, judul
+                gray-50, dan teks body gray-400. Arrow mengikuti surface yang bersentuhan dengannya.
+            </x-slot:lead>
             <x-docs.stage max-width="max-w-[640px]" dark>
-                <div data-theme="dark" class="flex min-h-32 items-center justify-center p-6">
+                <div class="flex min-h-32 items-center justify-center p-6">
                     <x-docs.popover-example label="Buka Popover dark mode" side="top" dark />
                 </div>
             </x-docs.stage>
             <x-docs.code>
                 @verbatim
-                <div ⟦data-theme⟧="dark">
-                    <x-ceplok::popover ⟦title⟧="Popover" ⟦side⟧="top">
-                        <x-slot:⟦trigger⟧
-                            raw
-                            type="button"
-                            aria-label="Buka informasi"
-                            class="inline-flex size-9 items-center justify-center text-gray-400 focus-visible:outline-2"
-                        >
-                            <x-ceplok::icon>{{ svg('ceplok-o-info-circle') }}</x-ceplok::icon>
-                        </x-slot:trigger>
-                        Popover Body Text
-                    </x-ceplok::popover>
-                </div>
+                <x-ceplok::popover ⟦dark-mode⟧ ⟦title⟧="Popover" ⟦side⟧="top">
+                    <x-slot:⟦trigger⟧
+                        raw
+                        type="button"
+                        aria-label="Buka informasi"
+                        class="inline-flex size-9 items-center justify-center text-gray-400 focus-visible:outline-2"
+                    >
+                        <x-ceplok::icon>{{ svg('ceplok-o-info-circle') }}</x-ceplok::icon>
+                    </x-slot:trigger>
+                    Popover Body Text
+                </x-ceplok::popover>
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
-        <livewire:playground.popover />
+        <livewire:playground.popover :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
@@ -128,7 +140,7 @@
                 <span class="{{ $hl }}">wire:open-change</span> ketika state tersebut perlu diproses di server.
             </x-docs.lead>
             <x-docs.stage max-width="max-w-[640px]">
-                <livewire:playground.popover-livewire />
+                <livewire:playground.popover-livewire :dark="$docsDark" />
             </x-docs.stage>
             <x-docs.code>
                 @verbatim

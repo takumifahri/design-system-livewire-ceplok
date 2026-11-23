@@ -10,6 +10,9 @@ new class extends Component
 {
     public string $message = 'Belum ada aktivitas salin.';
 
+    /** Mengikuti mode docs halaman, diisi saat mount (lihat App\Docs\Theme). */
+    public bool $dark = false;
+
     public function copied(string $value): void
     {
         $this->message = "Berhasil disalin: {$value}";
@@ -31,7 +34,8 @@ new class extends Component
             prefix="ID"
             wire:copy-success="copied($event.detail.value)"
             wire:copy-error="failed"
+            :dark-mode="$dark"
         />
     </div>
-    <p class="text-body-sm text-content-subtle" role="status">{{ $message }}</p>
+    <p class="text-body-sm text-content-subtle dark:text-gray-400" role="status">{{ $message }}</p>
 </div>

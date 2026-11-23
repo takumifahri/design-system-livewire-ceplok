@@ -30,11 +30,16 @@
 ])
 
 @php
+    // Trigger meniru Button kit. Di tampilan gelap ia menjadi tombol putih,
+    // fallback filled Button ber-darkMode di docs React, bukan primary biru
+    // yang hanya digelapkan. Button kit Livewire belum punya dark-mode, jadi
+    // warnanya ditulis di sini.
     $triggerClass = implode(' ', [
         'inline-flex h-10 items-center justify-center gap-2',
-        'rounded-lg bg-primary-700 px-4',
-        'text-base font-medium text-white',
-        'transition-colors duration-200 hover:bg-primary-800',
+        'rounded-lg px-4',
+        'text-base font-medium',
+        $dark ? 'bg-gray-50 text-gray-700 hover:bg-white hover:text-gray-700' : 'bg-primary-700 text-white hover:bg-primary-800',
+        'transition-colors duration-200',
         'focus:outline-none focus:ring-2 focus:ring-primary-400',
         'disabled:pointer-events-none disabled:opacity-50',
     ]);
