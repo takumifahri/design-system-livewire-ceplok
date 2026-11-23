@@ -144,15 +144,21 @@ dan tombol bulan/matahari di rail serta top bar mobile diredupkan.
 - Tombolnya memuat ulang halaman setelah cookie ditulis, karena pratinjau
   dirender server dengan `dark-mode`. Muat ulang juga membuang snapshot
   wire:navigate yang masih memakai mode lama.
-- Portal Dashboard ikut memakai pilihan yang sama. Tombol tema di header-nya
-  hanya mengirim event `dark-mode-change`; `<x-docs.app-frame>` yang
-  menyimpannya.
+- Portal Dashboard ikut memakai pilihan yang sama, seperti di docs React:
+  toggle Terang/Gelap di kaki Sidebar mulai lg, dan tombol tema di header di
+  bawahnya. Keduanya hanya mengirim event `dark-mode-change` setelah
+  transisinya selesai
+  ([resources/js/docs/portal-tema.js](resources/js/docs/portal-tema.js));
+  `<x-docs.app-frame>` yang menyimpannya.
 
 Menambah halaman ke mode gelap:
 
 1. Beri elemen halamannya varian `dark:`, mis. `text-gray-500 dark:text-gray-400`.
 2. Ambil `$docsDark = Theme::dark();` di blok `@php` halaman, lalu beri
-   `:dark-mode="$docsDark"` pada komponen kit di pratinjau.
+   `:dark-mode="$docsDark"` pada komponen kit di pratinjau. Beri juga
+   `:dark="$docsDark"` pada `<x-docs.stage>` yang membungkusnya. Tanpa itu,
+   pratinjau gelap duduk di panggung terang, sehingga trigger putih atau teks
+   putih tidak terlihat.
 3. Tulis `dark-mode` di cuplikannya lewat penanda: `⟨ dark-mode⟩` untuk tag
    satu baris, atau baris `⟨dark-mode⟩` untuk prop yang ditulis satu per baris.
 4. Ganti bagian Dark mode dengan `<x-docs.mode-section>`. Bagian ini tetap
@@ -161,7 +167,8 @@ Menambah halaman ke mode gelap:
    `dark-mode` di dalam `<x-docs.demo dark>`, dan cuplikannya selalu menulis
    `⟦dark-mode⟧`.
 5. Pasang `:dark="$docsDark"` pada Playground dan contoh Livewire-nya, supaya
-   mode awalnya mengikuti docs.
+   mode awalnya mengikuti docs. Di dalam komponennya, panggungnya memakai
+   `<x-docs.stage :dark="$dark">`.
 6. Daftarkan rutenya di `Theme::PAGES`.
 
 Button kit Livewire belum punya prop `dark-mode` seperti di kit React, jadi

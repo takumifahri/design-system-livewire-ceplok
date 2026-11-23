@@ -1,7 +1,8 @@
 {{--
     Popover contoh untuk halaman Popover: trigger tombol ikon informasi, port
     infoTrigger di PopoverPage docs React. Ikon hanya contoh; trigger boleh
-    tombol lain yang sesuai konteks.
+    tombol lain yang sesuai konteks. `dark` menggelapkan trigger dan memberi
+    `dark-mode` pada panelnya, seperti `darkMode` di contoh React.
 --}}
 @props([
     'label',
@@ -18,7 +19,7 @@
     $triggerClasses = trim($baseTriggerClass.' '.$triggerClass);
 @endphp
 
-<x-ceplok::popover :title="$title" :side="$side" {{ $attributes }}>
+<x-ceplok::popover :title="$title" :side="$side" :dark-mode="$dark" {{ $attributes }}>
     <x-slot:trigger raw :aria-label="$label" :class="$triggerClasses"><x-ceplok::icon>{{ svg('ceplok-o-info-circle') }}</x-ceplok::icon></x-slot:trigger>
     @if ($slot->isEmpty())
         Popover Body Text, Popover Body Text, Popover Body Text

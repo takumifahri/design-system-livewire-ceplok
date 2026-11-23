@@ -28,7 +28,7 @@ new class extends Component
             Pengajuan sedang diverifikasi.
         </x-ceplok::popover>
     </div>
-    <p class="text-body-sm text-content-subtle dark:text-gray-300" role="status">
+    <p class="text-body-sm text-content-subtle dark:text-gray-400" role="status">
         $open = {{ $open ? 'true' : 'false' }} · berubah {{ $changes }}×
     </p>
 </div>

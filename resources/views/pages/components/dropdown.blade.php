@@ -1,5 +1,7 @@
 @php
-    $docsDark = \App\Docs\Theme::dark();
+    use App\Docs\Theme;
+
+    $docsDark = Theme::dark();
     $docsTriggerClass = implode(' ', [
         'inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4',
         'text-base font-medium transition-colors duration-200',
@@ -8,7 +10,6 @@
             : 'bg-primary-700 text-white hover:bg-primary-800',
         'focus:outline-none focus:ring-2 focus:ring-primary-400',
     ]);
-
     $dropdownProps = [
         ['trigger', 'slot', '— (wajib)', 'Tombol pembuka panel. Dirender sebagai Button kit atau <button> raw; Dropdown mengelola popovertarget, popovertargetaction, aria-expanded, dan atribut listbox bila relevan.'],
         ['items', 'array', 'null', 'Daftar aksi tanpa pengelompokan.'],
@@ -45,6 +46,10 @@
         ['separator', 'bool', 'false', 'Menampilkan garis pemisah sebelum kelompok ini.'],
         ['items', 'array', '— (wajib)', 'Daftar item yang ditampilkan di dalam kelompok.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: Dropdown di pratinjau memakai
+    // `dark-mode`, dan Playground mulai dari mode docs. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
 @endphp
 
 <x-docs.layout title="Dropdown">
@@ -73,7 +78,8 @@
                 <span class="text-primary-500">items</span> atau <span class="text-primary-500">groups</span>
                 menyediakan daftar isinya. Panel dapat ditutup melalui trigger, klik di luar, atau Escape.
                 Item aksi menutup panel setelah diaktifkan; konten kustom tetap terbuka sampai consumer
-                menutupnya.
+                menutupnya. Setelah panel terbuka, ketik nama aksi untuk memindahkan fokus ke item yang
+                cocok, lalu tekan Enter.
             </x-docs.lead>
             <x-docs.stage max-width="max-w-xl" :dark="$docsDark">
                 <div class="flex min-h-72 items-start justify-center pt-10">
@@ -82,7 +88,7 @@
             </x-docs.stage>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::dropdown⟨ dark-mode⟩ :items="[
+                <x-ceplok::dropdown :items="[
                     ['label' => 'Profil'],
                     ['label' => 'Pengaturan'],
                     ['label' => 'Keluar', 'tone' => 'danger'],
@@ -95,9 +101,9 @@
 
         <x-docs.section id="kelompok" title="Kelompok">
             <x-docs.lead>
-                Aksi yang perlu dipisah disusun lewat <span class="text-primary-500">groups</span>. Prop <span class="text-primary-500">separator</span> menambahkan
-                garis sebelum sebuah kelompok. Untuk panel berisi konten kustom, gunakan pemisah visual
-                yang sesuai di dalam slot.
+                Aksi yang perlu dipisah disusun lewat <span class="text-primary-500 dark:text-primary-400">groups</span>. Prop <span class="text-primary-500 dark:text-primary-400">separator</span> menambahkan
+                garis sebelum sebuah kelompok, dan <span class="text-primary-500 dark:text-primary-400">label</span> memberinya judul. Untuk panel berisi kontrol
+                bebas, pakai <span class="text-primary-500 dark:text-primary-400">&lt;hr&gt;</span> biasa.
             </x-docs.lead>
             <div class="grid gap-6 sm:grid-cols-2">
                 <x-docs.demo label="Satu daftar" :dark="$docsDark">
@@ -113,7 +119,7 @@
             </div>
             <x-docs.code mark="'separator'">
                 @verbatim
-                <x-ceplok::dropdown⟨ dark-mode⟩ :⟦groups⟧="[
+                <x-ceplok::dropdown :⟦groups⟧="[
                     [
                         'id' => 'utama',
                         'items' => [
@@ -135,8 +141,8 @@
 
         <x-docs.section id="keterangan" title="Keterangan">
             <x-docs.lead>
-                Aksi yang perlu konteks tambahan diberi <span class="text-primary-500">description</span> — baris kedua yang lebih kecil
-                di bawah labelnya. Untuk panel berisi Radio atau Checkbox, yang dipakai <span class="text-primary-500">helper-text</span>
+                Aksi yang perlu konteks tambahan diberi <span class="text-primary-500 dark:text-primary-400">description</span> — baris kedua yang lebih kecil
+                di bawah labelnya. Untuk panel berisi Radio atau Checkbox, yang dipakai <span class="text-primary-500 dark:text-primary-400">helper-text</span>
                 milik komponen itu sendiri.
             </x-docs.lead>
             <div class="grid gap-6 sm:grid-cols-2">
@@ -153,7 +159,7 @@
             </div>
             <x-docs.code mark="'description'">
                 @verbatim
-                <x-ceplok::dropdown⟨ dark-mode⟩ :items="[
+                <x-ceplok::dropdown :items="[
                     [
                         'label' => 'Editor',
                         'description' => 'Dapat mengubah konten.',
@@ -167,7 +173,7 @@
 
         <x-docs.section id="disable" title="Disable">
             <x-docs.lead>
-                Tambahkan <span class="text-primary-500">disabled</span> pada item yang belum dapat dipilih. Pengaturan ini berlaku per
+                Tambahkan <span class="text-primary-500 dark:text-primary-400">disabled</span> pada item yang belum dapat dipilih. Pengaturan ini berlaku per
                 item, bukan untuk seluruh Dropdown.
             </x-docs.lead>
             <div class="grid gap-6 sm:grid-cols-2">
@@ -184,7 +190,7 @@
             </div>
             <x-docs.code mark="'disabled'">
                 @verbatim
-                <x-ceplok::dropdown⟨ dark-mode⟩ :items="[
+                <x-ceplok::dropdown :items="[
                     [
                         'label' => 'Bantuan',
                         'disabled' => true,
@@ -220,7 +226,7 @@
             </x-docs.stage>
             <x-docs.code mark="'href'">
                 @verbatim
-                <x-ceplok::dropdown⟨ dark-mode⟩ :items="[
+                <x-ceplok::dropdown :items="[
                     ['label' => 'Ringkasan', 'href' => '/ringkasan', 'current' => true],
                     [
                         'label' => 'Dokumentasi eksternal',
@@ -246,22 +252,22 @@
         <x-docs.section id="selection" title="Selection">
             <x-docs.lead>
                 Gunakan Selection ketika Dropdown dipakai untuk memilih nilai. Saat item menggunakan
-                <span class="text-primary-500">selected</span>, koleksinya memakai pola <span class="text-primary-500">listbox</span>, setiap baris menjadi
-                <span class="text-primary-500">option</span>, dan pilihan aktif menerima fokus saat dibuka. Option dapat ditelusuri
+                <span class="text-primary-500 dark:text-primary-400">selected</span>, koleksinya memakai pola <span class="text-primary-500 dark:text-primary-400">listbox</span>, setiap baris menjadi
+                <span class="text-primary-500 dark:text-primary-400">option</span>, dan pilihan aktif menerima fokus saat dibuka. Option dapat ditelusuri
                 dengan tombol panah, Home, End, dan pencarian lewat ketikan — sama seperti daftar pilihan
-                Select. Gunakan <span class="text-primary-500">content-label</span> untuk menamai listbox tersebut. Action dan Selection tidak
-                dapat dicampur dalam satu koleksi: koleksi yang memakai <span class="text-primary-500">selected</span> seluruhnya
-                diperlakukan sebagai Selection, sedangkan <span class="text-primary-500">href</span> hanya untuk item Action.
+                Select. Gunakan <span class="text-primary-500 dark:text-primary-400">content-label</span> untuk menamai listbox tersebut. Action dan Selection tidak
+                dapat dicampur dalam satu koleksi: koleksi yang memakai <span class="text-primary-500 dark:text-primary-400">selected</span> seluruhnya
+                diperlakukan sebagai Selection, sedangkan <span class="text-primary-500 dark:text-primary-400">href</span> hanya untuk item Action.
             </x-docs.lead>
             <x-docs.stage max-width="max-w-xl" :dark="$docsDark">
                 <div class="flex min-h-56 items-start justify-center pt-10">
                     <livewire:playground.dropdown-sort :dark="$docsDark" />
                 </div>
             </x-docs.stage>
-            <p class="mt-2 max-w-2xl text-body-sm text-gray-500">
+            <p class="mt-2 max-w-2xl text-body-sm text-gray-500 dark:text-gray-400">
                 Dropdown selalu memosisikan panel relatif terhadap trigger, termasuk flip dan
                 pembatasan viewport. Bila pilihannya dipegang Alpine, bukan properti Livewire,
-                isi <span class="text-primary-500">selected-when</span> dengan ekspresinya supaya
+                isi <span class="text-primary-500 dark:text-primary-400">selected-when</span> dengan ekspresinya supaya
                 tanda terpilih ikut berganti tanpa render ulang server.
             </p>
             <x-docs.code mark="'selected'">
@@ -274,7 +280,7 @@
                     ])->all();
                 @endphp
 
-                <x-ceplok::dropdown⟨ dark-mode⟩ ⟦content-label⟧="Urutan hasil" :⟦items⟧="$urutan">
+                <x-ceplok::dropdown ⟦content-label⟧="Urutan hasil" :⟦items⟧="$urutan">
                     <x-slot:⟦trigger⟧ raw>Urutkan: {{ $urut }}</x-slot:trigger>
                 </x-ceplok::dropdown>
                 @endverbatim
@@ -309,7 +315,7 @@
                     </x-docs.demo>
                     <x-docs.code>
                         @verbatim
-                        <x-ceplok::dropdown⟨ dark-mode⟩ content-label="Pengaturan tampilan">
+                        <x-ceplok::dropdown content-label="Pengaturan tampilan">
                             <x-slot:trigger raw>Atur tampilan</x-slot:trigger>
                             <button type="button" x-on:click="applyChanges(); $dispatch('dropdown-close')">
                                 Terapkan
@@ -348,7 +354,7 @@
                     </x-docs.demo>
                     <x-docs.code>
                         @verbatim
-                        <x-ceplok::dropdown⟨ dark-mode⟩ panel-id="filter-status">
+                        <x-ceplok::dropdown panel-id="filter-status">
                             <x-slot:trigger raw>Filter status</x-slot:trigger>
                             {{-- ... --}}
                         </x-ceplok::dropdown>
@@ -398,9 +404,9 @@
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Aksi Livewire dipasang lewat <span class="text-primary-500">attributes</span> tiap item, mis. <span class="text-primary-500">wire:click</span>. Bawaannya panel
-                menutup setelah baris ditekan; gunakan <span class="text-primary-500">close-on-select="false"</span> bila proses asynchronous perlu menentukan waktunya.
-                Isi kustom dapat mengirim event <span class="text-primary-500">dropdown-close</span> untuk menutup panel. Tanpa <span class="text-primary-500">raw</span>, slot trigger dirender sebagai Button kit, jadi
+                Aksi Livewire dipasang lewat <span class="text-primary-500 dark:text-primary-400">attributes</span> tiap item, mis. <span class="text-primary-500 dark:text-primary-400">wire:click</span>. Bawaannya panel
+                menutup setelah baris ditekan; gunakan <span class="text-primary-500 dark:text-primary-400">close-on-select="false"</span> bila proses asynchronous perlu menentukan waktunya.
+                Isi kustom dapat mengirim event <span class="text-primary-500 dark:text-primary-400">dropdown-close</span> untuk menutup panel. Tanpa <span class="text-primary-500 dark:text-primary-400">raw</span>, slot trigger dirender sebagai Button kit, jadi
                 atribut slotnya dibaca sebagai props Button. Tombol dan atribut ARIA-nya dirender server, sehingga
                 tetap utuh setiap kali Livewire merender ulang komponennya.
             </x-docs.lead>
@@ -409,7 +415,7 @@
             </x-docs.example>
             <x-docs.code mark="'attributes'">
                 @verbatim
-                <x-ceplok::dropdown⟨ dark-mode⟩ :items="[
+                <x-ceplok::dropdown :items="[
                     ['label' => 'Duplikat', 'attributes' => ['wire:click' => 'duplikat']],
                     ['label' => 'Arsipkan', 'attributes' => ['wire:click' => 'arsipkan']],
                     ['label' => 'Hapus', 'tone' => 'danger', 'attributes' => ['wire:click' => 'hapus']],
@@ -423,7 +429,7 @@
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>
                 Seluruh prop yang diterima komponen, beserta tipe dan nilai bawaannya. Bentuk data
-                <span class="text-primary-500">Item</span> dan <span class="text-primary-500">Kelompok</span> mengikuti DropdownItem dan DropdownGroup di React;
+                <span class="text-primary-500 dark:text-primary-400">Item</span> dan <span class="text-primary-500 dark:text-primary-400">Kelompok</span> mengikuti DropdownItem dan DropdownGroup di React;
                 atribut serta event khusus Livewire tetap dicantumkan sebagai adaptasi framework.
             </x-docs.lead>
 

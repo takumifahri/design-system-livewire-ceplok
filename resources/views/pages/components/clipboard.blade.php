@@ -16,8 +16,7 @@
         ['atribut input', 'id, aria-label, aria-labelledby, aria-describedby', 'null', 'Hanya atribut ini diteruskan. ID dibuat otomatis jika kosong; aria-describedby digabung dengan helper-text.'],
     ];
 
-    // Contoh mengikuti mode docs. Bagian Dark mode tetap gelap di kedua mode,
-    // sama seperti ModeSection pada docs React.
+    // Contoh mengikuti mode docs; bagian Dark mode tetap gelap di kedua mode.
     $docsDark = Theme::dark();
 @endphp
 
@@ -87,8 +86,8 @@
 
         <x-docs.section id="callbacks" title="Event">
             <x-docs.lead>
-                Event <span class="text-primary-500">copy-success</span> dikirim setelah Clipboard API berhasil, sedangkan
-                <span class="text-primary-500">copy-error</span> dikirim saat API tidak tersedia atau menolak operasi.
+                Event <span class="text-primary-500 dark:text-primary-400">copy-success</span> dikirim setelah Clipboard API berhasil, sedangkan
+                <span class="text-primary-500 dark:text-primary-400">copy-error</span> dikirim saat API tidak tersedia atau menolak operasi.
                 Listener consumer tidak mengubah feedback internal Clipboard.
             </x-docs.lead>
             <x-docs.code>@verbatim
@@ -104,7 +103,7 @@
 
         <x-docs.mode-section>
             <x-slot:lead>Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengaktifkan palet gelap pada field, teks, prefix, dan tooltip. Tanpa prop tersebut, Clipboard mengikuti scope ambient <span class="text-primary-500 dark:text-primary-400">data-theme</span>.</x-slot:lead>
-            <x-docs.demo label="Dark" dark><div class="mx-auto w-full max-w-[452px]"><x-ceplok::clipboard value="https://komdigi.go.id/" label="Alamat situs" helper-text="Gunakan alamat ini untuk mengunjungi situs." variant="segmented" prefix="URL" dark-mode /></div></x-docs.demo>
+            <x-docs.demo dark><div class="mx-auto w-full max-w-[452px]"><x-ceplok::clipboard value="https://komdigi.go.id/" label="Alamat situs" helper-text="Gunakan alamat ini untuk mengunjungi situs." variant="segmented" prefix="URL" dark-mode /></div></x-docs.demo>
             <x-docs.code>@verbatim
                 <x-ceplok::clipboard
                     ⟦dark-mode⟧
@@ -120,8 +119,8 @@
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Tangkap <span class="text-primary-500">copy-success</span> dan <span class="text-primary-500">copy-error</span>
-                lewat atribut <span class="text-primary-500">wire:</span> untuk mencatat hasil penyalinan di state server.
+                Tangkap <span class="text-primary-500 dark:text-primary-400">copy-success</span> dan <span class="text-primary-500 dark:text-primary-400">copy-error</span>
+                lewat atribut <span class="text-primary-500 dark:text-primary-400">wire:</span> untuk mencatat hasil penyalinan di state server.
             </x-docs.lead>
             <x-docs.demo>
                 <livewire:playground.clipboard-livewire :dark="$docsDark" />
@@ -141,7 +140,7 @@
 
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>Daftar prop, tipe, dan nilai bawaannya. Clipboard memerlukan salah satu dari <span class="text-primary-500 dark:text-primary-400">label</span>, <span class="text-primary-500 dark:text-primary-400">aria-label</span>, atau <span class="text-primary-500 dark:text-primary-400">aria-labelledby</span>. Hanya <span class="text-primary-500 dark:text-primary-400">id</span> serta atribut penamaan atau deskripsi aksesibel yang diteruskan ke input hanya-baca.</x-docs.lead>
-            <x-docs.props-table :rows="$props" min-width="46rem" />
+            <x-docs.props-table :rows="$props" min-width="50rem" />
         </x-docs.section>
     </x-docs.page>
 </x-docs.layout>

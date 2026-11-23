@@ -101,6 +101,11 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   diklik.
 - `sidebar`: tombol collapse yang nonaktif kini berkursor `not-allowed`,
   sama dengan kit React.
+- `list-view`: tombol aksi tidak lagi mencetak kode mentah seperti
+  `@if="@if"` dan `actionDisabled="actionDisabled"` sebagai atribut.
+  `action-click` dan `action-attributes` kini benar-benar sampai ke tombol
+  aksinya. Tautan aksi yang dinonaktifkan tetap mendapat `aria-disabled` dan
+  `tabindex="-1"`.
 
 ## [0.2.0] - 2026-11-03
 

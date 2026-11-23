@@ -16,6 +16,9 @@ new class extends Component
 
     public int $selected = 0;
 
+    /** Mengikuti mode docs halaman, diisi saat mount (lihat App\Docs\Theme). */
+    public bool $dark = false;
+
     public function select(int $index): void
     {
         if (array_key_exists($index, $this->users)) {
@@ -27,8 +30,8 @@ new class extends Component
 
 <div class="flex flex-col items-start gap-4">
     <div class="flex items-center gap-3">
-        <x-ceplok::avatar :src="$users[$selected]['avatar']" :name="$users[$selected]['name']" alt="" />
-        <span class="text-sm font-semibold text-gray-900">{{ $users[$selected]['name'] }}</span>
+        <x-ceplok::avatar :src="$users[$selected]['avatar']" :name="$users[$selected]['name']" alt="" :dark-mode="$dark" />
+        <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $users[$selected]['name'] }}</span>
     </div>
 
     <div class="flex flex-wrap gap-2" role="group" aria-label="Pilih pengguna aktif">

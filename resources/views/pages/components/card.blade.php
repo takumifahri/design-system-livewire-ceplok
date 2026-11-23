@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     $image = '/images/card-sample.svg';
     $title = 'Ceplok Design System Card Desktop';
     $titleMobile = 'Ceplok Design System Card Mobile';
@@ -15,6 +17,11 @@
         ['dark-mode', 'bool', 'false', 'Tampilan gelap: kartu gray-700, judul putih, deskripsi gray-300, tautan primary-400. Tombol di actions tidak ikut diubah.'],
         ['slot', 'slot', '—', 'Isi tambahan di akhir badan kartu.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Card">
@@ -37,62 +44,62 @@
         <x-docs.section id="varian" title="Varian">
             <x-docs.lead>
                 Keempatnya komponen yang sama — tidak ada prop varian sama sekali. Yang
-                membedakan hanya bagian mana yang diisi: lepas <span class="text-primary-500">image</span> untuk kartu
-                tanpa gambar, lepas <span class="text-primary-500">actions</span> untuk kartu tanpa tombol, isi
-                <span class="text-primary-500">href</span> untuk mengganti tombol dengan satu tautan. Bagian yang
+                membedakan hanya bagian mana yang diisi: lepas <span class="text-primary-500 dark:text-primary-400">image</span> untuk kartu
+                tanpa gambar, lepas <span class="text-primary-500 dark:text-primary-400">actions</span> untuk kartu tanpa tombol, isi
+                <span class="text-primary-500 dark:text-primary-400">href</span> untuk mengganti tombol dengan satu tautan. Bagian yang
                 tidak diisi tidak dirender, bukan disembunyikan lewat CSS.
             </x-docs.lead>
 
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Default">
-                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description">
+                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" :dark-mode="$docsDark">
                         <x-slot:actions><x-docs.card-button /></x-slot:actions>
                     </x-ceplok::card>
                 </x-docs.demo>
                 <x-docs.demo label="Tanpa gambar">
-                    <x-ceplok::card :title="$title" :description="$description">
+                    <x-ceplok::card :title="$title" :description="$description" :dark-mode="$docsDark">
                         <x-slot:actions><x-docs.card-button /></x-slot:actions>
                     </x-ceplok::card>
                 </x-docs.demo>
                 <x-docs.demo label="Tanpa tombol">
-                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" />
+                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Dengan tautan">
-                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" href="#" link-label="See our guideline" />
+                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" href="#" link-label="See our guideline" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
 
             <x-docs.code>
                 @verbatim
-                <x-ceplok::card image="…" title="…" description="…">
+                <x-ceplok::card image="…" title="…" description="…"⟨ dark-mode⟩>
                     <x-slot:actions><x-ceplok::button size="s">…</x-ceplok::button></x-slot:actions>
                 </x-ceplok::card>
 
-                <x-ceplok::card title="…" description="…">
+                <x-ceplok::card title="…" description="…"⟨ dark-mode⟩>
                     <x-slot:actions><x-ceplok::button size="s">…</x-ceplok::button></x-slot:actions>
                 </x-ceplok::card>
 
-                <x-ceplok::card image="…" title="…" description="…" />
+                <x-ceplok::card image="…" title="…" description="…"⟨ dark-mode⟩ />
 
-                <x-ceplok::card image="…" title="…" description="…" href="/panduan" />
+                <x-ceplok::card image="…" title="…" description="…" href="/panduan"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="image" title="image · image-alt">
             <x-docs.lead>
-                <span class="text-primary-500">image</span> berisi URL gambar yang mengisi bagian atas kartu; rasionya
+                <span class="text-primary-500 dark:text-primary-400">image</span> berisi URL gambar yang mengisi bagian atas kartu; rasionya
                 mengikuti lebar kartu — 16:9 di kolom lebar, 5:4 di bawah 320px.
-                <span class="text-primary-500">image-alt</span> jadi teks alternatifnya, dan boleh string kosong bila
-                gambarnya murni dekoratif. Tanpa <span class="text-primary-500">image</span>, kartu langsung dimulai
+                <span class="text-primary-500 dark:text-primary-400">image-alt</span> jadi teks alternatifnya, dan boleh string kosong bila
+                gambarnya murni dekoratif. Tanpa <span class="text-primary-500 dark:text-primary-400">image</span>, kartu langsung dimulai
                 dari judul.
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Dengan gambar">
-                    <x-ceplok::card :image="$image" image-alt="Suasana kerja tim" :title="$title" :description="$description" />
+                    <x-ceplok::card :image="$image" image-alt="Suasana kerja tim" :title="$title" :description="$description" :dark-mode="$docsDark" />
                 </x-docs.demo>
                 <x-docs.demo label="Tanpa gambar">
-                    <x-ceplok::card :title="$title" :description="$description" />
+                    <x-ceplok::card :title="$title" :description="$description" :dark-mode="$docsDark" />
                 </x-docs.demo>
             </div>
             <x-docs.code>
@@ -100,6 +107,7 @@
                 <x-ceplok::card
                     ⟦*image⟧="/images/card-sample.svg"
                     ⟦*image-alt⟧="Suasana kerja tim"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -107,14 +115,14 @@
 
         <x-docs.section id="title" title="title · description">
             <x-docs.lead>
-                Dua-duanya bisa berupa prop atau slot (<span class="text-primary-500">&lt;x-slot:title&gt;</span>), jadi boleh disisipi elemen.
+                Dua-duanya bisa berupa prop atau slot (<span class="text-primary-500 dark:text-primary-400">&lt;x-slot:title&gt;</span>), jadi boleh disisipi elemen.
                 Ukuran judul mengikuti lebar kartu: 20px di kolom lebar, turun ke 16px di kolom
                 sempit. Deskripsi bersifat opsional — kartu dengan judul saja tetap
                 rapi karena jaraknya diatur per bagian, bukan lewat margin tetap.
             </x-docs.lead>
             <x-docs.demo>
                 <div class="mx-auto w-full max-w-[384px]">
-                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" />
+                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" :dark-mode="$docsDark" />
                 </div>
             </x-docs.demo>
             <x-docs.code>
@@ -122,6 +130,7 @@
                 <x-ceplok::card
                     ⟦*title⟧="Ceplok Design System Card Desktop"
                     ⟦*description⟧="Here are the biggest enterprise technology acquisitions of 2021."
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -129,14 +138,14 @@
 
         <x-docs.section id="href" title="href · link-label">
             <x-docs.lead>
-                Mengisi <span class="text-primary-500">href</span> mengubah bagian bawah kartu jadi satu tautan, bukan
-                deretan tombol. <span class="text-primary-500">link-label</span> menentukan teksnya dan berlaku hanya
-                bersama <span class="text-primary-500">href</span>; bila dikosongkan, teksnya jatuh ke bawaan
-                <span class="text-primary-500">Selengkapnya</span>.
+                Mengisi <span class="text-primary-500 dark:text-primary-400">href</span> mengubah bagian bawah kartu jadi satu tautan, bukan
+                deretan tombol. <span class="text-primary-500 dark:text-primary-400">link-label</span> menentukan teksnya dan berlaku hanya
+                bersama <span class="text-primary-500 dark:text-primary-400">href</span>; bila dikosongkan, teksnya jatuh ke bawaan
+                <span class="text-primary-500 dark:text-primary-400">Selengkapnya</span>.
             </x-docs.lead>
             <x-docs.demo>
                 <div class="mx-auto w-full max-w-[384px]">
-                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" href="#" link-label="See our guideline" />
+                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" href="#" link-label="See our guideline" :dark-mode="$docsDark" />
                 </div>
             </x-docs.demo>
             <x-docs.code>
@@ -144,6 +153,7 @@
                 <x-ceplok::card
                     ⟦*href⟧="/panduan"
                     ⟦*link-label⟧="See our guideline"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -158,14 +168,14 @@
             </x-docs.lead>
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Satu tombol">
-                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description">
+                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" :dark-mode="$docsDark">
                         <x-slot:actions><x-docs.card-button /></x-slot:actions>
                     </x-ceplok::card>
                 </x-docs.demo>
                 <x-docs.demo label="Dua tombol">
-                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description">
+                    <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" :dark-mode="$docsDark">
                         <x-slot:actions>
-                            <x-docs.card-button variant="secondary" />
+                            <x-docs.card-button variant="secondary" :dark="$docsDark" />
                             <x-docs.card-button />
                         </x-slot:actions>
                     </x-ceplok::card>
@@ -173,7 +183,7 @@
             </div>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::card>
+                <x-ceplok::card⟨ dark-mode⟩>
                     <x-slot:⟦*actions⟧>
                         <x-ceplok::button size="s">Button text</x-ceplok::button>
                         <x-ceplok::button size="s">Button text</x-ceplok::button>
@@ -183,15 +193,15 @@
             </x-docs.code>
         </x-docs.section>
 
-        <x-docs.section id="dark-mode" title="Dark mode">
-            <x-docs.lead>
-                Isi <span class="text-primary-500">dark-mode</span> untuk halaman berlatar gelap. Kartu berubah ke
+        <x-docs.mode-section>
+            <x-slot:lead>
+                Isi <span class="text-primary-500 dark:text-primary-400">dark-mode</span> untuk halaman berlatar gelap. Kartu berubah ke
                 gray-700, judul jadi putih, deskripsi gray-300, dan tautan primary-400
                 supaya tetap terbaca. Gambar sedikit diredupkan. Semua varian di atas
-                tetap berlaku, termasuk ukuran mobile. Tombol di <span class="text-primary-500">actions</span> tidak
+                tetap berlaku, termasuk ukuran mobile. Tombol di <span class="text-primary-500 dark:text-primary-400">actions</span> tidak
                 ikut diubah. Tombol outline perlu diberi warna primary-400 sendiri,
                 karena primary-700 bawaannya hampir tidak terlihat di kartu gelap.
-            </x-docs.lead>
+            </x-slot:lead>
 
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-docs.demo label="Dua tombol" dark>
@@ -263,11 +273,11 @@
                 @endverbatim
             </x-docs.code>
 
-            <h3 class="mt-10 mb-2 text-heading-4 font-bold text-gray-900">Ikut tema pembungkus</h3>
+            <h3 class="mt-10 mb-2 text-heading-4 font-bold text-gray-900 dark:text-white">Ikut tema pembungkus</h3>
             <x-docs.lead>
-                Tanpa <span class="text-primary-500">dark-mode</span>, kartu mengikuti tema elemen di sekitarnya. Pasang
-                <span class="text-primary-500">data-theme="dark"</span> sekali di pembungkus, semua kartu di dalamnya ikut gelap.
-                Di dalam area gelap, <span class="text-primary-500">data-theme="light"</span> mengembalikan satu bagian ke terang.
+                Tanpa <span class="text-primary-500 dark:text-primary-400">dark-mode</span>, kartu mengikuti tema elemen di sekitarnya. Pasang
+                <span class="text-primary-500 dark:text-primary-400">data-theme="dark"</span> sekali di pembungkus, semua kartu di dalamnya ikut gelap.
+                Di dalam area gelap, <span class="text-primary-500 dark:text-primary-400">data-theme="light"</span> mengembalikan satu bagian ke terang.
             </x-docs.lead>
 
             <x-docs.demo label='Pembungkus data-theme="dark", kartu tanpa prop' dark>
@@ -291,7 +301,7 @@
                 </section>
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
         <x-docs.section id="lebar" title="Lebar kartu">
             <x-docs.lead>
@@ -303,12 +313,12 @@
                 atasnya gambar 16:9, padding 24px, judul 20px.
             </x-docs.lead>
 
-            <div class="rounded-2xl border border-border bg-surface-subtle p-5 sm:p-8">
+            <div class="rounded-2xl border border-border bg-surface-subtle p-5 sm:p-8 dark:border-gray-700 dark:bg-gray-900">
                 <div class="flex flex-wrap items-start justify-center gap-5">
                     @foreach ([240, 300, 384, 520] as $width)
                         <div style="width: {{ $width }}px" class="max-w-full">
-                            <p class="mb-2 text-xs font-bold text-primary-700">kolom {{ $width }}px</p>
-                            <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description">
+                            <p class="mb-2 text-xs font-bold text-primary-700 dark:text-primary-400">kolom {{ $width }}px</p>
+                            <x-ceplok::card :image="$image" image-alt="" :title="$title" :description="$description" :dark-mode="$docsDark">
                                 <x-slot:actions><x-docs.card-button /></x-slot:actions>
                             </x-ceplok::card>
                         </div>
@@ -316,14 +326,14 @@
                 </div>
             </div>
 
-            <p class="mt-4 text-body-sm text-gray-500">
+            <p class="mt-4 text-body-sm text-gray-500 dark:text-gray-400">
                 Di halaman formulir kartu perlu selebar kolomnya, sementara di daftar ringkas ia perlu menyempit
                 mengikuti grid. Menentukan lebar adalah tugas tata letak, bukan tugas
                 kartu.
             </p>
         </x-docs.section>
 
-        <livewire:playground.card />
+        <livewire:playground.card :dark="$docsDark" />
 
         <x-docs.section id="properties" title="Properties">
             <x-docs.lead>

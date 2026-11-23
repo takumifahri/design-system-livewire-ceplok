@@ -6,6 +6,7 @@
         ['title', 'string | slot', 'wajib', 'Konten judul pada header Popover.'],
         ['slot', 'slot', 'wajib', 'Konten body Popover.'],
         ['side', '"top" | "right" | "bottom" | "left"', 'right', 'Preferensi posisi panel terhadap trigger; posisi dapat berbalik agar aman di viewport.'],
+        ['data-theme', '"light" | "dark"', 'inherit', 'Boundary tema eksplisit. Tanpa atribut ini Popover mengikuti data-theme ancestor; dark-mode tetap memaksa dark.'],
         ['dark-mode', 'bool', 'false', 'Memaksa panel Popover bertema gelap. Tanpa prop ini Popover mengikuti tema pembungkusnya.'],
         ['wire:model', 'atribut', '—', 'Mengontrol visibilitas Popover dari luar melalui properti boolean Livewire; gunakan x-model untuk Alpine.'],
         ['open', 'bool', 'false', 'Menentukan visibilitas awal saat Popover tidak dikontrol.'],
@@ -27,8 +28,7 @@
         'left' => 'top-1/2 right-[-8px] -translate-y-1/2 rotate-90',
     ];
 
-    // Contoh di halaman ini mengikuti mode docs. Bagian Dark mode tetap gelap
-    // di kedua mode, sama seperti ModeSection pada docs React.
+    // Contoh mengikuti mode docs; bagian Dark mode tetap gelap di kedua mode.
     $docsDark = Theme::dark();
 @endphp
 
@@ -92,7 +92,7 @@
             </div>
             <x-docs.code class="mt-8">
                 @verbatim
-                <x-ceplok::popover title="Popover" ⟦side⟧="top"⟨ dark-mode⟩>
+                <x-ceplok::popover title="Popover" ⟦side⟧="top">
                     <x-slot:trigger
                         raw
                         type="button"
@@ -119,7 +119,7 @@
             </x-docs.stage>
             <x-docs.code>
                 @verbatim
-                <x-ceplok::popover ⟦dark-mode⟧ title="Popover" side="top">
+                <x-ceplok::popover ⟦dark-mode⟧ ⟦title⟧="Popover" ⟦side⟧="top">
                     <x-slot:⟦trigger⟧
                         raw
                         type="button"
@@ -150,7 +150,6 @@
                     title="Status pengajuan"
                     ⟦wire:model.live⟧="open"
                     ⟦wire:open-change⟧="changed($event.detail.open)"
-                    ⟨dark-mode⟩
                 >
                     <x-slot:trigger raw type="button">
                         Lihat status

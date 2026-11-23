@@ -37,5 +37,5 @@ new class extends Component
             :dark-mode="$dark"
         />
     </div>
-    <p class="text-body-sm text-content-subtle" role="status">{{ $message }}</p>
+    <p class="text-body-sm text-content-subtle dark:text-gray-400" role="status">{{ $message }}</p>
 </div>

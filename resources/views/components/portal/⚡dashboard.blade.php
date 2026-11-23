@@ -119,8 +119,9 @@ new class extends Component
 
     /**
      * Tampilan gelap seluruh dasbor, diisi halamannya dari mode gelap docs.
-     * Tombol tema di header hanya mengabarkan pilihan baru lewat event
-     * `dark-mode-change`; bingkai docs yang menyimpan dan menerapkannya.
+     * Toggle tema di kaki Sidebar dan tombol tema di header hanya mengabarkan
+     * pilihan baru lewat event `dark-mode-change`; bingkai docs yang
+     * menyimpan dan menerapkannya.
      */
     public bool $darkMode = false;
 
@@ -381,6 +382,17 @@ new class extends Component
             <x-slot:collapsed-logo>
                 <img src="/images/ceplok.svg" alt="CEPLOK" class="size-8">
             </x-slot:collapsed-logo>
+            {{-- Toggle tema, seperti di docs React. Bertukar mengikuti `collapsed`
+                 milik Sidebar, jadi berganti seketika saat Sidebar diringkas
+                 tanpa menunggu $ringkas dari server; nilai awalnya dari $ringkas. --}}
+            <x-slot:footer>
+                <div x-show="! collapsed" @if ($ringkas) style="display: none;" @endif class="px-5 py-4">
+                    <x-portal.pilih-tema :dark-mode="$darkMode" />
+                </div>
+                <div x-show="collapsed" @unless ($ringkas) style="display: none;" @endunless class="flex justify-center p-3">
+                    <x-portal.tombol-tema :dark-mode="$darkMode" />
+                </div>
+            </x-slot:footer>
         </x-ceplok::sidebar>
     </div>
 
@@ -426,33 +438,25 @@ new class extends Component
                 />
             </div>
 
-            {{-- Tombol tema, bergaya sama dengan lonceng di sebelahnya. Ikonnya
-                 menunjukkan hasil bila ditekan: bulan saat terang, matahari saat gelap. --}}
-            <button
-                type="button"
-                aria-label="Mode gelap"
-                aria-pressed="{{ $darkMode ? 'true' : 'false' }}"
-                title="{{ $darkMode ? 'Matikan mode gelap' : 'Nyalakan mode gelap' }}"
-                x-on:click="$dispatch('dark-mode-change', { darkMode: @js(! $darkMode) })"
-                class="ml-auto grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-            >
-                @if ($darkMode)
-                    <x-ceplok-o-sun class="size-5" aria-hidden="true" />
-                @else
-                    <x-ceplok-o-moon class="size-5" aria-hidden="true" />
-                @endif
-            </button>
+            <div class="ml-auto flex shrink-0 items-center gap-3">
+                {{-- Tombol tema hanya di layar sempit: mulai lg toggle-nya ada di
+                     kaki Sidebar, seperti di docs React. Di sana tombol ini hanya
+                     tampil di bawah 576px karena ditempel di atas Navbar kit;
+                     header di sini dirakit sendiri, jadi cukup disembunyikan
+                     mulai lg. --}}
+                <x-portal.tombol-tema :dark-mode="$darkMode" class="lg:hidden" />
 
-            {{-- Lonceng bergaya notificationTrigger Navbar front-office: ikon 20px
-                 gray-500 dalam kotak 36px, tanpa angka. --}}
-            <button
-                type="button"
-                aria-label="Notifikasi"
-                wire:click="kabari('Ada 5 notifikasi baru.')"
-                class="grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-            >
-                <x-ceplok-o-bell class="size-5" aria-hidden="true" />
-            </button>
+                {{-- Lonceng bergaya notificationTrigger Navbar front-office: ikon 20px
+                     gray-500 dalam kotak 36px, tanpa angka. --}}
+                <button
+                    type="button"
+                    aria-label="Notifikasi"
+                    wire:click="kabari('Ada 5 notifikasi baru.')"
+                    class="grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                >
+                    <x-ceplok-o-bell class="size-5" aria-hidden="true" />
+                </button>
+            </div>
         </header>
 
         {{--
