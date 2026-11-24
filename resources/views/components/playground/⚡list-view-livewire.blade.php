@@ -9,6 +9,7 @@ new class extends Component
 
     public int $interactionCount = 0;
 
+    /** Mengikuti mode docs halaman, diisi saat mount (lihat App\Docs\Theme). */
     public bool $dark = false;
 
     /** @var array<string, array{title: string, metadata: array<int, string>, description: string}> */
@@ -68,18 +69,18 @@ new class extends Component
                 @endforeach
             </x-ceplok::list-view>
 
-            <div @class(['rounded-xl border p-6', $dark ? 'border-gray-700 bg-gray-800' : 'border-border bg-surface'])>
+            <div class="rounded-xl border border-border bg-surface p-6 dark:border-gray-700 dark:bg-gray-800">
                 <p class="ds-eyebrow">Detail dokumen</p>
-                <h3 @class(['mt-2 text-heading-3 font-black', $dark ? 'text-white' : 'text-gray-900']) x-text="documents[selectedId].title">{{ $this->selectedDocument['title'] }}</h3>
-                <p @class(['mt-3 text-body-sm', $dark ? 'text-gray-300' : 'text-gray-600']) x-text="documents[selectedId].description">{{ $this->selectedDocument['description'] }}</p>
-                <p @class(['mt-5 text-sm', $dark ? 'text-gray-400' : 'text-gray-500'])>{{ implode(' · ', $this->selectedDocument['metadata']) }}</p>
+                <h3 class="mt-2 text-heading-3 font-black text-gray-900 dark:text-white" x-text="documents[selectedId].title">{{ $this->selectedDocument['title'] }}</h3>
+                <p class="mt-3 text-body-sm text-gray-600 dark:text-gray-300" x-text="documents[selectedId].description">{{ $this->selectedDocument['description'] }}</p>
+                <p class="mt-5 text-sm text-gray-500 dark:text-gray-400">{{ implode(' · ', $this->selectedDocument['metadata']) }}</p>
             </div>
         </div>
     </x-docs.stage>
 
     <p class="mt-5 text-body-sm text-gray-600 dark:text-gray-300">
-        Dokumen terpilih: <strong class="text-gray-900">{{ $this->selectedDocument['title'] }}</strong>
+        Dokumen terpilih: <strong class="text-gray-900 dark:text-white">{{ $this->selectedDocument['title'] }}</strong>
         <span aria-hidden="true">·</span>
-        Interaksi: <strong class="text-gray-900">{{ $interactionCount }}×</strong>
+        Interaksi: <strong class="text-gray-900 dark:text-white">{{ $interactionCount }}×</strong>
     </p>
 </x-docs.section>

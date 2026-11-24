@@ -18,6 +18,7 @@ new class extends Component
     #[Url(as: 'halaman')]
     public int $page = 1;
 
+    /** Mengikuti mode docs halaman, diisi saat mount (lihat App\Docs\Theme). */
     public bool $dark = false;
 
     public function totalPages(): int
@@ -49,16 +50,16 @@ new class extends Component
 ?>
 
 <div class="space-y-4">
-    <ul @class(['divide-y overflow-hidden rounded-lg border', $dark ? 'divide-gray-700 border-gray-700 bg-gray-800' : 'divide-border border-border bg-white'])>
+    <ul class="divide-y divide-border overflow-hidden rounded-lg border border-border bg-white dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-800">
         @foreach ($this->rows as $row)
-            <li wire:key="{{ $row['nomor'] }}" @class(['flex items-center justify-between gap-4 px-4 py-2.5 text-sm', $dark ? 'text-gray-100' : 'text-gray-900'])>
+            <li wire:key="{{ $row['nomor'] }}" class="flex items-center justify-between gap-4 px-4 py-2.5 text-sm text-gray-900 dark:text-white">
                 {{ $row['nomor'] }}
                 <x-ceplok::badge :variant="$row['variant']" :dark-mode="$dark">{{ $row['status'] }}</x-ceplok::badge>
             </li>
         @endforeach
     </ul>
     <div class="flex flex-wrap items-center justify-between gap-4">
-        <span @class(['text-sm', $dark ? 'text-gray-400' : 'text-gray-500'])>Halaman {{ $page }} dari {{ $this->totalPages() }} · {{ $this::TOTAL }} pengajuan</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Halaman {{ $page }} dari {{ $this->totalPages() }} · {{ $this::TOTAL }} pengajuan</span>
         <x-ceplok::pagination :current-page="$page" :total-pages="$this->totalPages()" wire:model.live="page" size="s" :dark-mode="$dark" />
     </div>
 </div>

@@ -110,12 +110,20 @@
                             'x-on:click' => $item['actionClick'],
                         ]);
                     }
+                    // Tautan aksi yang dinonaktifkan tidak bisa memakai `disabled`, jadi dikeluarkan dari urutan
+                    // fokus. Atributnya dipasang di sini karena direktif Blade di dalam tag komponen tidak dikompilasi.
+                    if (! $cardOwnsAction && $actionDisabled && filled($item['actionHref'] ?? null)) {
+                        $actionAttributes = $actionAttributes->merge([
+                            'aria-disabled' => 'true',
+                            'tabindex' => '-1',
+                        ]);
+                    }
 
                 @endphp
                 <{{ $itemTag }} @if ($itemHref) href="{{ $itemHref }}" @endif @if ($hasDelegatedClick) type="button" @endif {{ $itemAttributes->class(['group relative flex w-full items-center justify-between overflow-hidden rounded-lg border border-border bg-surface text-left text-content transition-all', 'data-[theme=dark]:border-gray-500 in-data-[theme=dark]:border-gray-500 data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:bg-gray-700', $current['container'], $itemDecoration ? $current['decoration'] : '', $itemIsClickable ? 'cursor-pointer' : '', $itemIsClickable && $itemInteractiveFeedback ? 'hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]' : ''])->merge($itemDarkMode ? ['data-theme' => 'dark'] : []) }}>
                     @if ($itemDecoration)<span class="absolute inset-y-0 left-0 w-1 bg-primary-700 sm:w-1.5" aria-hidden="true"></span>@endif
                     <div class="flex min-w-0 flex-1 items-center gap-3.5 sm:gap-4">@if (($item['icon'] ?? null) !== false)<div @class(['flex shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-700 transition-colors', 'in-data-[theme=dark]:border in-data-[theme=dark]:border-gray-700 in-data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:text-gray-200', $current['iconBox'], $item['iconContainerClass'] ?? null])>@if (!empty($item['icon'])){!! Content::icon($item['icon']) !!}@else<x-ceplok-o-file-lines class="{{ $current['icon'] }} shrink-0" aria-hidden="true" />@endif</div>@endif<div class="min-w-0 flex-1"><h4 class="truncate leading-snug text-content in-data-[theme=dark]:text-white {{ $current['title'] }}">{{ $title }}</h4>@if (filled($item['description'] ?? null))<div class="mt-0.5 truncate leading-normal text-content-muted in-data-[theme=dark]:text-gray-400 {{ $current['description'] }}">{{ $item['description'] }}</div>@endif @if (!empty($item['metadata']))<div class="mt-0.5 flex flex-wrap items-center gap-1.5 leading-normal text-content-muted in-data-[theme=dark]:text-gray-400 {{ $current['description'] }}">@foreach ($item['metadata'] as $index => $meta)<span class="inline-flex items-center gap-1.5">@if ($index)<span class="select-none text-content-muted/60 in-data-[theme=dark]:text-gray-400/60" aria-hidden="true">&middot;</span>@endif<span>{{ $meta }}</span></span>@endforeach</div>@endif @if ($hasBadge)<div class="mt-2 flex items-center">@if (is_string($badge))<x-ceplok::badge variant="success" size="sm" :dark-mode="$itemDarkMode">{{ $badge }}</x-ceplok::badge>@else{{ $badge }}@endif</div>@endif</div></div>
-                    @if (! $actionDisabled && filled($item['actionLabel'] ?? null))<div class="flex shrink-0 items-center pl-2"><x-ceplok::button theme="primary" variant="filled" :dark-mode="$itemDarkMode" :size="$item['actionButtonSize'] ?? $current['button']" :href="$item['actionHref'] ?? null" :wire-click="$item['actionWireClick'] ?? null" {{ $actionAttributes }}>{{ $item['actionLabel'] }}</x-ceplok::button></div>@endif
+                    @if (! $cardOwnsAction && filled($item['actionLabel'] ?? null))<div class="flex shrink-0 items-center pl-2"><x-ceplok::button :size="$item['actionButtonSize'] ?? $current['button']" :href="$item['actionHref'] ?? null" :wire-click="$item['actionWireClick'] ?? null" :disabled="! filled($item['actionHref'] ?? null) && $actionDisabled" @class(['pointer-events-none opacity-50' => $actionDisabled && filled($item['actionHref'] ?? null)]) :attributes="$actionAttributes">{{ $item['actionLabel'] }}</x-ceplok::button></div>@endif
                 </{{ $itemTag }}>
             @endif
         @endforeach

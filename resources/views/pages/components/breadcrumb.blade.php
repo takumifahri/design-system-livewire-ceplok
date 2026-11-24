@@ -1,7 +1,6 @@
 @php
     use App\Docs\Theme;
 
-    $docsDark = Theme::dark();
     $items = [
         ['label' => 'Home', 'href' => '#'],
         ['label' => 'Menu 1', 'href' => '#'],
@@ -23,6 +22,11 @@
         ['separator', 'slot', 'chevron', 'Pemisah antar-item; bawaannya ikon chevron.'],
         ['dark-mode', 'bool', 'false', 'Mengaktifkan tampilan mode gelap pada Breadcrumb secara manual.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Breadcrumb">
@@ -43,7 +47,7 @@
         <x-docs.section id="sizes" title="Sizes">
             <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
                 Breadcrumb tersedia dalam dua ukuran untuk menyesuaikan kebutuhan hierarki dan kepadatan
-                informasi pada layout. Ukuran <span class="text-primary-500">base</span> adalah ukuran default. Ukuran <span class="text-primary-500">sm</span>
+                informasi pada layout. Ukuran <span class="text-primary-500 dark:text-primary-400">base</span> adalah ukuran default. Ukuran <span class="text-primary-500 dark:text-primary-400">sm</span>
                 digunakan ketika Breadcrumb diimplementasikan pada mobile.
             </p>
 
@@ -153,8 +157,8 @@
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Kunci <span class="text-primary-500">attributes</span> pada tiap item diteruskan ke tautannya — padanan onClick di React.
-                Isi <span class="text-primary-500">wire:navigate</span> supaya perpindahan halaman berjalan tanpa memuat ulang
+                Kunci <span class="text-primary-500 dark:text-primary-400">attributes</span> pada tiap item diteruskan ke tautannya — padanan onClick di React.
+                Isi <span class="text-primary-500 dark:text-primary-400">wire:navigate</span> supaya perpindahan halaman berjalan tanpa memuat ulang
                 seluruh halaman. Tautan di bawah benar-benar membuka halaman docs.
             </x-docs.lead>
             <x-docs.demo>

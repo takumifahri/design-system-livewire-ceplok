@@ -17,6 +17,11 @@
         ['size', '"base" | "s" | "responsive"', 'base', 'Ukuran kotak: 40px atau 32px. responsive memakai 32px lalu 40px saat container induk ≥ 512px; butuh induk ber-@container.'],
         ['dark-mode', 'bool', 'false', 'Menentukan apakah pagination dirender dalam mode gelap.'],
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
+    $docsDark = \App\Docs\Theme::dark();
 @endphp
 
 <x-docs.layout title="Pagination">
@@ -57,6 +62,7 @@
                     :⟦current-page⟧="$page"
                     :total-pages="100"
                     wire:model.live="page"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -73,19 +79,19 @@
                     <div>
                         <x-ceplok::pagination :current-page="1" :total-pages="100" theme="default" :dark-mode="$docsDark" />
                         <p class="mt-2 mb-5 text-sm text-gray-600 dark:text-gray-300">
-                            <span class="text-primary-500">Default</span> menggunakan gray sebagai warna utama pagination.
+                            <span class="text-primary-500 dark:text-primary-400">Default</span> menggunakan gray sebagai warna utama pagination.
                         </p>
                     </div>
                     <div>
                         <x-ceplok::pagination :current-page="1" :total-pages="100" theme="primary" :dark-mode="$docsDark" />
                         <p class="mt-2 mb-5 text-sm text-gray-600 dark:text-gray-300">
-                            <span class="text-primary-500">Primary</span> digunakan sebagai warna utama lain pagination.
+                            <span class="text-primary-500 dark:text-primary-400">Primary</span> digunakan sebagai warna utama lain pagination.
                         </p>
                     </div>
                     <div>
                         <x-ceplok::pagination :current-page="1" :total-pages="100" theme="purple" :dark-mode="$docsDark" />
                         <p class="mt-2 mb-5 text-sm text-gray-600 dark:text-gray-300">
-                            <span class="text-primary-500">Purple</span> digunakan ketika pagination membutuhkan aksen ungu.
+                            <span class="text-primary-500 dark:text-primary-400">Purple</span> digunakan ketika pagination membutuhkan aksen ungu.
                         </p>
                     </div>
                 </x-docs.demo>
@@ -98,6 +104,7 @@
                     :total-pages="100"
                     wire:model.live="page"
                     ⟦theme⟧="primary"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -137,10 +144,10 @@
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Dengan <span class="text-primary-500">wire:model.live</span>, klik pada Pagination langsung mengganti properti komponen dan
-                daftar datanya dirender ulang. Atribut <span class="text-primary-500">#[Url]</span> mencatat halamannya di alamat,
-                jadi tautannya bisa dibagikan. Bila komponen Anda memakai <span class="text-primary-500">WithPagination</span>, tangkap
-                event-nya: <span class="text-primary-500">wire:page-change="gotoPage($event.detail.page)"</span>.
+                Dengan <span class="text-primary-500 dark:text-primary-400">wire:model.live</span>, klik pada Pagination langsung mengganti properti komponen dan
+                daftar datanya dirender ulang. Atribut <span class="text-primary-500 dark:text-primary-400">#[Url]</span> mencatat halamannya di alamat,
+                jadi tautannya bisa dibagikan. Bila komponen Anda memakai <span class="text-primary-500 dark:text-primary-400">WithPagination</span>, tangkap
+                event-nya: <span class="text-primary-500 dark:text-primary-400">wire:page-change="gotoPage($event.detail.page)"</span>.
             </x-docs.lead>
             <x-docs.demo>
                 <livewire:playground.pagination-list :dark="$docsDark" />
@@ -157,6 +164,7 @@
                     :total-pages="$this->totalPages()"
                     ⟦wire:model.live⟧="page"
                     size="s"
+                    ⟨dark-mode⟩
                 />
                 @endverbatim
             </x-docs.code>
@@ -164,8 +172,8 @@
 
         <x-docs.section id="tautan" title="Mode tautan">
             <x-docs.lead>
-                Di halaman Blade biasa tanpa Livewire, isi <span class="text-primary-500">url</span> supaya setiap halaman menjadi tautan
-                <span class="text-primary-500">&lt;a href&gt;</span> — berupa pola dengan <span class="text-primary-500">{page}</span>, atau closure yang menerima nomor
+                Di halaman Blade biasa tanpa Livewire, isi <span class="text-primary-500 dark:text-primary-400">url</span> supaya setiap halaman menjadi tautan
+                <span class="text-primary-500 dark:text-primary-400">&lt;a href&gt;</span> — berupa pola dengan <span class="text-primary-500 dark:text-primary-400">{page}</span>, atau closure yang menerima nomor
                 halamannya. Tidak butuh JavaScript, dan alamatnya bisa disalin atau dibuka di tab baru.
                 Pagination di bawah membaca halamannya dari alamat halaman ini.
             </x-docs.lead>
@@ -178,11 +186,12 @@
                     :current-page="request()->integer('page', 1)"
                     :total-pages="10"
                     ⟦url⟧="/pengajuan?page={page}"
+                    ⟨dark-mode⟩
                 />
 
                 {{-- Atau dengan closure --}}
                 <x-ceplok::pagination :current-page="$page" :total-pages="10"
-                    :⟦url⟧="fn (int $page) => route('pengajuan.index', ['page' => $page])" />
+                    :⟦url⟧="fn (int $page) => route('pengajuan.index', ['page' => $page])"⟨ dark-mode⟩ />
                 @endverbatim
             </x-docs.code>
         </x-docs.section>

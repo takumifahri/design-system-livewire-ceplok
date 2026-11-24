@@ -20,10 +20,10 @@
         <x-docs.section id="sizes" title="Sizes">
             <div class="grid gap-4 md:grid-cols-2">
                 <article>
-                    <h3 class="text-sm font-black text-gray-900">Default</h3>
-                    <p class="mt-1 mb-3 text-body-sm text-gray-500">
+                    <h3 class="text-sm font-black text-gray-900 dark:text-white">Default</h3>
+                    <p class="mt-1 mb-3 text-body-sm text-gray-500 dark:text-gray-400">
                         Ukuran standar 50×50 px untuk indikator loading pada area komponen atau konten umum.
-                        Ukuran ini digunakan secara default, jadi prop <span class="text-primary-500">size</span> tidak perlu ditulis.
+                        Ukuran ini digunakan secara default, jadi prop <span class="text-primary-500 dark:text-primary-400">size</span> tidak perlu ditulis.
                     </p>
                     <x-docs.example>
                         <x-ceplok::spinner />
@@ -31,10 +31,10 @@
                 </article>
 
                 <article>
-                    <h3 class="text-sm font-black text-gray-900">Large</h3>
-                    <p class="mt-1 mb-3 text-body-sm text-gray-500">
+                    <h3 class="text-sm font-black text-gray-900 dark:text-white">Large</h3>
+                    <p class="mt-1 mb-3 text-body-sm text-gray-500 dark:text-gray-400">
                         Ukuran 100×100 px untuk loading state yang membutuhkan penekanan visual lebih besar.
-                        Gunakan <span class="text-primary-500">size="large"</span> untuk memilih ukuran ini.
+                        Gunakan <span class="text-primary-500 dark:text-primary-400">size="large"</span> untuk memilih ukuran ini.
                     </p>
                     <x-docs.example>
                         <x-ceplok::spinner size="large" />
@@ -55,8 +55,8 @@
 
         <x-docs.section id="livewire" title="Livewire">
             <x-docs.lead>
-                Pasang <span class="text-primary-500">wire:loading</span> pada pembungkus Spinner supaya ia hanya tampil selama aksi
-                Livewire berjalan, dan <span class="text-primary-500">wire:target</span> untuk membatasinya ke satu aksi.
+                Pasang <span class="text-primary-500 dark:text-primary-400">wire:loading</span> pada pembungkus Spinner supaya ia hanya tampil selama aksi
+                Livewire berjalan, dan <span class="text-primary-500 dark:text-primary-400">wire:target</span> untuk membatasinya ke satu aksi.
             </x-docs.lead>
             <x-docs.example>
                 <livewire:playground.spinner-loading />

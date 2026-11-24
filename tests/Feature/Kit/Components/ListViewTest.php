@@ -114,4 +114,25 @@ class ListViewTest extends TestCase
         $this->assertHasClasses($card, 'cursor-pointer');
         $this->assertLacksClasses($card, 'hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]');
     }
+
+    public function test_atribut_tombol_aksi_terpasang_tanpa_atribut_liar(): void
+    {
+        // Tautan aksi mobile yang dinonaktifkan keluar dari urutan fokus.
+        $link = $this->find($this->dom('<x-ceplok::list-view platform="mobile" title="Project brief" action-label="Open" action-href="/brief" action-disabled />'), 'a[href="/brief"]');
+        $this->assertSame('true', $link->getAttribute('aria-disabled'));
+        $this->assertSame('-1', $link->getAttribute('tabindex'));
+        $this->assertHasClasses($link, 'pointer-events-none opacity-50');
+
+        // action-click dan action-attributes sampai ke tombolnya.
+        $button = $this->find($this->dom('<x-ceplok::list-view title="Project brief" action-label="Open" action-click="open = true" :action-attributes="[\'data-aksi\' => \'buka\']" />'), 'button');
+        $this->assertSame('open = true', $button->getAttribute('x-on:click'));
+        $this->assertSame('buka', $button->getAttribute('data-aksi'));
+
+        // Tidak ada sisa direktif atau nama variabel yang tercetak sebagai atribut.
+        foreach ([$link, $button] as $el) {
+            foreach ($el->attributes as $attr) {
+                $this->assertDoesNotMatchRegularExpression('/^@|^actionAttributes$|^actionDisabled$/', $attr->name);
+            }
+        }
+    }
 }

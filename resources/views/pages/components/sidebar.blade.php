@@ -133,6 +133,11 @@
         'profileLabel' => 'Lihat Profil',
         'href' => '#',
     ];
+
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
+    $docsDark = \App\Docs\Theme::dark();
 @endphp
 
 <x-docs.layout title="Sidebar">
@@ -186,6 +191,7 @@
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
+                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -215,6 +221,7 @@
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
+                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -244,6 +251,7 @@
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
+                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -259,7 +267,7 @@
                 </article>
 
                 {{-- Varian 5 --}}
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 lg:col-span-2">
+                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white lg:col-span-2 dark:border-gray-700 dark:bg-gray-800">
                     <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                         <h3 class="text-sm font-bold text-gray-900 dark:text-white">5. Collapsed</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Konfigurasi varian 4 dalam kondisi tertutup: icon, user, dan logo mark tetap terlihat.</p>
@@ -274,6 +282,7 @@
                             :dark-mode="$docsDark"
                             collapsed
                             show-collapse-button
+                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -348,6 +357,7 @@
                                     ],
                                 ],
                             ]"
+                            :dark-mode="$docsDark"
                         />
                     </div>
 
@@ -434,15 +444,15 @@
         {{-- SECTION 5: DARK MODE --}}
         <x-docs.mode-section>
             <x-slot:lead>
-                Prop <span class="text-primary-500">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Sidebar.
+                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Sidebar.
                 Komponen secara otomatis menyesuaikan warna ikon, teks aktif/inaktif, badge, profil, dan border untuk menjaga rasio kontras.
             </x-slot:lead>
 
             <div class="mb-4 grid gap-4 lg:grid-cols-2">
-                <article class="overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
-                    <div class="border-b border-gray-700 px-4 py-3">
-                        <h3 class="text-sm font-bold text-white">1. Multi-level menu + icon, user info, logo web</h3>
-                        <p class="mt-1 text-xs leading-5 text-gray-400">Menu berikon dikelompokkan; separator membedakan area konten.</p>
+                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+                        <h3 class="text-sm font-bold text-gray-900 dark:text-white">1. Multi-level menu + icon, user info, logo web</h3>
+                        <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Menu berikon dikelompokkan; separator membedakan area konten.</p>
                     </div>
                     <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-950">
                         <x-ceplok::sidebar
@@ -467,10 +477,10 @@
                     </div>
                 </article>
 
-                <article class="overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
-                    <div class="border-b border-gray-700 px-4 py-3">
-                        <h3 class="text-sm font-bold text-white">2. Collapsed</h3>
-                        <p class="mt-1 text-xs leading-5 text-gray-400">Konfigurasi varian 1 dalam kondisi tertutup: icon, user, dan logo terlihat.</p>
+                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+                        <h3 class="text-sm font-bold text-gray-900 dark:text-white">2. Collapsed</h3>
+                        <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Konfigurasi varian 1 dalam kondisi tertutup: icon, user, dan logo terlihat.</p>
                     </div>
                     <div class="ds-scroll-x flex h-[440px] items-start overflow-x-auto overflow-y-auto overscroll-contain bg-gray-950">
                         <x-ceplok::sidebar
@@ -496,15 +506,10 @@
                     </div>
                 </article>
             </div>
-            <x-docs.code>
-                @verbatim
-                <x-ceplok::sidebar ⟦dark-mode⟧ :groups="$groups" />
-                @endverbatim
-            </x-docs.code>
         </x-docs.mode-section>
 
         {{-- SECTION 6: PLAYGROUND & PENGGUNAAN --}}
-        <livewire:playground.sidebar :theme="$docsDark ? 'dark' : 'light'" />
+        <livewire:playground.sidebar :dark="$docsDark" />
 
         {{-- SECTION 7: LIVEWIRE --}}
         <x-docs.section id="livewire" title="Livewire">

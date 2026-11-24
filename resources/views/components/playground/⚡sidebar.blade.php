@@ -28,6 +28,12 @@ new class extends Component
 
     public string $activeMenu = 'Menu 1';
 
+    /** Mode awal mengikuti mode docs halaman (lihat App\Docs\Theme). */
+    public function mount(bool $dark = false): void
+    {
+        $this->theme = $dark ? 'dark' : 'light';
+    }
+
     public function selectMenu(string $label): void
     {
         $this->activeMenu = $label;

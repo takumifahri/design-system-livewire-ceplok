@@ -5,9 +5,10 @@
 {{--
     Portal Dashboard penuh layar, dibuka dari tombol di pintu masuknya
     (pages/portal/index). Mode gelapnya mengikuti pilihan yang sama dengan
-    docs, dan tombol tema di Sidebar-nya mengubahnya lewat x-docs.app-frame.
-    Posisi Sidebar desktop dipulihkan dari cookie agar tidak kembali expanded
-    ketika pergantian tema memuat ulang halaman.
+    docs, dan toggle tema di kaki Sidebar atau tombol tema di header layar
+    sempit mengubahnya lewat x-docs.app-frame. Posisi Sidebar desktop
+    dipulihkan dari cookie agar tidak kembali expanded ketika pergantian tema
+    memuat ulang halaman.
 --}}
 <x-docs.app-frame title="Portal Dashboard" :kembali="route('portal.index')">
     <livewire:portal.dashboard
