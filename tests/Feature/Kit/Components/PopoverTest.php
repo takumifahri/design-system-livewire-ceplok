@@ -75,7 +75,14 @@ class PopoverTest extends TestCase
         $this->assertSame('dark', $this->find($dom, '[popover]')->getAttribute('data-theme'));
     }
 
-    public function test_listener_open_change_dipasang_di_root_bukan_panel(): void
+    public function test_boundary_tema_consumer_meng_override_dark_mode(): void
+    {
+        $dom = $this->dom('<x-ceplok::popover title="P" dark-mode data-theme="light"><x-slot:trigger>Buka</x-slot:trigger>Isi</x-ceplok::popover>');
+
+        $this->assertSame('light', $this->find($dom, '[popover]')->getAttribute('data-theme'));
+    }
+
+    public function test_model_dan_listener_perubahan_dipasang_di_pembungkus(): void
     {
         $dom = $this->dom(<<<'BLADE'
             <x-ceplok::popover
@@ -88,7 +95,7 @@ class PopoverTest extends TestCase
                 Isi
             </x-ceplok::popover>
             BLADE);
-        $root = $this->find($dom, 'div[x-data="ceplokPopover"]');
+        $root = $this->find($dom, 'body > div');
         $panel = $this->find($root, '[popover]');
 
         $this->assertSame('open', $root->getAttribute('wire:model.live'));
@@ -96,6 +103,26 @@ class PopoverTest extends TestCase
         $this->assertSame('audit($event.detail.open)', $root->getAttribute('x-on:open-change'));
         $this->assertFalse($panel->hasAttribute('wire:open-change'));
         $this->assertFalse($panel->hasAttribute('x-on:open-change'));
+    }
+
+    public function test_listener_beforetoggle_native_tidak_diteruskan(): void
+    {
+        $dom = $this->dom(<<<'BLADE'
+            <x-ceplok::popover
+                title="P"
+                x-on:beforetoggle="audit($event)"
+                wire:beforetoggle="beforeToggle"
+                onbeforetoggle="nativeAudit(event)"
+            >
+                <x-slot:trigger>Buka</x-slot:trigger>
+                Isi
+            </x-ceplok::popover>
+            BLADE);
+        $panel = $this->find($dom, '[popover]');
+
+        $this->assertFalse($panel->hasAttribute('x-on:beforetoggle'));
+        $this->assertFalse($panel->hasAttribute('wire:beforetoggle'));
+        $this->assertFalse($panel->hasAttribute('onbeforetoggle'));
     }
 
     public function test_popover_merangkai_handler_trigger_consumer_dengan_toggle_internal(): void

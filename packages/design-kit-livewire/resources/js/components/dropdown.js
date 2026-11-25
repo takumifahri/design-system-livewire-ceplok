@@ -16,11 +16,9 @@
  * Di kedua peran, mengetik melompat ke baris yang cocok seperti `<select>`
  * bawaan, dan menekan sebuah baris menutup panelnya.
  *
- * Bentuk `attached` (`ceplokDropdown(true)`) menempelkan panel pada
- * tombolnya: lebar minimum selebar tombol, dijepit di dalam viewport, dibalik
- * ke atas bila di bawah tidak muat, dan diukur ulang saat halaman digulir,
- * jendela diubah, atau tombolnya bergerak. Tanpa itu panel ditempatkan CSS
- * anchor positioning.
+ * Panel selalu mengikuti tombolnya: perataan horizontal dipilih lewat
+ * `align`, lebar dan tinggi dijepit di viewport, lalu panel dibalik ke atas
+ * bila ruang bawah tidak cukup. Ukuran dan posisi dipantau selama terbuka.
  */
 
 /** Jarak panel dari tombol dan dari tepi layar, dalam piksel. */
@@ -47,12 +45,13 @@ const rowName = (el) => {
     return normalize(all.slice(0, all.length - note.length)).trim();
 };
 
-export default function dropdown(attached = false) {
+export default function dropdown(align = 'start', closeOnSelect = true) {
     let typed = { text: '', time: 0 };
     let spaceHeld = false;
     let frame = 0;
     let follow = 0;
     let resize = null;
+    let restoreFocus = false;
 
     return {
         ceplokOpen: false,
@@ -77,8 +76,14 @@ export default function dropdown(attached = false) {
             // terlihat melompat; `toggle` mengulanginya setelah tingginya terukur.
             panel.addEventListener('beforetoggle', (event) => {
                 this.ceplokOpen = event.newState === 'open';
-                if (!this.ceplokOpen) stopFollowing();
-                else if (attached) this.ceplokPlace();
+                if (!this.ceplokOpen) {
+                    restoreFocus = panel.contains(document.activeElement);
+                    stopFollowing();
+                }
+                else {
+                    panel.style.visibility = 'hidden';
+                    this.ceplokPlace();
+                }
             });
 
             panel.addEventListener('toggle', (event) => {
@@ -86,31 +91,33 @@ export default function dropdown(attached = false) {
                     stopFollowing();
                     // Ditutup selagi fokus di dalamnya (Escape, klik di luar, atau
                     // sebuah pilihan diambil), jadi fokus kembali ke tombolnya.
-                    if (selection && panel.contains(document.activeElement)) trigger.focus();
+                    if (restoreFocus) trigger.focus();
+                    restoreFocus = false;
+                    panel.style.visibility = 'hidden';
                     return;
                 }
 
-                if (attached) {
-                    this.ceplokPlace();
-                    // `true` supaya guliran pada pembungkus mana pun ikut terdengar.
-                    window.addEventListener('scroll', onMove, true);
-                    window.addEventListener('resize', onMove);
-                    resize = new ResizeObserver(onMove);
-                    resize.observe(trigger);
+                this.ceplokPlace();
+                panel.style.visibility = 'visible';
+                // `true` supaya guliran pada pembungkus mana pun ikut terdengar.
+                window.addEventListener('scroll', onMove, true);
+                window.addEventListener('resize', onMove);
+                resize = new ResizeObserver(onMove);
+                resize.observe(trigger);
+                resize.observe(panel);
 
-                    // Perpindahan posisi tidak punya observer DOM, jadi selama
-                    // panel terbuka kotak tombol dibandingkan per frame.
-                    let box = trigger.getBoundingClientRect();
-                    const track = () => {
-                        const next = trigger.getBoundingClientRect();
-                        if (next.left !== box.left || next.top !== box.top) {
-                            box = next;
-                            this.ceplokRequestPlace();
-                        }
-                        follow = requestAnimationFrame(track);
-                    };
+                // Perpindahan posisi tidak punya observer DOM, jadi selama
+                // panel terbuka kotak tombol dibandingkan per frame.
+                let box = trigger.getBoundingClientRect();
+                const track = () => {
+                    const next = trigger.getBoundingClientRect();
+                    if (next.left !== box.left || next.top !== box.top) {
+                        box = next;
+                        this.ceplokPlace();
+                    }
                     follow = requestAnimationFrame(track);
-                }
+                };
+                follow = requestAnimationFrame(track);
 
                 // Pada daftar pilihan, fokus jatuh ke baris yang sedang aktif
                 // supaya panah bergerak dari sana, seperti `<select>` bawaan.
@@ -123,17 +130,15 @@ export default function dropdown(attached = false) {
             // Livewire yang merender ulang selagi panel terbuka mengganti atribut
             // `style` panel dengan versi server, yang tidak membawa posisinya;
             // posisinya dipasang lagi sebelum layar sempat digambar.
-            if (attached) {
-                new MutationObserver(() => {
-                    if (this.ceplokOpen && panel.style.top === '') this.ceplokPlace();
-                }).observe(panel, { attributes: true, attributeFilter: ['style'] });
-            }
+            new MutationObserver(() => {
+                if (this.ceplokOpen && panel.style.top === '') this.ceplokPlace();
+            }).observe(panel, { attributes: true, attributeFilter: ['style'] });
 
             panel.addEventListener('keydown', (event) => this.ceplokKeydown(event, selection));
             panel.addEventListener('keyup', (event) => this.ceplokHoldSpace(event));
             panel.addEventListener('click', (event) => {
                 const row = event.target.closest('[data-baris]');
-                if (row && panel.contains(row) && row.getAttribute('aria-disabled') !== 'true') this.ceplokClose();
+                if (closeOnSelect && row && panel.contains(row) && row.getAttribute('aria-disabled') !== 'true') this.ceplokClose();
             });
 
             // Menu aksi yang baru dibuka belum memindahkan fokus dari tombolnya,
@@ -179,14 +184,25 @@ export default function dropdown(attached = false) {
             const panel = this.ceplokPanel();
             const box = this.ceplokTrigger().getBoundingClientRect();
 
-            panel.style.minWidth = `${Math.min(box.width, window.innerWidth - GAP * 2)}px`;
+            const safeWidth = Math.max(0, window.innerWidth - GAP * 2);
+            panel.style.minWidth = `${Math.min(box.width, safeWidth)}px`;
+            panel.style.maxWidth = `${safeWidth}px`;
 
             const width = panel.offsetWidth || box.width;
-            panel.style.left = `${Math.max(GAP, Math.min(box.left, window.innerWidth - width - GAP))}px`;
+            const idealLeft = align === 'center'
+                ? box.left + box.width / 2 - width / 2
+                : align === 'end'
+                    ? box.right - width
+                    : box.left;
+            panel.style.left = `${Math.max(GAP, Math.min(idealLeft, window.innerWidth - width - GAP))}px`;
 
+            const below = Math.max(0, window.innerHeight - GAP - (box.bottom + GAP));
+            const above = Math.max(0, box.top - GAP - GAP);
+            const naturalHeight = Math.max(panel.scrollHeight, panel.offsetHeight);
+            const upwards = naturalHeight > below && above > below;
+            panel.style.maxHeight = `${upwards ? above : below}px`;
             const height = panel.offsetHeight;
-            const below = window.innerHeight - box.bottom - GAP;
-            panel.style.top = height > below && box.top - GAP > below ? `${Math.max(GAP, box.top - height - GAP)}px` : `${box.bottom + GAP}px`;
+            panel.style.top = upwards ? `${Math.max(GAP, box.top - GAP - height)}px` : `${box.bottom + GAP}px`;
         },
 
         ceplokRequestPlace() {

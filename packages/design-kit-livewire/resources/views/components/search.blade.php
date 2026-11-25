@@ -171,7 +171,7 @@
                     @endforeach
                 </select>
 
-                <x-ceplok::dropdown attached :content-label="$categoryPlaceholder" :items="$categoryItems" :dark-mode="$darkMode">
+                <x-ceplok::dropdown class="absolute inset-0" :content-label="$categoryPlaceholder" :items="$categoryItems" :dark-mode="$darkMode">
                     <x-slot:trigger
                         raw
                         :disabled="$disabled"

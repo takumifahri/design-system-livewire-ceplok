@@ -4,12 +4,12 @@ use Livewire\Component;
 
 new class extends Component
 {
+    /** Tampilan gelap, mengikuti mode docs halamannya. */
+    public bool $dark = false;
+
     public bool $open = false;
 
     public int $changes = 0;
-
-    /** Mengikuti mode docs halaman, diisi saat mount (lihat App\Docs\Theme). */
-    public bool $dark = false;
 
     public function changed(bool $open): void
     {

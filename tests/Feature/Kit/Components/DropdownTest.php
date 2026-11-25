@@ -15,9 +15,11 @@ class DropdownTest extends TestCase
         $trigger = $this->find($dom, 'body > div > button');
         $panel = $this->find($dom, 'body > div > [popover="auto"]');
 
-        $this->assertHasClasses($root, 'relative inline-block');
+        $this->assertHasClasses($root, 'inline-block');
         $this->assertSame('Menu akun', $root->getAttribute('aria-label'));
-        $this->assertSame('ceplokDropdown(false)', $root->getAttribute('x-data'));
+        $this->assertSame("ceplokDropdown('start', true)", $root->getAttribute('x-data'));
+        $this->assertSame('ceplokClose()', $root->getAttribute('x-on:dropdown-close.stop'));
+        $this->assertStringContainsString('detail?.panelId', $root->getAttribute('x-on:dropdown-close.window'));
         // Pemicu dirender sebagai Button kit, lengkap dengan atribut Popover dari server.
         $this->assertHasClasses($trigger, 'border-gray-500 text-gray-500');
         $this->assertSame($panel->getAttribute('id'), $trigger->getAttribute('popovertarget'));
@@ -26,22 +28,22 @@ class DropdownTest extends TestCase
         $this->assertFalse($trigger->hasAttribute('aria-haspopup'));
 
         $this->assertNull($panel->getAttribute('role'));
-        $this->assertHasClasses($panel, 'mt-2 w-max [position-area:bottom_center] py-1 bg-surface');
+        $this->assertHasClasses($panel, 'm-0 overflow-y-auto shadow-dropdown py-1 bg-dropdown-surface text-dropdown-content');
         $this->assertSame('/bantuan', $this->find($panel, 'a[data-baris]')->getAttribute('href'));
         $this->assertTrue($this->find($panel, 'button[data-baris]:disabled')->hasAttribute('disabled'));
-        $this->assertSame('keluar', $this->find($panel, 'button.text-red-600')->getAttribute('wire:click'));
+        $this->assertSame('keluar', $this->find($panel, 'button.text-feedback-error')->getAttribute('wire:click'));
     }
 
-    public function test_pemicu_raw_dan_attached(): void
+    public function test_pemicu_raw(): void
     {
-        $dom = $this->dom('<x-ceplok::dropdown attached :items="[[\'label\' => \'Satu\']]"><x-slot:trigger raw class="w-full">Buka</x-slot:trigger></x-ceplok::dropdown>');
+        $dom = $this->dom('<x-ceplok::dropdown :items="[[\'label\' => \'Satu\']]"><x-slot:trigger raw class="w-full">Buka</x-slot:trigger></x-ceplok::dropdown>');
         $trigger = $this->find($dom, 'body > div > button');
 
-        $this->assertHasClasses($this->find($dom, 'body > div'), 'contents');
+        $this->assertHasClasses($this->find($dom, 'body > div'), 'inline-block');
         $this->assertSame('button', $trigger->getAttribute('type'));
         $this->assertSame('w-full', $trigger->getAttribute('class'));
         $this->assertFalse($trigger->hasAttribute('raw'));
-        $this->assertHasClasses($this->find($dom, '[popover]'), 'm-0 max-h-72 overflow-y-auto');
+        $this->assertHasClasses($this->find($dom, '[popover]'), 'm-0 overflow-y-auto overscroll-contain');
     }
 
     public function test_kelompok_dengan_judul_pemisah_ikon_dan_keterangan(): void
@@ -54,9 +56,10 @@ class DropdownTest extends TestCase
             BLADE);
         $panel = $this->find($dom, '[popover]');
 
-        $this->assertHasClasses($panel, 'bg-gray-800 text-gray-300');
+        $this->assertSame('dark', $this->find($dom, 'body > div')->getAttribute('data-theme'));
+        $this->assertHasClasses($panel, 'bg-dropdown-surface text-dropdown-content');
         $this->assertSame('Akun', trim($this->find($panel, 'p.uppercase')->textContent));
-        $this->assertHasClasses($this->find($panel, 'hr'), 'border-gray-700');
+        $this->assertHasClasses($this->find($panel, 'hr'), 'border-border');
         $this->assertNotNull($panel->querySelector('[data-baris] span[aria-hidden="true"] > svg'));
         $this->assertSame('Data diri', trim($this->find($panel, '[data-keterangan]')->textContent));
     }
@@ -87,9 +90,11 @@ class DropdownTest extends TestCase
 
     public function test_isi_bebas_tanpa_items(): void
     {
-        $panel = $this->find($this->dom('<x-ceplok::dropdown content-class="p-4"><x-slot:trigger raw>Buka</x-slot:trigger><p id="isi">Bebas</p></x-ceplok::dropdown>'), '[popover]');
+        $panel = $this->find($this->dom('<x-ceplok::dropdown content-label="Pengaturan tampilan" content-class="p-4"><x-slot:trigger raw>Buka</x-slot:trigger><p id="isi">Bebas</p></x-ceplok::dropdown>'), '[popover]');
 
         $this->assertNotNull($panel->querySelector('#isi'));
+        $this->assertSame('group', $panel->getAttribute('role'));
+        $this->assertSame('Pengaturan tampilan', $panel->getAttribute('aria-label'));
         $this->assertHasClasses($panel, 'p-4');
         $this->assertLacksClasses($panel, 'py-1');
     }
@@ -103,6 +108,38 @@ class DropdownTest extends TestCase
         $this->assertPropError(
             "<x-ceplok::dropdown :items=\"[['label' => 'A', 'tone' => 'warning']]\"><x-slot:trigger raw>X</x-slot:trigger></x-ceplok::dropdown>",
             'Prop `items.tone` pada <x-ceplok::dropdown>',
+        );
+    }
+
+    public function test_align_close_on_select_dan_navigasi_mengikuti_kontrak_v2(): void
+    {
+        $dom = $this->dom(<<<'BLADE'
+            <x-ceplok::dropdown align="end" :close-on-select="false" :items="[
+                ['label' => 'Dokumentasi', 'href' => '/docs', 'target' => '_blank', 'current' => true],
+                ['label' => 'Kustom', 'href' => '/custom', 'target' => '_self', 'rel' => 'author', 'current' => 'step'],
+            ]"><x-slot:trigger raw>Buka</x-slot:trigger></x-ceplok::dropdown>
+            BLADE);
+        $root = $this->find($dom, 'body > div');
+        [$docs, $custom] = iterator_to_array($dom->querySelectorAll('[popover] a[data-baris]'), false);
+
+        $this->assertSame("ceplokDropdown('end', false)", $root->getAttribute('x-data'));
+        $this->assertSame('_blank', $docs->getAttribute('target'));
+        $this->assertSame('noopener noreferrer', $docs->getAttribute('rel'));
+        $this->assertSame('page', $docs->getAttribute('aria-current'));
+        $this->assertSame('author', $custom->getAttribute('rel'));
+        $this->assertSame('step', $custom->getAttribute('aria-current'));
+        $this->assertHasClasses($docs, 'bg-dropdown-item-current-surface text-content');
+    }
+
+    public function test_align_dan_close_on_select_divalidasi(): void
+    {
+        $this->assertPropError(
+            '<x-ceplok::dropdown align="left"><x-slot:trigger raw>X</x-slot:trigger></x-ceplok::dropdown>',
+            'Prop `align` pada <x-ceplok::dropdown>',
+        );
+        $this->assertPropError(
+            '<x-ceplok::dropdown close-on-select="maybe"><x-slot:trigger raw>X</x-slot:trigger></x-ceplok::dropdown>',
+            'Prop `close-on-select` pada <x-ceplok::dropdown>',
         );
     }
 }

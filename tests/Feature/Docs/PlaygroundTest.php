@@ -20,7 +20,7 @@ class PlaygroundTest extends TestCase
     {
         $names = [
             'alert', 'alert-notice', 'avatar', 'avatar-livewire', 'badge', 'badge-filters', 'breadcrumb', 'button', 'card', 'container',
-            'footer', 'hero', 'pagination', 'pagination-list', 'table', 'table-demo', 'popover', 'popover-livewire', 'modal', 'modal-livewire', 'spinner', 'spinner-loading', 'clipboard', 'clipboard-livewire', 'toast', 'toast-saved',
+            'footer', 'hero', 'pagination', 'pagination-list', 'table', 'table-demo', 'popover', 'popover-livewire', 'modal', 'modal-livewire', 'navbar', 'spinner', 'spinner-loading', 'clipboard', 'clipboard-livewire', 'toast', 'toast-saved',
             'dropdown', 'dropdown-actions', 'dropdown-sort', 'drawer', 'drawer-livewire', 'sidebar', 'sidebar-livewire', 'list-view', 'list-view-livewire',
             'input-field', 'input-field-validate', 'floating-label', 'floating-label-fill', 'text-area', 'text-area-send',
             'select', 'select-region', 'search', 'search-live', 'datepicker', 'datepicker-filter', 'upload', 'upload-livewire',

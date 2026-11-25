@@ -19,6 +19,9 @@
         'default' => 'size-[50px]',
         'large' => 'size-[100px]',
     ];
+    // Sama dengan kontrak props React: ukuran dan geometri SVG dikendalikan
+    // Spinner, bukan atribut consumer.
+    $attributes = $attributes->except(['width', 'height', 'viewBox', 'fill']);
     $hidden = in_array($attributes->get('aria-hidden'), [true, 'true'], true);
     // `:aria-hidden="true"` dicetak Blade sebagai aria-hidden="aria-hidden"
     // (aturan atribut boolean HTML). Nilai itu tidak sah untuk ARIA dan dibaca

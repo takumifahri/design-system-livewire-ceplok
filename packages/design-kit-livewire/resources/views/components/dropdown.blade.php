@@ -1,4 +1,5 @@
 @php
+    use CeplokUi\DesignKit\Enums\DropdownAlign;
     use CeplokUi\DesignKit\Enums\DropdownItemTone;
     use CeplokUi\DesignKit\Support\Content;
     use CeplokUi\DesignKit\Support\FieldId;
@@ -27,15 +28,17 @@
     juga. `selected-when` (ekspresi Alpine) membuat `aria-selected`-nya ikut
     berganti tanpa render ulang server.
 
-    `attached` menempelkan panel pada tombolnya, seperti daftar Select;
-    `content-label` menamai daftar pilihan bagi pembaca layar; `content-class`
-    menambah class pada panel; `dark-mode` memakai panel gelap. Atribut lain
-    ke pembungkus terluar.
+    `align` mengatur perataan panel; `close-on-select` menentukan apakah item
+    generated menutup panel. Event `dropdown-close` menutup isi kustom secara
+    eksplisit; event yang dikirim dari luar harus membawa `detail.panelId`.
+    `content-label` menamai daftar pilihan atau panel slot kustom; `content-class` menambah class panel;
+    `dark-mode` membuat boundary tema gelap. Atribut lain ke pembungkus terluar.
 --}}
 @props([
     'items' => null,
     'groups' => null,
-    'attached' => false,
+    'align' => 'start',
+    'closeOnSelect' => true,
     'contentLabel' => null,
     'contentClass' => null,
     'panelId' => null,
@@ -44,7 +47,8 @@
 ])
 
 @php
-    $attached = Prop::bool($attached, false, 'dropdown', 'attached');
+    $align = Prop::oneOf(DropdownAlign::class, $align, DropdownAlign::Start, 'dropdown', 'align');
+    $closeOnSelect = Prop::bool($closeOnSelect, true, 'dropdown', 'close-on-select');
     $darkMode = Prop::bool($darkMode, false, 'dropdown', 'dark-mode');
     $panelId ??= filled($attributes->get('id')) ? $attributes->get('id').'-panel' : FieldId::for($attributes, 'dropdown');
 
@@ -68,10 +72,9 @@
     $plain = count($list) === 1 && $list[0]['label'] === null && ! $list[0]['separator'];
 
     $tones = [
-        'light' => ['default' => 'text-gray-700 hover:bg-gray-100', 'danger' => 'text-red-600 hover:bg-red-50'],
-        'dark' => ['default' => 'text-gray-300 hover:bg-gray-700', 'danger' => 'text-red-500 hover:bg-gray-700'],
+        'default' => 'text-dropdown-item-content hover:bg-dropdown-item-hover-surface',
+        'danger' => 'text-feedback-error hover:bg-dropdown-item-danger-hover-surface',
     ];
-    $theme = $darkMode ? 'dark' : 'light';
     $base = 'flex w-full items-center gap-3 rounded-md px-4 py-2 text-left text-sm leading-normal font-medium transition-colors';
 
     $triggerAttributes = ($trigger->attributes ?? new ComponentAttributeBag)->merge([
@@ -83,7 +86,12 @@
     $raw = $triggerAttributes->has('raw');
 @endphp
 
-<div {{ $attributes->class([$attached ? 'contents' : 'relative inline-block']) }} x-data="ceplokDropdown(@js($attached))">
+<div
+    {{ $attributes->merge(['data-theme' => $darkMode ? 'dark' : null])->class('inline-block') }}
+    x-data="ceplokDropdown(@js($align), @js($closeOnSelect))"
+    x-on:dropdown-close.stop="ceplokClose()"
+    x-on:dropdown-close.window="if ($event.detail?.panelId === @js($panelId)) ceplokClose()"
+>
     @if ($raw)
         <button {{ $triggerAttributes->except('raw')->merge(['type' => 'button']) }}>{{ $trigger }}</button>
     @else
@@ -93,11 +101,12 @@
     <div
         id="{{ $panelId }}"
         popover="auto"
-        @if ($selection) role="listbox" @if (filled($contentLabel)) aria-label="{{ $contentLabel }}" @endif @endif
+        @if ($selection) role="listbox" @if (filled($contentLabel)) aria-label="{{ $contentLabel }}" @endif
+        @elseif (! $hasList && filled($contentLabel)) role="group" aria-label="{{ $contentLabel }}"
+        @endif
         @class([
-            'fixed inset-auto max-w-[calc(100vw-1rem)] overflow-x-hidden rounded-lg shadow-md [overflow-wrap:anywhere]',
-            $darkMode ? 'bg-gray-800 text-gray-300' : 'bg-surface text-content',
-            $attached ? 'm-0 max-h-72 overflow-y-auto overscroll-contain' : 'mt-2 mr-0 mb-0 ml-0 w-max min-w-[min(anchor-size(width),calc(100vw-1rem))] [position-area:bottom_center]',
+            'fixed inset-auto m-0 overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg shadow-dropdown [overflow-wrap:anywhere]',
+            'bg-dropdown-surface text-dropdown-content',
             'py-1' => $hasList,
             $contentClass,
         ])
@@ -111,12 +120,12 @@
                 @endif
 
                 @if ($group['separator'])
-                    <hr aria-hidden="true" @class(['my-1 border-0 border-t', $darkMode ? 'border-gray-700' : 'border-border'])>
+                    <hr aria-hidden="true" class="my-1 border-0 border-t border-border">
                 @endif
 
                 @if ($group['label'] !== null)
                     {{-- Pada daftar pilihan kelompoknya sudah bernama lewat aria-label, jadi judul ini disembunyikan dari pembaca layar. --}}
-                    <p @if ($selection) aria-hidden="true" @endif class="px-4 pt-2 pb-1 text-caption font-bold tracking-wide text-gray-400 uppercase">{{ $group['label'] }}</p>
+                    <p @if ($selection) aria-hidden="true" @endif class="px-4 pt-2 pb-1 text-caption font-bold tracking-wide text-dropdown-group-label uppercase">{{ $group['label'] }}</p>
                 @endif
 
                 @foreach ($group['items'] as $item)
@@ -126,6 +135,8 @@
                         $icon = $item['icon'] ?? null;
                         $description = $item['description'] ?? null;
                         $extra = new ComponentAttributeBag($item['attributes'] ?? []);
+                        $current = ! empty($item['href']) ? ($item['current'] ?? null) : null;
+                        $current = $current === true || $current === 'true' ? 'page' : (($current === false || $current === 'false') ? null : $current);
                     @endphp
 
                     @php ob_start(); @endphp
@@ -135,8 +146,8 @@
                             aria-hidden="true"
                             @class([
                                 'flex shrink-0 items-center [&_svg]:size-3.5',
-                                $tone === 'default' ? ($darkMode ? 'text-gray-300' : 'text-gray-500') : null,
-                                $disabled && $darkMode ? 'text-gray-500' : null,
+                                $tone === 'default' ? 'text-dropdown-item-icon' : null,
+                                $disabled ? 'text-dropdown-item-support-disabled' : null,
                             ])
                         >{!! Content::icon($icon) !!}</span>
                     @endif
@@ -145,7 +156,7 @@
                             <span class="block">{{ $item['label'] ?? '' }}</span>
                             <span
                                 data-keterangan=""
-                                @class(['mt-0.5 block text-xs font-normal', $darkMode ? 'text-gray-400' : 'text-gray-500', 'text-gray-500' => $disabled && $darkMode])
+                                @class(['mt-0.5 block text-xs font-normal text-dropdown-item-description', 'text-dropdown-item-support-disabled' => $disabled])
                             >{{ $description }}</span>
                         </span>
                     @else
@@ -172,23 +183,33 @@
                                 // `select-none` dan kursor panah menyamakan baris ini dengan baris menu yang berupa <button>.
                                 'outline-none select-none',
                                 $disabled
-                                    ? 'cursor-not-allowed opacity-50 '.($tone === 'danger' ? ($darkMode ? 'text-red-500' : 'text-red-600') : ($darkMode ? 'text-gray-500' : 'text-gray-700'))
-                                    : 'cursor-default '.$tones[$theme][$tone].' '.($darkMode ? 'focus:bg-gray-700' : 'focus:bg-gray-100'),
+                                    ? 'cursor-not-allowed opacity-50 '.($tone === 'danger' ? 'text-feedback-error' : 'text-dropdown-item-disabled')
+                                    : 'cursor-default '.$tones[$tone].' focus:bg-dropdown-item-hover-surface',
                             ]) }}
                         >{!! $content !!}</div>
                     @else
                         @php
                             $row = $extra->class([
                                 $base,
-                                'focus-visible:outline-2 focus-visible:outline-offset-2',
-                                $darkMode ? 'focus-visible:outline-primary-400' : 'focus-visible:outline-primary-600',
+                                'focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand',
                                 'disabled:cursor-not-allowed disabled:opacity-50',
-                                $tones[$theme][$tone],
+                                $current ? 'bg-dropdown-item-current-surface text-content' : $tones[$tone],
                             ]);
                         @endphp
                         {{-- Aksi yang berpindah halaman dirender sebagai tautan; yang dimatikan tetap <button>. --}}
                         @if (filled($item['href'] ?? null) && ! $disabled)
-                            <a href="{{ $item['href'] }}" data-baris="" {{ $row }}>{!! $content !!}</a>
+                            @php
+                                $target = $item['target'] ?? null;
+                                $rel = $target === '_blank' ? ($item['rel'] ?? 'noopener noreferrer') : ($item['rel'] ?? null);
+                            @endphp
+                            <a
+                                href="{{ $item['href'] }}"
+                                @if (filled($target)) target="{{ $target }}" @endif
+                                @if (filled($rel)) rel="{{ $rel }}" @endif
+                                @if (filled($current)) aria-current="{{ $current }}" @endif
+                                data-baris=""
+                                {{ $row }}
+                            >{!! $content !!}</a>
                         @else
                             <button type="button" data-baris="" @disabled($disabled) {{ $row }}>{!! $content !!}</button>
                         @endif

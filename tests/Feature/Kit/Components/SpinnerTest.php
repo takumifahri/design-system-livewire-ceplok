@@ -40,6 +40,16 @@ class SpinnerTest extends TestCase
         $this->assertHasClasses($spinner, 'shrink-0 animate-spin motion-reduce:animate-none size-[50px] text-primary-700');
     }
 
+    public function test_ukuran_dan_geometri_svg_tidak_dapat_ditimpa(): void
+    {
+        $spinner = $this->find($this->dom('<x-ceplok::spinner width="24" height="24" viewBox="0 0 24 24" fill="red" />'), 'svg');
+
+        $this->assertFalse($spinner->hasAttribute('width'));
+        $this->assertFalse($spinner->hasAttribute('height'));
+        $this->assertSame('0 0 50 50', $spinner->getAttribute('viewBox'));
+        $this->assertSame('none', $spinner->getAttribute('fill'));
+    }
+
     public function test_aria_hidden_melepas_role_dan_label(): void
     {
         foreach (['<x-ceplok::spinner aria-hidden="true" />', '<x-ceplok::spinner :aria-hidden="true" />'] as $markup) {

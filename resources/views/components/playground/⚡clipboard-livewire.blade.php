@@ -8,10 +8,10 @@ use Livewire\Component;
  */
 new class extends Component
 {
-    public string $message = 'Belum ada aktivitas salin.';
-
-    /** Mengikuti mode docs halaman, diisi saat mount (lihat App\Docs\Theme). */
+    /** Tampilan gelap, mengikuti mode docs halamannya. */
     public bool $dark = false;
+
+    public string $message = 'Belum ada aktivitas salin.';
 
     public function copied(string $value): void
     {

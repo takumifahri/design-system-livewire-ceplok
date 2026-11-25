@@ -56,6 +56,7 @@
     x-data="ceplokClipboard"
     data-value="{{ $value }}"
     data-disabled="{{ $disabled ? 'true' : 'false' }}"
+    x-on:keydown.escape.window="if (ceplokTooltip) ceplokTooltipDismissed = true"
     @if ($darkMode) data-theme="dark" @endif
     {{ $root->class('w-full') }}
 >

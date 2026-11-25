@@ -106,7 +106,7 @@ class DocsThemeTest extends TestCase
             ['components.card', '[data-theme="dark"]', true],
             ['components.clipboard', '[data-theme="dark"]', true],
             ['components.container', '[data-theme="dark"]', true],
-            ['components.dropdown', '[popover].bg-gray-800', false],
+            ['components.dropdown', '[data-theme="dark"]', false],
             ['components.list-view', '[data-theme="dark"]', true],
             ['components.pagination', '.border-gray-600.bg-gray-700', true],
             ['components.popover', '[data-theme="dark"]', false],
@@ -250,13 +250,14 @@ class DocsThemeTest extends TestCase
         $this->assertSame('$docsTheme($event.detail.darkMode)', $this->find($dom, 'body')->getAttribute('x-on:dark-mode-change'));
         $this->assertSame('dark', $this->find($dom, 'main')->closest('[data-theme]')->getAttribute('data-theme'));
 
-        // Tombol tema header hanya untuk layar sempit; mulai lg toggle-nya di kaki Sidebar.
-        $toggle = $this->find($dom, 'header button[aria-label="Mode gelap"]');
+        // Seperti docs React, tombol tema layar sempit ditempel di baris atas header
+        // (di luar <header>, dalam pembungkus sticky) dan disembunyikan mulai 576px.
+        $toggle = $this->find($dom, 'div.sticky > button[aria-label="Mode gelap"]');
 
         $this->assertSame('true', $toggle->getAttribute('aria-pressed'));
         $this->assertSame('portalTema(true)', $toggle->getAttribute('x-data'));
         $this->assertSame('pilih(! gelap)', $toggle->getAttribute('x-on:click'));
-        $this->assertHasClasses($toggle, 'lg:hidden');
+        $this->assertHasClasses($toggle, 'absolute top-4.5 right-29 min-[576px]:hidden');
 
         // Pilihan baru digeser dulu di browser, lalu dikabarkan ke bingkai docs.
         $this->assertStringContainsString(
@@ -287,8 +288,11 @@ class DocsThemeTest extends TestCase
         $this->assertSame('collapsed', $ringkas->parentElement->getAttribute('x-show'));
         $this->assertSame('display: none;', $ringkas->parentElement->getAttribute('style'));
 
-        // Sidebar di Drawer layar sempit tidak membawa toggle: di sana tombolnya ada di header.
-        $this->assertNull($sidebarSeluler->querySelector('[aria-label="Pilih tema"], button[aria-label="Mode gelap"]'));
+        // Sidebar di Drawer layar sempit juga membawa pilihan tema (beda dari docs React),
+        // supaya tema tetap bisa diganti di lebar 576px–lg. Sidebar ini tidak pernah
+        // diringkas, jadi tanpa tombol berikon.
+        $this->assertSame('portalTema(true)', $this->find($sidebarSeluler, '[role="group"][aria-label="Pilih tema"]')->getAttribute('x-data'));
+        $this->assertNull($sidebarSeluler->querySelector('button[aria-label="Mode gelap"]'));
     }
 
     private function page(string $url, bool $dark = false): HTMLDocument

@@ -8,16 +8,15 @@
         ['prefix', 'string | slot', 'null', 'Konten sebelum nilai pada tampilan bersegmen. Prefix tidak ikut disalin.'],
         ['variant', '"default" | "segmented"', 'default', 'Menentukan susunan Clipboard.'],
         ['platform', '"default" | "mobile"', 'default', 'Menentukan preset ukuran Default atau Mobile.'],
-        ['disabled', 'bool', 'false', 'Menonaktifkan aksi salin dan interaksi pemilihan nilai melalui UI.'],
         ['dark-mode', 'bool', 'false', 'Mengaktifkan tampilan gelap. Tanpa prop ini, Clipboard mengikuti tema pembungkusnya.'],
-        ['event', 'copy-success | copy-error', '—', 'Event DOM untuk integrasi wire:* atau x-on:*.'],
+        ['disabled', 'bool', 'false', 'Menonaktifkan aksi salin dan interaksi pemilihan nilai melalui UI.'],
         ['class', 'string', 'null', 'Kelas CSS untuk pembungkus terluar Clipboard.'],
-        ['atribut input', 'id, aria-label, aria-labelledby, aria-describedby', 'null', 'ID dibuat otomatis jika kosong; aria-describedby digabung dengan helper-text.'],
+        ['copy-success', 'event', 'null', 'Dikirim setelah nilai berhasil disalin. Error listener diabaikan dan tidak mengubah hasil salin.'],
+        ['copy-error', 'event', 'null', 'Dikirim ketika proses salin gagal. Error listener diabaikan dan tidak mengubah feedback gagal.'],
+        ['atribut input', 'id, aria-label, aria-labelledby, aria-describedby', 'null', 'Hanya atribut ini diteruskan. ID dibuat otomatis jika kosong; aria-describedby digabung dengan helper-text.'],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
-    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
-    // gelap di kedua mode (lihat App\Docs\Theme).
+    // Contoh mengikuti mode docs; bagian Dark mode tetap gelap di kedua mode.
     $docsDark = Theme::dark();
 @endphp
 

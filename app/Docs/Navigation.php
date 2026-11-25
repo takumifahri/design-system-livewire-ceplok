@@ -79,6 +79,7 @@ final class Navigation
                     ['label' => 'Dropdown', 'route' => 'components.dropdown', 'keywords' => 'menu'],
                     ['label' => 'Drawer', 'route' => 'components.drawer', 'keywords' => 'panel samping laci'],
                     ['label' => 'Modal', 'route' => 'components.modal', 'keywords' => 'dialog jendela konfirmasi'],
+                    ['label' => 'Navbar', 'route' => 'components.navbar', 'keywords' => 'header navigasi menu utama'],
                     ['label' => 'Alert', 'route' => 'components.alert', 'keywords' => 'peringatan pesan'],
                     ['label' => 'Toast', 'route' => 'components.toast', 'keywords' => 'notifikasi'],
                     ['label' => 'Card', 'route' => 'components.card', 'keywords' => 'kartu'],

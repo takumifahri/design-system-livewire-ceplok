@@ -17,6 +17,10 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   mempertahankan item pertama serta halaman aktif. Kelas layout
   (`min-w-0`, `max-w-full`, `shrink-0`, `whitespace-nowrap`) dan perataan
   ikon item non-tautan ikut disamakan, setara kit React.
+- Navbar mengadopsi kontrak React untuk platform Front Office dan Back Office:
+  brand consumer-owned, destination/disclosure native, Search, notification,
+  guest/account identity, Dropdown desktop, Sidebar navigation mobile, Drawer
+  Navbar Back Office, state mobile terikat, Dark Mode, Playground, dan docs.
 - Docs `popover`: menambahkan preview statis untuk empat posisi, contoh kode,
   dan section integrasi state `wire:model`/`wire:open-change` dengan Livewire.
 - `clipboard`: nilai hanya-baca dengan variant default dan segmented, preset
@@ -122,6 +126,19 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   kosong memakai token `--color-upload-empty-surface` (`#1F2A37`, bisa
   ditimpa consumer), field terisi gray-700, garis tombol mengikuti warna
   aplikasi, dan teks tombol Remove gray-400. Seluruh ukurannya tetap.
+- Modal diselaraskan dengan kontrak React: `actions` ber-role secondary,
+  primary, dan danger, ikon Popup bawaan yang dapat diganti atau disembunyikan,
+  boundary `dark-mode`, DarkDocs, Playground, serta dokumentasi Aksi Footer,
+  State Modal, dan Dark Mode. Slot `footer` tetap tersedia sebagai override.
+- Dropdown diselaraskan dengan kontrak V2 React: positioning viewport dengan
+  `align`, kebijakan `close-on-select`, event `dropdown-close`, item navigasi
+  `target`/`rel`/`current`, pemulihan fokus, token warna semantik, dan
+  `shadow-dropdown`. Select, Search, dan Table telah dimigrasikan ke
+  positioning V2 dan prop legacy `attached` dihapus agar API selaras
+  dengan React.
+- Kontrak tema `clipboard` diperjelas: prop `dark-mode` tetap menjadi API resmi
+  untuk mengaktifkan palet gelap secara lokal. Tanpa prop tersebut, Clipboard
+  mengikuti scope ambient `data-theme`, setara kit React.
 - `clipboard` kini mewajibkan `value` dan nama aksesibel melalui `label`,
   `aria-label`, atau `aria-labelledby`; docs, Playground, dan contoh Livewire
   diselaraskan dengan kontrak terbaru kit React.
@@ -179,13 +196,21 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - `popover`: listener `wire:open-change`, `x-on:open-change`, dan
   `@open-change` kini dipasang pada elemen root tempat event `open-change`
   dikirim, sehingga binding Livewire menerima perubahan state.
+- Tooltip `clipboard` varian segmented kini ditutup saat Escape ditekan tanpa
+  memindahkan fokus, setara perilaku kit React.
+- `spinner` kini menyaring atribut `width`, `height`, `viewBox`, dan `fill`
+  agar ukuran serta geometri SVG tidak dapat ditimpa consumer, setara kontrak
+  props kit React.
 - `popover` kini memakai token surface, border, dan content yang sama dengan
   React sehingga mengikuti boundary ambient `data-theme`. Cleanup listener,
   observer, dan frame fokus dilengkapi; perubahan `side` saat panel terbuka
   memicu pengukuran ulang; trigger anchor ditolak. Handler trigger consumer
   kini dirangkai sebelum toggle internal dan dapat membatalkannya dengan
-  `preventDefault()`. Docs, Playground, kontrak aksesibilitas, dan Properties
-  juga diselaraskan dengan React.
+  `preventDefault()`. Listener `open-change` kini dipasang di pembungkus agar
+  menerima event Alpine, dan `data-theme` consumer dapat meng-override
+  `dark-mode`. Listener native `beforetoggle` consumer kini disaring agar
+  lifecycle tetap dikelola Popover. Docs, Playground, kontrak trigger dan
+  tema, aksesibilitas, serta Properties juga diselaraskan dengan React.
 - `clipboard` mempertahankan write-lock sampai operasi Clipboard API selesai,
   mengabaikan hasil lama setelah nilai berubah atau menjadi disabled, serta
   melepas fokus dan seleksi input ketika dinonaktifkan. Hasil operasi yang

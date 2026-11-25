@@ -189,6 +189,7 @@
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
+                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -216,6 +217,7 @@
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
+                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -243,6 +245,7 @@
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
+                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -271,6 +274,7 @@
                             :dark-mode="$docsDark"
                             collapsed
                             show-collapse-button
+                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -344,6 +348,7 @@
                                     ],
                                 ],
                             ]"
+                            :dark-mode="$docsDark"
                         />
                     </div>
 
