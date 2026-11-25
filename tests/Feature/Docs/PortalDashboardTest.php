@@ -57,7 +57,10 @@ class PortalDashboardTest extends TestCase
         $this->assertSame('page', $this->find($sidebar, 'a[href="'.route('portal.app').'"]')->getAttribute('aria-current'));
         $this->assertNotNull($sidebar->querySelector('a[wire\:click\.prevent="menuDemo(\'kms\')"]'));
         $this->assertNotNull($sidebar->querySelector('a[href="'.route('portal.index').'"][wire\:navigate]'));
-        $this->assertSame("kabari('Halaman profil belum ada di contoh ini.')", $this->find($sidebar, 'a[href="#"]')->getAttribute('wire:click'));
+        // Seperti docs React, profil membuka dropdown berisi "Keluar" sekaligus memberi tahu lewat Toast.
+        $profil = $this->find($sidebar, 'button[aria-haspopup="true"]');
+        $this->assertSame("kabari('Halaman profil belum ada di contoh ini.')", $profil->getAttribute('wire:click'));
+        $this->assertSame('toggleUserMenu()', $profil->getAttribute('x-on:click'));
         // wire:collapse menampilkan tombol collapse yang aktif.
         $this->assertFalse($this->find($sidebar, 'header button')->hasAttribute('disabled'));
         $this->assertSame(
@@ -69,14 +72,31 @@ class PortalDashboardTest extends TestCase
         $drawer = $this->find($dom, 'dialog#portal-menu');
         $this->assertSame('Menu Portal Dashboard', $drawer->getAttribute('aria-label'));
         $sidebarSeluler = $this->find($drawer, 'aside[x-data="ceplokSidebar"]');
+        // Tombol "<" hanya menutup Drawer; Sidebar-nya tidak ikut ringkas saat dibuka lagi.
+        $this->assertSame('collapsed = false; $wire.menuSeluler = false', $sidebarSeluler->getAttribute('x-on:collapse'));
+        // Pilihan tema tetap ada di Sidebar layar sempit.
+        $this->assertNotNull($sidebarSeluler->querySelector('[aria-label="Pilih tema"]'));
 
         foreach ([$sidebar, $sidebarSeluler] as $sidebarResponsif) {
             $this->assertSame('page', $this->find($sidebarResponsif, 'a[href="'.route('portal.app').'"]')->getAttribute('aria-current'));
-            $this->assertNotNull($sidebarResponsif->querySelector('a[wire\:click\.prevent="menuDemo(\'forum\')"]'));
+            $this->assertNotNull($sidebarResponsif->querySelector('a[wire\:click\.prevent="menuDemo(\'kms\')"]'));
+            // Pengumuman, Forum, Berita, dan Event pindah ke Navbar, seperti docs React.
+            $this->assertNull($sidebarResponsif->querySelector('a[wire\:click\.prevent="menuDemo(\'forum\')"]'));
             $this->assertNotNull($sidebarResponsif->querySelector('a[href="'.route('portal.index').'"][wire\:navigate]'));
             $this->assertNotNull($sidebarResponsif->querySelector('img[alt="CEPLOK"]'));
             $this->assertStringContainsString('RAFLI ARANDHANA', $sidebarResponsif->textContent);
         }
+
+        // Tautan Navbar: di header desktop dan di Drawer kanan layar sempit.
+        $navbar = $this->find($dom, 'header nav[aria-label="Navigasi utama"]');
+        $drawerNavbar = $this->find($dom, 'dialog#portal-menu-navbar');
+        $this->assertSame('Menu', $drawerNavbar->getAttribute('aria-label'));
+        foreach (['pengumuman', 'forum', 'berita', 'event'] as $id) {
+            $this->assertNotNull($navbar->querySelector('a[wire\:click\.prevent="menuDemo(\''.$id.'\')"]'));
+            $this->assertNotNull($drawerNavbar->querySelector('[wire\:click\.prevent="menuDemo(\''.$id.'\')"]'));
+        }
+        $this->assertSame('$wire.menuNavbar = true', $this->find($dom, 'button[aria-label="Buka navigasi Navbar"]')->getAttribute('x-on:click'));
+        $this->assertSame('$wire.menuSeluler = true', $this->find($dom, 'button[aria-label="Buka navigasi utama"]')->getAttribute('x-on:click'));
     }
 
     public function test_sidebar_desktop_memulihkan_posisi_collapsed_dari_cookie(): void
@@ -149,7 +169,7 @@ class PortalDashboardTest extends TestCase
 
         $this->assertHasClasses($tombol($gelap, 'Pengaturan layout'), 'bg-primary-800 text-white hover:bg-primary-700');
         $this->assertHasClasses($tombol($gelap, 'Halaman buat forum'), 'border border-gray-50 text-gray-50 hover:bg-white');
-        $this->assertHasClasses($this->find($gelap, 'button[aria-label="Buka menu"]'), 'border border-gray-50 text-gray-50');
+        $this->assertHasClasses($this->find($gelap, 'button[aria-label="Buka navigasi utama"]'), 'text-content-subtle in-data-[theme=dark]:text-gray-400');
         $this->assertHasClasses($this->find($gelap, 'button[aria-label="Tampilkan semua aplikasi"]'), 'bg-primary-800 text-white');
         $this->assertHasClasses($checkOut, 'justify-self-start sm:justify-self-stretch bg-primary-800 text-white');
         $this->assertHasClasses(

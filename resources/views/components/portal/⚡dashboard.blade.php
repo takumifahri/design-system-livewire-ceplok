@@ -49,6 +49,11 @@ new class extends Component
         'event' => ['label' => 'Event', 'ikon' => 'ceplok-o-calendar-month'],
     ];
 
+    /** Seperti docs React: Sidebar memuat Dashboard dan KMS, menu lain menjadi tautan Navbar. */
+    public const MENU_SIDEBAR = ['dashboard', 'kms'];
+
+    public const MENU_NAVBAR = ['pengumuman', 'forum', 'berita', 'event'];
+
     public const WIKI = [
         ['judul' => 'Integrasi dan Template Standar', 'tanggal' => '09 Okt 2026', 'penulis' => 'Rezy Tijo Waskito', 'ruang' => 'Repository Kode Sumber'],
         ['judul' => 'SonarQube — Analisis Kode dan Kualitas', 'tanggal' => '09 Okt 2026', 'penulis' => 'Rezy Tijo Waskito', 'ruang' => 'Repository Kode Sumber'],
@@ -135,6 +140,9 @@ new class extends Component
 
     public bool $menuSeluler = false;
 
+    /** Drawer tautan Navbar di bawah lg, padanan Drawer milik Navbar back-office React. */
+    public bool $menuNavbar = false;
+
     /** Seluruh ubin Aplikasi Intranet tampil, dibuka tombol panah di bawah kartunya. */
     public bool $semuaAplikasi = false;
 
@@ -164,6 +172,7 @@ new class extends Component
     public function menuDemo(string $id): void
     {
         $this->menuSeluler = false;
+        $this->menuNavbar = false;
         $this->kabari('Halaman '.(self::MENU[$id]['label'] ?? $id).' belum ada di contoh ini.');
     }
 
@@ -327,7 +336,9 @@ new class extends Component
             'avatarSrc' => '/images/avatar-sample.svg',
             'attributes' => [
                 'wire:click' => "kabari('Halaman profil belum ada di contoh ini.')",
-                'x-on:click' => '$wire.menuSeluler = false',
+            ],
+            'items' => [
+                ['label' => 'Keluar', 'tone' => 'danger', 'href' => route('portal.index'), 'attributes' => ['wire:navigate' => true]],
             ],
         ];
     }
@@ -338,7 +349,8 @@ new class extends Component
     {
         $menu = [];
 
-        foreach (self::MENU as $id => ['label' => $label, 'ikon' => $ikon]) {
+        foreach (self::MENU_SIDEBAR as $id) {
+            ['label' => $label, 'ikon' => $ikon] = self::MENU[$id];
             $menu[] = [
                 'id' => "portal-{$id}",
                 'label' => $label,
@@ -361,6 +373,19 @@ new class extends Component
         ];
 
         return $menu;
+    }
+
+    /** Tautan Navbar: Pengumuman, Forum, Berita, Event. Dipakai juga Drawer menu Navbar di bawah lg. */
+    #[Computed]
+    public function tautanNavbar(): array
+    {
+        return array_map(fn (string $id) => [
+            'id' => $id,
+            'label' => self::MENU[$id]['label'],
+            'href' => route('portal.app'),
+            'icon' => svg(self::MENU[$id]['ikon'], 'size-5'),
+            'attributes' => ['wire:click.prevent' => "menuDemo('{$id}')"],
+        ], self::MENU_NAVBAR);
     }
 };
 ?>
@@ -398,68 +423,129 @@ new class extends Component
     </div>
 
     <div class="flex min-w-0 flex-1 flex-col">
-        <header class="sticky top-0 z-20 flex h-18 items-center gap-3 border-b border-border bg-surface px-4 sm:px-6">
-            {{-- Dibuka di browser lewat $wire, tanpa menunggu request: Drawer diikat wire:model ke properti yang sama. --}}
-            <x-ceplok::button
-                icon-only
-                variant="outline"
-                theme="gray"
-                :dark-mode="$darkMode"
-                size="s"
-                class="lg:hidden"
-                aria-label="Buka menu"
-                aria-controls="portal-menu"
-                :aria-expanded="$menuSeluler ? 'true' : 'false'"
-                x-bind:aria-expanded="$wire.menuSeluler ? 'true' : 'false'"
-                x-on:click="$wire.menuSeluler = true"
-            >
-                <x-ceplok-o-bars />
-            </x-ceplok::button>
-            <img src="/images/ceplok.svg" alt="CEPLOK" class="size-8 lg:hidden">
+        {{--
+            Header bergaya Navbar platform back-office di docs React (kit Livewire
+            belum punya komponen Navbar). Desktop: Search berkategori compact,
+            tautan menu, dan lonceng berbadge (sama dengan
+            NotificationTrigger React). Di bawah lg: tombol Sidebar, logo,
+            Search, lonceng, dan tombol Drawer tautan Navbar.
+        --}}
+        <div class="sticky top-0 z-20">
+            <header class="border-b border-border bg-surface text-content" style="container-type: inline-size">
+                <div class="hidden min-h-[93px] w-full items-center gap-[clamp(12px,calc(-23.03846px+4.807692cqw),32px)] lg:flex lg:px-8">
+                    {{-- Seperti slot search Navbar, garis field-nya gray-600 di mode gelap.
+                         Yang ditimpa variabel palet gelapnya, karena Search ber-`dark-mode`
+                         memasang `data-theme` sendiri dan akan menimpa token biasa. --}}
+                    <div class="w-[420px] max-w-[480px] min-w-[360px] flex-[0_1_420px] [--color-field-border-dark:var(--color-gray-600)]">
+                        <x-ceplok::search
+                            platform="compact"
+                            :categories="$this->kategoriPilihan"
+                            category-placeholder="Pilih"
+                            :category-attributes="['wire:model' => 'kategori']"
+                            placeholder="Pencarian"
+                            aria-label="Pencarian"
+                            button-label="Cari"
+                            trigger="enter"
+                            :dark-mode="$darkMode"
+                            wire:model="kata"
+                            wire:search="cari($event.detail.value, $event.detail.category)"
+                        />
+                    </div>
 
-            {{-- Search berkategori di kiri, selebar slot search Navbar back-office:
-                 348px, menyusut sampai 180px bila ruangnya kurang. Varian kategori
-                 membawa role="search" sendiri, jadi pembungkus ini tidak.
+                    <nav aria-label="Navigasi utama" class="relative ml-auto min-w-max flex-none">
+                        <ul class="flex items-center justify-end gap-[clamp(4px,calc(-3.009615px+0.961538cqw),8px)]">
+                            @foreach ($this->tautanNavbar as $menu)
+                                <li>
+                                    <a
+                                        href="{{ $menu['href'] }}"
+                                        wire:click.prevent="menuDemo('{{ $menu['id'] }}')"
+                                        class="inline-flex items-center rounded px-[clamp(6px,calc(2.495192px+0.480769cqw),8px)] py-1.5 text-left text-content transition-colors hover:text-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                                    ><span class="block shrink-0 font-sans text-base leading-[1.5] font-semibold whitespace-nowrap">{{ $menu['label'] }}</span></a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </nav>
 
-                 Seperti slot search Navbar, garis field-nya gray-600 di mode gelap.
-                 Tanpa itu ruas kategorinya (gray-700) lebur dengan header gray-700.
-                 Yang ditimpa variabel palet gelapnya, karena Search ber-`dark-mode`
-                 memasang `data-theme` sendiri dan akan menimpa token biasa. --}}
-            <div class="hidden w-87 max-w-87 min-w-45 flex-[0_1_348px] [--color-field-border-dark:var(--color-gray-600)] md:block">
-                <x-ceplok::search
-                    :categories="$this->kategoriPilihan"
-                    category-placeholder="Pilih"
-                    :category-attributes="['wire:model' => 'kategori']"
-                    placeholder="Pencarian"
-                    aria-label="Pencarian"
-                    button-label="Cari"
-                    trigger="enter"
-                    :dark-mode="$darkMode"
-                    wire:model="kata"
-                    wire:search="cari($event.detail.value, $event.detail.category)"
-                />
-            </div>
+                    <div class="flex shrink-0 items-center gap-3">
+                        <button
+                            type="button"
+                            aria-label="Notifikasi, 5 belum dibaca"
+                            wire:click="kabari('Ada 5 notifikasi baru.')"
+                            class="relative grid size-10 shrink-0 place-items-center rounded-lg text-gray-800 transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand in-data-[theme=dark]:text-gray-400"
+                        >
+                            <x-ceplok-s-bell class="size-6" aria-hidden="true" />
+                            <span aria-hidden="true" class="absolute top-0.5 right-0.5 min-w-4 rounded-full bg-feedback-error px-1 text-center text-[10px] leading-4 text-white">5</span>
+                        </button>
+                    </div>
+                </div>
 
-            <div class="ml-auto flex shrink-0 items-center gap-3">
-                {{-- Tombol tema hanya di layar sempit: mulai lg toggle-nya ada di
-                     kaki Sidebar, seperti di docs React. Di sana tombol ini hanya
-                     tampil di bawah 576px karena ditempel di atas Navbar kit;
-                     header di sini dirakit sendiri, jadi cukup disembunyikan
-                     mulai lg. --}}
-                <x-portal.tombol-tema :dark-mode="$darkMode" class="lg:hidden" />
+                <div class="w-full px-4 py-4 sm:px-5 lg:hidden [--color-field-border-dark:var(--color-gray-600)]">
+                    <div class="grid min-h-10 grid-cols-[auto_minmax(0,1fr)_auto_auto] grid-rows-[minmax(40px,auto)_auto] items-center gap-x-3 gap-y-3 min-[576px]:grid-cols-[auto_auto_minmax(0,1fr)_auto_auto] min-[576px]:grid-rows-none">
+                        {{-- Dibuka di browser lewat $wire, tanpa menunggu request: Drawer diikat wire:model ke properti yang sama. --}}
+                        <button
+                            type="button"
+                            aria-label="Buka navigasi utama"
+                            aria-controls="portal-menu"
+                            aria-expanded="{{ $menuSeluler ? 'true' : 'false' }}"
+                            x-bind:aria-expanded="$wire.menuSeluler ? 'true' : 'false'"
+                            x-on:click="$wire.menuSeluler = true"
+                            class="grid size-9 shrink-0 place-items-center rounded-lg text-content-subtle transition-colors hover:bg-surface-subtle hover:text-content focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand in-data-[theme=dark]:text-gray-400"
+                        >
+                            <x-ceplok-o-bars class="size-5" aria-hidden="true" />
+                        </button>
+                        <div class="col-start-2 min-w-0">
+                            <a href="{{ route('portal.app') }}" aria-label="CEPLOK — Dashboard" class="inline-block shrink-0 rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+                                <img src="/images/ceplok.svg" alt="" class="size-8">
+                            </a>
+                        </div>
+                        <div class="col-span-4 row-start-2 min-w-0 min-[576px]:col-span-1 min-[576px]:col-start-3 min-[576px]:row-start-1">
+                            <x-ceplok::search
+                                platform="compact"
+                                :categories="$this->kategoriPilihan"
+                                category-placeholder="Pilih"
+                                :category-attributes="['wire:model' => 'kategori']"
+                                placeholder="Pencarian"
+                                aria-label="Pencarian"
+                                button-label="Cari"
+                                trigger="enter"
+                                :dark-mode="$darkMode"
+                                wire:model="kata"
+                                wire:search="cari($event.detail.value, $event.detail.category)"
+                            />
+                        </div>
+                        <div class="col-start-3 row-start-1 min-[576px]:col-start-4">
+                            <button
+                                type="button"
+                                aria-label="Notifikasi, 5 belum dibaca"
+                                wire:click="kabari('Ada 5 notifikasi baru.')"
+                                class="relative grid size-10 shrink-0 place-items-center rounded-lg text-gray-800 transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand in-data-[theme=dark]:text-gray-400"
+                            >
+                                <x-ceplok-s-bell class="size-6" aria-hidden="true" />
+                                <span aria-hidden="true" class="absolute top-0.5 right-0.5 min-w-4 rounded-full bg-feedback-error px-1 text-center text-[10px] leading-4 text-white">5</span>
+                            </button>
+                        </div>
+                        <div class="col-start-4 row-start-1 min-[576px]:col-start-5">
+                            <button
+                                type="button"
+                                aria-label="Buka navigasi Navbar"
+                                aria-controls="portal-menu-navbar"
+                                aria-expanded="{{ $menuNavbar ? 'true' : 'false' }}"
+                                x-bind:aria-expanded="$wire.menuNavbar ? 'true' : 'false'"
+                                x-on:click="$wire.menuNavbar = true"
+                                class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 in-data-[theme=dark]:text-gray-400 in-data-[theme=dark]:hover:bg-gray-700 in-data-[theme=dark]:hover:text-white"
+                            >
+                                <x-ceplok-o-bars-from-left class="size-5" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-                {{-- Lonceng bergaya notificationTrigger Navbar front-office: ikon 20px
-                     gray-500 dalam kotak 36px, tanpa angka. --}}
-                <button
-                    type="button"
-                    aria-label="Notifikasi"
-                    wire:click="kabari('Ada 5 notifikasi baru.')"
-                    class="grid size-9 shrink-0 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-                >
-                    <x-ceplok-o-bell class="size-5" aria-hidden="true" />
-                </button>
-            </div>
-        </header>
+            {{-- Seperti docs React: toggle tema layar sempit ditempel di baris atas
+                 header, di kiri lonceng, dan disembunyikan mulai 576px. Di desktop
+                 toggle-nya ada di kaki Sidebar. --}}
+            <x-portal.tombol-tema :dark-mode="$darkMode" class="absolute top-4.5 right-29 min-[576px]:hidden" />
+        </div>
 
         {{--
             Toast di kanan atas, tepat di bawah header. Ia hilang sendiri 4 detik
@@ -470,7 +556,7 @@ new class extends Component
         <div
             x-data="{ jeda: null }"
             x-effect="$wire.umpanKali; clearTimeout(jeda); jeda = $wire.umpanTampil ? setTimeout(() => $wire.umpanTampil = false, 4000) : null"
-            class="fixed top-22 right-4 z-30 w-80 max-w-[calc(100vw-2rem)] sm:right-6"
+            class="fixed top-[148px] right-4 z-30 w-80 max-w-[calc(100vw-2rem)] min-[576px]:top-[102px] sm:right-6"
         >
             <x-ceplok::toast wire:model="umpanTampil" :dark-mode="$darkMode">{{ $umpan }}</x-ceplok::toast>
         </div>
@@ -741,7 +827,11 @@ new class extends Component
             :user="$this->profil"
             :collapsed="false"
             :dark-mode="$darkMode"
-            wire:collapse="$set('menuSeluler', false)"
+            {{-- Tombol "<" di Drawer menutup Drawer, bukan meringkas Sidebar.
+                 `collapsed` dikembalikan di tick yang sama: tanpa itu Sidebar
+                 tetap ringkas (72px) saat Drawer dibuka lagi, karena
+                 data-initial-collapsed dari server tidak berubah. --}}
+            x-on:collapse="collapsed = false; $wire.menuSeluler = false"
             class="h-full min-h-full border-r-0"
         >
             <x-slot:logo>
@@ -750,6 +840,27 @@ new class extends Component
             <x-slot:collapsed-logo>
                 <img src="/images/ceplok.svg" alt="CEPLOK" class="size-8">
             </x-slot:collapsed-logo>
+            {{-- Pilihan tema juga di Sidebar layar sempit (beda dari docs React, yang
+                 panel selulernya tanpa toggle), supaya tetap bisa diganti di lebar
+                 576px–lg. Sidebar ini tidak pernah diringkas, jadi cukup pilih-tema. --}}
+            <x-slot:footer>
+                <div class="px-5 py-4">
+                    <x-portal.pilih-tema :dark-mode="$darkMode" />
+                </div>
+            </x-slot:footer>
         </x-ceplok::sidebar>
     </x-ceplok::drawer>
+
+    {{-- Tautan Navbar di bawah lg, seperti Drawer milik Navbar back-office React. --}}
+    <x-ceplok::drawer
+        id="portal-menu-navbar"
+        wire:model="menuNavbar"
+        position="right"
+        size="s"
+        aria-label="Menu"
+        eyebrow="Menu"
+        class="lg:hidden"
+        :dark-mode="$darkMode"
+        :items="$this->tautanNavbar"
+    />
 </div>
