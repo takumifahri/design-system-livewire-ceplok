@@ -14,6 +14,7 @@ class ClipboardTest extends TestCase
 
         $this->assertSame('ceplokClipboard', $root->getAttribute('x-data'));
         $this->assertSame('INV-2026-001', $root->getAttribute('data-value'));
+        $this->assertSame('if (ceplokTooltip) ceplokTooltipDismissed = true', $root->getAttribute('x-on:keydown.escape.window'));
         $this->assertSame('INV-2026-001', $input->getAttribute('value'));
         $this->assertSame('input', $input->getAttribute('x-ref'));
         $this->assertTrue($input->hasAttribute('readonly'));

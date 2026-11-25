@@ -10,6 +10,8 @@ use Livewire\Component;
  */
 new class extends Component
 {
+    public bool $dark = false;
+
     public bool $open = false;
 
     public string $nama = 'Andi Saputra';
@@ -26,13 +28,13 @@ new class extends Component
 
 <div class="mt-4 space-y-3">
     <div class="flex flex-wrap items-center gap-3">
-        <x-ceplok::button wire:click="$set('open', true)">Edit data</x-ceplok::button>
+        <x-ceplok::button :tone="$dark ? 'dark' : 'light'" wire:click="$set('open', true)">Edit data</x-ceplok::button>
         @if ($tersimpan > 0)
             <span class="text-body-sm text-gray-500">Tersimpan {{ $tersimpan }}× — nama: {{ $nama }}</span>
         @endif
     </div>
 
-    <x-ceplok::modal wire:model="open" title="Edit data">
+    <x-ceplok::modal wire:model="open" title="Edit data" :dark-mode="$dark">
         <x-ceplok::input-field label="Nama" wire:model="nama" />
 
         <x-slot:footer>

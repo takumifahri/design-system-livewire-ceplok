@@ -189,7 +189,7 @@
 
         {{-- Panel tinggal di dalam field ini (top layer tetap ikut pohon DOM), jadi tanpa ds-theme-light ia ikut gelap. Desainnya: panel tetap terang. --}}
         <x-ceplok::dropdown
-            attached
+            class="min-w-0 flex-1"
             :panel-id="$listboxId"
             :content-label="is_string($label) ? $label : $ariaLabel"
             content-class="ds-theme-light"

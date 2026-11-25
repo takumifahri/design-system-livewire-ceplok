@@ -106,7 +106,7 @@ class DocsThemeTest extends TestCase
             ['components.card', '[data-theme="dark"]', true],
             ['components.clipboard', '[data-theme="dark"]', true],
             ['components.container', '[data-theme="dark"]', true],
-            ['components.dropdown', '[popover].bg-gray-800', false],
+            ['components.dropdown', '[data-theme="dark"]', false],
             ['components.list-view', '[data-theme="dark"]', true],
             ['components.pagination', '.border-gray-700.bg-gray-800', true],
             ['components.popover', '[data-theme="dark"]', false],

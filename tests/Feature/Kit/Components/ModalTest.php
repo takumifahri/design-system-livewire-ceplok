@@ -77,6 +77,50 @@ class ModalTest extends TestCase
         $this->assertLacksClasses($footer, 'border-t');
     }
 
+    public function test_modal_popup_memiliki_icon_actions_dan_tema_seperti_react(): void
+    {
+        $dom = $this->dom(<<<'BLADE'
+            <x-ceplok::modal
+                variant="popup"
+                aria-label="Konfirmasi"
+                dark-mode
+                x-model="open"
+                :actions="[
+                    'secondary' => ['label' => 'Batal', 'attributes' => ['x-on:click' => 'close()']],
+                    'danger' => ['label' => 'Hapus', 'attributes' => ['wire:click' => 'hapus']],
+                ]"
+            >Hapus data?</x-ceplok::modal>
+            BLADE);
+        $dialog = $this->find($dom, 'dialog');
+        $body = $this->childrenOf($dialog)[1];
+        $footer = $this->childrenOf($dialog)[2];
+        $buttons = $footer->querySelectorAll('button');
+
+        $this->assertSame('dark', $dialog->getAttribute('data-theme'));
+        $this->assertNotNull($body->querySelector('svg'));
+        $this->assertCount(2, $buttons);
+        $this->assertSame('Batal', trim($buttons[0]->textContent));
+        $this->assertSame('close()', $buttons[0]->getAttribute('x-on:click'));
+        $this->assertHasClasses($buttons[0], 'border-gray-50! text-gray-50!');
+        $this->assertSame('Hapus', trim($buttons[1]->textContent));
+        $this->assertSame('hapus', $buttons[1]->getAttribute('wire:click'));
+        $this->assertHasClasses($footer, 'justify-center gap-4');
+        $this->assertHasClasses($buttons[1], 'text-white! font-semibold!');
+    }
+
+    public function test_modal_icon_dapat_diganti_atau_dihilangkan_dan_actions_tidak_dapat_dicampur_footer(): void
+    {
+        $custom = $this->dom('<x-ceplok::modal variant="popup" aria-label="Info" icon="ceplok-o-info-circle" x-model="open">Info</x-ceplok::modal>');
+        $without = $this->dom('<x-ceplok::modal variant="popup" aria-label="Info" :icon="false" x-model="open">Info</x-ceplok::modal>');
+
+        $this->assertNotNull($this->find($custom, 'dialog')->querySelector('svg'));
+        $this->assertNull($this->find($without, 'dialog')->querySelector('[class*="text-feedback-error"]'));
+        $this->assertPropError(
+            '<x-ceplok::modal title="X" :actions="[\'primary\' => [\'label\' => \'Simpan\']]" x-model="open"><x-slot:footer>Footer</x-slot:footer></x-ceplok::modal>',
+            'salah satu `actions` atau slot `footer`',
+        );
+    }
+
     public function test_modal_terbuka_dari_properti_livewire(): void
     {
         $html = Livewire::test(new class extends Component

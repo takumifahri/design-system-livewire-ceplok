@@ -56,7 +56,7 @@ class NavigationTest extends TestCase
         $pages = Navigation::pages();
         $urls = array_column($pages, 'url');
 
-        $this->assertCount(44, $pages);
+        $this->assertCount(45, $pages);
         $this->assertSame(array_unique($urls), $urls);
         $this->assertEqualsCanonicalizing(array_map(fn (string $name) => route($name), $this->docsRoutes()), $urls);
 

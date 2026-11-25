@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'pages.home')->name('home');
 
+Route::view('/previews/navbar', 'pages.previews.navbar')->name('previews.navbar');
+
 Route::prefix('components')->name('components.')->group(function () {
     Route::view('/', 'pages.components.index')->name('index');
     Route::view('/container', 'pages.components.container')->name('container');
@@ -18,6 +20,7 @@ Route::prefix('components')->name('components.')->group(function () {
     Route::view('/dropdown', 'pages.components.dropdown')->name('dropdown');
     Route::view('/drawer', 'pages.components.drawer')->name('drawer');
     Route::view('/modal', 'pages.components.modal')->name('modal');
+    Route::view('/navbar', 'pages.components.navbar')->name('navbar');
     Route::view('/alert', 'pages.components.alert')->name('alert');
     Route::view('/toast', 'pages.components.toast')->name('toast');
     Route::view('/card', 'pages.components.card')->name('card');
