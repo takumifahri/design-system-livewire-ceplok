@@ -62,7 +62,7 @@ class DocsThemeTest extends TestCase
 
     public function test_halaman_tanpa_tampilan_gelap_tetap_terang_dan_tombolnya_diredupkan(): void
     {
-        $dom = $this->page(route('components.card'), dark: true);
+        $dom = $this->page(route('components.badge'), dark: true);
 
         $this->assertFalse($this->find($dom, 'html')->hasAttribute('data-docs-theme'));
 
@@ -108,7 +108,7 @@ class DocsThemeTest extends TestCase
             ['components.container', '[data-theme="dark"]', true],
             ['components.dropdown', '[popover].bg-gray-800', false],
             ['components.list-view', '[data-theme="dark"]', true],
-            ['components.pagination', '.border-gray-700.bg-gray-800', true],
+            ['components.pagination', '.border-gray-600.bg-gray-700', true],
             ['components.popover', '[data-theme="dark"]', false],
             ['components.sidebar', '[data-theme="dark"]', true],
             ['components.table-of-contents', '[data-theme="dark"]', true],

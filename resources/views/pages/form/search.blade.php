@@ -25,12 +25,12 @@
         ['platform', '"default" | "mobile" | "compact"', 'default', 'Tinggi kotak, ukuran ikon, teks, dan tombol: 54px, 50px, atau 37px. compact untuk navbar. Tidak berlaku pada varian kategori.'],
         ['show-button', 'bool', 'true', 'Menampilkan tombol cari di kanan. Bawaannya false pada platform compact.'],
         ['application', '"default" | "purple"', 'default', 'Warna tombol cari dan garis saat field difokus.'],
-        ['categories', 'array', 'null', 'Bila diisi, komponen berpindah ke varian dengan kategori.'],
+        ['categories', 'array', 'null', 'Bila diisi, komponen berpindah ke varian dengan ruas kategori tetap 113px; label panjang dipotong tanpa mempersempit field pencarian.'],
         ['category-placeholder', 'string', 'Kategori', 'Teks dropdown saat kategori belum dipilih.'],
         ['category', 'string', 'null', 'Kategori terpilih di awal.'],
         ['category-attributes', 'array', '[]', 'Atribut untuk <select> kategorinya, mis. [\'wire:model.live\' => \'kategori\'].'],
         ['wire:category-change', 'event', '—', 'Dipicu saat kategori berganti, dengan detail.value; padanan onCategoryChange.'],
-        ['dark-mode', 'bool', 'false', 'Tampilan gelap: warna abu-abu gelap dengan teks terang.'],
+        ['dark-mode', 'bool', 'false', 'Tampilan gelap: warna abu-abu gelap, teks terang, dan border tipis gray-500 seperti List View.'],
         ['…atribut', 'HTML', '—', 'Seluruh atribut <input> standar diteruskan (name, wire:model, placeholder, …). class dan wire:key ke pembungkus terluar.'],
     ];
 
@@ -137,7 +137,8 @@
             <p class="mt-2 text-body-sm text-gray-500 dark:text-gray-400">
                 Daftar kategorinya panel Dropdown, sama dengan daftar pilihan Regular Select Form. Nilai
                 kategorinya dibawa elemen <span class="text-primary-500 dark:text-primary-400">&lt;select&gt;</span> di belakang tombolnya, dan itulah yang
-                dikirim event <span class="text-primary-500 dark:text-primary-400">category-change</span> serta <span class="text-primary-500 dark:text-primary-400">detail.category</span> pada event search.
+                dikirim event <span class="text-primary-500 dark:text-primary-400">category-change</span> serta <span class="text-primary-500 dark:text-primary-400">detail.category</span> pada event search. Option yang
+                panjang tidak mengubah lebar ruas 113px; label pada trigger dipotong dengan ellipsis.
             </p>
         </x-docs.section>
 
@@ -163,7 +164,7 @@
 
         <x-docs.mode-section>
             <x-slot:lead>
-                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Search Form. Komponen secara otomatis menyesuaikan warna latar, teks, placeholder, dan batas.
+                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Search Form. Komponen secara otomatis menyesuaikan warna latar, teks, placeholder, serta menambahkan border tipis gray-500 agar batas field tetap terlihat pada permukaan gelap.
             </x-slot:lead>
             <div class="grid gap-5">
                 <x-docs.demo label="Default" dark>

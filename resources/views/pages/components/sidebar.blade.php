@@ -1,6 +1,9 @@
 @php
     use App\Docs\Theme;
 
+    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
+    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
+    // gelap di kedua mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
     $sidebarProps = [
         ['items', 'array', '[]', 'Daftar menu yang ditampilkan pada Sidebar.'],
@@ -9,7 +12,7 @@
         ['collapsed-logo', 'Htmlable | slot', 'null', 'Logo/mark ringkas untuk Sidebar collapsed.'],
         ['user', 'array', 'null', 'Informasi pengguna yang ditampilkan pada profile section.'],
         ['sticky', 'bool', 'false', 'Menempelkan Sidebar di atas viewport dan membatasi tingginya setinggi viewport.'],
-        ['collapsed', 'bool', 'false', 'State controlled untuk membuka atau menutup Sidebar.'],
+        ['collapsed', 'bool', 'false', 'State controlled untuk membuka atau menutup Sidebar; gunakan bersama wire:collapse.'],
         ['show-collapse-button', 'bool', 'false', 'Menampilkan tombol collapse nonaktif; independen dari prop logo.'],
         ['footer', 'Htmlable | slot', 'null', 'Area di kaki Sidebar, di bawah daftar menu — versi aplikasi, tautan bantuan, atau catatan status.'],
         ['dark-mode', 'bool', 'false', 'Mengaktifkan tampilan mode gelap pada Sidebar secara manual.'],
@@ -25,7 +28,7 @@
         ['active', 'bool', 'false', 'Mengaktifkan tampilan state aktif.'],
         ['disabled', 'bool', 'false', 'Menonaktifkan interaksi pada menu.'],
         ['children', 'array', 'null', 'Daftar submenu pada menu.'],
-        ['defaultOpen', 'bool', 'false', 'Membuka submenu saat pertama dirender.'],
+        ['defaultOpen', 'bool', 'false', 'Membuka submenu saat pertama dirender; parent juga otomatis terbuka bila ada child aktif.'],
         ['submenuToggleDisabled', 'bool', 'false', 'Menonaktifkan tombol buka/tutup submenu tanpa menonaktifkan menu.'],
         ['attributes', 'array', '[]', 'Atribut tambahan pada menu, mis. wire:click atau wire:navigate; padanan onClick.'],
     ];
@@ -52,6 +55,7 @@
         ['external', 'bool', 'false', 'Menandai tautan eksternal; membuka tab baru dengan rel="noreferrer noopener".'],
         ['tone', '"default" | "danger"', 'default', 'Variasi warna item (gunakan "danger" untuk aksi destruktif seperti Keluar).'],
         ['disabled', 'bool', 'false', 'Menonaktifkan item dropdown.'],
+        ['attributes', 'array', '[]', "Atribut tambahan pada item dropdown, mis. ['wire:click' => 'logout']; padanan onClick."],
     ];
 
     $menuOnlyItems = array_map(function ($i) {
@@ -134,10 +138,6 @@
         'href' => '#',
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
-    // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
-    // gelap di kedua mode (lihat App\Docs\Theme).
-    $docsDark = \App\Docs\Theme::dark();
 @endphp
 
 <x-docs.layout title="Sidebar">
@@ -166,32 +166,29 @@
 
             <div class="mb-4 grid gap-4 lg:grid-cols-2">
                 {{-- Varian 1 --}}
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                <article class="sidebar-component-preview overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                     <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                         <h3 class="text-sm font-bold text-gray-900 dark:text-white">1. Menu Only</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Navigasi dasar tanpa logo dan informasi akun.</p>
                     </div>
-                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50 dark:bg-gray-900">
-                        <x-ceplok::sidebar class="!min-h-0 h-full" x-on:click.capture="$event.target.closest('a') && $event.preventDefault()" :items="$menuOnlyItems" :dark-mode="$docsDark" />
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-hidden bg-gray-50 dark:bg-gray-900">
+                        <x-ceplok::sidebar class="!min-h-0 h-full shrink-0" :items="$menuOnlyItems" :dark-mode="$docsDark" />
                     </div>
                 </article>
 
                 {{-- Varian 2 --}}
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                <article class="sidebar-component-preview overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                     <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                         <h3 class="text-sm font-bold text-gray-900 dark:text-white">2. Menu, user info, logo web</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Navigasi dasar dengan identitas aplikasi dan area akun.</p>
                     </div>
-                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50 dark:bg-gray-900">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-hidden bg-gray-50 dark:bg-gray-900">
                         <x-ceplok::sidebar
-                            class="!min-h-0 h-full"
-                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
-                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
+                            class="!min-h-0 h-full shrink-0"
                             :items="$standardItems"
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
-                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -207,21 +204,18 @@
                 </article>
 
                 {{-- Varian 3 --}}
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                <article class="sidebar-component-preview overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                     <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                         <h3 class="text-sm font-bold text-gray-900 dark:text-white">3. Multi-level menu, user info, logo web</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Menu anak dipakai untuk mengelompokkan navigasi yang berkaitan.</p>
                     </div>
-                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50 dark:bg-gray-900">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-hidden bg-gray-50 dark:bg-gray-900">
                         <x-ceplok::sidebar
-                            class="!min-h-0 h-full"
-                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
-                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
+                            class="!min-h-0 h-full shrink-0"
                             :items="$nestedItems"
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
-                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -237,21 +231,18 @@
                 </article>
 
                 {{-- Varian 4 --}}
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                <article class="sidebar-component-preview overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                     <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                         <h3 class="text-sm font-bold text-gray-900 dark:text-white">4. Multi-level menu + icon, user info, logo web</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Menu berikon dikelompokkan; separator membedakan area konten.</p>
                     </div>
-                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50 dark:bg-gray-900">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-hidden bg-gray-50 dark:bg-gray-900">
                         <x-ceplok::sidebar
-                            class="!min-h-0 h-full"
-                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
-                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
+                            class="!min-h-0 h-full shrink-0"
                             :groups="$iconGroups"
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             show-collapse-button
-                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -267,22 +258,19 @@
                 </article>
 
                 {{-- Varian 5 --}}
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white lg:col-span-2 dark:border-gray-700 dark:bg-gray-800">
+                <article class="sidebar-component-preview overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                     <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                         <h3 class="text-sm font-bold text-gray-900 dark:text-white">5. Collapsed</h3>
                         <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Konfigurasi varian 4 dalam kondisi tertutup: icon, user, dan logo mark tetap terlihat.</p>
                     </div>
-                    <div class="ds-scroll-x flex h-[440px] items-start overflow-x-auto overflow-y-auto overscroll-contain bg-gray-50 dark:bg-gray-900">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-hidden bg-gray-50 dark:bg-gray-900">
                         <x-ceplok::sidebar
-                            class="!min-h-0 h-full"
-                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
-                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
+                            class="!min-h-0 h-full shrink-0"
                             :groups="$iconGroups"
                             :user="$dummyUser"
                             :dark-mode="$docsDark"
                             collapsed
                             show-collapse-button
-                            :dark-mode="$docsDark"
                         >
                             <x-slot:logo>
                                 <span class="flex items-center gap-2">
@@ -343,7 +331,6 @@
                         <x-ceplok::sidebar
                             class="!min-h-0"
                             :dark-mode="$docsDark"
-                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
                             :items="[
                                 [
                                     'label' => 'Menu 3',
@@ -357,7 +344,6 @@
                                     ],
                                 ],
                             ]"
-                            :dark-mode="$docsDark"
                         />
                     </div>
 
@@ -412,7 +398,7 @@
             </x-docs.lead>
 
             <div class="mb-4 max-w-[280px] overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-                <x-ceplok::sidebar class="!min-h-0" x-on:click.capture="$event.target.closest('a') && $event.preventDefault()" :groups="$separatorGroups" :dark-mode="$docsDark" />
+                <x-ceplok::sidebar class="!min-h-0" :groups="$separatorGroups" :dark-mode="$docsDark" />
             </div>
 
             <x-docs.code>
@@ -444,21 +430,19 @@
         {{-- SECTION 5: DARK MODE --}}
         <x-docs.mode-section>
             <x-slot:lead>
-                Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Sidebar.
+                Prop <span class="text-primary-300">dark-mode</span> dapat digunakan untuk mengaktifkan warna gelap secara manual pada Sidebar.
                 Komponen secara otomatis menyesuaikan warna ikon, teks aktif/inaktif, badge, profil, dan border untuk menjaga rasio kontras.
             </x-slot:lead>
 
             <div class="mb-4 grid gap-4 lg:grid-cols-2">
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
-                        <h3 class="text-sm font-bold text-gray-900 dark:text-white">1. Multi-level menu + icon, user info, logo web</h3>
-                        <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Menu berikon dikelompokkan; separator membedakan area konten.</p>
+                <article class="sidebar-component-preview overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
+                    <div class="border-b border-gray-700 px-4 py-3">
+                        <h3 class="text-sm font-bold text-white">1. Multi-level menu + icon, user info, logo web</h3>
+                        <p class="mt-1 text-xs leading-5 text-gray-400">Menu berikon dikelompokkan; separator membedakan area konten.</p>
                     </div>
-                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-auto overscroll-contain bg-gray-950">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-hidden bg-gray-900">
                         <x-ceplok::sidebar
-                            class="!min-h-0 h-full"
-                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
-                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
+                            class="!min-h-0 h-full shrink-0"
                             :groups="$iconGroups"
                             :user="$dummyUser"
                             dark-mode
@@ -477,16 +461,14 @@
                     </div>
                 </article>
 
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
-                        <h3 class="text-sm font-bold text-gray-900 dark:text-white">2. Collapsed</h3>
-                        <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Konfigurasi varian 1 dalam kondisi tertutup: icon, user, dan logo terlihat.</p>
+                <article class="sidebar-component-preview overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
+                    <div class="border-b border-gray-700 px-4 py-3">
+                        <h3 class="text-sm font-bold text-white">2. Collapsed</h3>
+                        <p class="mt-1 text-xs leading-5 text-gray-400">Konfigurasi varian 1 dalam kondisi tertutup: icon, user, dan logo terlihat.</p>
                     </div>
-                    <div class="ds-scroll-x flex h-[440px] items-start overflow-x-auto overflow-y-auto overscroll-contain bg-gray-950">
+                    <div class="ds-scroll-x h-[440px] overflow-x-auto overflow-y-hidden bg-gray-900">
                         <x-ceplok::sidebar
-                            class="!min-h-0 h-full"
-                            x-on:click.capture="$event.target.closest('a') && $event.preventDefault()"
-                            x-init="$el.querySelector('button[aria-label*=sidebar]')?.setAttribute('disabled', 'disabled')"
+                            class="!min-h-0 h-full shrink-0"
                             :groups="$iconGroups"
                             :user="$dummyUser"
                             collapsed
@@ -506,6 +488,12 @@
                     </div>
                 </article>
             </div>
+
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::sidebar ⟦dark-mode⟧ :groups="$groups" />
+                @endverbatim
+            </x-docs.code>
         </x-docs.mode-section>
 
         {{-- SECTION 6: PLAYGROUND & PENGGUNAAN --}}
@@ -518,6 +506,22 @@
             </x-docs.lead>
 
             <livewire:playground.sidebar-livewire :dark="$docsDark" />
+
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::sidebar
+                    :collapsed="$collapsed"
+                    ⟦wire:collapse⟧="$toggle('collapsed')"
+                    :items="[
+                        ['label' => 'Dashboard', 'icon' => 'ceplok-s-chart-pie', 'active' => $halaman === 'Dashboard',
+                            '⟦attributes⟧' => ['wire:click' => "navigasi('Dashboard')"]],
+                        ['label' => 'Pesanan', 'icon' => 'ceplok-s-cart', 'active' => $halaman === 'Pesanan',
+                            '⟦attributes⟧' => ['wire:click' => "navigasi('Pesanan')"]],
+                    ]"
+                    ⟨dark-mode⟩
+                />
+                @endverbatim
+            </x-docs.code>
 
         </x-docs.section>
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Kit\Components;
 
+use Illuminate\Support\HtmlString;
 use Tests\TestCase;
 
 class ListViewTest extends TestCase
@@ -117,11 +118,15 @@ class ListViewTest extends TestCase
 
     public function test_atribut_tombol_aksi_terpasang_tanpa_atribut_liar(): void
     {
-        // Tautan aksi mobile yang dinonaktifkan keluar dari urutan fokus.
-        $link = $this->find($this->dom('<x-ceplok::list-view platform="mobile" title="Project brief" action-label="Open" action-href="/brief" action-disabled />'), 'a[href="/brief"]');
-        $this->assertSame('true', $link->getAttribute('aria-disabled'));
-        $this->assertSame('-1', $link->getAttribute('tabindex'));
-        $this->assertHasClasses($link, 'pointer-events-none opacity-50');
+        // Seperti kit React, action-disabled menyembunyikan tombol aksi walau kartu punya href sendiri;
+        // kartunya tetap tautan ke href-nya, bukan ke action-href.
+        foreach (['desktop', 'mobile'] as $platform) {
+            $dom = $this->dom('<x-ceplok::list-view platform="'.$platform.'" title="Project brief" href="/kartu" action-label="Open" action-href="/brief" action-disabled />');
+            $link = $this->find($dom, 'a[href="/kartu"]');
+            $this->assertNull($link->querySelector('a, button'), "{$platform}: tombol aksi masih tampil.");
+            $this->assertNull($dom->querySelector('a[href="/brief"]'), "{$platform}: action-href masih dipakai.");
+            $this->assertFalse($link->hasAttribute('aria-disabled'));
+        }
 
         // action-click dan action-attributes sampai ke tombolnya.
         $button = $this->find($this->dom('<x-ceplok::list-view title="Project brief" action-label="Open" action-click="open = true" :action-attributes="[\'data-aksi\' => \'buka\']" />'), 'button');
@@ -134,5 +139,84 @@ class ListViewTest extends TestCase
                 $this->assertDoesNotMatchRegularExpression('/^@|^actionAttributes$|^actionDisabled$/', $attr->name);
             }
         }
+    }
+
+    public function test_target_dan_rel_hanya_untuk_tautan_dengan_rel_aman_bawaan(): void
+    {
+        $blank = $this->find($this->dom('<x-ceplok::list-view title="Brief" href="/brief" target="_blank" />'), 'a[href="/brief"]');
+        $custom = $this->find($this->dom('<x-ceplok::list-view variant="article" title="Topik" href="/topik" target="_self" rel="next" />'), 'a[href="/topik"]');
+        $tanpaHref = $this->find($this->dom('<x-ceplok::list-view title="Brief" target="_blank" />'), 'article');
+
+        // Seperti React: target _blank tanpa rel mendapat noreferrer noopener.
+        $this->assertSame('_blank', $blank->getAttribute('target'));
+        $this->assertSame('noreferrer noopener', $blank->getAttribute('rel'));
+        $this->assertSame('_self', $custom->getAttribute('target'));
+        $this->assertSame('next', $custom->getAttribute('rel'));
+        $this->assertFalse($tanpaHref->hasAttribute('target'));
+    }
+
+    public function test_item_dengan_klik_sendiri_menjadi_tombol_kecuali_ada_tombol_aksi(): void
+    {
+        $items = [
+            ['title' => 'Klik', 'attributes' => ['wire:click.prevent' => 'pilih']],
+            ['title' => 'Klik + aksi', 'actionLabel' => 'Open', 'attributes' => ['wire:click' => 'pilih']],
+            ['variant' => 'article', 'title' => 'Topik', 'attributes' => ['wire:click' => 'baca']],
+        ];
+        $dom = $this->dom('<x-ceplok::list-view :items="$items" />', compact('items'));
+
+        // Seperti React: item simple yang bisa diklik tanpa href dirender sebagai <button>.
+        $button = $this->find($dom, 'button[wire\:click\.prevent="pilih"]');
+        $this->assertSame('button', $button->getAttribute('type'));
+        $this->assertHasClasses($button, 'cursor-pointer hover:shadow-soft');
+        // Dengan tombol aksi, item tetap <article> agar tidak ada <button> bersarang.
+        $this->assertNotNull($dom->querySelector('article[wire\:click="pilih"] button'));
+        // Article dengan klik sendiri ikut interaktif.
+        $this->assertHasClasses($this->find($dom, 'article[wire\:click="baca"]'), 'cursor-pointer hover:border-primary-400/80');
+    }
+
+    public function test_pin_attributes_menjadikan_lencana_pin_tombol(): void
+    {
+        $dom = $this->dom('<x-ceplok::list-view variant="article" title="Topik" :pin-attributes="[\'wire:click\' => \'sematkan\']" />');
+        $pin = $this->find($dom, '[role="button"]');
+
+        // Padanan onPin: tombol yang tidak meneruskan kliknya ke kartu.
+        $this->assertSame('sematkan', $pin->getAttribute('wire:click'));
+        $this->assertSame('0', $pin->getAttribute('tabindex'));
+        $this->assertTrue($pin->hasAttribute('x-on:click.stop'));
+        $this->assertHasClasses($pin, 'cursor-pointer hover:bg-primary-100');
+
+        $diam = $this->dom('<x-ceplok::list-view variant="article" title="Topik" />');
+        $this->assertNull($diam->querySelector('[role="button"]'));
+    }
+
+    public function test_content_menambah_isi_di_kolom_teks_seperti_children(): void
+    {
+        $items = [
+            ['title' => 'Brief', 'badge' => 'Baru', 'content' => new HtmlString('<p id="isi-simple">Catatan</p>')],
+            ['variant' => 'article', 'title' => 'Topik', 'content' => new HtmlString('<p id="isi-article">Ringkasan</p>')],
+        ];
+        $dom = $this->dom('<x-ceplok::list-view :items="$items" />', compact('items'));
+
+        // Simple: di kolom teks, setelah badge.
+        $simple = $this->find($dom, '#isi-simple');
+        $this->assertSame('mt-2 flex items-center', $simple->previousElementSibling->getAttribute('class'));
+        // Article: setelah judul, di blok atas.
+        $this->assertSame('h4', strtolower($this->find($dom, '#isi-article')->previousElementSibling->tagName));
+
+        // Mode satu item: slot menjadi isi tambahan, di dalam kartunya.
+        $tunggal = $this->dom('<x-ceplok::list-view title="Brief"><p id="slot-isi">Dari slot</p></x-ceplok::list-view>');
+        $this->assertNotNull($this->find($tunggal, 'article')->querySelector('#slot-isi'));
+    }
+
+    public function test_kunci_as_mengatur_tag_kartu(): void
+    {
+        $items = [
+            ['title' => 'Satu', 'as' => 'li'],
+            ['variant' => 'article', 'title' => 'Dua', 'as' => 'li'],
+        ];
+        $dom = $this->dom('<x-ceplok::list-view as="ul" :items="$items" />', compact('items'));
+
+        $this->assertCount(2, $dom->querySelectorAll('ul > li'));
+        $this->assertNull($dom->querySelector('article'));
     }
 }

@@ -14,8 +14,11 @@ class SidebarTest extends TestCase
         $this->assertNotNull($aside);
         $this->assertSame('ceplokSidebar', $aside->getAttribute('x-data'));
         $this->assertSame('false', $aside->getAttribute('data-initial-collapsed'));
-        $this->assertSame('width: 280px', $aside->getAttribute('style'));
-        $this->assertSame("{ width: collapsed ? '72px' : '280px' }", $aside->getAttribute('x-bind:style'));
+        // Lebar lewat kelas, seperti React, supaya bisa ditimpa `class`.
+        $this->assertHasClasses($aside, 'w-[280px]');
+        $this->assertLacksClasses($aside, 'w-[72px]');
+        $this->assertFalse($aside->hasAttribute('style'));
+        $this->assertSame("{ 'w-[72px]': collapsed, 'w-[280px]': ! collapsed }", $aside->getAttribute('x-bind:class'));
 
         $this->assertHasClasses(
             $aside,
@@ -31,7 +34,8 @@ class SidebarTest extends TestCase
         $this->assertNotNull($aside);
         $this->assertSame('ceplokSidebar', $aside->getAttribute('x-data'));
         $this->assertSame('true', $aside->getAttribute('data-initial-collapsed'));
-        $this->assertSame('width: 72px', $aside->getAttribute('style'));
+        $this->assertHasClasses($aside, 'w-[72px]');
+        $this->assertLacksClasses($aside, 'w-[280px]');
     }
 
     public function test_sidebar_sticky_dan_dark_mode(): void
@@ -102,7 +106,11 @@ class SidebarTest extends TestCase
         $this->assertNotNull($link);
         $this->assertStringContainsString('Budi Santoso', $link->textContent);
         $this->assertStringContainsString('Administrator', $link->textContent);
-        $this->assertSame('B', trim($this->find($link, 'span[aria-hidden="true"]')->textContent));
+        // Avatar kit, seperti React: inisial dua huruf dari nama, ukuran default 32px.
+        $avatar = $this->find($link, 'div[role="img"]');
+        $this->assertSame('Budi Santoso', $avatar->getAttribute('aria-label'));
+        $this->assertHasClasses($avatar, 'size-8 bg-avatar-surface text-avatar-content transition');
+        $this->assertSame('BS', trim($avatar->textContent));
         // Tautan yang punya tujuan dibiarkan berpindah halaman.
         $this->assertFalse($link->hasAttribute('x-on:click.prevent'));
     }
@@ -253,5 +261,62 @@ class SidebarTest extends TestCase
             '<x-ceplok::sidebar dark-mode="gelap">Konten</x-ceplok::sidebar>',
             'Prop `dark-mode` pada <x-ceplok::sidebar> harus boolean',
         );
+    }
+
+    public function test_item_dropdown_profil_meneruskan_attributes_target_dan_rel(): void
+    {
+        // Padanan onClick, target, dan rel pada SidebarUserItem di React.
+        $user = [
+            'name' => 'Keisha',
+            'items' => [
+                ['label' => 'Bantuan', 'href' => '/bantuan', 'target' => '_blank', 'rel' => 'help'],
+                ['label' => 'Keluar', 'tone' => 'danger', 'attributes' => ['wire:click' => 'logout', 'x-on:click' => 'catat()']],
+                ['label' => 'Arsip', 'disabled' => true, 'attributes' => ['wire:click' => 'arsip']],
+            ],
+        ];
+
+        $menu = $this->find($this->dom('<x-ceplok::sidebar :user="$user" />', ['user' => $user]), 'div[role="menu"]');
+
+        $bantuan = $this->find($menu, 'a[href="/bantuan"]');
+        $this->assertSame('_blank', $bantuan->getAttribute('target'));
+        $this->assertSame('help', $bantuan->getAttribute('rel'));
+
+        $buttons = iterator_to_array($menu->querySelectorAll('button[role="menuitem"]'), false);
+        $this->assertSame('logout', $buttons[0]->getAttribute('wire:click'));
+        $this->assertSame('catat(); closeUserMenu()', $buttons[0]->getAttribute('x-on:click'));
+        // Item nonaktif tidak meneruskan aksinya.
+        $this->assertTrue($buttons[1]->hasAttribute('disabled'));
+        $this->assertFalse($buttons[1]->hasAttribute('wire:click'));
+    }
+
+    public function test_menu_tanpa_tujuan_tidak_melompat_dan_submenu_ringkas_berlabel(): void
+    {
+        $items = [
+            ['label' => 'Beranda', 'icon' => 'ceplok-s-chart-pie'],
+            ['label' => 'Laporan', 'href' => '/laporan', 'icon' => 'ceplok-s-clipboard'],
+            ['label' => 'Toko', 'icon' => 'ceplok-s-cart', 'active' => true, 'children' => [['label' => 'Pesanan', 'href' => '#']]],
+        ];
+
+        $dom = $this->dom('<x-ceplok::sidebar collapsed :items="$items" wire:collapse="$toggle(\'ringkas\')" />', ['items' => $items]);
+        $nav = $this->find($dom, 'nav');
+
+        // Seperti React: tanpa href atau "#" tidak melompat; tautan sungguhan dibiarkan.
+        $this->assertTrue($this->find($nav, 'a[title="Beranda"]')->hasAttribute('x-on:click.prevent'));
+        $this->assertFalse($this->find($nav, 'a[href="/laporan"]')->hasAttribute('x-on:click.prevent'));
+        $this->assertTrue($this->find($nav, 'li ul a[href="#"]')->hasAttribute('x-on:click.prevent'));
+
+        $button = $this->find($nav, 'button');
+        $this->assertSame('Buka sidebar untuk melihat submenu Toko', $button->getAttribute('aria-label'));
+        // Item aktif membuka submenunya, jadi chevron sudah terputar sejak render server.
+        $svgs = iterator_to_array($button->querySelectorAll('svg'), false);
+        $this->assertHasClasses(end($svgs), 'rotate-180');
+    }
+
+    public function test_navigasi_tetap_dirender_tanpa_item(): void
+    {
+        $dom = $this->dom('<x-ceplok::sidebar><x-slot:footer><span id="foot">v1</span></x-slot:footer></x-ceplok::sidebar>');
+
+        // Navigasi flex-1 menahan footer di dasar, seperti React.
+        $this->assertNotNull($dom->querySelector('aside > nav[aria-label="Navigasi sidebar"].flex-1'));
     }
 }

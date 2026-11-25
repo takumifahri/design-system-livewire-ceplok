@@ -45,14 +45,11 @@ new class extends Component
             style="transition: width 200ms ease-out"
             :collapsed="$collapsed"
             :dark-mode="$dark"
-            show-collapse-button
-            :dark-mode="$dark"
             x-on:collapse="$wire.set('collapsed', $event.detail.collapsed)"
-            x-on:click.capture="const link = $event.target.closest('nav a'); if (link) { $event.preventDefault(); $wire.navigasi(link.textContent.trim()) }"
             :items="[
-                ['label' => 'Dashboard', 'icon' => 'ceplok-s-chart-pie', 'active' => $halaman === 'Dashboard', 'href' => '#'],
-                ['label' => 'Pesanan', 'icon' => 'ceplok-s-cart', 'active' => $halaman === 'Pesanan', 'href' => '#'],
-                ['label' => 'Kotak Masuk', 'icon' => 'ceplok-s-inbox', 'active' => $halaman === 'Kotak Masuk', 'href' => '#'],
+                ['label' => 'Dashboard', 'icon' => 'ceplok-s-chart-pie', 'active' => $halaman === 'Dashboard', 'attributes' => ['wire:click' => 'navigasi(\'Dashboard\')']],
+                ['label' => 'Pesanan', 'icon' => 'ceplok-s-cart', 'active' => $halaman === 'Pesanan', 'attributes' => ['wire:click' => 'navigasi(\'Pesanan\')']],
+                ['label' => 'Kotak Masuk', 'icon' => 'ceplok-s-inbox', 'active' => $halaman === 'Kotak Masuk', 'attributes' => ['wire:click' => 'navigasi(\'Kotak Masuk\')']],
             ]"
             :user="[
                 'name' => 'Admin Livewire',

@@ -5,8 +5,7 @@
     // Di mode gelap docs pratinjaunya ikut gelap: komponen dengan prop
     // `dark-mode` menerimanya, sedangkan tiruan statis dan komponen yang
     // mengikuti tema pembungkus (Avatar, Clipboard, Table of Contents) memakai
-    // `data-theme` di kotaknya. Modal belum punya desain gelap, jadi kerangkanya tetap terang,
-    // dan Button kit Livewire belum punya `dark-mode`.
+    // `data-theme` di kotaknya. Modal belum punya desain gelap, jadi kerangkanya tetap terang.
     $docsDark = Theme::dark();
 
     // Ikon sosial yang sama dengan footer situs, urutannya mengikuti kartu Footer di docs React.
@@ -42,8 +41,8 @@
 
             <x-docs.overview-card route="components.button" name="Button" desc="Aksi utama dengan variant filled atau outline, enam theme warna, dan lima ukuran.">
                 <div class="flex flex-wrap items-center gap-2 rounded-xl bg-surface-subtle p-5 dark:bg-gray-900">
-                    <x-ceplok::button variant="outline">Secondary</x-ceplok::button>
-                    <x-ceplok::button variant="filled">Primary</x-ceplok::button>
+                    <x-ceplok::button variant="outline" :dark-mode="$docsDark">Secondary</x-ceplok::button>
+                    <x-ceplok::button variant="filled" :dark-mode="$docsDark">Primary</x-ceplok::button>
                 </div>
             </x-docs.overview-card>
 

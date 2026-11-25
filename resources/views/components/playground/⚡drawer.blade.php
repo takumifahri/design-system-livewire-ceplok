@@ -1,6 +1,7 @@
 <?php
 
 use CeplokUi\DesignKit\Enums\DrawerNavItemTheme;
+use Illuminate\Support\Js;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -13,15 +14,29 @@ new class extends Component
     public bool $dark = false;
     public string $activeMenu = 'Menu 3 - sub menu 1';
 
+    /** Seperti React: memilih menu memindahkan sorotan aktif dan menutup Drawer. */
+    public function pilih(string $menu): void
+    {
+        $this->activeMenu = $menu;
+    }
+
     #[Computed]
     public function items(): array
     {
+        // Klik item tidak menutup Drawer dengan sendirinya (seperti React), jadi
+        // Playground menutupnya sendiri lewat `attributes`, padanan onClick.
+        $pilih = fn (string $menu) => [
+            'active' => $this->activeMenu === $menu,
+            'attributes' => ['wire:click' => 'pilih('.Js::from($menu).')', 'x-on:click' => 'drawerOpen = false'],
+        ];
+        $sub = fn (string $parent, array $labels) => array_map(fn ($label) => ['label' => $label, ...$pilih("{$parent} - {$label}")], $labels);
+
         return [
-            ['label' => 'Menu 1', 'icon' => $this->icons ? 'ceplok-s-chart-pie' : null],
-            ['label' => 'Menu 2', 'icon' => $this->icons ? 'ceplok-s-file-lines' : null, 'expanded' => false, 'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']]],
-            ['label' => 'Menu 3', 'icon' => $this->icons ? 'ceplok-s-cart' : null, 'active' => true, 'expanded' => true, 'children' => [['label' => 'sub menu 1', 'active' => true], ['label' => 'sub menu 2']]],
+            ['label' => 'Menu 1', 'icon' => $this->icons ? 'ceplok-s-chart-pie' : null, ...$pilih('Menu 1')],
+            ['label' => 'Menu 2', 'icon' => $this->icons ? 'ceplok-s-file-lines' : null, 'expanded' => false, 'children' => $sub('Menu 2', ['sub menu 1', 'sub menu 2'])],
+            ['label' => 'Menu 3', 'icon' => $this->icons ? 'ceplok-s-cart' : null, 'expanded' => true, 'children' => $sub('Menu 3', ['sub menu 1', 'sub menu 2'])],
             ['label' => 'Menu 4', 'icon' => $this->icons ? 'ceplok-s-inbox' : null, 'disabled' => true],
-            ['label' => 'Menu 5', 'icon' => $this->icons ? 'ceplok-s-lock' : null, 'expanded' => false, 'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']]],
+            ['label' => 'Menu 5', 'icon' => $this->icons ? 'ceplok-s-lock' : null, 'expanded' => false, 'children' => $sub('Menu 5', ['sub menu 1', 'sub menu 2'])],
         ];
     }
 
@@ -68,8 +83,7 @@ new class extends Component
         <x-docs.stage max-width="max-w-[760px]" min-width="760px" :dark="$dark">
             <div @class(['flex min-h-[668px] w-full items-center justify-center rounded-xl p-5', $dark ? 'bg-gray-950' : 'bg-gray-50'])>
                 <div
-                    x-data="{ drawerOpen: true, activeMenu: @js($activeMenu) }"
-                    x-on:drawer-navigate="activeMenu = $event.detail.label"
+                    x-data="{ drawerOpen: true }"
                     @class(['relative flex max-w-full overflow-hidden border-x shadow-md', $dark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200', $font === 'lato' ? 'font-sans' : ($font === 'inter' ? 'font-alt' : 'font-alt-2')])
                     style="width: 420px; height: 588px"
                 >
@@ -77,11 +91,11 @@ new class extends Component
                         <div @class(['flex items-center border-b', $dark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white']) style="padding: 14px 16px">
                             <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 object-contain">
                             <span @class(['ml-2.5 text-base font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>CEPLOK</span>
-                            <button type="button" x-on:click="drawerOpen = true" aria-label="Buka drawer" @class(['ml-auto inline-flex size-8 items-center justify-center rounded-lg transition-colors', $dark ? 'text-gray-400 hover:bg-gray-700 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'])><x-ceplok-o-bars-from-left class="size-6" /></button>
+                            <button type="button" x-on:click="drawerOpen = true" aria-label="Buka drawer" @class(['ml-auto inline-flex size-8 items-center justify-center rounded-lg transition-colors', $dark ? 'text-gray-200 hover:bg-gray-700 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'])><x-ceplok-o-bars-from-left class="size-6" /></button>
                         </div>
                         <div @class([$dark ? 'text-gray-300' : 'text-gray-600']) style="padding: 24px">
-                            <h4 x-text="activeMenu" @class(['text-xl font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>{{ $activeMenu }}</h4>
-                            <p class="mt-4 text-sm">Anda sedang berada di halaman <span x-text="activeMenu">{{ $activeMenu }}</span>.</p>
+                            <h4 @class(['text-xl font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>{{ $activeMenu }}</h4>
+                            <p class="mt-4 text-sm">Anda sedang berada di halaman utama {{ $activeMenu }}.</p>
                         </div>
                     </div>
                     <div x-show="drawerOpen" x-on:click="drawerOpen = false" @class(['absolute inset-0', $dark ? 'bg-gray-900/50' : 'bg-gray-900/20'])></div>

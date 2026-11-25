@@ -31,7 +31,9 @@
     $showCollapseButton = Prop::bool($showCollapseButton, false, 'sidebar', 'show-collapse-button');
     $darkMode = Prop::bool($darkMode, false, 'sidebar', 'dark-mode');
 
-    $resolvedGroups = !empty($groups) ? $groups : (!empty($items) ? [['id' => 'default', 'items' => $items]] : []);
+    // Seperti React, navigasi selalu dirender (flex-1) supaya footer tetap di
+    // dasar meski menunya kosong.
+    $resolvedGroups = !empty($groups) ? $groups : [['id' => 'default', 'items' => $items ?: []]];
     $allItems = !empty($groups) ? collect($groups)->flatMap(fn ($g) => $g['items'] ?? [])->all() : $items;
     $hasMenuIcons = collect($allItems)->some(function ($item) {
         if (!empty($item['icon'])) {
@@ -60,7 +62,6 @@
 
     $avatarSrc = $user['avatarSrc'] ?? $user['avatar'] ?? null;
     $userName = $user['name'] ?? '';
-    $userInitials = $user['initials'] ?? (filled($userName) ? mb_strtoupper(mb_substr($userName, 0, 1)) : '?');
     $avatarAlt = $user['avatarAlt'] ?? $userName;
     $profileLabel = $user['profileLabel'] ?? 'Lihat Profil';
     // Padanan user.onClick di React, sama seperti `attributes` pada item menu.
@@ -78,10 +79,11 @@
         ->class([
             'flex min-h-screen flex-col border-r border-border bg-sidebar-surface text-content transition-all duration-200',
             $sticky ? 'sticky top-0 h-screen self-start' : '',
+            // Lebar lewat kelas, seperti React, supaya bisa ditimpa `class`.
+            $collapsed ? 'w-[72px]' : 'w-[280px]',
         ])
         ->merge($darkMode ? ['data-theme' => 'dark'] : []) }}
-    style="width: {{ $collapsed ? '72px' : '280px' }}"
-    x-bind:style="{ width: collapsed ? '72px' : '280px' }"
+    x-bind:class="{ 'w-[72px]': collapsed, 'w-[280px]': ! collapsed }"
 >
     @if ($hasHeader)
         <header
@@ -144,22 +146,14 @@
                         class="flex transition-colors"
                         x-bind:class="collapsed ? 'justify-center' : 'items-center gap-3 rounded-lg bg-primary-50 px-3 py-2.5 hover:bg-primary-100/70 in-data-[theme=dark]:bg-gray-600 in-data-[theme=dark]:hover:bg-gray-600/80'"
                     >
-                        @if ($avatarSrc)
-                            <img
-                                src="{{ $avatarSrc }}"
-                                alt="{{ $avatarAlt }}"
-                                class="size-9 shrink-0 rounded-full object-cover {{ $collapsed ? 'ring-2 ring-transparent transition hover:ring-primary-500' : '' }}"
-                                x-bind:class="collapsed ? 'ring-2 ring-transparent transition hover:ring-primary-500' : ''"
-                            />
-                        @else
-                            <span
-                                class="flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition {{ $darkMode ? 'bg-primary-900 text-primary-300' : 'bg-primary-100 text-primary-700 in-data-[theme=dark]:bg-primary-900 in-data-[theme=dark]:text-primary-300' }} {{ $collapsed ? 'hover:ring-2 hover:ring-primary-500' : '' }}"
-                                x-bind:class="collapsed ? 'hover:ring-2 hover:ring-primary-500' : ''"
-                                aria-hidden="true"
-                            >
-                                {{ $userInitials }}
-                            </span>
-                        @endif
+                        <x-ceplok::avatar
+                            :src="$avatarSrc"
+                            :alt="$avatarAlt"
+                            :name="$userName"
+                            :initials="$user['initials'] ?? null"
+                            :class="'transition'.($collapsed ? ' ring-2 ring-transparent hover:ring-primary-500' : '')"
+                            x-bind:class="{ 'ring-2 ring-transparent hover:ring-primary-500': collapsed }"
+                        />
 
                         <div
                             x-show="!collapsed"
@@ -183,22 +177,14 @@
                         class="flex w-full text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                         x-bind:class="collapsed ? 'justify-center p-0 rounded-full' : 'items-center gap-3 rounded-lg bg-primary-50 px-3 py-2.5 hover:bg-primary-100/70 text-content in-data-[theme=dark]:bg-gray-600 in-data-[theme=dark]:hover:bg-gray-600/80'"
                     >
-                        @if ($avatarSrc)
-                            <img
-                                src="{{ $avatarSrc }}"
-                                alt="{{ $avatarAlt }}"
-                                class="size-9 shrink-0 rounded-full object-cover {{ $collapsed ? 'ring-2 ring-transparent transition hover:ring-primary-500' : '' }}"
-                                x-bind:class="collapsed ? 'ring-2 ring-transparent transition hover:ring-primary-500' : ''"
-                            />
-                        @else
-                            <span
-                                class="flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition {{ $darkMode ? 'bg-primary-900 text-primary-300' : 'bg-primary-100 text-primary-700 in-data-[theme=dark]:bg-primary-900 in-data-[theme=dark]:text-primary-300' }} {{ $collapsed ? 'hover:ring-2 hover:ring-primary-500' : '' }}"
-                                x-bind:class="collapsed ? 'hover:ring-2 hover:ring-primary-500' : ''"
-                                aria-hidden="true"
-                            >
-                                {{ $userInitials }}
-                            </span>
-                        @endif
+                        <x-ceplok::avatar
+                            :src="$avatarSrc"
+                            :alt="$avatarAlt"
+                            :name="$userName"
+                            :initials="$user['initials'] ?? null"
+                            :class="'transition'.($collapsed ? ' ring-2 ring-transparent hover:ring-primary-500' : '')"
+                            x-bind:class="{ 'ring-2 ring-transparent hover:ring-primary-500': collapsed }"
+                        />
 
                         <div
                             x-show="!collapsed"
@@ -263,13 +249,23 @@
                                                         ? 'text-feedback-error hover:bg-red-50 hover:text-red-700 in-data-[theme=dark]:hover:bg-red-950/40 in-data-[theme=dark]:hover:text-red-300 focus-visible:bg-red-50 in-data-[theme=dark]:focus-visible:bg-red-950/40'
                                                         : 'text-content hover:bg-gray-100 in-data-[theme=dark]:hover:bg-surface focus-visible:bg-gray-100 in-data-[theme=dark]:focus-visible:bg-surface')
                                             );
+                                            // Padanan onClick di React, mis. ['wire:click' => 'logout'].
+                                            // Item nonaktif tidak meneruskan aksinya. x-on:click milik
+                                            // pemakai dijalankan dulu, lalu menu ditutup.
+                                            $uItemAttributes = new \Illuminate\View\ComponentAttributeBag($isDisabled ? [] : ($uItem['attributes'] ?? []));
+                                            $uItemClick = trim(($uItemAttributes->get('x-on:click') ?? '').'; closeUserMenu()', '; ');
+                                            $uItemAttributes = $uItemAttributes->except('x-on:click');
+                                            $uItemTarget = !empty($uItem['external']) ? '_blank' : ($uItem['target'] ?? null);
+                                            $uItemRel = !empty($uItem['external']) ? 'noreferrer noopener' : ($uItem['rel'] ?? null);
                                         @endphp
                                         @if (!empty($uItem['href']))
                                             <a
                                                 href="{{ $isDisabled ? null : $uItem['href'] }}"
+                                                {{ $uItemAttributes }}
                                                 role="menuitem"
-                                                @if ($isDisabled) aria-disabled="true" tabindex="-1" x-on:click.prevent @else tabindex="0" x-on:click="closeUserMenu()" @endif
-                                                @if (!empty($uItem['external'])) target="_blank" rel="noreferrer noopener" @endif
+                                                @if ($isDisabled) aria-disabled="true" tabindex="-1" x-on:click.prevent @else tabindex="0" x-on:click="{{ $uItemClick }}" @endif
+                                                @if (filled($uItemTarget)) target="{{ $uItemTarget }}" @endif
+                                                @if (filled($uItemRel)) rel="{{ $uItemRel }}" @endif
                                                 class="{{ $itemClasses }}"
                                             >
                                                 @if (!empty($uItem['icon']))
@@ -287,9 +283,10 @@
                                         @else
                                             <button
                                                 type="button"
+                                                {{ $uItemAttributes }}
                                                 role="menuitem"
                                                 @if ($isDisabled) disabled @endif
-                                                x-on:click="closeUserMenu()"
+                                                x-on:click="{{ $uItemClick }}"
                                                 class="{{ $itemClasses }}"
                                             >
                                                 @if (!empty($uItem['icon']))
@@ -316,8 +313,7 @@
     @endif
 
     {{-- Navigation --}}
-    @if (!empty($resolvedGroups))
-        <nav class="ds-scroll-y min-h-0 flex-1 overflow-y-auto px-3 py-3" aria-label="Navigasi sidebar">
+    <nav class="ds-scroll-y min-h-0 flex-1 overflow-y-auto px-3 py-3" aria-label="Navigasi sidebar">
             @foreach ($resolvedGroups as $group)
                 <section
                     class="{{ !empty($group['separator']) ? 'mt-3 border-t border-border pt-3' : '' }}"
@@ -361,7 +357,9 @@
                                         class="{{ $menuItemClasses }}"
                                         x-bind:class="collapsed ? 'justify-center px-2 py-2.5' : 'items-center gap-3 px-3 py-2.5'"
                                         @if ($isActive) aria-current="page" @endif
-                                        @if ($isDisabled) aria-disabled="true" tabindex="-1" x-on:click.prevent @endif
+                                        {{-- Seperti React, tanpa tujuan (atau "#") tautannya tidak melompat. --}}
+                                        @if ($isDisabled || empty($item['href']) || $item['href'] === '#') x-on:click.prevent @endif
+                                        @if ($isDisabled) aria-disabled="true" tabindex="-1" @endif
                                         @if ($collapsed) title="{{ $item['label'] ?? '' }}" @endif
                                         x-bind:title="collapsed ? '{{ addslashes($item['label'] ?? '') }}' : null"
                                         @if (!empty($item['external'])) target="_blank" rel="noreferrer noopener" @endif
@@ -407,6 +405,8 @@
                                             aria-controls="sidebar-submenu-{{ $itemId }}"
                                             x-bind:disabled="collapsed && !canExpand"
                                             @if ($isDisabled || $isSubmenuDisabled || ($collapsed && !$hasCollapseListener)) disabled aria-disabled="true" @endif
+                                            @if ($collapsed) aria-label="Buka sidebar untuk melihat submenu {{ $item['label'] ?? '' }}" @endif
+                                            x-bind:aria-label="collapsed ? @js('Buka sidebar untuk melihat submenu '.($item['label'] ?? '')) : null"
                                             @if ($collapsed) title="{{ $item['label'] ?? '' }}" @endif
                                             x-bind:title="collapsed ? '{{ addslashes($item['label'] ?? '') }}' : null"
                                         >
@@ -438,7 +438,7 @@
                                                 @if ($collapsed) style="display: none;" @endif
                                             >
                                                 <x-ceplok-o-chevron-down
-                                                    class="w-[28px] h-[28px] shrink-0 text-content transition-transform {{ $defaultOpen ? 'rotate-180' : '' }}"
+                                                    class="w-[28px] h-[28px] shrink-0 text-content transition-transform {{ $isOpen ? 'rotate-180' : '' }}"
                                                     x-bind:class="isOpen ? 'rotate-180' : ''"
                                                 />
                                             </span>
@@ -462,7 +462,8 @@
                                                         {{ $childAttributes }}
                                                         class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors text-content-subtle hover:bg-gray-100 hover:text-content in-data-[theme=dark]:hover:bg-gray-600 {{ $childActive ? 'bg-gray-100 font-medium text-content in-data-[theme=dark]:bg-gray-600 ' : '' }}{{ $childDisabled ? 'cursor-not-allowed opacity-50 ' : '' }}"
                                                         @if ($childActive) aria-current="page" @endif
-                                                        @if ($childDisabled) aria-disabled="true" tabindex="-1" x-on:click.prevent @endif
+                                                        @if ($childDisabled || empty($child['href']) || $child['href'] === '#') x-on:click.prevent @endif
+                                                        @if ($childDisabled) aria-disabled="true" tabindex="-1" @endif
                                                         @if (!empty($child['external'])) target="_blank" rel="noreferrer noopener" @endif
                                                     >
                                                         @if (!empty($child['icon']))
@@ -483,7 +484,6 @@
                 </section>
             @endforeach
         </nav>
-    @endif
 
     {{-- Slot custom --}}
     @if (Content::filled($slot))

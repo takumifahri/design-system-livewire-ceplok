@@ -79,62 +79,6 @@ class PortalDashboardTest extends TestCase
         }
     }
 
-    public function test_toggle_tema_berada_di_footer_sidebar_dan_responsif_terhadap_collapse(): void
-    {
-        $komponen = Livewire::test('portal.dashboard');
-        $dom = $this->parse($komponen->html());
-        $sidebars = $dom->querySelectorAll('aside[x-data="ceplokSidebar"]');
-        $toggleExpanded = $dom->querySelectorAll('input[type="checkbox"][role="switch"][aria-label="Mode gelap"]');
-        $toggleCollapsed = $dom->querySelectorAll('button[data-portal-theme-toggle="collapsed"]');
-
-        // Expanded memakai Toggle kit, collapsed memakai Button kit; Navbar tidak lagi memilikinya.
-        $this->assertCount(2, $toggleExpanded);
-        $this->assertCount(2, $toggleCollapsed);
-        foreach ($toggleExpanded as $toggle) {
-            $this->assertNotNull($toggle->closest('aside[x-data="ceplokSidebar"]'));
-            $this->assertSame('switch', $toggle->getAttribute('role'));
-            $this->assertFalse($toggle->hasAttribute('checked'));
-            $this->assertSame('Nyalakan mode gelap', $toggle->getAttribute('title'));
-            $this->assertSame("\$dispatch('dark-mode-change', { darkMode: \$event.target.checked })", $toggle->getAttribute('x-on:change'));
-        }
-        foreach ($toggleCollapsed as $toggle) {
-            $this->assertNotNull($toggle->closest('aside[x-data="ceplokSidebar"]'));
-            $this->assertSame('switch', $toggle->getAttribute('role'));
-            $this->assertSame('false', $toggle->getAttribute('aria-checked'));
-            $this->assertSame("\$dispatch('dark-mode-change', { darkMode: true })", $toggle->getAttribute('x-on:click'));
-        }
-        $this->assertSame('portal-theme-desktop', $toggleExpanded->item(0)->getAttribute('id'));
-        $this->assertSame('portal-theme-mobile', $toggleExpanded->item(1)->getAttribute('id'));
-
-        $sidebarDesktop = $sidebars->item(0);
-        $expanded = $this->find($sidebarDesktop, '[data-portal-theme-toggle="expanded"]');
-        $collapsed = $this->find($sidebarDesktop, 'button[data-portal-theme-toggle="collapsed"]');
-        $this->assertHasClasses($expanded->parentElement, 'flex h-20 items-center p-3');
-        $this->assertFalse($expanded->hasAttribute('style'));
-        $this->assertSame('display: none;', $collapsed->getAttribute('style'));
-        $this->assertHasClasses($this->find($dom, 'button[aria-label="Notifikasi"]'), 'ml-auto');
-
-        $komponen->set('ringkas', true);
-        $ringkas = $this->parse($komponen->html())->querySelectorAll('aside[x-data="ceplokSidebar"]')->item(0);
-        $this->assertSame('display: none;', $this->find($ringkas, '[data-portal-theme-toggle="expanded"]')->getAttribute('style'));
-        $this->assertStringNotContainsString(
-            'display: none',
-            $this->find($ringkas, 'button[data-portal-theme-toggle="collapsed"]')->getAttribute('style') ?? '',
-        );
-
-        $komponen->set('darkMode', true);
-        $gelap = $this->parse($komponen->html());
-        foreach ($gelap->querySelectorAll('input[type="checkbox"][aria-label="Mode gelap"]') as $toggle) {
-            $this->assertTrue($toggle->hasAttribute('checked'));
-            $this->assertSame('Matikan mode gelap', $toggle->getAttribute('title'));
-        }
-        foreach ($gelap->querySelectorAll('button[data-portal-theme-toggle="collapsed"]') as $toggle) {
-            $this->assertSame('true', $toggle->getAttribute('aria-checked'));
-            $this->assertSame('Matikan mode gelap', $toggle->getAttribute('title'));
-            $this->assertSame("\$dispatch('dark-mode-change', { darkMode: false })", $toggle->getAttribute('x-on:click'));
-        }
-    }
-
     public function test_sidebar_desktop_memulihkan_posisi_collapsed_dari_cookie(): void
     {
         $this->withUnencryptedCookie('ceplok_portal_sidebar_collapsed', '1');
@@ -145,11 +89,12 @@ class PortalDashboardTest extends TestCase
         $dom = $this->parse($response->getContent());
         $sidebar = $dom->querySelectorAll('aside[x-data="ceplokSidebar"]')->item(0);
 
+        // Sidebar ringkas: pilihan tema disembunyikan, tombol tema ringkas yang tampil.
         $this->assertSame('true', $sidebar->getAttribute('data-initial-collapsed'));
-        $this->assertSame('display: none;', $this->find($sidebar, '[data-portal-theme-toggle="expanded"]')->getAttribute('style'));
+        $this->assertSame('display: none;', $this->find($sidebar, '[aria-label="Pilih tema"]')->parentElement->getAttribute('style'));
         $this->assertStringNotContainsString(
             'display: none',
-            $this->find($sidebar, 'button[data-portal-theme-toggle="collapsed"]')->getAttribute('style') ?? '',
+            $this->find($sidebar, 'button[aria-label="Mode gelap"]')->parentElement->getAttribute('style') ?? '',
         );
     }
 

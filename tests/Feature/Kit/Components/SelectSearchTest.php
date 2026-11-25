@@ -113,6 +113,9 @@ class SelectSearchTest extends TestCase
         $this->assertHasClasses($this->find($button, 'svg'), 'size-4');
         $this->assertSame('Kategori: Perizinan', $trigger->getAttribute('aria-label'));
         $this->assertSame('Perizinan', $trigger->getAttribute('title'));
+
+        // Ring gelap dilukis di ::after sebatas kategori + field, hilang saat fokus.
+        $this->assertHasClasses($search, 'relative in-data-[theme=dark]:after:ring-gray-500 in-data-[theme=dark]:after:right-[42px] in-data-[theme=dark]:focus-within:after:ring-transparent');
     }
 
     public function test_search_kategori_compact_tetap_punya_tombol_dan_memotong_label(): void
@@ -127,7 +130,10 @@ class SelectSearchTest extends TestCase
         $this->assertHasClasses($button, 'w-[37px]');
         $this->assertLacksClasses($button, 'my-px h-[37px] w-[42px]');
         $this->assertHasClasses($this->find($button, 'svg'), 'size-3.5');
-        $this->assertSame('Administrasi…', trim($this->find($trigger, 'span.max-w-\[12ch\]')->textContent));
+        $this->assertHasClasses($trigger, 'px-2.5 py-[2px]');
+        $this->assertHasClasses($trigger->firstElementChild, 'w-full gap-2.5');
+        $this->assertSame('Administra…', trim($this->find($trigger, 'span.truncate')->textContent));
+        $this->assertHasClasses($search, 'in-data-[theme=dark]:after:right-[37px]');
     }
 
     public function test_token_dark_search_memisahkan_field_polos_dan_field_kategori(): void

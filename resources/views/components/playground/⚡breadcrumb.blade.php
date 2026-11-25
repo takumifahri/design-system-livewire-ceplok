@@ -60,7 +60,7 @@ new class extends Component
 
 <div class="space-y-16">
     <x-docs.section id="playground" title="Playground">
-        <p class="mb-6 text-body-sm text-gray-500">
+        <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
             Coba konfigurasi Breadcrumb secara langsung melalui kontrol di bawah ini. Anda dapat
             mengubah ukuran, background, dan jumlah menu.
         </p>
@@ -105,7 +105,7 @@ new class extends Component
     </x-docs.section>
 
     <x-docs.section id="penggunaan" title="Penggunaan">
-        <p class="mb-6 text-body-sm text-gray-500">
+        <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
             Bagian ini menampilkan contoh kode penggunaan Breadcrumb berdasarkan konfigurasi yang
             dipilih pada Playground.
         </p>

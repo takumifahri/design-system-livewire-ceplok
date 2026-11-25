@@ -347,7 +347,10 @@ class PlaygroundTest extends TestCase
         $this->assertStringContainsString(':items="$items"', $this->code($dom));
         $component->assertSet('activeMenu', 'Menu 4')->assertSeeText('Menu 4');
         $this->assertNotNull($this->find($dom, '[wire\\:click*="selectMenu"]'));
-        $this->assertStringContainsString("width: collapsed ? '72px' : '280px'", $component->html());
+        $this->assertStringContainsString("'w-[72px]': collapsed", $component->html());
+        // Padanan onCollapse: tombol collapse aktif lewat wire:collapse, bukan show-collapse-button.
+        $this->assertStringContainsString('wire:collapse="$toggle(\'collapsed\')"', $this->code($dom));
+        $this->assertStringNotContainsString('show-collapse-button', $this->code($dom));
         $this->assertNotNull($this->find($dom, '[x-bind\\:class*="$store.preview.font"]'));
     }
 
@@ -402,10 +405,13 @@ class PlaygroundTest extends TestCase
             ->assertSeeText('Konten Pesanan');
 
         $dom = $this->domOf($component);
-        $sidebar = $this->find($dom, 'aside[x-on\\:click\\.capture]');
+        $sidebar = $this->find($dom, 'aside[x-data="ceplokSidebar"]');
 
-        $this->assertStringContainsString('ceplokSidebar', $sidebar->getAttribute('x-data'));
-        $this->assertStringContainsString('$wire.navigasi', $sidebar->getAttribute('x-on:click.capture'));
+        // Klik menu lewat `attributes` per item (padanan onClick), tanpa hack x-on:click.capture.
+        $this->assertFalse($sidebar->hasAttribute('x-on:click.capture'));
+        $menu = $this->find($sidebar, 'a[wire\\:click="navigasi(\'Pesanan\')"]');
+        $this->assertSame('page', $menu->getAttribute('aria-current'));
+        $this->assertTrue($menu->hasAttribute('x-on:click.prevent'));
         $this->assertStringContainsString('$wire.set(\'collapsed\'', $component->html());
         $this->assertStringNotContainsString('Tutup Sidebar', $component->html());
     }
@@ -432,6 +438,20 @@ class PlaygroundTest extends TestCase
         $this->assertSame('Tidak Ada', trim($this->find($dom, '[aria-label="Pilih ikon"] [aria-pressed="true"]')->textContent));
         $this->assertNotNull($this->find($dom, '[data-preview]'));
         $this->assertNotNull($this->find($dom, '.bg-gray-950'));
+    }
+
+    public function test_drawer_playground_memindahkan_sorotan_aktif_ke_menu_yang_dipilih(): void
+    {
+        // Seperti React: klik menu memindahkan sorotan dan Playground menutup Drawer lewat `attributes`.
+        $component = Livewire::test('playground.drawer')->call('pilih', 'Menu 1');
+        $dom = $this->domOf($component);
+
+        $menu1 = $this->find($dom, '[data-preview] button[wire\\:click="pilih(\'Menu 1\')"]');
+        $this->assertHasClasses($menu1, 'bg-blue-50 text-blue-600');
+        $this->assertSame('drawerOpen = false', $menu1->getAttribute('x-on:click'));
+        $this->assertLacksClasses($this->find($dom, '[data-preview] button[wire\\:click="pilih(\'Menu 3 - sub menu 1\')"]'), 'bg-blue-50/70');
+        $this->assertStringNotContainsString('drawer-navigate', $component->html());
+        $component->assertSeeText('Anda sedang berada di halaman utama Menu 1.');
     }
 
     public function test_canvas_livewire_drawer_membuka_panel_dan_memilih_menu(): void

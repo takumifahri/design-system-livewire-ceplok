@@ -59,10 +59,10 @@ class UploadDatepickerTest extends TestCase
         $choose = $this->find($field, 'button[x-on\:click="ceplokBrowse()"]');
         $name = $this->find($field, 'p');
 
-        $this->assertHasClasses($field, 'h-10 border-[#1F2A37]');
+        $this->assertHasClasses($field, 'h-10 border-upload-empty-surface');
         $this->assertStringContainsString('border-gray-700', html_entity_decode($field->getAttribute('x-bind:class')));
         $this->assertHasClasses($choose, 'px-[21px] text-xs border-purple-500 bg-purple-500');
-        $this->assertHasClasses($name, 'bg-[#1F2A37] text-gray-400');
+        $this->assertHasClasses($name, 'bg-upload-empty-surface text-gray-400');
         $nameBinding = html_entity_decode($name->getAttribute('x-bind:class'));
         $this->assertStringContainsString('bg-gray-700', $nameBinding);
         $this->assertStringContainsString('text-white', $nameBinding);

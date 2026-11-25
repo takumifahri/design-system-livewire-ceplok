@@ -21,7 +21,8 @@
         ['dark-mode', 'bool', 'false', 'Filled dengan theme memakai palet gelapnya; filled tanpa theme dan seluruh outline menjadi putih.'],
         ['left-icon', 'Htmlable | slot', 'null', 'Ikon di sisi kiri tombol, mis. svg(\'ceplok-s-messages\', \'size-4\').'],
         ['right-icon', 'Htmlable | slot', 'null', 'Ikon di sisi kanan tombol.'],
-        ['theme', '"primary" | "green" | "gray" | "purple" | "orange" | "yellow"', 'primary (light mode)', 'Warna aksen tombol. Pada dark mode, Button tanpa theme memakai fallback putih.'],
+        ['theme', '"primary" | "green" | "gray" | "purple" | "orange" | "yellow"', 'primary (light mode)', 'Warna aksen tombol. Pada dark mode, Button tanpa theme atau dengan theme di luar enam bawaan memakai fallback putih.'],
+        ['wire-click', 'string', 'null', 'Memasang wire:click berisi aksi Livewire, mis. "simpan". Selama aksi berjalan tombol dinonaktifkan (wire:loading.attr="disabled", wire:target).'],
     ];
 
     $docsDark = Theme::dark();
@@ -116,13 +117,19 @@
                 tetap terlihat, namun tidak terlalu dominan.
             </p>
 
-            <div class="mb-4 grid gap-5 sm:grid-cols-2">
-                <x-docs.demo label="Filled" :dark="$docsDark">
-                    <x-ceplok::button variant="filled" theme="primary" :dark-mode="$docsDark">Simpan Perubahan</x-ceplok::button>
-                </x-docs.demo>
-                <x-docs.demo label="Outline" :dark="$docsDark">
-                    <x-ceplok::button variant="outline" theme="primary" :dark-mode="$docsDark">Lihat Detail</x-ceplok::button>
-                </x-docs.demo>
+            <div class="mb-6 grid gap-5 sm:grid-cols-2 sm:gap-8">
+                <div>
+                    <h3 class="mb-3 text-lg font-bold text-gray-900 dark:text-white">Filled</h3>
+                    <div class="flex min-h-[130px] items-center rounded-2xl border border-border bg-surface-subtle p-8 dark:border-gray-700 dark:bg-gray-900">
+                        <x-ceplok::button variant="filled" theme="primary" :dark-mode="$docsDark">Simpan Perubahan</x-ceplok::button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="mb-3 text-lg font-bold text-gray-900 dark:text-white">Outline</h3>
+                    <div class="flex min-h-[130px] items-center rounded-2xl border border-border bg-surface-subtle p-8 dark:border-gray-700 dark:bg-gray-900">
+                        <x-ceplok::button variant="outline" theme="primary" :dark-mode="$docsDark">Lihat Detail</x-ceplok::button>
+                    </div>
+                </div>
             </div>
             <x-docs.code>
                 @verbatim
@@ -194,14 +201,15 @@
             </div>
 
             <p class="mt-5 text-sm leading-6 text-gray-600 dark:text-gray-300">
-                Filled dengan salah satu dari enam theme bawaan memakai palet gelap theme tersebut.
-                Filled tanpa theme memakai fallback putih. Outline selalu memakai warna putih apa pun
-                theme-nya; Icon Only mengikuti aturan Filled.
+                Catatan: Filled dengan salah satu dari enam theme bawaan memakai palet gelap theme
+                tersebut. Filled tanpa theme atau tanpa palet dark khusus (theme di luar enam bawaan)
+                memakai fallback putih. Outline selalu memakai warna putih, apa pun theme-nya; Icon Only
+                mengikuti aturan Filled.
             </p>
 
             <x-docs.code>
                 @verbatim
-                <x-ceplok::button dark-mode variant="filled" theme="primary">
+                <x-ceplok::button dark-mode variant="filled" theme="primary" :left-icon="svg('ceplok-s-messages', 'size-4')">
                     Simpan Perubahan
                 </x-ceplok::button>
 

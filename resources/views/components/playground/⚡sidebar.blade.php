@@ -47,7 +47,6 @@ new class extends Component
     #[Computed]
     public function usage(): string
     {
-        $resolvedCollapse = ($this->menuIcon === 'hide' ? 'expanded' : $this->collapse);
         $resolvedCollapseBtn = ($this->menuIcon === 'hide' ? 'hide' : $this->collapseButton);
         $isDark = ($this->theme === 'dark');
         $hasSep = ($this->separator === 'show');
@@ -57,6 +56,7 @@ new class extends Component
         $hasLogo = ($this->logoWeb === 'show');
 
         $lines = [];
+        $lines[] = '{{-- Logo dan tombol collapse dikonfigurasi secara independen. --}}';
         $lines[] = '@php';
         $lines[] = '    $items = [';
         $lines[] = '        [\'label\' => \'Menu 1\', \'href\' => \'#\''.($hasIcons ? ', \'icon\' => \'ceplok-s-chart-pie\'' : '').'],';
@@ -97,7 +97,7 @@ new class extends Component
             $lines[] = '            [\'label\' => \'Profil Saya\', \'href\' => \'#profile\'],';
             $lines[] = '            [\'label\' => \'Pengaturan Akun\', \'href\' => \'#settings\'],';
             $lines[] = '            [\'label\' => \'Dokumentasi\', \'href\' => \'https://example.com\', \'external\' => true],';
-            $lines[] = '            [\'label\' => \'Keluar\', \'tone\' => \'danger\'],';
+            $lines[] = '            [\'label\' => \'Keluar\', \'tone\' => \'danger\', \'attributes\' => [\'wire:click\' => \'logout\']],';
             $lines[] = '        ],';
             $lines[] = '    ];';
         }
@@ -116,11 +116,11 @@ new class extends Component
             $lines[] = '    :⟦user⟧="$user"';
         }
         $lines[] = '    ⟦sticky⟧';
-        if ($resolvedCollapse === 'collapsed') {
-            $lines[] = '    ⟦collapsed⟧';
-        }
+        // Seperti React (collapsed + onCollapse): state collapsed di properti
+        // Livewire, dan wire:collapse menampilkan tombol collapse yang aktif.
+        $lines[] = '    :⟦collapsed⟧="$collapsed"';
         if ($resolvedCollapseBtn === 'show') {
-            $lines[] = '    ⟦show-collapse-button⟧';
+            $lines[] = '    ⟦wire:collapse⟧="$toggle(\'collapsed\')"';
         }
         $lines[] = '>';
         if ($hasLogo) {
@@ -191,7 +191,7 @@ new class extends Component
             ['label' => 'Profil Saya', 'href' => '#profile'],
             ['label' => 'Pengaturan Akun', 'href' => '#settings'],
             ['label' => 'Dokumentasi', 'href' => 'https://example.com', 'external' => true],
-            ['label' => 'Keluar', 'tone' => 'danger'],
+            ['label' => 'Keluar', 'tone' => 'danger', 'attributes' => ['x-on:click' => "alert('Logout berhasil diklik')"]],
         ],
     ] : null;
 @endphp
@@ -250,6 +250,18 @@ new class extends Component
         </x-docs.stage>
 
         <x-docs.controls>
+            <x-docs.control label="Tampilan">
+                <x-docs.segmented
+                    label="Pilih tampilan"
+                    model="theme"
+                    :value="$theme"
+                    :options="[
+                        ['value' => 'light', 'label' => 'Light'],
+                        ['value' => 'dark', 'label' => 'Dark'],
+                    ]"
+                />
+            </x-docs.control>
+
             <x-docs.control label="Sidebar">
                 <x-docs.segmented
                     label="Pilih kondisi Sidebar"
@@ -259,18 +271,6 @@ new class extends Component
                     :options="[
                         ['value' => 'expanded', 'label' => 'Expanded'],
                         ['value' => 'collapsed', 'label' => 'Collapsed'],
-                    ]"
-                />
-            </x-docs.control>
-
-            <x-docs.control label="Tampilan">
-                <x-docs.segmented
-                    label="Pilih tampilan"
-                    model="theme"
-                    :value="$theme"
-                    :options="[
-                        ['value' => 'light', 'label' => 'Light'],
-                        ['value' => 'dark', 'label' => 'Dark'],
                     ]"
                 />
             </x-docs.control>

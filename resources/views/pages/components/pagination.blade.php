@@ -5,7 +5,6 @@
     // setiap klik benar-benar memuat halaman dengan nomor yang baru.
     $linkPage = max(1, min(10, (int) request()->query('hal', 3)));
     $linkUrl = route('components.pagination').'?hal={page}#tautan';
-    $docsDark = Theme::dark();
 
     $props = [
         ['current-page', 'int', '1', 'Menentukan halaman yang sedang aktif.'],
@@ -21,7 +20,7 @@
     // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
     // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
     // gelap di kedua mode (lihat App\Docs\Theme).
-    $docsDark = \App\Docs\Theme::dark();
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Pagination">

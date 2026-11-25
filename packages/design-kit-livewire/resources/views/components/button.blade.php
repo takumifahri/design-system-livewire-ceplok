@@ -38,15 +38,18 @@
 @php
     $variant = Prop::oneOf(ButtonVariant::class, $variant, ButtonVariant::Filled, 'button', 'variant');
     $size = Prop::oneOf(ButtonSize::class, $size, ButtonSize::Base, 'button', 'size');
-    // Theme sengaja boleh null: di light mode ia tetap terlihat primary,
-    // sedangkan di dark mode ketiadaan theme memilih fallback putih.
-    $theme = $theme === null ? null : Prop::oneOf(ButtonTheme::class, $theme, ButtonTheme::Primary, 'button', 'theme');
     $tone = $tone === null ? null : Prop::oneOf(ButtonTone::class, $tone, ButtonTone::Light, 'button', 'tone');
     // Backward compatibility: tone="dark" diperlakukan seperti dark-mode,
     // kecuali dark-mode diberikan secara eksplisit.
     $darkMode = $darkMode === null
         ? $tone === 'dark'
         : Prop::bool($darkMode, false, 'button', 'dark-mode');
+    // Theme sengaja boleh null: di light mode ia tetap terlihat primary,
+    // sedangkan di dark mode ketiadaan theme memilih fallback putih. Theme di
+    // luar enam bawaan juga jatuh ke putih di dark mode (filled maupun
+    // outline), seperti kit React; di light mode ia tetap divalidasi.
+    $unknownDarkTheme = $darkMode && is_scalar($theme) && ButtonTheme::tryFrom((string) $theme) === null;
+    $theme = $theme === null || $unknownDarkTheme ? null : Prop::oneOf(ButtonTheme::class, $theme, ButtonTheme::Primary, 'button', 'theme');
     $iconOnly = Prop::bool($iconOnly, false, 'button', 'icon-only');
     $anchor = $as === null
         ? filled($attributes->get('href'))

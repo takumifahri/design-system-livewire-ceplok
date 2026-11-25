@@ -54,6 +54,16 @@ class ButtonTest extends TestCase
         $this->assertLacksClasses($outline, 'border-purple-800 text-purple-800');
     }
 
+    public function test_dark_mode_theme_di_luar_enam_bawaan_jatuh_ke_putih(): void
+    {
+        $filled = $this->find($this->dom('<x-ceplok::button dark-mode theme="teal">Simpan</x-ceplok::button>'), 'button');
+        $outline = $this->find($this->dom('<x-ceplok::button dark-mode theme="teal" variant="outline">Detail</x-ceplok::button>'), 'button');
+
+        $this->assertHasClasses($filled, 'bg-gray-50 text-gray-700 hover:bg-white hover:text-gray-700');
+        $this->assertLacksClasses($filled, 'bg-primary-800');
+        $this->assertHasClasses($outline, 'border border-gray-50 text-gray-50 hover:border-gray-50 hover:bg-white hover:text-gray-700');
+    }
+
     public function test_dark_mode_eksplisit_mengalahkan_alias_tone_lama(): void
     {
         $button = $this->find($this->dom('<x-ceplok::button tone="dark" :dark-mode="false">Simpan</x-ceplok::button>'), 'button');

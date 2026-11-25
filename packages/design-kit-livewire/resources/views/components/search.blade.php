@@ -94,8 +94,10 @@
     $categoryValue = (string) ($category ?? Bound::text($categoryBag) ?? '');
     $categoryOptions = [['value' => '', 'label' => (string) $categoryPlaceholder, 'disabled' => false], ...$categoryList];
     $categoryLabel = collect($categoryOptions)->firstWhere('value', $categoryValue)['label'] ?? $categoryPlaceholder;
-    $categoryLabelCompact = mb_strlen($categoryLabel) > 12
-        ? mb_substr($categoryLabel, 0, 12).'…'
+    // Label compact dipotong setelah 10 karakter, sama seperti kit React.
+    $categoryLabelMax = 10;
+    $categoryLabelCompact = mb_strlen($categoryLabel) > $categoryLabelMax
+        ? mb_substr($categoryLabel, 0, $categoryLabelMax).'…'
         : $categoryLabel;
     $categoryItems = array_map(fn (array $option) => [
         'label' => $option['label'],
@@ -128,10 +130,24 @@
             Bentuk reguler 39px: tombol kanan 37px dengan sisa 1px di atas dan
             bawah. Bentuk compact Navbar tetap 37px untuk seluruh ruas.
         --}}
+        {{--
+            Garis tipis tema gelap. Ring inset di pembungkus ini sendiri
+            tertutup latar anak-anaknya, jadi yang terlihat hanya sudutnya.
+            Karena itu ring dilukis di lapisan ::after di atas kategori + field
+            (tombol kanan tetap tanpa garis, sama seperti mode terang), dan
+            disembunyikan saat fokus supaya garis aksen fokus terlihat.
+        --}}
         <div
             role="search"
             @class([
-                'group flex items-stretch bg-search-category-surface',
+                'group relative flex items-stretch bg-search-category-surface',
+                "in-data-[theme=dark]:after:pointer-events-none in-data-[theme=dark]:after:absolute in-data-[theme=dark]:after:inset-y-0 in-data-[theme=dark]:after:left-0 in-data-[theme=dark]:after:content-['']",
+                'in-data-[theme=dark]:after:ring-1 in-data-[theme=dark]:after:ring-inset in-data-[theme=dark]:after:ring-gray-500 in-data-[theme=dark]:focus-within:after:ring-transparent',
+                ! $hasButton
+                    ? 'in-data-[theme=dark]:after:right-0 in-data-[theme=dark]:after:rounded-lg'
+                    : ($compactCategory
+                        ? 'in-data-[theme=dark]:after:right-[37px] in-data-[theme=dark]:after:rounded-l-lg'
+                        : 'in-data-[theme=dark]:after:right-[42px] in-data-[theme=dark]:after:rounded-l-lg'),
                 $compactCategory ? 'h-[37px] rounded-lg' : 'h-[39px] rounded-[10px]',
             ])
         >
@@ -162,30 +178,25 @@
                         :aria-label="$categoryPlaceholder.': '.$categoryLabel"
                         :title="$categoryLabel"
                         @class([
-                            'absolute inset-0 flex items-center justify-center text-sm outline-none disabled:cursor-not-allowed text-content disabled:text-content-disabled',
-                            'px-[5px] py-[2px]' => $compactCategory,
+                            'absolute inset-0 flex items-center px-2.5 text-sm outline-none disabled:cursor-not-allowed text-content disabled:text-content-disabled',
+                            'py-[2px]' => $compactCategory,
                         ])
                     >
-                        @if ($compactCategory)
-                            <span
-                                class="block max-w-[12ch] truncate text-center"
-                                x-text="ceplokLabel.length > 12 ? ceplokLabel.slice(0, 12) + '…' : ceplokLabel"
-                            >{{ $categoryLabelCompact }}</span>
-                            <span aria-hidden="true" @class(['absolute right-[5px] flex shrink-0 items-center', $disabled ? 'text-content-disabled' : 'text-content'])>
+                        <span class="flex w-full min-w-0 items-center gap-2.5">
+                            @if ($compactCategory)
+                                <span
+                                    class="min-w-0 flex-1 truncate text-center"
+                                    x-text="ceplokLabel.length > {{ $categoryLabelMax }} ? ceplokLabel.slice(0, {{ $categoryLabelMax }}) + '…' : ceplokLabel"
+                                >{{ $categoryLabelCompact }}</span>
+                            @else
+                                <span class="min-w-0 flex-1 truncate text-center" x-text="ceplokLabel">{{ $categoryLabel }}</span>
+                            @endif
+                            <span aria-hidden="true" @class(['flex shrink-0 items-center', $disabled ? 'text-content-disabled' : 'text-content'])>
                                 <svg class="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2 4.5 6 8.5l4-4" />
                                 </svg>
                             </span>
-                        @else
-                            <span class="flex min-w-0 max-w-[106px] items-center gap-[10px]">
-                                <span class="min-w-0 truncate" x-text="ceplokLabel">{{ $categoryLabel }}</span>
-                                <span aria-hidden="true" @class(['flex shrink-0 items-center', $disabled ? 'text-content-disabled' : 'text-content'])>
-                                    <svg class="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2 4.5 6 8.5l4-4" />
-                                    </svg>
-                                </span>
-                            </span>
-                        @endif
+                        </span>
                     </x-slot:trigger>
                 </x-ceplok::dropdown>
             </div>
@@ -224,6 +235,7 @@
             role="search"
             @class([
                 'flex items-center gap-2 rounded-lg border px-2.5 transition-colors',
+                'in-data-[theme=dark]:ring-1 in-data-[theme=dark]:ring-inset in-data-[theme=dark]:ring-gray-500',
                 $disabled ? 'border-field-border bg-field-disabled' : 'border-field-border bg-search-field-surface',
                 $size['field'],
                 $size['text'],

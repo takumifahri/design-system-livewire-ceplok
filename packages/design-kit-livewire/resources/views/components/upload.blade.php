@@ -82,12 +82,13 @@
     }
 
     // Bingkai dan nama berkas ikut berubah ketika file dipilih. Warna kosong
-    // #1F2A37 berasal langsung dari desain (sedikit berbeda dari gray-800).
+    // mode gelap dari token --color-upload-empty-surface, supaya consumer bisa
+    // menimpanya.
     $field = (new ClassToggle)->always('flex flex-1 items-stretch overflow-hidden rounded-lg border transition-colors '.$size['field']);
     $name = (new ClassToggle)->always('flex min-w-0 flex-1 items-center px-4 transition-colors '.$size['text']);
     if ($darkMode) {
-        $field->when('ceplokFile', false, 'border-gray-700', 'border-[#1F2A37]');
-        $name->when('ceplokFile', false, 'bg-gray-700', 'bg-[#1F2A37]');
+        $field->when('ceplokFile', false, 'border-gray-700', 'border-upload-empty-surface');
+        $name->when('ceplokFile', false, 'bg-gray-700', 'bg-upload-empty-surface');
         if ($disabled) {
             $name->always('text-gray-500');
         } else {

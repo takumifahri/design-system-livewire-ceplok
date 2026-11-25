@@ -7,7 +7,8 @@
     'items' => null, 'gap' => 'md', 'size' => 'default', 'platform' => 'desktop', 'decoration' => null, 'darkMode' => false, 'interactiveFeedback' => true, 'as' => 'div',
     'variant' => null, 'title' => null, 'description' => null, 'metadata' => [], 'icon' => null, 'iconContainerClass' => null,
     'badge' => null, 'actionLabel' => null, 'actionHref' => null, 'actionDisabled' => false, 'actionButtonSize' => null, 'actionWireClick' => null, 'actionClick' => null, 'actionAttributes' => [], 'href' => null,
-    'subject' => null, 'category' => null, 'timestamp' => null, 'views' => null, 'comments' => null, 'likes' => null, 'pinned' => true,
+    'target' => null, 'rel' => null,
+    'subject' => null, 'category' => null, 'timestamp' => null, 'views' => null, 'comments' => null, 'likes' => null, 'pinned' => true, 'pinAttributes' => [],
 ])
 
 @php
@@ -22,8 +23,9 @@
             'darkMode' => $darkMode, 'interactiveFeedback' => $interactiveFeedback, 'title' => $title, 'description' => $description, 'metadata' => $metadata,
             'icon' => $icon, 'iconContainerClass' => $iconContainerClass, 'badge' => $badge, 'actionLabel' => $actionLabel,
             'actionHref' => $actionHref, 'actionDisabled' => $actionDisabled, 'actionButtonSize' => $actionButtonSize, 'actionWireClick' => $actionWireClick, 'actionClick' => $actionClick, 'actionAttributes' => $actionAttributes,
-            'href' => $href, 'subject' => $subject, 'category' => $category, 'timestamp' => $timestamp,
-            'views' => $views, 'comments' => $comments, 'likes' => $likes, 'pinned' => $pinned,
+            'href' => $href, 'target' => $target, 'rel' => $rel, 'subject' => $subject, 'category' => $category, 'timestamp' => $timestamp,
+            'views' => $views, 'comments' => $comments, 'likes' => $likes, 'pinned' => $pinned, 'pinAttributes' => $pinAttributes,
+            'content' => Content::filled($slot) ? $slot : null,
         ]];
     }
 @endphp
@@ -41,7 +43,8 @@
                 $actionAttributes = new \Illuminate\View\ComponentAttributeBag($item['actionAttributes'] ?? []);
                 $itemHref = $item['href'] ?? null;
                 $itemAttributes = new \Illuminate\View\ComponentAttributeBag($item['attributes'] ?? []);
-                $hasItemClick = filled($itemAttributes->get('wire:click')) || filled($itemAttributes->get('x-on:click')) || filled($itemAttributes->get('@click'));
+                // Termasuk modifier, mis. wire:click.prevent atau x-on:click.stop.
+                $hasItemClick = count($itemAttributes->whereStartsWith(['wire:click', 'x-on:click', '@click'])->getAttributes()) > 0;
                 $cardOwnsAction = $variant === 'simple' && $actionDisabled && ! filled($itemHref) && ! $hasItemClick;
 
                 if ($cardOwnsAction && ! filled($itemHref)) {
@@ -53,7 +56,18 @@
                     || filled($item['actionClick'] ?? null)
                     || count($actionAttributes->getAttributes()) > 0
                 );
-                $itemTag = filled($itemHref) ? 'a' : ($hasDelegatedClick ? 'button' : 'article');
+                // Seperti React, item simple yang bisa diklik tanpa href dirender sebagai
+                // <button> supaya bisa dipakai lewat keyboard. Bila tombol aksi tampil,
+                // item tetap <article>: <button> di dalam <button> tidak sah di HTML.
+                $hasVisibleAction = ! $actionDisabled && filled($item['actionLabel'] ?? null);
+                $itemTag = filled($item['as'] ?? null)
+                    ? Prop::tag($item['as'], 'article', 'list-view', 'as')
+                    : (filled($itemHref)
+                    ? 'a'
+                    : ($variant === 'simple' && ($hasDelegatedClick || ($hasItemClick && ! $hasVisibleAction)) ? 'button' : 'article'));
+                // target/rel hanya untuk tautan; target _blank mendapat rel aman bawaan, seperti React.
+                $itemTarget = filled($itemHref) ? ($item['target'] ?? null) : null;
+                $itemRel = filled($itemHref) ? ($item['rel'] ?? ($itemTarget === '_blank' ? 'noreferrer noopener' : null)) : null;
 
                 if ($cardOwnsAction) {
                     $itemAttributes = $itemAttributes->merge($actionAttributes->getAttributes());
@@ -84,10 +98,15 @@
                         'xl' => ['container' => 'w-full max-w-[1028px] min-h-[149px] pr-5 pt-3 pb-3.5', 'decoration' => 'pl-9', 'headerGap' => 'gap-3.5', 'subject' => 'text-sm font-semibold', 'category' => 'text-sm font-normal', 'timestamp' => 'text-xs sm:text-sm', 'divider' => 'mt-2 mb-4', 'title' => 'text-xl font-semibold leading-snug', 'titleSpacing' => 'mb-4.5', 'metricsGap' => 'gap-5.5', 'metricsText' => 'text-sm font-medium', 'metricIcon' => 'size-4'],
                     ];
                     $current = $articleSizes[$articleSize];
+                    // Padanan onPin: atribut pada lencana pin menjadikannya tombol. Kliknya
+                    // tidak diteruskan ke kartu (stopPropagation di React).
+                    $pinAttributes = new \Illuminate\View\ComponentAttributeBag($item['pinAttributes'] ?? []);
+                    $pinInteractive = count($pinAttributes->getAttributes()) > 0;
                 @endphp
-                <{{ $itemTag }} @if ($itemHref) href="{{ $itemHref }}" @endif {{ $itemAttributes->class(['group relative flex flex-col justify-between overflow-hidden rounded-[8px] border-t border-r border-b border-border bg-surface text-content transition-all', 'data-[theme=dark]:border-gray-600 in-data-[theme=dark]:border-gray-600 data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:bg-gray-700', $current['container'], $current['decoration'], filled($itemHref) ? 'cursor-pointer hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]' : ''])->merge($itemDarkMode ? ['data-theme' => 'dark'] : []) }}>
+                {{-- Seperti React, article interaktif bila punya href atau klik sendiri. --}}
+                <{{ $itemTag }} @if ($itemHref) href="{{ $itemHref }}" @endif @if (filled($itemTarget)) target="{{ $itemTarget }}" @endif @if (filled($itemRel)) rel="{{ $itemRel }}" @endif {{ $itemAttributes->class(['group relative flex flex-col justify-between overflow-hidden rounded-[8px] border-t border-r border-b border-border bg-surface text-content transition-all', 'data-[theme=dark]:border-gray-600 in-data-[theme=dark]:border-gray-600 data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:bg-gray-700', $current['container'], $current['decoration'], $itemIsClickable ? 'cursor-pointer hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]' : ''])->merge($itemDarkMode ? ['data-theme' => 'dark'] : []) }}>
                     <span class="absolute inset-y-0 left-0 w-1 bg-primary-700" aria-hidden="true"></span>
-                    <div><div class="flex items-start justify-between {{ $current['headerGap'] }}"><div class="min-w-0 pr-2">@if (!empty($item['subject']))<div class="truncate text-content in-data-[theme=dark]:text-gray-100 {{ $current['subject'] }}">{{ $item['subject'] }}</div>@endif</div><div class="flex shrink-0 items-center gap-2.5 sm:gap-3">@if (!empty($item['category']) || !empty($item['timestamp']))<div class="text-left">@if (!empty($item['category']))<div class="leading-none text-content-muted in-data-[theme=dark]:text-gray-100 {{ $current['category'] }}">{{ $item['category'] }}</div>@endif @if (!empty($item['timestamp']))<div class="mt-1 leading-none text-content-muted in-data-[theme=dark]:text-gray-100 {{ $current['timestamp'] }}">{{ $item['timestamp'] }}</div>@endif</div>@endif @if ($item['pinned'] ?? true)<span class="flex size-6 shrink-0 items-center justify-center rounded-full border border-primary-100/80 bg-primary-50 text-gray-800 in-data-[theme=dark]:border-primary-800 in-data-[theme=dark]:bg-transparent in-data-[theme=dark]:text-primary-600"><x-ceplok-o-thumbtack class="size-4 shrink-0 -rotate-45" aria-hidden="true" /></span>@endif</div></div><div class="w-full border-b border-gray-200 in-data-[theme=dark]:border-gray-500 {{ $current['divider'] }}"></div><h4 class="text-content in-data-[theme=dark]:text-gray-200 {{ $current['title'] }} {{ $current['titleSpacing'] }}">{{ $title }}</h4></div>
+                    <div><div class="flex items-start justify-between {{ $current['headerGap'] }}"><div class="min-w-0 pr-2">@if (!empty($item['subject']))<div class="truncate text-content in-data-[theme=dark]:text-gray-100 {{ $current['subject'] }}">{{ $item['subject'] }}</div>@endif</div><div class="flex shrink-0 items-center gap-2.5 sm:gap-3">@if (!empty($item['category']) || !empty($item['timestamp']))<div class="text-left">@if (!empty($item['category']))<div class="leading-none text-content-muted in-data-[theme=dark]:text-gray-100 {{ $current['category'] }}">{{ $item['category'] }}</div>@endif @if (!empty($item['timestamp']))<div class="mt-1 leading-none text-content-muted in-data-[theme=dark]:text-gray-100 {{ $current['timestamp'] }}">{{ $item['timestamp'] }}</div>@endif</div>@endif @if ($item['pinned'] ?? true)<span @if ($pinInteractive) role="button" tabindex="0" x-on:click.stop x-on:keydown.enter.prevent.stop="$el.click()" x-on:keydown.space.prevent.stop="$el.click()" @endif {{ $pinAttributes->class(['flex size-6 shrink-0 items-center justify-center rounded-full border border-primary-100/80 bg-primary-50 text-gray-800 transition-colors in-data-[theme=dark]:border-primary-800 in-data-[theme=dark]:bg-transparent in-data-[theme=dark]:text-primary-600', 'cursor-pointer hover:bg-primary-100 in-data-[theme=dark]:hover:bg-primary-900/30' => $pinInteractive]) }}><x-ceplok-o-thumbtack class="size-4 shrink-0 -rotate-45" aria-hidden="true" /></span>@endif</div></div><div class="w-full border-b border-gray-200 in-data-[theme=dark]:border-gray-500 {{ $current['divider'] }}"></div><h4 class="text-content in-data-[theme=dark]:text-gray-200 {{ $current['title'] }} {{ $current['titleSpacing'] }}">{{ $title }}</h4>@if (Content::filled($item['content'] ?? null)){{ $item['content'] }}@endif</div>
                     @if (isset($item['views']) || isset($item['comments']) || isset($item['likes']))<div class="flex items-center justify-end select-none text-content-muted in-data-[theme=dark]:text-gray-300 {{ $current['metricsGap'] }} {{ $current['metricsText'] }}">@if (isset($item['views']))<span class="inline-flex items-center gap-1.5"><x-ceplok-o-eye class="{{ $current['metricIcon'] }} shrink-0" /><span>{{ $item['views'] }}</span></span>@endif @if (isset($item['comments']))<span class="inline-flex items-center gap-1.5"><x-ceplok-o-message-caption class="{{ $current['metricIcon'] }} shrink-0" /><span>{{ $item['comments'] }}</span></span>@endif @if (isset($item['likes']))<span class="inline-flex items-center gap-1.5"><x-ceplok-o-heart class="{{ $current['metricIcon'] }} shrink-0" /><span>{{ $item['likes'] }}</span></span>@endif</div>@endif
                 </{{ $itemTag }}>
             @else
@@ -110,20 +129,13 @@
                             'x-on:click' => $item['actionClick'],
                         ]);
                     }
-                    // Tautan aksi yang dinonaktifkan tidak bisa memakai `disabled`, jadi dikeluarkan dari urutan
-                    // fokus. Atributnya dipasang di sini karena direktif Blade di dalam tag komponen tidak dikompilasi.
-                    if (! $cardOwnsAction && $actionDisabled && filled($item['actionHref'] ?? null)) {
-                        $actionAttributes = $actionAttributes->merge([
-                            'aria-disabled' => 'true',
-                            'tabindex' => '-1',
-                        ]);
-                    }
 
                 @endphp
-                <{{ $itemTag }} @if ($itemHref) href="{{ $itemHref }}" @endif @if ($hasDelegatedClick) type="button" @endif {{ $itemAttributes->class(['group relative flex w-full items-center justify-between overflow-hidden rounded-lg border border-border bg-surface text-left text-content transition-all', 'data-[theme=dark]:border-gray-500 in-data-[theme=dark]:border-gray-500 data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:bg-gray-700', $current['container'], $itemDecoration ? $current['decoration'] : '', $itemIsClickable ? 'cursor-pointer' : '', $itemIsClickable && $itemInteractiveFeedback ? 'hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]' : ''])->merge($itemDarkMode ? ['data-theme' => 'dark'] : []) }}>
+                <{{ $itemTag }} @if ($itemHref) href="{{ $itemHref }}" @endif @if (filled($itemTarget)) target="{{ $itemTarget }}" @endif @if (filled($itemRel)) rel="{{ $itemRel }}" @endif @if ($itemTag === 'button') type="button" @endif {{ $itemAttributes->class(['group relative flex w-full items-center justify-between overflow-hidden rounded-lg border border-border bg-surface text-left text-content transition-all', 'data-[theme=dark]:border-gray-500 in-data-[theme=dark]:border-gray-500 data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:bg-gray-700', $current['container'], $itemDecoration ? $current['decoration'] : '', $itemIsClickable ? 'cursor-pointer' : '', $itemIsClickable && $itemInteractiveFeedback ? 'hover:border-primary-400/80 hover:shadow-soft active:scale-[0.998]' : ''])->merge($itemDarkMode ? ['data-theme' => 'dark'] : []) }}>
                     @if ($itemDecoration)<span class="absolute inset-y-0 left-0 w-1 bg-primary-700 sm:w-1.5" aria-hidden="true"></span>@endif
-                    <div class="flex min-w-0 flex-1 items-center gap-3.5 sm:gap-4">@if (($item['icon'] ?? null) !== false)<div @class(['flex shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-700 transition-colors', 'in-data-[theme=dark]:border in-data-[theme=dark]:border-gray-700 in-data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:text-gray-200', $current['iconBox'], $item['iconContainerClass'] ?? null])>@if (!empty($item['icon'])){!! Content::icon($item['icon']) !!}@else<x-ceplok-o-file-lines class="{{ $current['icon'] }} shrink-0" aria-hidden="true" />@endif</div>@endif<div class="min-w-0 flex-1"><h4 class="truncate leading-snug text-content in-data-[theme=dark]:text-white {{ $current['title'] }}">{{ $title }}</h4>@if (filled($item['description'] ?? null))<div class="mt-0.5 truncate leading-normal text-content-muted in-data-[theme=dark]:text-gray-400 {{ $current['description'] }}">{{ $item['description'] }}</div>@endif @if (!empty($item['metadata']))<div class="mt-0.5 flex flex-wrap items-center gap-1.5 leading-normal text-content-muted in-data-[theme=dark]:text-gray-400 {{ $current['description'] }}">@foreach ($item['metadata'] as $index => $meta)<span class="inline-flex items-center gap-1.5">@if ($index)<span class="select-none text-content-muted/60 in-data-[theme=dark]:text-gray-400/60" aria-hidden="true">&middot;</span>@endif<span>{{ $meta }}</span></span>@endforeach</div>@endif @if ($hasBadge)<div class="mt-2 flex items-center">@if (is_string($badge))<x-ceplok::badge variant="success" size="sm" :dark-mode="$itemDarkMode">{{ $badge }}</x-ceplok::badge>@else{{ $badge }}@endif</div>@endif</div></div>
-                    @if (! $cardOwnsAction && filled($item['actionLabel'] ?? null))<div class="flex shrink-0 items-center pl-2"><x-ceplok::button :size="$item['actionButtonSize'] ?? $current['button']" :href="$item['actionHref'] ?? null" :wire-click="$item['actionWireClick'] ?? null" :disabled="! filled($item['actionHref'] ?? null) && $actionDisabled" @class(['pointer-events-none opacity-50' => $actionDisabled && filled($item['actionHref'] ?? null)]) :attributes="$actionAttributes">{{ $item['actionLabel'] }}</x-ceplok::button></div>@endif
+                    <div class="flex min-w-0 flex-1 items-center gap-3.5 sm:gap-4">@if (($item['icon'] ?? null) !== false)<div @class(['flex shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-700 transition-colors', 'in-data-[theme=dark]:border in-data-[theme=dark]:border-gray-700 in-data-[theme=dark]:bg-gray-700 in-data-[theme=dark]:text-gray-200', $current['iconBox'], $item['iconContainerClass'] ?? null])>@if (!empty($item['icon'])){!! Content::icon($item['icon']) !!}@else<x-ceplok-o-file-lines class="{{ $current['icon'] }} shrink-0" aria-hidden="true" />@endif</div>@endif<div class="min-w-0 flex-1"><h4 class="truncate leading-snug text-content in-data-[theme=dark]:text-white {{ $current['title'] }}">{{ $title }}</h4>@if (filled($item['description'] ?? null))<div class="mt-0.5 truncate leading-normal text-content-muted in-data-[theme=dark]:text-gray-400 {{ $current['description'] }}">{{ $item['description'] }}</div>@endif @if (!empty($item['metadata']))<div class="mt-0.5 flex flex-wrap items-center gap-1.5 leading-normal text-content-muted in-data-[theme=dark]:text-gray-400 {{ $current['description'] }}">@foreach ($item['metadata'] as $index => $meta)<span class="inline-flex items-center gap-1.5">@if ($index)<span class="select-none text-content-muted/60 in-data-[theme=dark]:text-gray-400/60" aria-hidden="true">&middot;</span>@endif<span>{{ $meta }}</span></span>@endforeach</div>@endif @if ($hasBadge)<div class="mt-2 flex items-center">@if (is_string($badge))<x-ceplok::badge variant="success" size="sm" :dark-mode="$itemDarkMode">{{ $badge }}</x-ceplok::badge>@else{{ $badge }}@endif</div>@endif @if (Content::filled($item['content'] ?? null)){{ $item['content'] }}@endif</div></div>
+                    {{-- Seperti kit React, action-disabled selalu menyembunyikan tombol aksi; aksinya pindah ke kartu bila kartu belum punya href/klik sendiri. --}}
+                    @if (! $actionDisabled && filled($item['actionLabel'] ?? null))<div class="flex shrink-0 items-center pl-2"><x-ceplok::button :size="$item['actionButtonSize'] ?? $current['button']" :href="$item['actionHref'] ?? null" :wire-click="$item['actionWireClick'] ?? null" :attributes="$actionAttributes">{{ $item['actionLabel'] }}</x-ceplok::button></div>@endif
                 </{{ $itemTag }}>
             @endif
         @endforeach
