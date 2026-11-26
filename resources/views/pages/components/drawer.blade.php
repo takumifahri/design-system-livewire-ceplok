@@ -1,146 +1,158 @@
 @php
     use App\Docs\Theme;
+    use CeplokUi\DesignKit\Support\Content;
 
+    // Sama dengan isi preview Variants di DrawerPage kit React.
     $menuItems = [
         ['label' => 'Menu 1', 'icon' => 'ceplok-s-chart-pie'],
-        ['label' => 'Menu 2', 'icon' => 'ceplok-s-file-lines', 'expanded' => false, 'children' => [['label' => 'Sub menu 1'], ['label' => 'Sub menu 2']]],
-        ['label' => 'Menu 3', 'icon' => 'ceplok-s-cart', 'active' => true, 'expanded' => true, 'children' => [['label' => 'Sub menu 1', 'active' => true], ['label' => 'Sub menu 2']]],
+        ['label' => 'Menu 2', 'icon' => 'ceplok-s-file-lines', 'expanded' => false, 'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']]],
+        ['label' => 'Menu 3', 'icon' => 'ceplok-s-cart', 'active' => true, 'expanded' => true, 'children' => [['label' => 'sub menu 1', 'active' => true], ['label' => 'sub menu 2', 'active' => false]]],
         ['label' => 'Menu 4', 'icon' => 'ceplok-s-inbox'],
-        ['label' => 'Menu 5', 'icon' => 'ceplok-s-lock', 'expanded' => false, 'children' => [['label' => 'Sub menu 1'], ['label' => 'Sub menu 2']]],
-    ];
-    $drawerProps = [
-        ['open', 'bool', 'false', 'Status buka Drawer; mendukung wire:model dan x-model.'],
-        ['position', 'right | left | top | bottom', 'right', 'Arah panel muncul.'],
-        ['size', 's | m | l | xl | full', 'm', 'Ukuran panel.'],
-        ['eyebrow', 'string', 'null', 'Label di header otomatis.'],
-        ['header', 'Htmlable', 'null', 'Konten header kustom.'],
-        ['items', 'array', 'null', 'Menu dengan icon, badge, href, active, disabled, attributes, serta children.'],
-        ['theme', 'primary | purple | blue | gray', 'primary', 'Warna item aktif.'],
-        ['font', 'lato | inter | arial', 'lato', 'Keluarga font panel dan seluruh item Drawer.'],
-        ['footer', 'Htmlable', 'null', 'Konten footer.'],
-        ['dark-mode', 'bool', 'false', 'Tema gelap.'],
+        ['label' => 'Menu 5', 'icon' => 'ceplok-s-lock', 'expanded' => false, 'children' => [['label' => 'sub menu 1'], ['label' => 'sub menu 2']]],
     ];
 
-    // Contoh di halaman ini mengikuti mode docs: bingkai tiruan memakai varian
-    // dark: dan Playground mulai dari mode docs. Bagian Dark mode tetap gelap di
-    // kedua mode (lihat App\Docs\Theme).
+    $drawerProps = [
+        ['open', 'bool', 'false', 'Status buka Drawer; mendukung wire:model dan x-model.'],
+        ['wire:close', 'event', '—', 'Dipicu saat Drawer ditutup lewat tombol X, backdrop, Esc, atau penutupan dialog lainnya; padanan onClose.'],
+        ['position', '"right" | "left" | "top" | "bottom"', 'right', 'Arah kemunculan panel Drawer pada layar.'],
+        ['size', '"s" | "m" | "l" | "xl" | "full"', 'm', 'Ukuran lebar (atau tinggi pada top/bottom) dari panel Drawer.'],
+        ['close-on-overlay-click', 'bool', 'true', 'Jika true, mengklik backdrop akan menutup Drawer.'],
+        ['close-on-esc', 'bool', 'true', 'Jika true, menekan tombol ESC akan menutup Drawer.'],
+        ['eyebrow', 'string', 'null', 'Label kapital bagian atas header (mis. "MENU").'],
+        ['header', 'Htmlable | slot', 'null', 'Elemen kustom untuk konten header.'],
+        ['close-label', 'string', 'Tutup drawer', 'Aria-label untuk tombol tutup di header.'],
+        ['show-close-button', 'bool', 'true', 'Menampilkan atau menyembunyikan tombol ikon X di header.'],
+        ['items', 'array', 'null', 'Daftar konfigurasi menu item; lihat tabel Item di bawah.'],
+        ['after-items', 'slot', 'null', 'Konten tambahan setelah seluruh items, di dalam body yang sama; padanan afterItems.'],
+        ['wire:expanded-change', 'event', '—', 'Dipicu saat pengguna membuka atau menutup submenu, dengan detail.expanded dan detail.label; padanan onExpandedChange.'],
+        ['theme', '"primary" | "purple" | "blue" | "gray"', 'primary', 'Skema warna item yang aktif.'],
+        ['dark-mode', 'bool', 'false', 'Mengaktifkan tema gelap (latar gray-800, teks gray-50).'],
+        ['footer', 'Htmlable | slot', 'null', 'Konten kaki Drawer, dipisah garis di bagian bawah.'],
+        ['font', '"lato" | "inter" | "arial"', 'lato', 'Keluarga font panel dan seluruh item Drawer.'],
+        ['preview', 'bool', 'false', 'Merender panel sebagai <div> statis di dalam wadahnya (bukan <dialog>), untuk pratinjau dan dokumentasi.'],
+        ['slot', 'slot', '—', 'Konten kustom; menggantikan header dan items bawaan.'],
+    ];
+
+    $itemProps = [
+        ['icon', 'Htmlable | string', 'null', 'Ikon di sisi kiri label menu.'],
+        ['label', 'string', 'required', 'Judul / teks item menu.'],
+        ['active', 'bool', 'false', 'Menandai status aktif dengan latar pill berwarna; otomatis aktif bila ada child aktif.'],
+        ['defaultExpanded', 'bool', 'true bila ada children', 'Status submenu saat render pertama.'],
+        ['expanded', 'bool', 'null', 'Status submenu terkendali: nilai awal, dan state ikut berubah bila server merender nilai lain. Gunakan bersama wire:expanded-change.'],
+        ['collapsible', 'bool', 'false', 'Menampilkan ikon chevron tanda dropdown meski tidak memiliki anak.'],
+        ['theme', '"primary" | "purple" | "blue" | "gray"', 'theme Drawer', 'Skema warna sorotan saat item status active.'],
+        ['href', 'string', 'null', 'Link tujuan navigasi. Item yang memiliki children berperan sebagai disclosure, sehingga href diabaikan.'],
+        ['target / rel', 'string', 'null', 'Atribut tautan untuk href, mis. target="_blank".'],
+        ['badge', 'Htmlable | string', 'null', 'Elemen badge di sisi kanan label.'],
+        ['disabled', 'bool', 'false', 'Menonaktifkan interaksi dan menampilkan status nonaktif.'],
+        ['attributes', 'array', '[]', "Atribut tambahan pada item, mis. ['wire:click' => 'buka', 'x-on:click' => 'close()']; padanan onClick. Mengklik item tidak menutup Drawer dengan sendirinya."],
+        ['children', 'array', 'null', 'Daftar sub-item ter-indentasi di bawah item; lihat tabel Sub-item.'],
+    ];
+
+    $subItemProps = [
+        ['label', 'string', 'required', 'Judul / teks sub-item menu.'],
+        ['active', 'bool', '—', 'Menandai status aktif. Bila tidak diisi, sub-item yang diklik menjadi aktif.'],
+        ['href', 'string', 'null', 'Link tujuan navigasi.'],
+        ['target / rel', 'string', 'null', 'Atribut tautan untuk href.'],
+        ['disabled', 'bool', 'false', 'Menonaktifkan interaksi dan menampilkan status nonaktif.'],
+        ['attributes', 'array', '[]', 'Atribut tambahan pada sub-item; padanan onClick.'],
+    ];
+
+    $propTables = [
+        ['Drawer Props', $drawerProps],
+        ['Item Props (items)', $itemProps],
+        ['Sub-item Props (children)', $subItemProps],
+    ];
+
+    // Kerangka layar mobile untuk Variants dan Dark mode — padanan
+    // VariantPreview, topbar, DrawerTrigger, dan DummyPageContent di
+    // DrawerPage kit React. `stay` = section Dark mode (topbar gray-900).
+    $previews = fn (bool $dark, bool $stay) => [
+        ['title' => '1. Drawer Terbuka (Open Drawer)', 'description' => 'Drawer muncul dari sisi kanan secara mengambang (overlay) di atas tampilan layar mobile.', 'open' => true, 'dark' => $dark, 'stay' => $stay],
+        ['title' => '2. Drawer Tertutup (Closed State / Page View)', 'description' => 'Tampilan utama layar mobile dengan topbar header dan icon hamburger drawer di bagian kanan.', 'open' => false, 'dark' => $dark, 'stay' => $stay],
+    ];
+
+    // Contoh di halaman ini mengikuti mode docs: bingkai preview dan
+    // Playground mulai dari mode docs. Bagian Dark mode tetap gelap di kedua
+    // mode (lihat App\Docs\Theme).
     $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Drawer">
-    <x-docs.page title="Drawer" description="Drawer adalah panel navigasi off-canvas di tepi layar untuk menampilkan menu dan konten sekunder tanpa meninggalkan konteks utama." :toc="['variants' => 'Variants', 'dark-mode' => 'Dark mode', 'menu' => 'Menu', 'playground' => 'Playground', 'penggunaan' => 'Penggunaan', 'livewire' => 'Livewire', 'properties' => 'Properties']">
-        <x-docs.section id="variants" title="Variants">
-            <style>
-                #variants .ds-scroll-x { height: 600px; }
-                #variants .absolute.inset-y-0.right-0 { width: 320px; }
-                #variants .ds-scroll-x .size-7.bg-primary-600 {
-                    background-color: transparent;
-                    background-image: url('/images/ceplok.svg');
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-size: contain;
-                    color: transparent;
-                }
-                @media (min-width: 1024px) {
-                    #variants .ds-scroll-x { overflow-x: visible; }
-                }
-                @media (max-width: 1023px) {
-                    #variants .ds-scroll-x { justify-content: flex-start; overflow-x: auto; }
-                    #variants .ds-scroll-x > div { max-width: none; min-width: 420px; }
-                }
-            </style>
-            @if (true)
-            <div class="mt-3">
-                <p class="mb-4 max-w-2xl text-body-sm text-gray-500 dark:text-gray-400">Drawer dapat berada dalam kondisi <strong>Terbuka (Open Drawer)</strong> saat dipanggil oleh pengguna, maupun <strong>Tertutup (Closed Drawer)</strong> dengan pemicu tombol hamburger menu pada header halaman.</p>
+    <x-docs.page
+        eyebrow="Components · Drawer"
+        title="Drawer"
+        description="Drawer adalah panel navigasi off-canvas di tepi layar yang slide-in untuk menampilkan menu navigasi dan submenu tanpa meninggalkan konteks utama halaman."
+        :toc="['variants' => 'Variants', 'dark-mode' => 'Dark mode', 'menu' => 'Menu', 'playground' => 'Playground', 'penggunaan' => 'Penggunaan', 'livewire' => 'Livewire', 'properties' => 'Properties']"
+    >
+        {{--
+            Variants dan Dark mode memakai kerangka yang sama, jadi markupnya ditulis
+            sekali di sini. Section Dark mode sama dengan x-docs.mode-section:
+            selalu gelap di kedua mode docs. Seperti preview React, tombol X pada
+            Drawer terbuka hanya tampilan: kliknya dihentikan di pembungkus.
+        --}}
+        @foreach ([
+            ['id' => 'variants', 'title' => 'Variants', 'cards' => $previews($docsDark, false), 'lead' => 'Drawer dapat berada dalam kondisi <strong>Terbuka (Open Drawer)</strong> saat dipanggil oleh pengguna, maupun <strong>Tertutup (Closed Drawer)</strong> dengan pemicu tombol hamburger menu pada header halaman.'],
+            ['id' => 'dark-mode', 'title' => 'Dark mode', 'cards' => $previews(true, true), 'lead' => 'Tampilan Drawer dalam mode gelap (<span class="text-primary-500 dark:text-primary-400">dark-mode</span>), menyesuaikan warna latar belakang, teks, dan status aktif.'],
+        ] as $section)
+            <x-docs.section :id="$section['id']" :title="$section['title']">
+                <x-docs.lead>{!! $section['lead'] !!}</x-docs.lead>
                 <div class="grid gap-6 lg:grid-cols-2">
-                    <article class="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs dark:border-gray-700 dark:bg-gray-800">
-                        <div class="shrink-0 border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800"><h3 class="text-sm font-bold text-gray-900 dark:text-white">1. Drawer Terbuka (Open Drawer)</h3><p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Drawer muncul dari sisi kanan secara mengambang (overlay) di atas tampilan layar mobile.</p></div>
-                        <div class="ds-scroll-x flex h-[500px] w-full items-center justify-center overflow-x-auto bg-gray-50/80 py-4 dark:bg-gray-900">
-                            <div class="relative flex h-full w-[420px] max-w-full shrink-0 flex-col overflow-hidden rounded-none border-x border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-                                <div class="flex h-full w-full flex-col"><div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3.5 dark:border-gray-700 dark:bg-gray-800"><div class="flex items-center gap-2.5"><div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-600 text-xs font-bold text-white">C</div><span class="text-base font-bold tracking-tight text-gray-900 dark:text-white">CEPLOK</span></div><button type="button" aria-label="Buka menu drawer" class="inline-flex shrink-0 items-center justify-center rounded-lg p-1.5 text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"><x-ceplok-o-bars-from-left class="size-6" /></button></div><div class="min-w-0 flex-1 overflow-y-auto bg-white p-6 dark:bg-gray-800"><h4 class="mb-4 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Halaman Beranda</h4><p class="text-sm text-gray-500 dark:text-gray-400">Anda sedang berada di halaman utama Halaman Beranda.</p></div></div>
-                                <div class="pointer-events-none absolute inset-0 z-10 bg-gray-900/20 dark:bg-gray-900/40"></div>
-                                <div class="absolute inset-y-0 right-0 z-20 flex h-full w-[250px] flex-col border-l border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800"><div class="flex shrink-0 items-center justify-between gap-4 px-5 pb-2 pt-4"><span class="text-base font-semibold tracking-wider text-gray-500 dark:text-gray-400">MENU</span><button type="button" aria-label="Tutup drawer" class="-mr-2 ml-auto inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"><x-ceplok-o-close class="size-[18px]" /></button></div><div class="flex-1 space-y-1 overflow-y-auto p-3">@foreach ($menuItems as $item)<div class="w-full"><div @class(['group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-base font-medium transition-all', !empty($item['active']) ? 'bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-white' : 'text-gray-900 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-50 dark:hover:bg-gray-700 dark:hover:text-white'])><div class="flex min-w-0 flex-1 items-center gap-3">@if (!empty($item['icon']))<span @class(['flex size-[18px] shrink-0 items-center justify-center', !empty($item['active']) ? 'text-blue-600 dark:text-white' : 'text-gray-500 dark:text-gray-400'])>{!! \CeplokUi\DesignKit\Support\Content::icon($item['icon']) !!}</span>@endif<span class="truncate">{{ $item['label'] }}</span></div>@if (!empty($item['children']))@if (!empty($item['expanded']))<x-ceplok-o-chevron-up class="size-[18px] shrink-0" />@else<x-ceplok-o-chevron-down class="size-[18px] shrink-0" />@endif@endif</div>@if (!empty($item['children']) && !empty($item['expanded']))<div class="mt-1 space-y-1 pl-8">@foreach ($item['children'] as $child)<div @class(['rounded-lg px-3 py-2 text-base font-medium', !empty($child['active']) ? 'bg-blue-50/70 text-blue-600 dark:bg-gray-700/50 dark:text-white' : 'text-gray-900 dark:text-gray-50'])>{{ $child['label'] }}</div>@endforeach</div>@endif</div>@endforeach</div></div>
+                    @foreach ($section['cards'] as $card)
+                        @php($dark = $card['dark'])
+                        <article @class(['flex flex-col overflow-hidden rounded-xl border shadow-xs', $dark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'])>
+                            <div @class(['shrink-0 border-b px-4 py-3', $dark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'])>
+                                <h3 @class(['text-sm font-bold', $dark ? 'text-white' : 'text-gray-900'])>{{ $card['title'] }}</h3>
+                                <p @class(['mt-1 text-xs leading-5', $dark ? 'text-gray-400' : 'text-gray-500'])>{{ $card['description'] }}</p>
                             </div>
-                        </div>
-                    </article>
-                    <article class="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs dark:border-gray-700 dark:bg-gray-800">
-                        <div class="shrink-0 border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800"><h3 class="text-sm font-bold text-gray-900 dark:text-white">2. Drawer Tertutup (Closed State / Page View)</h3><p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Tampilan utama layar mobile dengan topbar header dan icon hamburger drawer di bagian kanan.</p></div>
-                        <div class="ds-scroll-x flex h-[500px] w-full items-center justify-center overflow-x-auto bg-gray-50/80 py-4 dark:bg-gray-900"><div class="relative flex h-full w-[420px] max-w-full shrink-0 flex-col overflow-hidden rounded-none border-x border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800"><div class="flex h-full w-full flex-col"><div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3.5 dark:border-gray-700 dark:bg-gray-800"><div class="flex items-center gap-2.5"><div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-600 text-xs font-bold text-white">C</div><span class="text-base font-bold tracking-tight text-gray-900 dark:text-white">CEPLOK</span></div><button type="button" aria-label="Buka menu drawer" class="inline-flex shrink-0 items-center justify-center rounded-lg p-1.5 text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"><x-ceplok-o-bars-from-left class="size-6" /></button></div><div class="min-w-0 flex-1 overflow-y-auto bg-white p-6 dark:bg-gray-800"><h4 class="mb-4 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Halaman Beranda</h4><p class="text-sm text-gray-500 dark:text-gray-400">Anda sedang berada di halaman utama Halaman Beranda.</p></div></div></div></div>
-                    </article>
+                            <div @class(['ds-scroll-x h-[500px] w-full overflow-x-auto py-4', $dark ? 'bg-gray-900' : 'bg-gray-50/80'])>
+                                <div x-data="{ drawerOpen: @js($card['open']) }" x-on:click.capture="$event.target.closest('[data-preview] > div:first-child button') && $event.stopPropagation()" style="min-width: 420px" @class(['relative mx-auto flex h-full w-[420px] flex-col overflow-hidden rounded-none border-x shadow-md', $dark ? 'border-white/10 bg-gray-800 shadow-2xl' : 'border-gray-200 bg-white'])>
+                                    <div class="flex h-full w-full flex-col">
+                                        <div @class(['flex shrink-0 items-center justify-between border-b px-4 py-3.5', $card['stay'] ? 'border-gray-800 bg-gray-900' : ($dark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white')])>
+                                            <div class="flex items-center gap-2.5">
+                                                <img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-7 shrink-0 object-contain">
+                                                <span @class(['text-base font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>CEPLOK</span>
+                                            </div>
+                                            {{-- Padanan DrawerTrigger di kit React. --}}
+                                            <button type="button" aria-label="Buka menu drawer" @class(['inline-flex shrink-0 items-center justify-center rounded-lg p-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600', $dark ? 'text-gray-200 hover:bg-gray-700 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'])><x-ceplok-o-bars-from-left class="size-6" aria-hidden="true" /></button>
+                                        </div>
+                                        <div @class(['min-w-0 flex-1 overflow-y-auto p-6', $dark ? 'bg-gray-600' : 'bg-white'])>
+                                            <h4 @class(['mb-4 text-xl font-bold tracking-tight', $dark ? 'text-white' : 'text-gray-900'])>Halaman Beranda</h4>
+                                            <p @class(['text-sm', $dark ? 'text-gray-400' : 'text-gray-500'])>Anda sedang berada di halaman utama Halaman Beranda.</p>
+                                        </div>
+                                    </div>
+                                    @if ($card['open'])
+                                        <div x-show="drawerOpen" @class(['pointer-events-none absolute inset-0 z-10', $dark ? 'bg-gray-900/40' : 'bg-gray-900/20'])></div>
+                                        <x-ceplok::drawer preview x-model="drawerOpen" eyebrow="MENU" class="z-20" style="width: 250px" :dark-mode="$dark" :items="$menuItems" />
+                                    @endif
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
                 </div>
-            </div>
-            @endif
-
-            @if (false)
-            <x-docs.lead>Drawer dapat berada dalam kondisi <strong>Terbuka (Open Drawer)</strong> saat dipanggil oleh pengguna, maupun <strong>Tertutup (Closed Drawer)</strong> dengan pemicu tombol hamburger menu pada header halaman.</x-docs.lead>
-            <style>
-                #variants .ds-scroll-x { height: 432px; overflow-y: hidden; }
-                #variants .ds-scroll-x > div { transform: scale(.6); transform-origin: center; }
-            </style>
-            <div class="grid gap-6 lg:grid-cols-2">
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
-                    <div class="border-b border-gray-200 px-4 py-3"><h3 class="text-sm font-bold text-gray-900 dark:text-white">1. Drawer Terbuka (Open Drawer)</h3><p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Drawer muncul dari sisi kanan secara mengambang (overlay) di atas tampilan layar mobile.</p></div>
-                    <div class="ds-scroll-x flex h-[720px] items-center justify-center overflow-x-auto bg-gray-50 px-5 py-6"><div class="relative flex h-[700px] w-[628px] shrink-0 overflow-hidden border-x border-gray-200 bg-white shadow-md"><div class="w-full"><div class="flex h-[96px] items-center border-b border-gray-200 px-6"><div class="flex size-10 items-center justify-center rounded-lg bg-primary-600 text-lg font-semibold text-white">C</div><span class="ml-4 text-xl font-bold text-gray-900 dark:text-white">CEPLOK</span></div><div class="p-9"><h4 class="text-2xl font-bold">Halaman Beranda</h4><p class="mt-6 text-base text-gray-500 dark:text-gray-400">Anda sedang berada di halaman utama Halaman Beranda.</p></div></div><div class="absolute inset-0 bg-gray-900/20"></div><div class="absolute inset-y-0 right-0 flex w-[375px] flex-col border-l border-gray-200 bg-white shadow-2xl"><div class="flex items-center justify-between px-7 pb-3 pt-7"><span class="text-xl font-semibold tracking-wider text-gray-500 dark:text-gray-400">MENU</span><x-ceplok-o-close class="size-6 text-gray-500 dark:text-gray-400" /></div><div class="space-y-1 p-5 text-gray-600">@foreach ($menuItems as $item)<div @class(['rounded-lg px-3 py-2.5 text-base font-medium', !empty($item['active']) ? 'bg-blue-50 text-blue-600' : 'text-gray-900'])><div class="flex items-center gap-3">@if (!empty($item['icon']))<span @class(['flex size-[18px] items-center justify-center', !empty($item['active']) ? 'text-blue-600' : 'text-gray-500'])>{!! \CeplokUi\DesignKit\Support\Content::icon($item['icon']) !!}</span>@endif<span>{{ $item['label'] }}</span>@if (!empty($item['children']))@if (!empty($item['expanded']))<x-ceplok-o-chevron-up class="ml-auto size-[18px]" />@else<x-ceplok-o-chevron-down class="ml-auto size-[18px]" />@endif@endif</div>@if (!empty($item['children']) && !empty($item['expanded']))<div class="mt-1 space-y-1 pl-8 text-base font-medium text-gray-900 dark:text-white">@foreach ($item['children'] as $child)<div @class(['rounded-lg px-3 py-2', !empty($child['active']) ? 'bg-blue-50 text-blue-600' : ''])>{{ $child['label'] }}</div>@endforeach</div>@endif</div>@endforeach</div></div></div></div>
-                </article>
-                <article class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
-                    <div class="border-b border-gray-200 px-4 py-3"><h3 class="text-sm font-bold text-gray-900 dark:text-white">2. Drawer Tertutup (Closed State / Page View)</h3><p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Tampilan utama layar mobile dengan topbar header dan icon hamburger drawer di bagian kanan.</p></div>
-                    <div class="ds-scroll-x flex h-[720px] items-center justify-center overflow-x-auto bg-gray-50 px-5 py-6"><div class="flex h-[700px] w-[628px] shrink-0 flex-col border-x border-gray-200 bg-white shadow-md"><div class="flex h-[96px] items-center border-b border-gray-200 px-6"><div class="flex size-10 items-center justify-center rounded-lg bg-primary-600 text-lg font-semibold text-white">C</div><span class="ml-4 text-xl font-bold text-gray-900 dark:text-white">CEPLOK</span><x-ceplok-o-bars-from-left class="ml-auto size-7 text-gray-500 dark:text-gray-400" /></div><div class="p-9"><h4 class="text-2xl font-bold">Halaman Beranda</h4><p class="mt-6 text-base text-gray-500 dark:text-gray-400">Anda sedang berada di halaman utama Halaman Beranda.</p></div></div></div>
-                </article>
-            </div>
-            @endif
-        </x-docs.section>
-
-        <x-docs.mode-section>
-            <x-slot:lead>Tampilan yang sama tersedia pada dark mode; latar, teks, border, dan state aktif menyesuaikan secara konsisten.</x-slot:lead>
-            <style>
-                #dark-mode .ds-scroll-x { height: 600px; }
-                #dark-mode .ds-scroll-x > div { height: 100%; width: 420px; max-width: 100%; }
-                #dark-mode .absolute.inset-y-0.right-0 { z-index: 20; width: 320px; }
-                #dark-mode .ds-scroll-x > div > .w-full > div:first-child > img { display: none; }
-                #dark-mode .ds-scroll-x > div > .w-full > div:first-child::before {
-                    display: flex;
-                    width: 1.75rem;
-                    height: 1.75rem;
-                    flex: none;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: .5rem;
-                    background: transparent url('/images/ceplok.svg') center / contain no-repeat;
-                    color: transparent;
-                    content: '';
-                    font-size: .75rem;
-                    font-weight: 700;
-                }
-                #dark-mode .ds-scroll-x > div > .w-full > div:first-child > span { margin-left: .625rem; }
-                @media (min-width: 1024px) {
-                    #dark-mode .ds-scroll-x { overflow-x: visible; }
-                }
-                @media (max-width: 1023px) {
-                    #dark-mode .ds-scroll-x { justify-content: flex-start; overflow-x: auto; }
-                    #dark-mode .ds-scroll-x > div { max-width: none; min-width: 420px; }
-                }
-            </style>
-            <div class="grid gap-6 lg:grid-cols-2">
-                <article class="overflow-hidden rounded-xl border border-gray-800 bg-gray-900 shadow-xs">
-                    <div class="border-b border-gray-800 px-4 py-3"><h3 class="text-sm font-bold text-white">1. Drawer Terbuka (Dark Mode)</h3><p class="mt-1 text-xs leading-5 text-gray-400">Panel overlay dengan warna gelap.</p></div>
-                    <div class="ds-scroll-x flex h-[520px] items-center justify-center overflow-x-auto bg-gray-950 px-6 py-4"><div class="relative flex h-[480px] w-[420px] shrink-0 overflow-hidden border-x border-gray-700 bg-gray-800 shadow-2xl"><div class="w-full"><div class="flex h-[72px] items-center border-b border-gray-700 px-4"><img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-8 object-contain"><span class="ml-3 text-base font-bold text-white">CEPLOK</span></div><div class="text-gray-300" style="padding: 28px"><h4 class="text-lg font-bold text-white">Halaman Beranda</h4><p class="mt-4 text-xs text-gray-400">Anda sedang berada di halaman utama.</p></div></div><div class="absolute inset-0 bg-gray-900/50"></div><div class="absolute inset-y-0 right-0 flex w-[260px] flex-col border-l border-gray-700 bg-gray-800 font-sans"><div class="flex items-center justify-between px-5 pb-2 pt-4"><span class="text-base font-semibold tracking-wider text-gray-500 dark:text-gray-400">MENU</span><x-ceplok-o-close class="size-5 text-gray-500 dark:text-gray-400" /></div><div class="space-y-1 p-3 text-xs text-gray-400">@foreach ($menuItems as $item)<div @class(['rounded-lg px-3 py-2.5 text-base font-medium', !empty($item['active']) ? 'bg-gray-700 text-white' : 'text-gray-50'])><div class="flex items-center gap-3">@if (!empty($item['icon']))<span @class(['flex size-[18px] items-center justify-center', !empty($item['active']) ? 'text-white' : 'text-gray-400'])>{!! \CeplokUi\DesignKit\Support\Content::icon($item['icon']) !!}</span>@endif<span>{{ $item['label'] }}</span>@if (!empty($item['children']))@if (!empty($item['expanded']))<x-ceplok-o-chevron-up class="ml-auto size-[18px] text-white" />@else<x-ceplok-o-chevron-down class="ml-auto size-[18px] text-gray-400" />@endif@endif</div>@if (!empty($item['children']) && !empty($item['expanded']))<div class="mt-1 space-y-1 pl-8 text-base font-medium text-gray-50">@foreach ($item['children'] as $child)<div @class(['rounded-lg px-3 py-2', !empty($child['active']) ? 'bg-gray-700/50 text-white' : ''])>{{ $child['label'] }}</div>@endforeach</div>@endif</div>@endforeach</div></div></div></div>
-                </article>
-                <article class="overflow-hidden rounded-xl border border-gray-800 bg-gray-900 shadow-xs">
-                    <div class="border-b border-gray-800 px-4 py-3"><h3 class="text-sm font-bold text-white">2. Drawer Tertutup (Dark Mode)</h3><p class="mt-1 text-xs leading-5 text-gray-400">Halaman mobile sebelum Drawer dibuka.</p></div>
-                    <div class="ds-scroll-x flex h-[520px] items-center justify-center overflow-x-auto bg-gray-950 px-6 py-4"><div class="flex h-[480px] w-[420px] shrink-0 flex-col border-x border-gray-700 bg-gray-800 shadow-2xl"><div class="flex h-[72px] items-center border-b border-gray-700 px-4"><img src="/images/ceplok.svg" alt="" aria-hidden="true" class="size-8 object-contain"><span class="ml-3 text-base font-bold text-white">CEPLOK</span><x-ceplok-o-bars-from-left class="ml-auto size-6 text-gray-300" /></div><div class="text-gray-300" style="padding: 28px"><h4 class="text-lg font-bold text-white">Halaman Beranda</h4><p class="mt-4 text-xs text-gray-400">Anda sedang berada di halaman utama Halaman Beranda.</p></div></div></div>
-                </article>
-            </div>
-        </x-docs.mode-section>
+                @if ($section['id'] === 'dark-mode')
+                    <x-docs.code>
+                        @verbatim
+                        <x-ceplok::drawer ⟦dark-mode⟧ wire:model="open" />
+                        @endverbatim
+                    </x-docs.code>
+                @endif
+            </x-docs.section>
+        @endforeach
 
         <x-docs.section id="menu" title="Menu">
-            <x-docs.lead>Menu pada Drawer dikonfigurasi melalui prop <code>items</code> sebagai data-driven array. Gunakan <code>children</code> untuk membentuk submenu.</x-docs.lead>
+            <x-docs.lead>Menu pada Drawer dikonfigurasi melalui prop <span class="text-primary-500 dark:text-primary-400">items</span> sebagai data-driven array. Gunakan <span class="text-primary-500 dark:text-primary-400">children</span> untuk membentuk submenu.</x-docs.lead>
             <div class="grid gap-6 lg:grid-cols-2">
                 <div class="min-w-0">
                     <h3 class="mb-3 text-sm font-bold text-gray-900 dark:text-white">Menu</h3>
-                    <div class="mb-4 space-y-1 rounded-xl border border-border bg-surface p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800" style="width: 332px; max-width: 100%">
-                        <div class="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium text-gray-900 dark:text-white transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-white"><span class="flex size-[18px] shrink-0 items-center justify-center text-gray-500 dark:text-gray-400 transition-colors group-hover:text-blue-600 dark:group-hover:text-white">{!! \CeplokUi\DesignKit\Support\Content::icon('ceplok-s-chart-pie') !!}</span><span class="truncate">Menu 1</span></div>
-                        <div class="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium text-gray-900 dark:text-white transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-white"><span class="flex size-[18px] shrink-0 items-center justify-center text-gray-500 dark:text-gray-400 transition-colors group-hover:text-blue-600 dark:group-hover:text-white">{!! \CeplokUi\DesignKit\Support\Content::icon('ceplok-s-file-lines') !!}</span><span class="truncate">Menu 2</span></div>
-                        <div class="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium text-gray-900 dark:text-white transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-white"><span class="flex size-[18px] shrink-0 items-center justify-center text-gray-500 dark:text-gray-400 transition-colors group-hover:text-blue-600 dark:group-hover:text-white">{!! \CeplokUi\DesignKit\Support\Content::icon('ceplok-s-inbox') !!}</span><span class="truncate">Menu 3</span></div>
+                    <div class="ds-scroll-x mb-4 overflow-x-auto">
+                        <div class="w-[300px] space-y-1 overflow-hidden rounded-xl border border-border bg-surface p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
+                            @foreach ([['Menu 1', 'ceplok-s-chart-pie'], ['Menu 2', 'ceplok-s-file-lines'], ['Menu 3', 'ceplok-s-inbox']] as [$label, $icon])
+                                <div class="group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-base font-medium text-gray-900 transition-all hover:bg-blue-50 hover:text-blue-600 dark:text-gray-50 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    <div class="flex min-w-0 flex-1 items-center gap-3"><span class="flex size-[18px] shrink-0 items-center justify-center text-gray-500 transition-colors group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-white">{!! Content::icon($icon) !!}</span><span class="truncate">{{ $label }}</span></div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                     <x-docs.code scroll>@verbatim
 <x-ceplok::drawer
@@ -154,9 +166,18 @@
                 </div>
                 <div class="min-w-0">
                     <h3 class="mb-3 text-sm font-bold text-gray-900 dark:text-white">Sub Menu</h3>
-                    <div class="mb-4 rounded-xl border border-border bg-surface p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800" style="width: 332px; max-width: 100%">
-                        <div class="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium text-gray-900 dark:text-white transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-white"><span class="flex size-[18px] shrink-0 items-center justify-center text-gray-500 dark:text-gray-400 transition-colors group-hover:text-blue-600 dark:group-hover:text-white">{!! \CeplokUi\DesignKit\Support\Content::icon('ceplok-s-cart') !!}</span><span class="truncate">Menu 3</span><x-ceplok-o-chevron-up class="ml-auto size-[18px] shrink-0 text-gray-500 dark:text-gray-400 transition-colors group-hover:text-blue-600" /></div>
-                        <div class="mt-1 space-y-1 pl-8 text-base font-medium text-gray-900 dark:text-white"><div class="truncate rounded-lg px-3 py-2 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-white">sub menu 1</div><div class="truncate rounded-lg px-3 py-2 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-gray-700 dark:hover:text-white">sub menu 2</div></div>
+                    <div class="ds-scroll-x mb-4 overflow-x-auto">
+                        <div class="w-[300px] overflow-hidden rounded-xl border border-border bg-surface p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
+                            <div class="group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-base font-medium text-gray-900 transition-all hover:bg-blue-50 hover:text-blue-600 dark:text-gray-50 dark:hover:bg-gray-700 dark:hover:text-white">
+                                <div class="flex min-w-0 flex-1 items-center gap-3"><span class="flex size-[18px] shrink-0 items-center justify-center text-gray-500 transition-colors group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-white">{!! Content::icon('ceplok-s-cart') !!}</span><span class="truncate">Menu 3</span></div>
+                                <span class="flex size-[18px] items-center justify-center text-gray-500 transition-all group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-white"><x-ceplok-o-chevron-up class="size-[18px]" /></span>
+                            </div>
+                            <div class="mt-1 space-y-1 pl-8">
+                                @foreach (['sub menu 1', 'sub menu 2'] as $label)
+                                    <div class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-base font-medium text-gray-900 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-gray-50 dark:hover:bg-gray-700 dark:hover:text-white">{{ $label }}</div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                     <x-docs.code scroll>@verbatim
 <x-ceplok::drawer
@@ -175,12 +196,39 @@
         <livewire:playground.drawer :dark="$docsDark" />
 
         <x-docs.section id="livewire" title="Livewire">
-            <x-docs.lead>Gunakan <code>wire:model.live</code> untuk mengikat status buka/tutup. <code>wire:close</code> menangkap penutupan dari tombol, backdrop, atau Esc.</x-docs.lead>
+            <x-docs.lead>
+                Gunakan <span class="text-primary-500 dark:text-primary-400">wire:model.live</span> untuk mengikat status buka/tutup, dan kunci
+                <span class="text-primary-500 dark:text-primary-400">attributes</span> pada item untuk memanggil aksi Livewire. <span class="text-primary-500 dark:text-primary-400">wire:close</span>
+                menangkap penutupan dari tombol, backdrop, atau Esc.
+            </x-docs.lead>
             <livewire:playground.drawer-livewire :dark="$docsDark" />
+            <x-docs.code>
+                @verbatim
+                <x-ceplok::drawer
+                    ⟦wire:model.live⟧="buka"
+                    eyebrow="MENU"
+                    :items="[
+                        ['label' => 'Beranda', 'icon' => 'ceplok-s-chart-pie',
+                            '⟦attributes⟧' => ['wire:click' => "pilihMenu('Beranda')"]],
+                        ['label' => 'Laporan', 'icon' => 'ceplok-s-file-lines',
+                            '⟦attributes⟧' => ['wire:click' => "pilihMenu('Laporan')"]],
+                    ]"
+                    ⟨dark-mode⟩
+                />
+                @endverbatim
+            </x-docs.code>
         </x-docs.section>
 
         <x-docs.section id="properties" title="Properties">
-            <x-docs.props-table :rows="$drawerProps" />
+            <x-docs.lead>Daftar lengkap props untuk komponen Drawer serta kunci item dan sub-item menunya.</x-docs.lead>
+            <div class="space-y-6">
+                @foreach ($propTables as [$heading, $rows])
+                    <div>
+                        <h3 class="mb-3 text-lg font-bold text-gray-900 dark:text-white">{{ $heading }}</h3>
+                        <x-docs.props-table :rows="$rows" />
+                    </div>
+                @endforeach
+            </div>
         </x-docs.section>
     </x-docs.page>
 </x-docs.layout>

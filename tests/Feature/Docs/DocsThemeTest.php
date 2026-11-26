@@ -62,7 +62,7 @@ class DocsThemeTest extends TestCase
 
     public function test_halaman_tanpa_tampilan_gelap_tetap_terang_dan_tombolnya_diredupkan(): void
     {
-        $dom = $this->page(route('components.button'), dark: true);
+        $dom = $this->page(route('components.badge'), dark: true);
 
         $this->assertFalse($this->find($dom, 'html')->hasAttribute('data-docs-theme'));
 
@@ -108,7 +108,7 @@ class DocsThemeTest extends TestCase
             ['components.container', '[data-theme="dark"]', true],
             ['components.dropdown', '[data-theme="dark"]', false],
             ['components.list-view', '[data-theme="dark"]', true],
-            ['components.pagination', '.border-gray-700.bg-gray-800', true],
+            ['components.pagination', '.border-gray-600.bg-gray-700', true],
             ['components.popover', '[data-theme="dark"]', false],
             ['components.sidebar', '[data-theme="dark"]', true],
             ['components.table-of-contents', '[data-theme="dark"]', true],
@@ -203,6 +203,45 @@ class DocsThemeTest extends TestCase
         $this->assertStringContainsString('dark-mode', $this->find($gelap, '#penggunaan pre code')->textContent);
     }
 
+    public function test_button_docs_selalu_memperagakan_bagian_dark_mode(): void
+    {
+        $terang = $this->page(route('components.button'));
+        $gelap = $this->page(route('components.button'), dark: true);
+
+        foreach ([$terang, $gelap] as $dom) {
+            $section = $this->find($dom, '#dark-mode');
+
+            $this->assertStringStartsWith('Dark mode', trim($this->find($section, 'h2')->textContent));
+            $buttons = $section->querySelectorAll('div.grid > div > div > button[class~="inline-flex"]');
+            $this->assertCount(4, $buttons);
+            $this->assertHasClasses($buttons->item(0), 'bg-primary-800 text-white');
+            $this->assertHasClasses($buttons->item(1), 'bg-gray-50 text-gray-700');
+            $this->assertHasClasses($buttons->item(3), 'border-gray-50 text-gray-50');
+            $this->assertStringContainsString('dark-mode', $this->find($section, 'pre code')->textContent);
+        }
+
+        $this->assertSame('Dark mode', trim($this->find($gelap, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
+        $this->assertSame('Dark', trim($this->find($gelap, '#playground [aria-label="Pilih tampilan"] [aria-pressed="true"]')->textContent));
+    }
+
+    public function test_breadcrumb_dan_sidebar_mengikuti_mode_docs(): void
+    {
+        $breadcrumb = $this->page(route('components.breadcrumb'), dark: true);
+        $sidebar = $this->page(route('components.sidebar'), dark: true);
+
+        $this->assertNotNull($this->find($breadcrumb, '#sizes')->querySelector('nav[data-theme="dark"]'));
+        $this->assertStringStartsWith('Dark mode', trim($this->find($breadcrumb, '#dark-mode h2')->textContent));
+        $this->assertSame('Dark mode', trim($this->find($breadcrumb, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
+        $this->assertNotNull($this->find($breadcrumb, '#dark-mode')->querySelector('[data-theme="dark"]'));
+        $this->assertSame('Dark', trim($this->find($breadcrumb, '#playground [aria-label="Pilih tampilan"] [aria-pressed="true"]')->textContent));
+
+        $this->assertNotNull($this->find($sidebar, '#variants')->querySelector('aside[data-theme="dark"]'));
+        $this->assertStringStartsWith('Dark mode', trim($this->find($sidebar, '#dark-mode h2')->textContent));
+        $this->assertSame('Dark mode', trim($this->find($sidebar, 'nav[aria-label="Daftar isi halaman"] a[href="#dark-mode"]')->textContent));
+        $this->assertNotNull($this->find($sidebar, '#dark-mode')->querySelector('[data-theme="dark"]'));
+        $this->assertSame('Dark', trim($this->find($sidebar, '#playground [aria-label="Pilih tampilan"] [aria-pressed="true"]')->textContent));
+    }
+
     public function test_portal_dashboard_mengikuti_mode_docs_dan_mengabarkan_tombol_temanya(): void
     {
         $dom = $this->page(route('portal.app'), dark: true);
@@ -211,13 +250,14 @@ class DocsThemeTest extends TestCase
         $this->assertSame('$docsTheme($event.detail.darkMode)', $this->find($dom, 'body')->getAttribute('x-on:dark-mode-change'));
         $this->assertSame('dark', $this->find($dom, 'main')->closest('[data-theme]')->getAttribute('data-theme'));
 
-        // Tombol tema header hanya untuk layar sempit; mulai lg toggle-nya di kaki Sidebar.
-        $toggle = $this->find($dom, 'header button[aria-label="Mode gelap"]');
+        // Seperti docs React, tombol tema layar sempit ditempel di baris atas header
+        // (di luar <header>, dalam pembungkus sticky) dan disembunyikan mulai 576px.
+        $toggle = $this->find($dom, 'div.sticky > button[aria-label="Mode gelap"]');
 
         $this->assertSame('true', $toggle->getAttribute('aria-pressed'));
         $this->assertSame('portalTema(true)', $toggle->getAttribute('x-data'));
         $this->assertSame('pilih(! gelap)', $toggle->getAttribute('x-on:click'));
-        $this->assertHasClasses($toggle, 'lg:hidden');
+        $this->assertHasClasses($toggle, 'absolute top-4.5 right-29 min-[576px]:hidden');
 
         // Pilihan baru digeser dulu di browser, lalu dikabarkan ke bingkai docs.
         $this->assertStringContainsString(
@@ -248,8 +288,11 @@ class DocsThemeTest extends TestCase
         $this->assertSame('collapsed', $ringkas->parentElement->getAttribute('x-show'));
         $this->assertSame('display: none;', $ringkas->parentElement->getAttribute('style'));
 
-        // Sidebar di Drawer layar sempit tidak membawa toggle: di sana tombolnya ada di header.
-        $this->assertNull($sidebarSeluler->querySelector('[aria-label="Pilih tema"], button[aria-label="Mode gelap"]'));
+        // Sidebar di Drawer layar sempit juga membawa pilihan tema (beda dari docs React),
+        // supaya tema tetap bisa diganti di lebar 576px–lg. Sidebar ini tidak pernah
+        // diringkas, jadi tanpa tombol berikon.
+        $this->assertSame('portalTema(true)', $this->find($sidebarSeluler, '[role="group"][aria-label="Pilih tema"]')->getAttribute('x-data'));
+        $this->assertNull($sidebarSeluler->querySelector('button[aria-label="Mode gelap"]'));
     }
 
     private function page(string $url, bool $dark = false): HTMLDocument

@@ -10,6 +10,13 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Ditambahkan
 
+- `breadcrumb`: label dibatasi 12 karakter di mobile dan 17 di desktop
+  (`lg`), dengan label lengkap di `title` dan `aria-label`. Bila lebih dari
+  dua level tidak muat, plugin Alpine `ceplokBreadcrumb` meringkas level
+  tengah menjadi "…" (`aria-label="Menu tersembunyi: …"`) dan
+  mempertahankan item pertama serta halaman aktif. Kelas layout
+  (`min-w-0`, `max-w-full`, `shrink-0`, `whitespace-nowrap`) dan perataan
+  ikon item non-tautan ikut disamakan, setara kit React.
 - Navbar mengadopsi kontrak React untuk platform Front Office dan Back Office:
   brand consumer-owned, destination/disclosure native, Search, notification,
   guest/account identity, Dropdown desktop, Sidebar navigation mobile, Drawer
@@ -23,15 +30,102 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - `avatar`: prop `name` untuk accessible name dan inisial otomatis, serta
   `fallback` `initials`, `female`, atau `male` dengan ilustrasi profil terang
   dan gelap, setara kit React.
-- `list-view`: prop `action-disabled` pada varian simple desktop menyembunyikan
-  tombol aksi dan memindahkan `action-href`, `action-wire-click`,
-  `action-click`, serta `action-attributes` ke seluruh kartu.
+- `list-view`: prop `action-disabled` pada varian simple menyembunyikan tombol
+  aksi dan memindahkan `action-href`, `action-wire-click`, `action-click`,
+  serta `action-attributes` ke seluruh kartu pada desktop maupun mobile.
+- `list-view`: prop `interactive-feedback` mengatur feedback border, shadow,
+  dan scale tanpa mengubah kemampuan kartu untuk diklik.
 - `sidebar`: kunci `attributes` pada `user` meneruskan atribut ke area
   profil, mis. `['wire:click' => 'bukaProfil']`, padanan `user.onClick` di
   kit React.
+- `sidebar`: item dropdown profil menerima `attributes` (padanan `onClick`,
+  mis. `['wire:click' => 'logout']`), `target`, dan `rel`, setara kit React.
+  `x-on:click` milik pemakai dijalankan sebelum menu ditutup, dan item
+  nonaktif tidak meneruskan aksinya.
+- `drawer`: item dan sub-item menerima `target` dan `rel`; item menerima
+  `collapsible` (chevron tanpa anak). Sub-item tanpa `active` menjadi aktif
+  saat diklik. Prop `close-label` dan `show-close-button` mengatur tombol
+  tutup header. Semuanya setara kit React.
+- `drawer`: status submenu mengikuti kit React. `default-expanded` (kunci
+  `defaultExpanded` pada `items`) mengatur status awal; `expanded` juga
+  menyinkronkan state bila server merender nilai lain. Event
+  `expanded-change` (`detail.expanded`, `detail.label`) dikirim setiap
+  submenu dibuka/ditutup, padanan `onExpandedChange`.
+- `drawer`: slot `after-items`, padanan `afterItems`, untuk konten setelah
+  seluruh `items` di body yang sama.
+- `list-view`: item dan article menerima `target` dan `rel`; `target="_blank"`
+  tanpa `rel` otomatis memakai `rel="noreferrer noopener"`, setara kit React.
+- `list-view`: `pin-attributes` (kunci `pinAttributes` pada `items`),
+  padanan `onPin`, menjadikan lencana pin article tombol (`role="button"`,
+  `tabindex`, hover) yang kliknya tidak diteruskan ke kartu.
+- `list-view`: kunci `content` pada `items` (dan slot pada mode satu item),
+  padanan `children`, menambah isi di kolom teks: di bawah badge (simple)
+  atau di bawah judul (article). Kunci `as` pada `items` mengatur tag
+  kartu, mis. `li` di dalam `as="ul"`, padanan prop `as` ListViewItem.
+  Subkomponen `ListView.Item`/`ListView.Article` sengaja tidak dibuat,
+  supaya List View tetap satu komponen; susun item lewat `items`.
 
 ### Diubah
 
+- Token disinkronkan dengan kit React: menambah `--color-upload-empty-surface`
+  serta token `card-*`, `footer-*`, dan `table-*`.
+- `sidebar`: avatar profil kini memakai komponen `avatar`, seperti kit React:
+  ukuran 32px (sebelumnya 36px), inisial dua huruf dari nama, dan token
+  `avatar-surface`/`avatar-content`.
+- `drawer`: **mengklik item atau sub-item tidak lagi menutup Drawer** dan
+  event `drawer-navigate` dihapus, seperti kit React. Pasang aksinya lewat
+  `attributes`, mis. `['wire:click' => "buka('laporan')", 'x-on:click' =>
+  'close()']`. Item nonaktif tidak meneruskan `attributes`-nya.
+- `list-view`: item simple yang punya klik sendiri (`wire:click`,
+  `x-on:click`, termasuk modifier-nya) tanpa `href` kini dirender sebagai
+  `<button type="button">`, seperti kit React, sehingga bisa dipakai lewat
+  keyboard. Bila tombol aksinya tampil, item tetap `<article>` karena tombol
+  bersarang tidak sah di HTML. Article dengan klik sendiri kini juga
+  mendapat kursor pointer dan efek hover.
+- `drawer`: warna mengikuti kit React: hover theme gray `bg-gray-100/70`,
+  sub-item aktif `bg-blue-50/70`/`bg-purple-50/70` (dark: hover
+  `bg-gray-600`), dan badge tidak lagi ikut warna ikon (hanya chevron).
+- `sidebar`: lebar 280px/72px kini lewat kelas `w-[280px]`/`w-[72px]`,
+  bukan `style` inline, sehingga bisa ditimpa `class` seperti di React.
+  Navigasi kini selalu dirender, jadi `footer` tetap di dasar meski menu
+  kosong.
+- `button`: di dark mode, `theme` di luar enam bawaan tidak lagi error atau
+  berubah menjadi primary. Filled jatuh ke tombol putih dan outline tetap
+  putih, setara kit React. Di light mode `theme` tetap divalidasi.
+- `list-view`: `action-disabled` selalu menyembunyikan tombol aksi, juga
+  ketika item punya `href` sendiri, setara kit React. Sebelumnya tombolnya
+  tetap tampil dalam keadaan nonaktif.
+- `search` berkategori: trigger kategori memakai padding kiri/kanan 10px dan
+  jarak 10px antara label dan chevron, baik reguler maupun compact. Label
+  compact dipotong setelah 10 karakter (sebelumnya 12), setara kit React.
+- `pagination`: palet dark mode mengikuti React staging: surface dan border
+  gray-700/gray-600, active default gray-600, primary-900, dan purple-900.
+- `drawer`: item dengan submenu kini selalu menjadi disclosure button,
+  mewarisi state aktif anak, dan memiliki `aria-expanded`, `aria-controls`,
+  `hidden`, serta `aria-current` yang sesuai.
+- Docs `drawer`, `list-view`, dan `pagination` kini mendukung mode gelap pada
+  preview, Playground, contoh Livewire, dan tabel Properties.
+- Docs `breadcrumb` dan `sidebar` kini mengikuti switch mode gelap global;
+  preview biasa, Playground, cuplikan kode, serta contoh Livewire memulai dari
+  mode docs yang aktif.
+- Section `Dark mode` pada docs Button, Drawer, List View, Pagination,
+  Breadcrumb, Sidebar, Search, dan Upload sekarang selalu memperagakan palet
+  gelap, meskipun situs dokumentasi sedang memakai mode gelap.
+- Label pengaturan mode pada Playground Button, Drawer, List View, Pagination,
+  Breadcrumb, Sidebar, Search, dan Upload diseragamkan menjadi `Tampilan` dan
+  `Pilih tampilan`.
+- `button`: `dark-mode` kini mengikuti refactor React staging. Filled dengan
+  theme memakai palet gelap theme tersebut, filled tanpa theme memakai
+  fallback putih, dan seluruh outline dark memakai warna putih. Prop `tone`
+  tetap diterima sebagai alias transisi untuk kompatibilitas.
+- `search`: dark mode dan ukuran varian berkategori diselaraskan dengan kit
+  React staging. Field polos kini gray-700; kategori reguler dikunci 113px
+  dengan tombol 42x37px, sedangkan kategori compact 128px dengan tombol
+  37x37px. Search berkategori compact kini tetap menampilkan tombol bawaan.
+- `upload`: state dark mode varian default mengikuti desain terbaru: field
+  kosong memakai token `--color-upload-empty-surface` (`#1F2A37`, bisa
+  ditimpa consumer), field terisi gray-700, garis tombol mengikuti warna
+  aplikasi, dan teks tombol Remove gray-400. Seluruh ukurannya tetap.
 - Modal diselaraskan dengan kontrak React: `actions` ber-role secondary,
   primary, dan danger, ikon Popup bawaan yang dapat diganti atau disembunyikan,
   boundary `dark-mode`, DarkDocs, Playground, serta dokumentasi Aksi Footer,
@@ -62,6 +156,29 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menampilkan tombol collapse dalam keadaan aktif, seperti `onCollapse` di
   kit React. Tanpa pendengar, `show-collapse-button` tetap menampilkannya
   nonaktif.
+- Docs Button, Pagination, Breadcrumb, Search, Upload, Sidebar, Drawer, dan
+  List View diselaraskan dengan docs kit React staging: kalimat lead,
+  deskripsi ukuran, catatan dark mode, cuplikan kode, dan tabel Properties
+  (mis. baris `wire-click` Button; `pin-attributes`, `target`/`rel`,
+  `content`, dan `as` List View; tiga tabel Drawer). Urutan section tetap.
+- Docs Drawer: preview Variants dan Dark mode kini memakai
+  `<x-ceplok::drawer preview>` sungguhan, bukan markup tiruan; blok `<style>`
+  penimpa dan kode mati dihapus; section Livewire memakai Drawer preview
+  yang diikat `wire:model.live` dan diberi cuplikan kode. Seperti preview
+  React, tombol X pada preview Drawer Terbuka hanya tampilan (kliknya
+  dihentikan di pembungkus docs, komponen tidak diubah).
+- Docs Sidebar: hack `x-init`/`x-on:click.capture` pada preview dihapus,
+  kotak preview memakai `overflow-y-hidden` seperti React, section Dark
+  mode selalu gelap dengan cuplikan kodenya, dan section Livewire memakai
+  `attributes` per item serta diberi cuplikan kode. Scrollbar navigasi di
+  kartu preview (`.sidebar-component-preview`) kini tipis seperti docs
+  React; sebelumnya selebar bawaan Windows karena kotak preview mewariskan
+  `scrollbar-color`.
+- Playground Drawer, Sidebar, dan List View mengikuti React: sorotan menu
+  aktif berpindah saat diklik (Drawer), cuplikan Penggunaan Sidebar memakai
+  `wire:collapse` alih-alih `show-collapse-button`, aksi "Keluar" dan tombol
+  "Open" memicu aksi, serta kontrol Size List View nonaktif untuk simple +
+  mobile.
 - Contoh Portal Dashboard kini memakai komponen `sidebar` yang sama pada
   desktop dan viewport sempit. Pada viewport sempit, `drawer` hanya menjadi
   shell off-canvas; data menu, profil, logo, status aktif, dan aksinya tetap
@@ -69,6 +186,16 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Diperbaiki
 
+- `search`: garis tipis `ring-gray-500` mode gelap pada Search berkategori
+  kini terlihat utuh. Ring dilukis di lapisan `::after` di atas kategori dan
+  field (tanpa tombol cari) dan disembunyikan saat fokus. Search polos juga
+  mendapat ring yang sama di mode gelap.
+- Docs `drawer`: warna teks, ikon, state aktif, submenu, dan hover pada preview
+  statis sekarang mengikuti palet dark mode komponen di Playground; hover
+  tidak lagi memakai surface biru terang.
+- `popover`: listener `wire:open-change`, `x-on:open-change`, dan
+  `@open-change` kini dipasang pada elemen root tempat event `open-change`
+  dikirim, sehingga binding Livewire menerima perubahan state.
 - Tooltip `clipboard` varian segmented kini ditutup saat Escape ditekan tanpa
   memindahkan fokus, setara perilaku kit React.
 - `spinner` kini menyaring atribut `width`, `height`, `viewBox`, dan `fill`
@@ -99,13 +226,21 @@ dan versinya mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   lingkaran kosong.
 - `sidebar`: area profil tanpa `href` tidak lagi melompat ke `#` saat
   diklik.
+- `drawer`: dialog yang ditutup dengan cara lain (mis. `form
+  method="dialog"`) kini ikut menyetel state `open` dan mengirim event
+  `close`, seperti `handleNativeClose` di kit React. Chevron submenu yang
+  terbuka sudah terputar sejak render server.
+- `sidebar`: menu dan submenu tanpa `href` (atau `href="#"`) tidak lagi
+  melompat ke `#` saat diklik. Chevron submenu yang terbuka karena item atau
+  anaknya aktif kini sudah terputar sejak render server, dan tombol submenu
+  saat ringkas berlabel "Buka sidebar untuk melihat submenu …", setara kit
+  React.
 - `sidebar`: tombol collapse yang nonaktif kini berkursor `not-allowed`,
   sama dengan kit React.
 - `list-view`: tombol aksi tidak lagi mencetak kode mentah seperti
   `@if="@if"` dan `actionDisabled="actionDisabled"` sebagai atribut.
   `action-click` dan `action-attributes` kini benar-benar sampai ke tombol
-  aksinya. Tautan aksi yang dinonaktifkan tetap mendapat `aria-disabled` dan
-  `tabindex="-1"`.
+  aksinya.
 
 ## [0.2.0] - 2026-11-03
 

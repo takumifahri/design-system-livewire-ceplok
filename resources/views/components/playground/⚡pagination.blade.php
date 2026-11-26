@@ -49,7 +49,7 @@ new class extends Component
 
 <div class="space-y-16">
     <x-docs.section id="playground" title="Playground">
-        <p class="mb-6 text-body-sm text-gray-500">
+        <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
             Coba konfigurasi Pagination secara langsung melalui kontrol di bawah ini untuk melihat
             perubahan halaman dan theme.
         </p>
@@ -61,8 +61,8 @@ new class extends Component
         </x-docs.stage>
 
         <x-docs.controls>
-            <x-docs.control label="Mode">
-                <x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[
+            <x-docs.control label="Tampilan">
+                <x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[
                     ['value' => false, 'label' => 'Light'],
                     ['value' => true, 'label' => 'Dark'],
                 ]" />
@@ -88,9 +88,9 @@ new class extends Component
     </x-docs.section>
 
     <x-docs.section id="penggunaan" title="Penggunaan">
-        <p class="mb-6 text-body-sm text-gray-500">
+        <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
             Bagian ini menampilkan contoh kode penggunaan Pagination berdasarkan konfigurasi yang
-            dipilih pada Playground. <span class="text-primary-500">$page</span> adalah properti publik di komponen Livewire Anda.
+            dipilih pada Playground. <span class="text-primary-500 dark:text-primary-400">$page</span> adalah properti publik di komponen Livewire Anda.
         </p>
         <x-docs.code :code="$this->usage" flush />
     </x-docs.section>

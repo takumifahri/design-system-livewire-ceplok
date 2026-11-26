@@ -16,7 +16,7 @@
     ];
 
     $props = [
-        ['items', 'array', '[]', "Daftar item: ['label' => …, 'href' => …, 'icon' => …, 'attributes' => […]]. Item terakhir jadi halaman aktif dan tidak pernah menjadi tautan. attributes diteruskan ke tautannya — padanan onClick, mis. ['wire:navigate' => true]."],
+        ['items', 'array', '[]', "Daftar item: ['label' => …, 'href' => …, 'icon' => …, 'attributes' => […]]. Item terakhir jadi halaman aktif dan tidak pernah menjadi tautan. attributes diteruskan ke tautannya — padanan onClick, mis. ['wire:navigate' => true]. Label dibatasi 12 karakter di mobile dan 17 di desktop; level tengah otomatis diringkas menjadi … saat ruang tidak cukup."],
         ['size', '"sm" | "base"', 'base', 'Menentukan ukuran teks Breadcrumb. sm = 12px dan base = 14px.'],
         ['background', '"bg" | "none"', 'none', 'Menentukan apakah Breadcrumb menggunakan background.'],
         ['separator', 'slot', 'chevron', 'Pemisah antar-item; bawaannya ikon chevron.'],
@@ -48,7 +48,8 @@
             <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
                 Breadcrumb tersedia dalam dua ukuran untuk menyesuaikan kebutuhan hierarki dan kepadatan
                 informasi pada layout. Ukuran <span class="text-primary-500 dark:text-primary-400">base</span> adalah ukuran default. Ukuran <span class="text-primary-500 dark:text-primary-400">sm</span>
-                digunakan ketika Breadcrumb diimplementasikan pada mobile.
+                digunakan ketika Breadcrumb diimplementasikan pada mobile. Jika seluruh level tidak muat,
+                komponen mempertahankan item pertama dan halaman aktif, lalu meringkas level tengah menjadi <span class="text-primary-300">…</span>.
             </p>
 
             <div class="mb-4 grid gap-5 sm:grid-cols-2">

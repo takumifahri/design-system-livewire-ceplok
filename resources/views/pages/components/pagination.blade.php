@@ -1,4 +1,6 @@
 @php
+    use App\Docs\Theme;
+
     // Demo mode tautan: halaman aktifnya dibaca dari alamat (?hal=), jadi
     // setiap klik benar-benar memuat halaman dengan nomor yang baru.
     $linkPage = max(1, min(10, (int) request()->query('hal', 3)));
@@ -18,7 +20,7 @@
     // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
     // dan cuplikannya menuliskannya lewat penanda ⟨…⟩. Bagian Dark mode tetap
     // gelap di kedua mode (lihat App\Docs\Theme).
-    $docsDark = \App\Docs\Theme::dark();
+    $docsDark = Theme::dark();
 @endphp
 
 <x-docs.layout title="Pagination">

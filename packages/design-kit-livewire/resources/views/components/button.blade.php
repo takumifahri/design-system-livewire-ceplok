@@ -12,10 +12,11 @@
 {{--
     Button — tombol atau tautan berbentuk tombol.
 
-    Warnanya diatur `theme` (primary, green, gray, purple, orange, yellow) dan
-    `tone` (light, dark); `variant` hanya memilih terisi atau bergaris. Ikon di
-    kiri/kanan teks lewat slot `left-icon` / `right-icon`; `icon-only` membuat
-    tombol bundar berisi ikon saja — beri `aria-label`.
+    Warnanya diatur `theme` (primary, green, gray, purple, orange, yellow),
+    sedangkan `dark-mode` memilih palet untuk permukaan gelap. `tone` masih
+    diterima sebagai alias transisi; `variant` memilih terisi atau bergaris.
+    Ikon di kiri/kanan teks lewat slot `left-icon` / `right-icon`; `icon-only`
+    membuat tombol bundar berisi ikon saja — beri `aria-label`.
 
     Dirender sebagai <a> bila `as="anchor"`, atau bila `href` diisi tanpa `as`.
     `type` (bawaan "button") hanya dipasang pada <button>.
@@ -23,8 +24,9 @@
 @props([
     'variant' => 'filled',
     'size' => 'base',
-    'theme' => 'primary',
-    'tone' => 'light',
+    'theme' => null,
+    'tone' => null,
+    'darkMode' => null,
     'iconOnly' => false,
     'as' => null,
     'type' => 'button',
@@ -36,8 +38,18 @@
 @php
     $variant = Prop::oneOf(ButtonVariant::class, $variant, ButtonVariant::Filled, 'button', 'variant');
     $size = Prop::oneOf(ButtonSize::class, $size, ButtonSize::Base, 'button', 'size');
-    $theme = Prop::oneOf(ButtonTheme::class, $theme, ButtonTheme::Primary, 'button', 'theme');
-    $tone = Prop::oneOf(ButtonTone::class, $tone, ButtonTone::Light, 'button', 'tone');
+    $tone = $tone === null ? null : Prop::oneOf(ButtonTone::class, $tone, ButtonTone::Light, 'button', 'tone');
+    // Backward compatibility: tone="dark" diperlakukan seperti dark-mode,
+    // kecuali dark-mode diberikan secara eksplisit.
+    $darkMode = $darkMode === null
+        ? $tone === 'dark'
+        : Prop::bool($darkMode, false, 'button', 'dark-mode');
+    // Theme sengaja boleh null: di light mode ia tetap terlihat primary,
+    // sedangkan di dark mode ketiadaan theme memilih fallback putih. Theme di
+    // luar enam bawaan juga jatuh ke putih di dark mode (filled maupun
+    // outline), seperti kit React; di light mode ia tetap divalidasi.
+    $unknownDarkTheme = $darkMode && is_scalar($theme) && ButtonTheme::tryFrom((string) $theme) === null;
+    $theme = $theme === null || $unknownDarkTheme ? null : Prop::oneOf(ButtonTheme::class, $theme, ButtonTheme::Primary, 'button', 'theme');
     $iconOnly = Prop::bool($iconOnly, false, 'button', 'icon-only');
     $anchor = $as === null
         ? filled($attributes->get('href'))
@@ -51,75 +63,58 @@
         'xl' => ['button' => 'h-[46px] px-6 gap-2 rounded-lg text-xl', 'icon' => 'size-4', 'iconOnly' => 'h-[46px] w-[46px] rounded-full p-0'],
     ];
 
-    $colors = [
+    $lightColors = [
         'primary' => [
-            'light' => [
-                'filled' => 'bg-primary-700 text-white hover:bg-primary-800',
-                'outline' => 'border border-primary-700 text-primary-700 hover:bg-primary-50',
-            ],
-            'dark' => [
-                'filled' => 'bg-primary-800 text-white hover:bg-primary-700',
-                'outline' => 'border border-primary-800 text-primary-800 hover:bg-primary-50',
-            ],
+            'filled' => 'bg-primary-700 text-white hover:bg-primary-800',
+            'outline' => 'border border-primary-700 text-primary-700 hover:bg-primary-50',
         ],
         'green' => [
-            'light' => [
-                'filled' => 'bg-green-700 text-white hover:bg-green-800',
-                'outline' => 'border border-green-700 text-green-700 hover:bg-green-50',
-            ],
-            'dark' => [
-                'filled' => 'bg-green-800 text-white hover:bg-green-700',
-                'outline' => 'border border-green-800 text-green-800 hover:bg-green-50',
-            ],
+            'filled' => 'bg-green-700 text-white hover:bg-green-800',
+            'outline' => 'border border-green-700 text-green-700 hover:bg-green-50',
         ],
         'gray' => [
-            // Gray light memakai 500, gray dark memakai 700.
-            'light' => [
-                'filled' => 'bg-gray-500 text-white hover:bg-gray-700',
-                'outline' => 'border border-gray-500 text-gray-500 hover:bg-gray-100 hover:text-gray-700 hover:border-gray-700',
-            ],
-            'dark' => [
-                'filled' => 'bg-gray-700 text-white hover:bg-gray-500',
-                'outline' => 'border border-gray-700 text-gray-700 hover:bg-gray-100 hover:text-gray-900 hover:border-gray-900',
-            ],
+            'filled' => 'bg-gray-500 text-white hover:bg-gray-700',
+            'outline' => 'border border-gray-500 text-gray-500 hover:border-gray-700 hover:bg-gray-100 hover:text-gray-700',
         ],
         'purple' => [
-            'light' => [
-                'filled' => 'bg-purple-700 text-white hover:bg-purple-800',
-                'outline' => 'border border-purple-700 text-purple-700 hover:bg-purple-50',
-            ],
-            'dark' => [
-                'filled' => 'bg-purple-800 text-white hover:bg-purple-700',
-                'outline' => 'border border-purple-800 text-purple-800 hover:bg-purple-50',
-            ],
+            'filled' => 'bg-purple-700 text-white hover:bg-purple-800',
+            'outline' => 'border border-purple-700 text-purple-700 hover:bg-purple-50',
         ],
         'orange' => [
-            // Orange light memakai 600, orange dark memakai 700.
-            'light' => [
-                'filled' => 'bg-orange-600 text-white hover:bg-orange-700',
-                'outline' => 'border border-orange-600 text-orange-600 hover:bg-orange-50',
-            ],
-            'dark' => [
-                'filled' => 'bg-orange-700 text-white hover:bg-orange-700',
-                'outline' => 'border border-orange-700 text-orange-700 hover:bg-orange-50',
-            ],
+            'filled' => 'bg-orange-600 text-white hover:bg-orange-700',
+            'outline' => 'border border-orange-600 text-orange-600 hover:bg-orange-50',
         ],
         'yellow' => [
-            'light' => [
-                'filled' => 'bg-yellow-700 text-white hover:bg-yellow-800',
-                'outline' => 'border border-yellow-700 text-yellow-700 hover:bg-yellow-50',
-            ],
-            'dark' => [
-                'filled' => 'bg-yellow-800 text-white hover:bg-yellow-700',
-                'outline' => 'border border-yellow-800 text-yellow-800 hover:bg-yellow-50',
-            ],
+            'filled' => 'bg-yellow-700 text-white hover:bg-yellow-800',
+            'outline' => 'border border-yellow-700 text-yellow-700 hover:bg-yellow-50',
         ],
     ];
 
+    // Theme baru yang belum mempunyai palet gelap jatuh ke tombol putih,
+    // bukan tanpa sengaja memakai warna light mode.
+    $darkFilledColors = [
+        'primary' => 'bg-primary-800 text-white hover:bg-primary-700',
+        'green' => 'bg-green-800 text-white hover:bg-green-700',
+        'gray' => 'bg-gray-700 text-white hover:bg-gray-500',
+        'purple' => 'bg-purple-800 text-white hover:bg-purple-700',
+        'orange' => 'bg-orange-700 text-white hover:bg-orange-700',
+        'yellow' => 'bg-yellow-800 text-white hover:bg-yellow-700',
+    ];
+    $darkFilledFallback = 'bg-gray-50 text-gray-700 hover:bg-white hover:text-gray-700';
+    $darkOutline = 'border border-gray-50 text-gray-50 hover:border-gray-50 hover:bg-white hover:text-gray-700';
+
+    $resolvedTheme = $theme ?? 'primary';
+    $color = match (true) {
+        ! $darkMode => $lightColors[$resolvedTheme][$variant],
+        $variant === 'outline' => $darkOutline,
+        $theme === null => $darkFilledFallback,
+        default => $darkFilledColors[$theme] ?? $darkFilledFallback,
+    };
+
     $s = $sizes[$size];
     $tag = $anchor ? 'a' : 'button';
-    $classes = 'inline-flex cursor-pointer items-center justify-center font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-50 '
-        .$colors[$theme][$tone][$variant].' '
+    $classes = 'inline-flex items-center justify-center font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:pointer-events-none disabled:opacity-50 '
+        .$color.' '
         .($iconOnly ? $s['iconOnly'] : $s['button']);
     // Content::filled, bukan (string): svg() mengembalikan objek Htmlable yang
     // tidak bisa di-cast ke string.

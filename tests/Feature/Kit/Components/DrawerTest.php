@@ -99,6 +99,111 @@ class DrawerTest extends TestCase
         $this->assertLacksClasses($item, 'aria-disabled:pointer-events-none');
     }
 
+    public function test_item_dengan_submenu_adalah_disclosure_dan_mewarisi_status_aktif_anak(): void
+    {
+        $items = [[
+            'label' => 'Dokumen',
+            'href' => '/dokumen',
+            'expanded' => false,
+            'children' => [
+                ['label' => 'Arsip', 'href' => '/arsip', 'active' => true],
+            ],
+        ]];
+
+        $dom = $this->dom('<x-ceplok::drawer :items="$items" />', compact('items'));
+        $parent = $this->find($dom, 'button.group');
+        $submenuId = $parent->getAttribute('aria-controls');
+        $submenu = $this->find($dom, '#'.$submenuId);
+        $child = $this->find($submenu, 'a');
+
+        $this->assertNull($dom->querySelector('a[href="/dokumen"]'));
+        $this->assertHasClasses($parent, 'bg-blue-50 text-blue-600');
+        $this->assertSame("expanded ? 'true' : 'false'", $parent->getAttribute('x-bind:aria-expanded'));
+        $this->assertSame('! expanded', $submenu->getAttribute('x-bind:hidden'));
+        $this->assertTrue($submenu->hasAttribute('hidden'));
+        $this->assertSame('page', $child->getAttribute('aria-current'));
+    }
+
+    public function test_klik_item_tidak_menutup_drawer_dan_meneruskan_attributes(): void
+    {
+        // Seperti React: tidak ada tutup otomatis; aksinya lewat `attributes` (padanan onClick).
+        $items = [
+            ['label' => 'Laporan', 'attributes' => ['wire:click' => "buka('laporan')", 'x-on:click' => 'close()']],
+            ['label' => 'Bantuan', 'href' => '/bantuan', 'target' => '_blank', 'rel' => 'help'],
+            ['label' => 'Arsip', 'disabled' => true, 'attributes' => ['wire:click' => 'arsip']],
+            ['label' => 'Dokumen', 'attributes' => ['x-on:click' => 'catat()'], 'children' => [['label' => 'Surat']]],
+        ];
+
+        $dom = $this->dom('<x-ceplok::drawer :items="$items" />', compact('items'));
+        [$laporan, $arsip, $dokumen] = iterator_to_array($dom->querySelectorAll('button.group'), false);
+        $bantuan = $this->find($dom, 'a[href="/bantuan"]');
+
+        $this->assertStringNotContainsString('drawer-navigate', $dom->saveHtml());
+        $this->assertSame("buka('laporan')", $laporan->getAttribute('wire:click'));
+        $this->assertSame('close()', $laporan->getAttribute('x-on:click'));
+        $this->assertSame('_blank', $bantuan->getAttribute('target'));
+        $this->assertSame('help', $bantuan->getAttribute('rel'));
+        // Item nonaktif tidak meneruskan aksinya.
+        $this->assertFalse($arsip->hasAttribute('wire:click'));
+        // Buka/tutup submenu jalan dulu, lalu x-on:click pemakai.
+        $this->assertSame("toggle('Dokumen'); catat()", $dokumen->getAttribute('x-on:click'));
+    }
+
+    public function test_warna_badge_chevron_collapsible_dan_sub_item_mengikuti_react(): void
+    {
+        $items = [
+            ['label' => 'Gray', 'theme' => 'gray', 'collapsible' => true, 'badge' => 'Baru'],
+            ['label' => 'Menu', 'children' => [['label' => 'Aktif', 'href' => '/a', 'active' => true], ['label' => 'Biasa', 'href' => '/b']]],
+        ];
+
+        $dom = $this->dom('<x-ceplok::drawer :items="$items" />', compact('items'));
+        [$gray, $menu] = iterator_to_array($dom->querySelectorAll('button.group'), false);
+
+        $this->assertHasClasses($gray, 'text-gray-900 hover:bg-gray-100/70 hover:text-gray-900');
+        // collapsible tanpa anak tetap berchevron; badge tidak ikut warna ikon.
+        $this->assertNotNull($gray->querySelector('svg'));
+        $this->assertLacksClasses($this->find($gray, 'span.shrink-0.gap-2'), 'text-gray-500');
+        // Submenu yang terbuka sudah terputar sejak render server.
+        $this->assertHasClasses($this->find($menu, 'svg'), 'rotate-180');
+
+        $aktif = $this->find($dom, 'a[href="/a"]');
+        $biasa = $this->find($dom, 'a[href="/b"]');
+        $this->assertHasClasses($aktif, 'text-blue-600 bg-blue-50/70 hover:bg-blue-50');
+        $this->assertFalse($aktif->hasAttribute('x-bind:class'));
+        // Tanpa `active`, sub-item yang diklik menjadi aktif (activeSubId di React).
+        $this->assertSame("activeSub = 'Biasa'", $biasa->getAttribute('x-on:click'));
+        $this->assertStringContainsString("activeSub === 'Biasa'", $biasa->getAttribute('x-bind:class'));
+        $this->assertSame("activeSub === 'Biasa' ? 'page' : null", $biasa->getAttribute('x-bind:aria-current'));
+    }
+
+    public function test_tombol_tutup_dapat_diberi_label_atau_disembunyikan(): void
+    {
+        $label = $this->find($this->dom('<x-ceplok::drawer eyebrow="MENU" close-label="Tutup menu" :items="[[\'label\' => \'A\']]" />'), 'button[aria-label="Tutup menu"]');
+        $tanpa = $this->dom('<x-ceplok::drawer eyebrow="MENU" :show-close-button="false" :items="[[\'label\' => \'A\']]" />');
+
+        $this->assertNotNull($label);
+        $this->assertNull($tanpa->querySelector('button[aria-label]'));
+    }
+
+    public function test_after_items_status_submenu_dan_event_expanded_change(): void
+    {
+        $items = [
+            ['label' => 'Dokumen', 'children' => [['label' => 'Arsip']]],
+            ['label' => 'Tertutup', 'defaultExpanded' => false, 'children' => [['label' => 'Satu']]],
+        ];
+        $dom = $this->dom('<x-ceplok::drawer :items="$items"><x-slot:after-items><p id="ekstra">Versi 1.0</p></x-slot:after-items></x-ceplok::drawer>', compact('items'));
+        [$dokumen, $tertutup] = iterator_to_array($dom->querySelectorAll('[x-data="ceplokDrawerItem"]'), false);
+
+        // Status awal submenu, dan toggle() mengirim expanded-change (padanan onExpandedChange).
+        $this->assertSame('true', $dokumen->getAttribute('data-expanded'));
+        $this->assertSame('false', $tertutup->getAttribute('data-expanded'));
+        $this->assertSame("toggle('Dokumen')", $this->find($dokumen, 'button.group')->getAttribute('x-on:click'));
+
+        // Padanan afterItems: di body yang sama, setelah seluruh item.
+        $children = $this->childrenOf($this->find($dom, 'dialog div.overflow-y-auto'));
+        $this->assertSame('ekstra', end($children)->getAttribute('id'));
+    }
+
     public function test_prop_yang_tidak_sah_ditolak(): void
     {
         $this->assertPropError(

@@ -62,6 +62,19 @@
         scrollbar-color: var(--color-gray-600) transparent;
     }
 
+    /* Preview Sidebar memakai scrollbar standar versi tipis, sama dengan docs
+       kit React: kotak preview (.ds-scroll-x) mewariskan scrollbar-color, jadi
+       Chrome/Edge mengabaikan ::-webkit-scrollbar milik .ds-scroll-y dan tanpa
+       ini scrollbar navigasi tampil selebar bawaan Windows. */
+    .sidebar-component-preview .ds-scroll-y {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-gray-300) transparent;
+    }
+
+    [data-docs-theme='dark'] .sidebar-component-preview .ds-scroll-y {
+        scrollbar-color: var(--color-gray-600) transparent;
+    }
+
     [data-docs-theme='dark'] .ds-scroll-x::-webkit-scrollbar-thumb,
     [data-docs-theme='dark'] .ds-scroll-y::-webkit-scrollbar-thumb {
         background-color: var(--color-gray-600);

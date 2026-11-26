@@ -71,12 +71,16 @@
         $triggerAttributes = $triggerAttributes->except(['href', 'as']);
     }
 
+    // Binding state dan listener perubahan harus berada pada root tempat
+    // Alpine memancarkan `open-change`. Listener yang tertinggal di panel
+    // anak tidak menerima event yang bubble ke atas.
     $wrapperKeys = array_keys($attributes->whereStartsWith([
         'wire:model',
         'x-model',
         'wire:key',
         'wire:open-change',
         'x-on:open-change',
+        '@open-change',
     ])->getAttributes());
     $wrapper = $attributes->only($wrapperKeys);
     $blockedPanelKeys = array_keys($attributes->whereStartsWith([

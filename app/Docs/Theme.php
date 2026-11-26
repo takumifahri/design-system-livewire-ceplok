@@ -36,6 +36,12 @@ final class Theme
     private const PAGES = [
         'home',
         'components.index',
+        'components.button',
+        'components.breadcrumb',
+        'components.drawer',
+        'components.list-view',
+        'components.pagination',
+        'components.sidebar',
         'components.alert',
         'components.clipboard',
         'components.dropdown',

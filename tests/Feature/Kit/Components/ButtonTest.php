@@ -24,10 +24,10 @@ class ButtonTest extends TestCase
     {
         return [
             'primary light filled' => ['primary', 'light', 'filled', 'bg-primary-700 text-white hover:bg-primary-800'],
-            'primary dark outline' => ['primary', 'dark', 'outline', 'border border-primary-800 text-primary-800 hover:bg-primary-50'],
+            'tone dark lama memakai dark mode' => ['primary', 'dark', 'outline', 'border border-gray-50 text-gray-50 hover:bg-white hover:text-gray-700'],
             'green light outline' => ['green', 'light', 'outline', 'border border-green-700 text-green-700 hover:bg-green-50'],
             'gray light memakai 500' => ['gray', 'light', 'filled', 'bg-gray-500 hover:bg-gray-700'],
-            'gray dark outline menggelap saat hover' => ['gray', 'dark', 'outline', 'border-gray-700 text-gray-700 hover:text-gray-900 hover:border-gray-900'],
+            'outline dark selalu putih' => ['gray', 'dark', 'outline', 'border-gray-50 text-gray-50 hover:bg-white hover:text-gray-700'],
             'purple dark filled' => ['purple', 'dark', 'filled', 'bg-purple-800 hover:bg-purple-700'],
             'orange light memakai 600' => ['orange', 'light', 'filled', 'bg-orange-600 hover:bg-orange-700'],
             'yellow dark filled' => ['yellow', 'dark', 'filled', 'bg-yellow-800 hover:bg-yellow-700'],
@@ -40,6 +40,36 @@ class ButtonTest extends TestCase
         $button = $this->find($this->dom("<x-ceplok::button theme=\"{$theme}\" tone=\"{$tone}\" variant=\"{$variant}\">Simpan</x-ceplok::button>"), 'button');
 
         $this->assertHasClasses($button, $classes);
+    }
+
+    public function test_dark_mode_memakai_palet_theme_fallback_dan_outline_terbaru(): void
+    {
+        $themed = $this->find($this->dom('<x-ceplok::button dark-mode theme="primary">Simpan</x-ceplok::button>'), 'button');
+        $fallback = $this->find($this->dom('<x-ceplok::button dark-mode>Simpan</x-ceplok::button>'), 'button');
+        $outline = $this->find($this->dom('<x-ceplok::button dark-mode theme="purple" variant="outline">Detail</x-ceplok::button>'), 'button');
+
+        $this->assertHasClasses($themed, 'bg-primary-800 text-white hover:bg-primary-700');
+        $this->assertHasClasses($fallback, 'bg-gray-50 text-gray-700 hover:bg-white hover:text-gray-700');
+        $this->assertHasClasses($outline, 'border border-gray-50 text-gray-50 hover:border-gray-50 hover:bg-white hover:text-gray-700');
+        $this->assertLacksClasses($outline, 'border-purple-800 text-purple-800');
+    }
+
+    public function test_dark_mode_theme_di_luar_enam_bawaan_jatuh_ke_putih(): void
+    {
+        $filled = $this->find($this->dom('<x-ceplok::button dark-mode theme="teal">Simpan</x-ceplok::button>'), 'button');
+        $outline = $this->find($this->dom('<x-ceplok::button dark-mode theme="teal" variant="outline">Detail</x-ceplok::button>'), 'button');
+
+        $this->assertHasClasses($filled, 'bg-gray-50 text-gray-700 hover:bg-white hover:text-gray-700');
+        $this->assertLacksClasses($filled, 'bg-primary-800');
+        $this->assertHasClasses($outline, 'border border-gray-50 text-gray-50 hover:border-gray-50 hover:bg-white hover:text-gray-700');
+    }
+
+    public function test_dark_mode_eksplisit_mengalahkan_alias_tone_lama(): void
+    {
+        $button = $this->find($this->dom('<x-ceplok::button tone="dark" :dark-mode="false">Simpan</x-ceplok::button>'), 'button');
+
+        $this->assertHasClasses($button, 'bg-primary-700 text-white hover:bg-primary-800');
+        $this->assertLacksClasses($button, 'bg-gray-50 bg-primary-800');
     }
 
     /** @return array<string, array{string, string, string, string}> */
@@ -161,5 +191,6 @@ class ButtonTest extends TestCase
         $this->assertPropError('<x-ceplok::button theme="red">Simpan</x-ceplok::button>', 'Prop `theme` pada <x-ceplok::button>');
         $this->assertPropError('<x-ceplok::button size="m">Simpan</x-ceplok::button>', 'Prop `size` pada <x-ceplok::button>');
         $this->assertPropError('<x-ceplok::button icon-only="ya">Simpan</x-ceplok::button>', 'Prop `icon-only` pada <x-ceplok::button> harus boolean');
+        $this->assertPropError('<x-ceplok::button dark-mode="ya">Simpan</x-ceplok::button>', 'Prop `dark-mode` pada <x-ceplok::button> harus boolean');
     }
 }

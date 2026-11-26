@@ -22,6 +22,15 @@ export default function drawer() {
                 this.syncDialog(val);
             });
 
+            // Seperti handleNativeClose di React: dialog yang ditutup dengan
+            // cara lain (mis. form method="dialog") ikut menyetel state-nya.
+            // Event `close` milik kit sendiri adalah CustomEvent, jadi dilewati.
+            this.$el.addEventListener('close', (event) => {
+                if (event instanceof CustomEvent || !this.open) return;
+                this.open = false;
+                this.$dispatch('close');
+            });
+
             if (this.open) {
                 this.$nextTick(() => {
                     this.syncDialog(true);
@@ -76,6 +85,43 @@ export default function drawer() {
             this.open = false;
             this.syncDialog(false);
             this.$dispatch('close');
+        },
+    };
+}
+
+/**
+ * Item menu Drawer (x-ceplok::drawer.nav-item) — padanan state expanded dan
+ * activeSubId di kit React.
+ *
+ * - `expanded`: status submenu. Nilai awalnya dari `data-expanded`; bila
+ *   server merender nilai lain (mis. properti Livewire yang diubah lewat
+ *   wire:expanded-change), state ikut disinkronkan — padanan prop `expanded`
+ *   terkendali. Klik tetap membuka/menutup secara lokal.
+ * - Event `expanded-change` (`detail.expanded`, `detail.label`) dikirim setiap
+ *   submenu dibuka/ditutup, padanan onExpandedChange.
+ * - `activeSub`: sub-item tanpa `active` yang terakhir diklik.
+ */
+export function drawerItem() {
+    return {
+        expanded: false,
+        activeSub: null,
+        expandedObserver: null,
+
+        init() {
+            this.expanded = this.$el.dataset.expanded === 'true';
+            this.expandedObserver = new MutationObserver(() => {
+                this.expanded = this.$el.dataset.expanded === 'true';
+            });
+            this.expandedObserver.observe(this.$el, { attributes: true, attributeFilter: ['data-expanded'] });
+        },
+
+        destroy() {
+            this.expandedObserver?.disconnect();
+        },
+
+        toggle(label) {
+            this.expanded = !this.expanded;
+            this.$dispatch('expanded-change', { expanded: this.expanded, label });
         },
     };
 }

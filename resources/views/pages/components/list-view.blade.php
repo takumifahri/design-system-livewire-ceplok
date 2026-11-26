@@ -1,37 +1,51 @@
 @php
+use App\Docs\Theme;
+
+$docsDark = Theme::dark();
+
 $itemProps = [
-['variant', '"simple" | "article"', 'simple', 'Jenis tampilan: item berkas sederhana atau kartu artikel/diskusi.'],
-['title', 'string | Htmlable', 'required', 'Judul utama item.'],
-['subject', 'string | Htmlable', 'null', 'Nama subjek atau penulis pada varian article.'],
-['category', 'string | Htmlable', 'null', 'Kategori pada varian article.'],
-['timestamp', 'string | Htmlable', 'null', 'Tanggal atau waktu publikasi pada varian article.'],
-['pinned', 'bool', 'true', 'Menampilkan penanda pin pada varian article.'],
-['views', 'string | int | Htmlable', 'null', 'Jumlah tayangan pada varian article.'],
-['comments', 'string | int | Htmlable', 'null', 'Jumlah komentar pada varian article.'],
-['likes', 'string | int | Htmlable', 'null', 'Jumlah suka pada varian article.'],
-['description', 'string | Htmlable', 'null', 'Keterangan tambahan di bawah judul item simple.'],
-['metadata', 'array', '[]', 'Metadata ringkas, mis. PDF, ukuran berkas, atau tanggal pembaruan.'],
-['icon', 'string | Htmlable | false', 'null', 'Ikon kiri; false untuk menyembunyikan wadah ikon.'],
-['platform', '"desktop" | "mobile"', 'desktop', 'Platform item simple. Mobile memakai layout ringkas.'],
-['size', '"s" | "m" | "l" | "xl"', 'm', 'Ukuran kartu. XL tersedia untuk varian article.'],
-['decoration', 'bool', 'false', 'Garis aksen vertikal; selalu ada pada varian article.'],
-['badge', 'slot', 'null', 'Label status di bawah metadata pada varian simple.'],
-['action-label', 'string | Htmlable', 'null', 'Label aksi cepat di sisi kanan item simple.'],
-['action-href', 'string', 'null', 'Tujuan tautan tombol aksi.'],
-['action-disabled', 'bool', 'false', 'Pada simple desktop, menyembunyikan tombol dan memindahkan URL/event aksinya ke seluruh kartu.'],
-['action-wire-click', 'string', 'null', 'Method Livewire yang dipanggil saat tombol aksi diklik.'],
-['href', 'string', 'null', 'Menjadikan seluruh kartu sebagai tautan.'],
-['dark-mode', 'bool', 'false', 'Mengaktifkan tema gelap secara eksplisit.'],
+['variant', '"simple" | "article"', 'simple', "Jenis tampilan kartu: 'simple' (daftar berkas) atau 'article' (kartu diskusi/artikel)."],
+['title', 'string | Htmlable', 'required', 'Judul utama berkas atau item dokumen.'],
+['subject', 'string | Htmlable', 'null', 'Nama subjek / penulis di kiri atas (varian article).'],
+['category', 'string | Htmlable', 'null', 'Kategori topik di dalam blok metadata rata kiri pada sisi kanan header (varian article).'],
+['timestamp', 'string | Htmlable', 'null', 'Tanggal / waktu publikasi di bawah kategori, rata kiri dalam blok metadata header (varian article).'],
+['pinned', 'bool', 'true', 'Menampilkan lencana pin bulat berorientasi ke kanan di kanan atas (varian article).'],
+['pin-attributes', 'array', '[]', "Atribut untuk lencana pin, mis. ['wire:click' => 'sematkan'], yang menjadikannya tombol; padanan onPin (varian article)."],
+['views', 'string | int | Htmlable', 'null', 'Jumlah tayangan / views di kanan bawah (varian article).'],
+['comments', 'string | int | Htmlable', 'null', 'Jumlah komentar di kanan bawah (varian article).'],
+['likes', 'string | int | Htmlable', 'null', 'Jumlah suka / likes di kanan bawah (varian article).'],
+['description', 'string | Htmlable', 'null', 'Keterangan atau teks deskripsi tambahan di bawah judul.'],
+['metadata', 'array', '[]', "Daftar metadata ringkas yang otomatis digabung dengan tanda pemisah titik tengah (·). Contoh: ['PDF', '2.4 MB', 'Updated Oct 10, 2026']."],
+['icon', 'string | Htmlable | false', 'ikon file-lines', 'Elemen visual di sisi kiri. Bernilai false jika tidak ingin menampilkan wadah ikon sama sekali.'],
+['platform', '"desktop" | "mobile"', 'desktop', "Platform tampilan kartu: 'desktop' (lebar 410–600 px) atau 'mobile' (ringkas 348 px)."],
+['decoration', 'bool', 'false', 'Menampilkan garis dekorasi aksen vertikal warna primary pada sisi kiri kartu (hanya varian simple; selalu aktif pada article).'],
+['badge', 'string | slot', 'null', 'Badge atau elemen label status tambahan yang ditampilkan di bawah metadata.'],
+['action-label', 'string | Htmlable', 'null', 'Label untuk tombol aksi cepat di sisi kanan (otomatis merender Button filled bawaan).'],
+['action-wire-click', 'string', 'null', 'Method Livewire tombol aksi; padanan onAction. Dengan action-disabled dan tanpa href/klik item, aksinya dialihkan ke seluruh item.'],
+['action-click', 'string', 'null', 'Ekspresi Alpine tombol aksi (x-on:click); padanan onAction.'],
+['action-attributes', 'array', '[]', 'Atribut tambahan untuk tombol aksi.'],
+['action-href', 'string', 'null', 'Alamat tombol aksi. Dengan action-disabled dan tanpa href/klik item, tautan dialihkan ke seluruh item.'],
+['action-disabled', 'bool', 'false', 'Menyembunyikan tombol aksi bawaan pada varian simple. Jika action-href atau aksi tersedia dan item belum memiliki href/klik, aksinya dialihkan ke seluruh item; href/klik eksplisit tetap diprioritaskan.'],
+['interactive-feedback', 'bool', 'true', 'Menampilkan feedback border, shadow, dan scale pada item simple yang interaktif. Tidak mengubah clickability item.'],
+['action-button-size', '"xs" | "s" | "base" | "l" | "xl"', 'null', 'Ukuran tombol aksi bawaan. Mengikuti prop size kartu bila tidak ditentukan.'],
+['size', '"s" | "m" | "l" | "xl" | "sm" | "default" | "lg"', 'm / default', 'Kerapatan ukuran visual item: S (ringkas), M (standar), atau L (lapang). XL hanya untuk varian article.'],
+['href', 'string', 'null', 'Alamat tautan jika seluruh kartu item bertindak sebagai link interaktif.'],
+['target / rel', 'string', 'null', "Atribut tautan untuk href; target _blank tanpa rel otomatis memakai rel='noreferrer noopener'."],
+['dark-mode', 'bool', 'false', 'Menyetel kartu item ke tema gelap secara eksplisit.'],
+['content', 'Htmlable | string | slot', 'null', 'Isi tambahan di dalam kolom teks: di bawah badge (simple) atau di bawah judul (article); padanan children. Pada mode satu item lewat slot.'],
+['as', 'string', 'article / a / button', 'Elemen HTML kartu (kunci items), mis. li di dalam kontainer as="ul"; padanan as.'],
+['attributes', 'array', '[]', "Atribut pada kartu (kunci items), mis. ['wire:click' => 'pilih']; padanan onClick. Item simple yang bisa diklik tanpa href dirender sebagai <button>, kecuali tombol aksinya tampil."],
 ];
 
 $containerProps = [
-['items', 'array', 'null', 'Array data untuk merender item secara otomatis.'],
-['gap', '"none" | "sm" | "md" | "lg"', 'md', 'Jarak vertikal antar item.'],
-['platform', '"desktop" | "mobile"', 'desktop', 'Platform bawaan yang diteruskan ke setiap item data-driven.'],
-['size', '"s" | "m" | "l" | "xl"', 'm', 'Ukuran bawaan yang diteruskan ke setiap item data-driven.'],
-['decoration', 'bool', 'null', 'Garis aksen bawaan yang diteruskan ke setiap item data-driven.'],
-['dark-mode', 'bool', 'false', 'Menyetel tema gelap untuk kontainer dan item data-driven.'],
-['as', 'string', 'div', 'Elemen HTML pembungkus List View.'],
+['items', 'array', 'null', 'Array data item jika ingin merender daftar berkas secara otomatis. Kuncinya sama dengan prop item dalam camelCase.'],
+['gap', '"none" | "sm" | "md" | "lg"', 'md', 'Jarak vertikal antar item dalam daftar berkas.'],
+['platform', '"desktop" | "mobile"', 'desktop', 'Platform bawaan yang diwariskan ke semua item di dalamnya.'],
+['decoration', 'bool', 'false', 'Garis dekorasi aksen bawaan yang diwariskan ke semua item di dalamnya.'],
+['size', '"s" | "m" | "l" | "sm" | "default" | "lg"', 'm / default', 'Ukuran bawaan yang diwariskan ke semua item di dalamnya.'],
+['dark-mode', 'bool', 'false', 'Menyetel seluruh daftar ke tema gelap.'],
+['slot', 'slot', '—', 'Isi bebas saat items dan title tidak diisi; bila title diisi, slot menjadi isi tambahan item (content).'],
+['as', 'string', 'div', 'Elemen HTML pembungkus kontainer.'],
 ];
 
 // Contoh di halaman ini mengikuti mode docs: pratinjau memakai `dark-mode`
@@ -56,9 +70,9 @@ $docsDark = \App\Docs\Theme::dark();
         ]">
         <x-docs.section id="variant" title="Variant">
             <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">
-                Varian <span class="text-primary-500 dark:text-primary-400">desktop</span> tersedia dalam ukuran S, M, dan L dengan aksi di
-                sisi kanan. Varian
-                <span class="text-primary-500 dark:text-primary-400">mobile</span> menggunakan satu layout ringkas untuk perangkat genggam.
+                Varian terbagi untuk platform <span class="text-primary-500 dark:text-primary-400">desktop</span> yang menyediakan 3 pilihan ukuran
+                <span class="text-primary-500 dark:text-primary-400">(S, M, L)</span> serta tombol aksi di sisi kanan, dan
+                <span class="text-primary-500 dark:text-primary-400">mobile</span> yang ringkas dan terstandardisasi untuk layar perangkat genggam.
             </p>
 
             <div class="space-y-8">
@@ -67,8 +81,8 @@ $docsDark = \App\Docs\Theme::dark();
                     <div class="space-y-6">
                         <div>
                             <h4 class="mb-1 text-sm font-bold text-gray-900 dark:text-white">Small (S)</h4>
-                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran ringkas dengan wadah ikon 32 × 32 px dan
-                                tombol aksi XS.</p>
+                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran ringkas (410 px) dengan wadah ikon 32×32 px dan
+                                tombol aksi ukuran XS.</p>
                             <x-docs.demo min-width="410px">
                                 <div class="w-full max-w-[410px]">
                                     <x-ceplok::list-view size="s" title="Project brief"
@@ -78,8 +92,8 @@ $docsDark = \App\Docs\Theme::dark();
                         </div>
                         <div>
                             <h4 class="mb-1 text-sm font-bold text-gray-900 dark:text-white">Medium (M) · Default</h4>
-                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran standar dengan wadah ikon 40 × 40 px dan
-                                tombol aksi S.</p>
+                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran standar bawaan (514 px) dengan wadah ikon 40×40 px dan
+                                tombol aksi ukuran S.</p>
                             <x-docs.demo min-width="514px">
                                 <div class="w-full max-w-[514px]">
                                     <x-ceplok::list-view title="Project brief"
@@ -89,8 +103,8 @@ $docsDark = \App\Docs\Theme::dark();
                         </div>
                         <div>
                             <h4 class="mb-1 text-sm font-bold text-gray-900 dark:text-white">Large (L)</h4>
-                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran lapang dengan wadah ikon 48 × 48 px dan
-                                tombol aksi Base.</p>
+                            <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Ukuran lapang (600 px) dengan wadah ikon 48×48 px dan
+                                tombol aksi ukuran Base.</p>
                             <x-docs.demo min-width="600px">
                                 <div class="w-full max-w-[600px]">
                                     <x-ceplok::list-view size="l" title="Project brief"
@@ -103,8 +117,8 @@ $docsDark = \App\Docs\Theme::dark();
 
                 <div>
                     <h3 class="mb-2 text-base font-bold text-gray-900 dark:text-white">2. Mobile</h3>
-                    <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Mobile menggunakan satu ukuran standar dengan layout satu
-                        baris yang ringkas.</p>
+                    <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">Platform mobile hanya memiliki 1 ukuran standar (lebar 348 px,
+                        tinggi 58 px). Wadah ikon 40×40 px dengan layout satu baris ringkas.</p>
                     <x-docs.demo min-width="348px">
                         <div class="w-full max-w-[348px]">
                             <x-ceplok::list-view platform="mobile" title="Project brief"
@@ -151,7 +165,7 @@ $docsDark = \App\Docs\Theme::dark();
                     <p class="mb-3 text-body-sm text-gray-500 dark:text-gray-400">{{ $articleVariant['description'] }}</p>
                     <x-docs.demo :min-width="match ($size) { 's' => '410px', 'm' => '514px', 'l' => '728px', 'xl' => '1028px' }">
                         <div class="w-full {{ $articleVariant['width'] }}">
-                            <x-ceplok::list-view variant="article" :size="$size" subject="Subject Name" category="Category"
+                            <x-ceplok::list-view variant="article" :size="$size" subject="subject Name" category="Category"
                                 timestamp="12 Okt 2026 09:59 WIB"
                                 :title="$size === 'xl' ? 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi. Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi.' : 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi'"
                                 :views="609" :comments="3" :likes="16" :dark-mode="$docsDark" />
@@ -162,22 +176,22 @@ $docsDark = \App\Docs\Theme::dark();
             </div>
             <x-docs.code>@verbatim
                 {{-- Article S (410 px) --}}
-                <x-ceplok::list-view variant="article" ⟦size⟧="s" subject="Subject Name" category="Category"
+                <x-ceplok::list-view variant="article" ⟦size⟧="s" subject="subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
                     :comments="3" :likes="16"⟨ dark-mode⟩ />
 
                 {{-- Article M · default (514 px) --}}
-                <x-ceplok::list-view variant="article" subject="Subject Name" category="Category"
+                <x-ceplok::list-view variant="article" subject="subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
                     :comments="3" :likes="16"⟨ dark-mode⟩ />
 
                 {{-- Article L (728 px) --}}
-                <x-ceplok::list-view variant="article" ⟦size⟧="l" subject="Subject Name" category="Category"
+                <x-ceplok::list-view variant="article" ⟦size⟧="l" subject="subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
                     :comments="3" :likes="16"⟨ dark-mode⟩ />
 
                 {{-- Article XL (1028 px) --}}
-                <x-ceplok::list-view variant="article" ⟦size⟧="xl" subject="Subject Name" category="Category"
+                <x-ceplok::list-view variant="article" ⟦size⟧="xl" subject="subject Name" category="Category"
                     timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk" :views="609"
                     :comments="3" :likes="16"⟨ dark-mode⟩ />
                 @endverbatim
@@ -185,10 +199,10 @@ $docsDark = \App\Docs\Theme::dark();
         </x-docs.section>
 
         <x-docs.section id="decoration" title="Decoration">
-            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Prop <span class="text-primary-500 dark:text-primary-400">decoration</span> menambahkan
-                garis aksen vertikal pada sisi kiri kartu sebagai penanda visual.</p>
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Prop <span class="text-primary-500 dark:text-primary-400">decoration</span> menyematkan garis aksen vertikal warna primary pada sisi kiri
+                kartu untuk memberikan aksentuasi visual atau penanda status berkas.</p>
             <div class="space-y-5">
-                <x-docs.demo label="Desktop" min-width="514px">
+                <x-docs.demo label="Desktop (Medium)" min-width="514px">
                     <div class="w-full max-w-[514px]">
                         <x-ceplok::list-view decoration title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" :dark-mode="$docsDark" />
@@ -213,15 +227,15 @@ $docsDark = \App\Docs\Theme::dark();
         </x-docs.section>
 
         <x-docs.section id="badge" title="Badge">
-            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Slot <span class="text-primary-500 dark:text-primary-400">badge</span> menempatkan
-                label status di bawah metadata dan menyesuaikan tinggi kartu secara otomatis.</p>
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Prop <span class="text-primary-500 dark:text-primary-400">badge</span> menyisipkan elemen label status di bawah baris metadata dokumen.
+                Tata letak vertikal kartu dan wadah ikon otomatis menyesuaikan proporsinya agar tetap seimbang.</p>
             <div class="space-y-5">
-                <x-docs.demo label="Desktop" min-width="514px">
+                <x-docs.demo label="Desktop (Medium)" min-width="514px">
                     <div class="w-full max-w-[514px]">
                         <x-ceplok::list-view title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" action-label="Open" :dark-mode="$docsDark">
                             <x-slot:badge>
-                                <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
+                                <x-ceplok::badge variant="success" size="sm" :dark-mode="$docsDark" :icon="svg('ceplok-s-clock')">Badge
                                 </x-ceplok::badge>
                             </x-slot:badge>
                         </x-ceplok::list-view>
@@ -232,7 +246,7 @@ $docsDark = \App\Docs\Theme::dark();
                         <x-ceplok::list-view platform="mobile" title="Project brief"
                             :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" :dark-mode="$docsDark">
                             <x-slot:badge>
-                                <x-ceplok::badge variant="success" size="sm" :icon="svg('ceplok-s-clock')">Badge
+                                <x-ceplok::badge variant="success" size="sm" :dark-mode="$docsDark" :icon="svg('ceplok-s-clock')">Badge
                                 </x-ceplok::badge>
                             </x-slot:badge>
                         </x-ceplok::list-view>
@@ -262,8 +276,8 @@ $docsDark = \App\Docs\Theme::dark();
         </x-docs.section>
 
         <x-docs.mode-section>
-            <x-slot:lead>Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> menyesuaikan
-                surface, teks, ikon, badge, dan border untuk latar gelap.</x-slot:lead>
+            <x-slot:lead>Prop <span class="text-primary-500 dark:text-primary-400">dark-mode</span> mengaktifkan tema gelap. Article memakai surface <span class="text-primary-500 dark:text-primary-400">gray-700</span>, teks bertingkat <span class="text-primary-500 dark:text-primary-400">gray-100</span> hingga <span class="text-primary-500 dark:text-primary-400">gray-300</span>,
+                serta pin transparan beraksen primary.</x-slot:lead>
             <div class="space-y-5">
                 <x-docs.demo dark label="Desktop" min-width="514px">
                     <div class="w-full max-w-[514px]">
@@ -314,14 +328,14 @@ $docsDark = \App\Docs\Theme::dark();
         <livewire:playground.list-view-livewire :dark="$docsDark" />
 
         <x-docs.section id="properties" title="Properties">
-            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Referensi prop untuk item dan kontainer List View.</p>
+            <p class="mb-6 text-body-sm text-gray-500 dark:text-gray-400">Referensi lengkap prop yang didukung oleh item List View dan kontainer pembungkusnya.</p>
             <div class="space-y-8">
                 <div>
-                    <h3 class="mb-3 text-sm font-bold text-gray-900 dark:text-white">List View Item</h3>
+                    <h3 class="mb-3 text-sm font-bold text-gray-900 dark:text-white">List View Item Props</h3>
                     <x-docs.props-table :rows="$itemProps" min-width="46rem" />
                 </div>
                 <div>
-                    <h3 class="mb-3 text-sm font-bold text-gray-900 dark:text-white">List View Container</h3>
+                    <h3 class="mb-3 text-sm font-bold text-gray-900 dark:text-white">List View (Container) Props</h3>
                     <x-docs.props-table :rows="$containerProps" min-width="46rem" />
                 </div>
             </div>

@@ -35,7 +35,7 @@ new class extends Component
                 '    ⟦*subject⟧="Subject Name"',
                 '    ⟦*category⟧="Category"',
                 '    ⟦*timestamp⟧="12 Okt 2026 09:59 WIB"',
-                '    ⟦*title⟧="Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi"',
+                '    ⟦*title⟧="'.($this->size === 'xl' ? 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi. Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi.' : 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi').'"',
                 '    :⟦*views⟧="609"',
                 '    :⟦*comments⟧="3"',
                 '    :⟦*likes⟧="16"',
@@ -52,6 +52,7 @@ new class extends Component
             '    ⟦*title⟧="Project brief"',
             "    :⟦*metadata⟧=\"['PDF', '2.4 MB', 'Updated Oct 10, 2026']\"",
             $this->platform !== 'mobile' ? '    ⟦*action-label⟧="Open"' : null,
+            $this->platform !== 'mobile' ? '    ⟦*action-click⟧="console.log(\'Open clicked\')"' : null,
             $this->dark ? '    ⟦*dark-mode⟧' : null,
         ])->filter()->implode("\n");
 
@@ -66,7 +67,7 @@ new class extends Component
 
 <div class="space-y-16">
 <x-docs.section id="playground" title="Playground">
-    <x-docs.lead>Uji kombinasi varian, platform, ukuran, dekorasi, badge, dan tema secara langsung.</x-docs.lead>
+    <x-docs.lead>Uji coba kombinasi varian kartu (Simple / Article), platform, pilihan ukuran (S hingga XL), garis dekorasi, penambahan badge, serta mode tampilan secara interaktif.</x-docs.lead>
     @php
         $canvasWidth = match (true) {
             $variant === 'article' && $size === 's' => 'max-w-[410px]',
@@ -93,9 +94,9 @@ new class extends Component
         <div class="flex min-h-[328px] items-center justify-center py-4">
             <div class="w-full transition-[max-width] duration-300 {{ $canvasWidth }}">
                 @if ($variant === 'article')
-                    <x-ceplok::list-view variant="article" :size="$size" subject="subject Name" category="Category" timestamp="12 Okt 2026 09:59 WIB" title="Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi" :views="609" :comments="3" :likes="16" :dark-mode="$dark" />
+                    <x-ceplok::list-view variant="article" :size="$size" subject="subject Name" category="Category" timestamp="12 Okt 2026 09:59 WIB" :title="$size === 'xl' ? 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi. Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi.' : 'Antusiasme dan Tindaklanjut Webinar Deep Talk untuk meningkatkan kekuatan organisasi'" :views="609" :comments="3" :likes="16" :dark-mode="$dark" />
                 @else
-                    <x-ceplok::list-view :platform="$platform" :size="$size" :decoration="$decoration" title="Project brief" :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" :dark-mode="$dark" :action-label="$platform === 'mobile' ? null : 'Open'">
+                    <x-ceplok::list-view :platform="$platform" :size="$size" :decoration="$decoration" title="Project brief" :metadata="['PDF', '2.4 MB', 'Updated Oct 10, 2026']" :dark-mode="$dark" :action-label="$platform === 'mobile' ? null : 'Open'" action-click="alert('Open diklik!')">
                         @if ($hasBadge)
                             <x-slot:badge><x-ceplok::badge variant="success" size="sm" :dark-mode="$dark" :icon="svg('ceplok-s-clock')">Badge</x-ceplok::badge></x-slot:badge>
                         @endif
@@ -107,15 +108,15 @@ new class extends Component
     <x-docs.controls>
         <x-docs.control label="Variant"><x-docs.segmented label="Pilih variant" model="variant" :value="$variant" :options="[['value' => 'simple', 'label' => 'Simple'], ['value' => 'article', 'label' => 'Article']]" /></x-docs.control>
         <x-docs.control label="Platform"><x-docs.segmented label="Pilih platform" model="platform" :value="$platform" :disabled="$variant === 'article'" :options="[['value' => 'desktop', 'label' => 'Desktop'], ['value' => 'mobile', 'label' => 'Mobile']]" /></x-docs.control>
-        <x-docs.control label="Size"><x-docs.segmented label="Pilih ukuran" model="size" :value="$size" :options="$variant === 'article' ? [['value' => 's', 'label' => 'S'], ['value' => 'm', 'label' => 'M'], ['value' => 'l', 'label' => 'L'], ['value' => 'xl', 'label' => 'XL']] : [['value' => 's', 'label' => 'S'], ['value' => 'm', 'label' => 'M'], ['value' => 'l', 'label' => 'L']]" /></x-docs.control>
+        <x-docs.control label="Size"><x-docs.segmented label="Pilih ukuran" model="size" :value="$size" :disabled="$variant === 'simple' && $platform === 'mobile'" :options="$variant === 'article' ? [['value' => 's', 'label' => 'S'], ['value' => 'm', 'label' => 'M'], ['value' => 'l', 'label' => 'L'], ['value' => 'xl', 'label' => 'XL']] : [['value' => 's', 'label' => 'S'], ['value' => 'm', 'label' => 'M'], ['value' => 'l', 'label' => 'L']]" /></x-docs.control>
         <x-docs.control label="Decoration"><x-docs.segmented label="Pilih dekorasi" model="decoration" :value="$decoration" :disabled="$variant === 'article'" :options="[['value' => false, 'label' => 'Tidak Ada'], ['value' => true, 'label' => 'Ada']]" /></x-docs.control>
         <x-docs.control label="Badge"><x-docs.segmented label="Pilih badge" model="hasBadge" :value="$hasBadge" :disabled="$variant === 'article'" :options="[['value' => false, 'label' => 'Tidak Ada'], ['value' => true, 'label' => 'Ada']]" /></x-docs.control>
-        <x-docs.control label="Mode"><x-docs.segmented label="Pilih mode" model="dark" :value="$dark" :options="[['value' => false, 'label' => 'Light'], ['value' => true, 'label' => 'Dark']]" /></x-docs.control>
+        <x-docs.control label="Tampilan"><x-docs.segmented label="Pilih tampilan" model="dark" :value="$dark" :options="[['value' => false, 'label' => 'Light'], ['value' => true, 'label' => 'Dark']]" /></x-docs.control>
     </x-docs.controls>
 </x-docs.section>
 
 <x-docs.section id="penggunaan" title="Penggunaan">
-    <x-docs.lead>Kode ini mengikuti konfigurasi Playground. Prop yang dikendalikan kontrol diberi highlight tebal.</x-docs.lead>
+    <x-docs.lead>Kode di bawah ini otomatis mengikuti kombinasi opsi yang dipilih pada Playground dan siap disalin ke aplikasi.</x-docs.lead>
     <x-docs.code :code="$this->usage" flush />
 </x-docs.section>
 </div>

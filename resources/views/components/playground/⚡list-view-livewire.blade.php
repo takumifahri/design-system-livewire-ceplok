@@ -61,6 +61,7 @@ new class extends Component
                             wire:key="list-view-livewire-{{ $id }}"
                             :title="$document['title']"
                             :metadata="$document['metadata']"
+                            :dark-mode="$dark"
                             action-label="Open"
                             :action-wire-click="$actionWireClick"
                         />

@@ -3,9 +3,10 @@
 use Livewire\Component;
 
 /*
- * Canvas integrasi Livewire untuk Drawer. Root Drawer memakai <dialog> dan
- * berada di viewport, maka canvas ini memakai subkomponennya agar perilaku
- * state tetap dapat dicoba tanpa menutupi halaman dokumentasi.
+ * Canvas integrasi Livewire untuk Drawer. Drawer biasa memakai <dialog> di
+ * viewport, jadi canvas ini memakai mode `preview` (panel <div> di dalam
+ * bingkai) agar state wire:model dan aksi item dapat dicoba tanpa menutupi
+ * halaman dokumentasi.
  */
 new class extends Component
 {
@@ -45,15 +46,19 @@ new class extends Component
 
                 @if ($buka)
                     <div class="absolute inset-0 z-10 bg-gray-900/40" wire:click="$set('buka', false)"></div>
-                    <div class="absolute inset-y-0 right-0 z-20 flex w-[260px] flex-col border-l border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800">
-                        <div class="flex shrink-0 items-center justify-between gap-4 px-5 pt-4 pb-2"><span class="text-base font-semibold tracking-wider uppercase text-gray-500 dark:text-gray-400">MENU</span><button type="button" aria-label="Tutup drawer" wire:click="$set('buka', false)" class="inline-flex size-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"><x-ceplok-o-close class="size-[18px]" /></button></div>
-                        <div class="min-h-0 flex-1 space-y-1 overflow-y-auto p-3 text-xs text-gray-600">
-                            @foreach (['Beranda' => 'ceplok-s-chart-pie', 'Laporan' => 'ceplok-s-file-lines', 'Pesan Masuk' => 'ceplok-s-inbox'] as $label => $icon)
-                                <button type="button" wire:click="pilihMenu('{{ $label }}')" @class(['group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-base font-medium transition-all', $menuTerpilih === $label ? 'bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-white' : 'text-gray-900 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-50 dark:hover:bg-gray-700 dark:hover:text-white'])><span class="flex size-[18px] shrink-0 items-center justify-center">{!! \CeplokUi\DesignKit\Support\Content::icon($icon) !!}</span>{{ $label }}</button>
-                            @endforeach
-                        </div>
-                    </div>
                 @endif
+                {{-- Drawer sungguhan dalam mode preview (bukan <dialog>), diikat wire:model.live. --}}
+                <x-ceplok::drawer
+                    preview
+                    wire:model.live="buka"
+                    eyebrow="MENU"
+                    class="z-20"
+                    style="width: 260px"
+                    :dark-mode="$dark"
+                    :items="collect(['Beranda' => 'ceplok-s-chart-pie', 'Laporan' => 'ceplok-s-file-lines', 'Pesan Masuk' => 'ceplok-s-inbox'])
+                        ->map(fn ($icon, $label) => ['label' => $label, 'icon' => $icon, 'active' => $menuTerpilih === $label, 'attributes' => ['wire:click' => 'pilihMenu('.\Illuminate\Support\Js::from($label).')']])
+                        ->values()->all()"
+                />
             </div>
         </div>
     </x-docs.stage>

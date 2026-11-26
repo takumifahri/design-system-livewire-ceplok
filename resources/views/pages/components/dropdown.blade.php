@@ -398,7 +398,7 @@
                 </x-ceplok::dropdown>
                 @endverbatim
             </x-docs.code>
-        </x-docs.section>
+        </x-docs.mode-section>
 
         <livewire:playground.dropdown :dark="$docsDark" />
 
